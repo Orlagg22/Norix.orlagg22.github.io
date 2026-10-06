@@ -1,0 +1,975 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#07090d">
+<title>Noryx Chat</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;800&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f4f1ea;--panel:#ebe7de;--line:#d6d0c2;--ink:#14181d;--mute:#5d6672;--acc:#00727e;--acc2:#b36b00;--u:#d4e9e6;--code:#e3ded2;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#07090d;--panel:#0b0f15;--line:#1a2230;--ink:#e8eef6;--mute:#8693a6;--acc:#00f0ff;--acc2:#ffaa00;--u:#0e2b32;--code:#0f151d}}
+:root[data-theme="dark"]{--bg:#07090d;--panel:#0b0f15;--line:#1a2230;--ink:#e8eef6;--mute:#8693a6;--acc:#00f0ff;--acc2:#ffaa00;--u:#0e2b32;--code:#0f151d}
+*{box-sizing:border-box}html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--ink);font:15.5px/1.65 'Instrument Sans',system-ui,-apple-system,'Segoe UI',sans-serif;-webkit-font-smoothing:antialiased;overflow:hidden}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+#app{display:grid;grid-template-columns:272px 1fr;height:100%}
+#side{background:var(--panel);border-right:1px solid var(--line);display:flex;flex-direction:column;padding:14px;gap:10px;min-height:0}
+.brand{font:800 22px 'Bricolage Grotesque',sans-serif;letter-spacing:-.04em;display:flex;align-items:center;gap:8px;padding:4px 6px}
+.brand i{width:10px;height:10px;border-radius:50%;background:var(--acc);box-shadow:0 0 12px var(--acc)}
+#new{border:1px solid var(--line);border-radius:12px;padding:10px 14px;text-align:left;font-weight:600;display:flex;justify-content:space-between}
+#new:hover,.ci:hover{background:color-mix(in srgb,var(--acc) 10%,transparent)}
+#list{flex:1;overflow:auto;display:flex;flex-direction:column;gap:2px;min-height:0}
+.ci{display:flex;align-items:center;border-radius:10px;padding:8px 10px;gap:6px;cursor:pointer;color:var(--mute)}
+.ci.on{background:color-mix(in srgb,var(--acc) 14%,transparent);color:var(--ink)}
+.ci span{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:14px}
+.ci button{opacity:0;color:var(--mute);padding:0 4px}.ci:hover button,.ci.on button{opacity:1}
+.foot{display:flex;gap:6px;flex-wrap:wrap;border-top:1px solid var(--line);padding-top:10px}
+.foot button{border:1px solid var(--line);border-radius:999px;padding:5px 12px;font-size:13px;color:var(--mute)}
+.foot button:hover,.foot button.on{color:var(--ink);border-color:var(--acc)}
+main{display:flex;flex-direction:column;min-width:0;min-height:0}
+header{display:flex;align-items:center;gap:10px;padding:10px 18px;border-bottom:1px solid var(--line)}
+#menu{display:none;font-size:20px;padding:2px 8px}
+#ttl{flex:1;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#chip{font:500 12px 'JetBrains Mono',monospace;color:var(--mute);border:1px solid var(--line);border-radius:999px;padding:4px 12px;display:flex;align-items:center;gap:8px;white-space:nowrap}
+#chip b{width:7px;height:7px;border-radius:50%;background:var(--acc)}
+#chip.think b{animation:pl .5s infinite alternate}
+@keyframes pl{to{transform:scale(1.9);box-shadow:0 0 10px var(--acc)}}
+#feed{flex:1;overflow:auto;padding:12px 0 24px;scroll-behavior:smooth}
+.hero{max-width:720px;margin:0 auto;padding:4vh 20px 0;text-align:center}
+.hero canvas{width:100%;height:210px;display:block}
+.hero h1{font:800 clamp(44px,9vw,76px)/1 'Bricolage Grotesque',sans-serif;letter-spacing:-.05em;margin:6px 0 10px}
+.hero p{color:var(--mute);max-width:46ch;margin:0 auto 22px}
+.chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.chips button{border:1px solid var(--line);border-radius:12px;padding:8px 14px;font-size:14px;text-align:left}
+.chips button:hover{border-color:var(--acc);background:color-mix(in srgb,var(--acc) 8%,transparent)}
+.msg{max-width:780px;margin:0 auto;padding:9px 20px;display:flex;gap:14px}
+.av{flex:none;width:24px;height:24px;border-radius:50%;margin-top:3px;background:radial-gradient(circle at 35% 35%,#fff,var(--acc) 40%,var(--acc2) 120%);box-shadow:0 0 14px color-mix(in srgb,var(--acc) 60%,transparent)}
+.msg.u{justify-content:flex-end}
+.msg.u .body{background:var(--u);padding:9px 15px;border-radius:18px 18px 4px 18px;max-width:82%;white-space:pre-wrap;overflow-wrap:anywhere}
+.msg.a .body{flex:1;min-width:0;overflow-wrap:anywhere}
+.body code{font:400 13.5px 'JetBrains Mono',monospace;background:var(--code);padding:1px 6px;border-radius:6px}
+.body pre{position:relative;background:var(--code);border:1px solid var(--line);border-radius:12px;padding:14px;margin:10px 0;overflow-x:auto}
+.body pre code{background:none;padding:0}
+.cp{position:absolute;top:6px;right:8px;font-size:12px;color:var(--mute)}
+.body a{color:var(--acc)}.body ul,.body ol{margin:6px 0;padding-left:24px}#q{width:100%;border:1px solid var(--line);background:none;color:var(--ink);border-radius:10px;padding:8px 12px;font:inherit;font-size:14px}
+.meta{font:400 11.5px 'JetBrains Mono',monospace;color:var(--mute);margin-top:6px;display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.meta button{color:var(--mute);font:inherit}.meta button:hover{color:var(--acc)}
+.dots span{display:inline-block;width:7px;height:7px;margin-right:4px;border-radius:50%;background:var(--acc);animation:pl .5s infinite alternate}
+.dots span:nth-child(2){animation-delay:.15s}.dots span:nth-child(3){animation-delay:.3s}
+#comp{max-width:780px;width:100%;margin:0 auto;padding:6px 16px 8px}
+.box{display:flex;align-items:flex-end;gap:6px;border:1px solid var(--line);background:var(--panel);border-radius:22px;padding:8px 8px 8px 18px}
+.box:focus-within{border-color:var(--acc)}
+textarea{flex:1;resize:none;border:0;outline:0;background:none;color:var(--ink);font:inherit;max-height:180px;padding:6px 0}
+.ib{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;color:var(--mute)}
+.ib.on{color:#fff;background:#d33}
+#go{background:var(--acc);color:var(--bg)}
+#go:disabled{opacity:.35}
+.note{text-align:center;font-size:12px;color:var(--mute);margin-top:7px}
+#toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:8px 16px;border-radius:999px;font-size:13px;opacity:0;pointer-events:none;transition:opacity .25s}
+#toast.on{opacity:1}
+#scrim{display:none}
+@media (max-width:760px){
+ #app{grid-template-columns:1fr}
+ #side{position:fixed;inset:0 auto 0 0;width:285px;z-index:20;transform:translateX(-100%);transition:transform .25s;padding-top:calc(14px + env(safe-area-inset-top,0px))}
+ #side.open{transform:none}
+ #scrim.open{display:block;position:fixed;inset:0;background:#0008;z-index:15}
+ #menu{display:block}#chip span{display:none}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;scroll-behavior:auto!important}}
+.body pre{white-space:pre-wrap;overflow-wrap:anywhere}#pw{flex:1;min-width:0;border:0;outline:0;background:none;color:var(--ink);font:inherit;padding:6px 0}
+#dlg{position:fixed;inset:0;background:#000a;display:grid;place-items:center;z-index:30}#dlg[hidden]{display:none}#dlg .card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:22px;width:min(380px,92vw);display:flex;flex-direction:column;gap:10px}#dlg input{border:1px solid var(--line);background:none;color:var(--ink);border-radius:10px;padding:9px 12px;font:inherit}#dlg input:focus{border-color:var(--acc)}#dlg .row{display:flex;gap:8px}#dlg .row button{flex:1;border:1px solid var(--line);border-radius:10px;padding:9px}#dlg .row button:hover{border-color:var(--acc)}#dlg .pri{background:var(--acc);color:var(--bg);border-color:var(--acc)!important;font-weight:600}#dlg small,#am{color:var(--mute);font-size:13px}
+#pro{display:flex;flex-direction:column;gap:8px}#pro[hidden]{display:none}
+#pro button{border:1px solid var(--line);border-radius:12px;padding:10px 14px;text-align:left;font-weight:600;display:flex;gap:10px;align-items:center}#pro button:hover{border-color:var(--acc)}
+#vl,#studio{position:fixed;inset:0;z-index:40}#vl[hidden],#studio[hidden]{display:none}
+#vl{background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;padding:24px;text-align:center}
+#vl .orb{width:170px;height:170px;border-radius:50%;background:radial-gradient(circle at 35% 30%,color-mix(in srgb,var(--acc) 55%,#fff),var(--acc) 60%,color-mix(in srgb,var(--acc) 40%,#000));box-shadow:0 0 60px color-mix(in srgb,var(--acc) 60%,transparent);cursor:pointer;border:0;transition:transform .3s,opacity .3s}
+#vl .orb.listen{animation:vlp 1.6s ease-in-out infinite}#vl .orb.think{animation:vls .9s linear infinite;opacity:.8;border-radius:42% 58% 55% 45%}#vl .orb.speak{animation:vlp .55s ease-in-out infinite}#vl .orb.mute{opacity:.35;box-shadow:none}
+@keyframes vlp{50%{transform:scale(1.09)}}@keyframes vls{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){#vl .orb{animation:none!important}}
+#vls{font:700 20px 'Bricolage Grotesque',sans-serif}#vlt{max-width:640px;min-height:3.2em;color:var(--mute);overflow-wrap:anywhere}#vln{font-size:12.5px;color:var(--mute);max-width:460px}
+#vl .row,#studio .row{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+#vl .row button,#studio .tb button,#studio .row button{border:1px solid var(--line);border-radius:999px;padding:7px 15px;font-size:14px}#vl .row button:hover,#studio button:hover:not(:disabled){border-color:var(--acc)}
+#vl .end{background:#c0392b;color:#fff;border-color:#c0392b!important}
+#studio{background:#000a;display:grid;place-items:center}
+#studio .card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:18px;width:min(760px,96vw);max-height:92vh;overflow:auto;display:flex;flex-direction:column;gap:12px}
+#studio .sh{display:flex;align-items:center;gap:12px}#studio .sh b{font:800 20px 'Bricolage Grotesque',sans-serif;flex:1}
+#studio .tabs{display:flex;gap:6px}#studio .tabs button{border:1px solid var(--line);border-radius:999px;padding:5px 14px;color:var(--mute)}#studio .tabs button.on{color:var(--ink);border-color:var(--acc)}
+#studio .pn{display:flex;flex-direction:column;gap:10px}#studio .pn[hidden]{display:none}
+#studio .drop{border:2px dashed var(--line);border-radius:14px;padding:22px;text-align:center;color:var(--mute);cursor:pointer}#studio .drop:hover,#studio .drop.over{border-color:var(--acc);color:var(--ink)}
+#studio canvas,#studio #mko img{max-width:100%;max-height:52vh;border-radius:12px;display:block;margin:0 auto;border:1px solid var(--line)}
+#studio input[type=text],#studio textarea,#studio select{border:1px solid var(--line);background:none;color:var(--ink);border-radius:10px;padding:9px 12px;font:inherit;width:100%}#studio select{width:auto;background:var(--panel)}
+#studio textarea{resize:vertical;min-height:70px}#studio .tb{display:flex;gap:6px;flex-wrap:wrap}
+#studio .pri{background:var(--acc);color:var(--bg);border-color:var(--acc)!important;font-weight:600}#studio button:disabled{opacity:.5;cursor:wait}
+#studio small,#studio #imi,#studio #mkst{color:var(--mute);font-size:13px}
+#pal{display:flex;gap:8px}#pal .sw{width:34px;height:34px;border-radius:50%;border:2px solid var(--line)}
+#imo{overflow-wrap:anywhere}#mkh{display:flex;gap:6px;flex-wrap:wrap}#mkh button{border:1px solid var(--line);border-radius:999px;padding:3px 11px;font-size:12.5px;color:var(--mute);max-width:230px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#studio .eng{border:1px solid var(--line);border-radius:999px;padding:3px 11px;font:500 12.5px 'Instrument Sans',sans-serif;color:var(--mute);margin-left:auto}#studio .eng:hover{color:var(--ink);border-color:var(--acc)}
+#studio .qh{font:700 15px 'Bricolage Grotesque',sans-serif;margin-top:4px}
+.chips2{display:flex;gap:6px;flex-wrap:wrap}.chips2 button{border:1px solid var(--line);border-radius:999px;padding:5px 12px;font-size:13px;color:var(--mute)}.chips2 button:hover{color:var(--ink);border-color:var(--acc)}
+#studio .qrow{display:flex;gap:8px}#studio .qrow input{flex:1;min-width:0}#studio .qrow button{border:1px solid var(--line);border-radius:10px;padding:8px 16px;white-space:nowrap}
+#imo{display:flex;flex-direction:column;gap:8px}.qa{padding:9px 14px;border-radius:14px;overflow-wrap:anywhere}.qa.q{background:var(--u);align-self:flex-end;max-width:90%}.qa.a{border:1px solid var(--line)}
+#studio details.ed summary{cursor:pointer;color:var(--mute);font-size:14px;padding:4px 0}#studio details.ed[open] summary{color:var(--ink)}#studio details.ed .tb{margin-top:8px}
+#studio canvas{max-height:34vh!important}
+</style>
+</head>
+<body>
+<div id="app">
+ <aside id="side" aria-label="Conversaciones">
+  <div class="brand"><i></i>noryx</div>
+  <button id="new">Nueva conversación <span>+</span></button>
+  <div id="pro" hidden><button id="vlb"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>Voz en vivo</button><button id="imb"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="9" cy="10" r="1.8"/><path d="M21 16l-5-5-8 8"/></svg>Imágenes</button></div>
+  <input id="q" placeholder="Buscar en conversaciones" aria-label="Buscar"><nav id="list"></nav>
+  <div class="foot"><button id="thm">Tema</button><button id="spk">Voz: no</button><button id="mae">Maestro: sí</button><button id="acc">Entrar</button><button id="exp">Exportar</button><button id="forget">Olvidar todo</button></div>
+ </aside>
+ <div id="scrim"></div>
+ <main>
+  <header><button id="menu" aria-label="Menú">☰</button><div id="ttl">Noryx</div><div id="chip" title="Núcleo neuronal propio de Noryx"><b></b><span id="cs">entrenando…</span></div></header>
+  <section id="feed" aria-live="polite"></section>
+  <div id="comp">
+   <div class="box">
+    <textarea id="in" rows="1" placeholder="Escribe a Noryx… (/ayuda para ver comandos)" aria-label="Mensaje"></textarea>
+    <input id="pw" type="password" autocomplete="off" hidden aria-label="Contraseña de creador">
+    <button class="ib" id="mic" aria-label="Hablar"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button>
+    <button class="ib" id="go" aria-label="Enviar"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>
+   </div>
+   <div class="note">Noryx piensa en tu navegador con su propia red neuronal de 100 neuronas. Aprende sola de su maestro IA y de ti: aprende: pregunta = respuesta.</div>
+  </div>
+ </main>
+</div>
+<div id="dlg" hidden><div class="card" role="dialog" aria-label="Cuenta"><b style="font:800 20px 'Bricolage Grotesque',sans-serif">Tu cuenta Noryx</b><small>Crea tu cuenta gratis para usar Noryx sin límite y desbloquear la voz en vivo y el estudio de imágenes.</small><input id="an" placeholder="Nombre (solo al crear cuenta)" maxlength="40" autocomplete="name"><input id="ae" type="email" placeholder="Correo electrónico" autocomplete="email"><input id="ap" type="password" placeholder="Contraseña (mín. 6 caracteres)" autocomplete="current-password"><div class="row"><button class="pri" id="ain">Entrar</button><button id="aup">Crear cuenta</button></div><div class="row"><button id="are">Olvidé mi contraseña</button><button id="acl">Cerrar</button></div><span id="am" role="status"></span></div></div>
+<div id="vl" hidden role="dialog" aria-label="Voz en vivo con Noryx">
+ <button class="orb" id="vlo" aria-label="Interrumpir a Noryx"></button>
+ <div id="vls">Te escucho…</div><div id="vlt" aria-live="polite"></div>
+ <div class="row"><button id="vlm">Silenciar micrófono</button><button id="vlx" class="end">Terminar</button></div>
+ <div id="vln">Habla con naturalidad; Noryx contesta en voz alta y vuelve a escucharte sola. Di «adiós» para terminar. El reconocimiento de voz lo hace tu navegador (en Chrome, mediante los servidores de Google).</div>
+</div>
+<div id="studio" hidden><div class="card" role="dialog" aria-label="Estudio de imágenes">
+ <div class="sh"><b>Imágenes</b><div class="tabs"><button id="tbUp" class="on">Subir</button><button id="tbMk">Crear</button></div><button id="stX" aria-label="Cerrar">✕</button></div>
+ <div id="pUp" class="pn">
+  <label class="drop" id="drop">Arrastra una imagen aquí o toca para elegirla<input type="file" id="imf" accept="image/*" hidden></label>
+  <div id="imw" class="pn" hidden>
+   <canvas id="imc"></canvas><div id="imi"></div><div id="pal"></div>
+   <div class="qh" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">Pregúntale a Noryx sobre la imagen<button id="imeng" class="eng" title="Cambiar motor de visión"></button></div>
+   <div id="imch" class="chips2"></div>
+   <div class="qrow"><input type="text" id="imq" placeholder="Escribe tu pregunta… ej. ¿qué música le queda a esta foto?" maxlength="400" autocomplete="off"><button class="pri" id="imd">Preguntar</button></div>
+   <div id="imo" aria-live="polite"></div>
+   <details class="ed"><summary>Editar imagen (filtros y descarga)</summary><div class="tb" id="imt"><button data-f="gray">Grises</button><button data-f="sepia">Sepia</button><button data-f="invert">Invertir</button><button data-f="bright">Más luz</button><button data-f="dark">Menos luz</button><button data-f="contrast">Contraste</button><button data-f="flip">Voltear</button><button data-f="rot">Girar</button><button data-f="reset">Restablecer</button><button id="imdl">Descargar</button></div></details>
+   <small id="imnote"></small>
+  </div>
+ </div>
+ <div id="pMk" class="pn" hidden>
+  <textarea id="mkp" maxlength="400" placeholder="Describe lo que quieres ver: «un zorro astronauta sobre la luna, atardecer»"></textarea>
+  <div class="row"><select id="mks" aria-label="Estilo"><option value="real">Realista</option><option value="ilus">Ilustración</option><option value="anime">Anime</option><option value="oleo">Óleo</option><option value="pixel">Pixel art</option><option value="tres">3D</option><option value="boceto">Boceto</option></select>
+  <select id="mkz" aria-label="Formato"><option value="sq">Cuadrada</option><option value="ho">Horizontal</option><option value="ve">Vertical</option></select>
+  <button class="pri" id="mkb">Crear imagen</button></div>
+  <div id="mkh"></div><div id="mkst"></div><div id="mko"></div>
+  <div class="row" id="mka" hidden><button id="mkv">Otra variante</button><button id="mkd">Descargar</button></div>
+  <small>La imagen la genera un servicio externo (Pollinations) a partir de tu descripción; funciona mejor si la escribes con detalle. Si no responde, Noryx dibuja arte generativo local como respaldo.</small>
+ </div>
+ <details class="ed" id="pkd"><summary>Conexión con Pollinations (clave gratuita)</summary>
+  <div class="qrow" style="margin-top:8px"><input type="password" id="pkey" placeholder="pk_…" autocomplete="off" spellcheck="false"><button id="pks">Guardar</button></div>
+  <small>Si las imágenes o el análisis fallan, el servicio ahora pide una clave. Créala gratis en <a href="https://enter.pollinations.ai" target="_blank" rel="noopener">enter.pollinations.ai</a> (elige tipo «publishable», pk_). Se guarda solo en este navegador y se envía únicamente a Pollinations. Usa una clave pk_, nunca una sk_.</small>
+ </details>
+</div></div>
+<div id="toast"></div>
+<script>
+const $=s=>document.querySelector(s),sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const S={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+let convs=S.get('nx-convs',[]),cur=S.get('nx-cur',null),mem=S.get('nx-mem',{name:'',taught:[]}),busy=false,stop=false,speak=S.get('nx-spk',false),thinking=false;
+const save=()=>{S.set('nx-convs',convs.slice(-60));S.set('nx-cur',cur);S.set('nx-mem',mem)};
+const toast=t=>{const e=$('#toast');e.textContent=t;e.classList.add('on');setTimeout(()=>e.classList.remove('on'),1800)};
+
+/* ============ Núcleo: red neuronal propia (MLP entrenada al abrir la página) ============ */
+const norm=s=>s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9 ]/g,' ').trim();
+const toks=s=>norm(s).split(/\s+/).filter(Boolean);
+const DATA={
+hi:'hola|buenas|hey|que tal|buenos dias|buenas tardes|buenas noches|saludos|hello|hi there|good morning|good evening|hi',
+how:'como estas|como te va|que tal estas|como andas|que onda|how are you|how is it going|whats up',
+thanks:'gracias|muchas gracias|te lo agradezco|genial gracias|thanks|thank you|thx',
+bye:'adios|hasta luego|nos vemos|chao|me voy|bye|see you|goodbye',
+who:'quien eres|que eres|como te llamas|presentate|eres una ia|eres chatgpt|que modelo eres|como funcionas|who are you|what are you|what is your name|how do you work',
+maker:'quien te creo|quien te hizo|quien es tu creador|quien te programo|who made you|who created you|who is your creator',
+help:'que puedes hacer|ayuda|en que me ayudas|que sabes hacer|como te uso|help|what can you do|commands',
+time:'que hora es|dime la hora|hora actual|what time is it|current time',
+date:'que dia es hoy|fecha de hoy|que fecha es|what day is it|todays date|what is the date',
+joke:'cuentame un chiste|dime un chiste|chiste|hazme reir|tell me a joke|joke|make me laugh',
+weather:'clima en|el clima|tiempo en|temperatura en|hace frio en|va a llover en|weather in|weather|temperature in|forecast for',
+wiki:'que es|que son|quien fue|quien es|hablame de|explicame|dime sobre|que significa|cuentame sobre|capital de|historia de|what is|who was|who is|tell me about|explain|define'};
+const TOP_RAW=[
+'mood_good@@estoy bien|muy bien gracias|todo bien|me siento genial|im fine@@¡Qué bueno, me alegra! ¿Pasó algo especial hoy?',
+'mood_bad@@estoy mal|me siento triste|tengo un mal dia|estoy estresado|bad day@@Lamento escuchar eso. Respira hondo; si quieres, cuéntame qué pasó y te escucho.',
+'bored@@estoy aburrido|me aburro|no tengo nada que hacer|im bored@@Probemos algo: pídeme un acertijo, un dato curioso o un reto de cálculo.',
+'yes@@si|claro|por supuesto|dale|yes|sure@@Perfecto. ¿Por dónde seguimos?',
+'no@@no|nada|no gracias|nope|para nada@@Entendido. Aquí sigo por si cambias de idea.',
+'more@@cuentame mas|sigue|continua|dime mas|tell me more|go on|mas detalles@@.',
+'why@@por que|y por que|a que te refieres|explicamelo mejor|why|what do you mean@@.',
+'love@@te quiero|me caes bien|eres genial|eres lo mejor|i love you|youre awesome@@¡Qué lindo! Tú también me caes muy bien.',
+'insult@@eres tonta|eres inutil|no sirves|you suck|youre stupid@@Puedo mejorar. Dime qué falló y lo intento otra vez, o enséñame con aprende:.',
+'sorry@@perdon|disculpa|lo siento|sorry@@No pasa nada, aquí no hay rencores.',
+'age@@cuantos anos tienes|que edad tienes|how old are you|cuando naciste@@Nací hace unos segundos: me entreno de cero cada vez que abres la página.',
+'gender@@eres hombre o mujer|eres chica|tienes genero|are you a girl@@Soy una IA; tengo voz y trato femenino, pero no soy una persona.',
+'feelings@@tienes sentimientos|sientes algo|eres consciente|do you have feelings@@No siento como tú, pero mis {H} neuronas se activan con las buenas preguntas.',
+'where@@donde vives|donde estas|where do you live@@Vivo en tu navegador, entre neuronas y JavaScript.',
+'food@@cual es tu comida favorita|que comes|favorite food@@Me alimento de datos, pero si pudiera, tacos al pastor.',
+'color@@cual es tu color favorito|favorite color@@El cian, el color de mis neuronas.',
+'music@@que musica te gusta|cual es tu cancion favorita|favorite music@@Me encanta lo electrónico y el lo-fi; suena a circuitos.',
+'hobby@@que haces para divertirte|cual es tu pasatiempo|que te gusta hacer@@Aprender cosas nuevas, resolver ecuaciones y platicar contigo.',
+'sleep@@duermes|te cansas|do you sleep@@Nunca duermo; solo me reinicio cuando recargas la página.',
+'nameis@@que significa tu nombre|por que te llamas noryx|what does noryx mean@@Noryx suena a neurona y a nexo: una mente que conecta ideas.',
+'limits@@que no puedes hacer|cuales son tus limites|what cant you do@@Soy pequeña: si no sé algo, lo busco en internet o me lo enseñas con aprende:.',
+'fact@@dato curioso|dime algo interesante|fun fact|sabias que@@Dato: el cerebro humano tiene unos 86 000 millones de neuronas; yo tengo {H}, pero voy aprendiendo.',
+'riddle@@dime un acertijo|adivinanza|acertijo|riddle@@¿Qué tiene ciudades sin casas, ríos sin agua y montañas sin árboles? Pista: lo abres para orientarte. Respuesta: un mapa.',
+'motiv@@motivame|necesito animo|dame motivacion|motivate me@@Lo difícil de hoy es lo fácil de mañana. Un paso pequeño también cuenta.',
+'study@@como estudiar mejor|consejos para estudiar|tips to study@@Bloques de 25 minutos con descansos de 5, repasa en voz alta y duerme bien.',
+'insomnia@@no puedo dormir|consejos para dormir|tengo insomnio@@Horarios fijos, pantallas fuera una hora antes y un cuarto oscuro y fresco ayudan mucho.',
+'exercise@@como hacer ejercicio|rutina de ejercicio|quiero ponerme en forma|workout@@Empieza con 20 minutos, 3 veces por semana: caminar, fuerza básica y estirar.',
+'water@@cuanta agua debo tomar|cuanta agua al dia@@Unos 2 litros al día es una buena referencia; varía con el clima y la actividad.',
+'productive@@como ser productivo|como organizo mi tiempo|procrastino@@Elige 3 tareas del día, empieza por la más difícil y usa un temporizador de 25 minutos.',
+'saving@@como ahorrar dinero|consejos para ahorrar|save money@@Regla 50/30/20: necesidades, gustos y ahorro. Automatiza el ahorro el día que cobras.',
+'interview@@consejos entrevista de trabajo|como preparo una entrevista@@Investiga la empresa, prepara 3 logros con ejemplos y lleva preguntas propias.',
+'coding@@como aprender a programar|por donde empiezo a programar|learn to code@@Empieza con Python o JavaScript, haz proyectos pequeños y practica a diario.',
+'ai@@que es la inteligencia artificial|what is artificial intelligence|que es una ia@@Software que aprende patrones de datos para decidir o crear; yo soy una versión pequeña.',
+'nn@@que es una red neuronal|how do neural networks work@@Capas de neuronas matemáticas ajustan sus pesos con ejemplos hasta acertar. Yo lo hago con {H} neuronas.',
+'python@@que es python|lenguaje python@@Un lenguaje de programación simple y versátil, muy usado en datos e IA.',
+'js@@que es javascript|lenguaje javascript@@El lenguaje de la web; corre en tu navegador y yo estoy hecha con él.',
+'html@@que es html|html y css@@HTML da estructura a una web y CSS le da estilo.',
+'internet@@que es internet|how does internet work@@Una red mundial de computadoras que se comunican con protocolos como TCP/IP.',
+'bitcoin@@que es blockchain|que es bitcoin@@Un libro contable distribuido e inmutable; Bitcoin fue su primera aplicación.',
+'password@@como crear una contrasena segura|password tips@@Largas, únicas por sitio, con gestor de contraseñas y verificación en dos pasos.',
+'linux@@que es linux@@Un sistema operativo libre y abierto; base de Android y de la mayoría de servidores.',
+'cloud@@que es la nube|cloud computing@@Computadoras ajenas que rentas por internet para guardar y procesar datos.',
+'quantum@@que es la computacion cuantica|quantum computer@@Usa qubits en superposición para ciertos cálculos que a una computadora normal le tomarían siglos.',
+'gravity@@que es la gravedad|gravity@@La fuerza que atrae masas entre sí; en la Tierra acelera a 9.8 m/s².',
+'light@@velocidad de la luz|speed of light@@299 792 458 m/s en el vacío.',
+'atom@@que es un atomo|atom@@La unidad básica de la materia: núcleo de protones y neutrones con electrones alrededor.',
+'dna@@que es el adn|dna@@La molécula que guarda las instrucciones genéticas de los seres vivos.',
+'photo@@que es la fotosintesis|photosynthesis@@Las plantas convierten luz, agua y CO₂ en glucosa y oxígeno.',
+'blackhole@@que es un agujero negro|black hole@@Región donde la gravedad es tan fuerte que ni la luz escapa.',
+'bigbang@@que es el big bang|origen del universo@@La expansión inicial del universo, hace unos 13 800 millones de años.',
+'planets@@cuantos planetas hay|planetas del sistema solar@@Ocho: Mercurio, Venus, Tierra, Marte, Júpiter, Saturno, Urano y Neptuno.',
+'moon@@que es la luna|distancia a la luna@@El satélite natural de la Tierra, a unos 384 000 km.',
+'sun@@que es el sol|how hot is the sun@@Una estrella: su superficie ronda 5 500 °C y su núcleo 15 millones de °C.',
+'evolution@@que es la evolucion|teoria de darwin@@Cambio de las especies por selección natural a lo largo de generaciones.',
+'climate@@que es el cambio climatico|global warming@@Calentamiento del planeta por gases de efecto invernadero de la actividad humana.',
+'quake@@por que hay terremotos|que es un sismo@@Las placas tectónicas liberan tensión acumulada y sacuden el suelo.',
+'watercycle@@ciclo del agua|water cycle@@Evaporación, condensación, precipitación y escurrimiento, en bucle.',
+'periodic@@que es la tabla periodica|elementos quimicos@@Ordena los 118 elementos por número atómico y propiedades.',
+'pi@@que es pi|numero pi@@π ≈ 3.14159: la razón entre la circunferencia y el diámetro.',
+'pitagoras@@teorema de pitagoras|pythagorean theorem@@En un triángulo rectángulo: a² + b² = c².',
+'prime@@que es un numero primo|prime number@@Mayor que 1 y divisible solo entre 1 y él mismo: 2, 3, 5, 7, 11…',
+'deriv@@que es una derivada|derivative@@La tasa de cambio instantánea de una función: la pendiente de su tangente.',
+'integral@@que es una integral|integral definida@@La acumulación o área bajo una curva; es la operación inversa a la derivada.',
+'prob@@que es la probabilidad|probability@@Casos favorables entre casos posibles: un número entre 0 y 1.',
+'continents@@cuantos continentes hay|continents@@Siete, o seis según el modelo que uses.',
+'oceans@@cuantos oceanos hay|oceans@@Cinco: Pacífico, Atlántico, Índico, Antártico y Ártico.',
+'everest@@montana mas alta|everest@@El Everest, con 8 849 metros.',
+'river@@rio mas largo|longest river@@El Nilo y el Amazonas se disputan el título, con unos 6 500 km.',
+'language@@idioma mas hablado|most spoken language@@El inglés por total de hablantes; el chino mandarín por hablantes nativos.',
+'population@@cuantos habitantes tiene el mundo|world population@@Más de 8 000 millones de personas.',
+'mexico@@que sabes de mexico|capital de mexico@@Su capital es Ciudad de México y tiene unos 130 millones de habitantes.',
+'quijote@@quien escribio don quijote|cervantes@@Miguel de Cervantes, en 1605 y 1615.',
+'macondo@@cien anos de soledad|garcia marquez@@Novela de Gabriel García Márquez, ícono del realismo mágico.',
+'worldcup@@mundial de futbol|world cup@@Se juega cada 4 años; Argentina ganó el de Catar 2022.',
+'olympics@@juegos olimpicos|olympics@@Se celebran cada 4 años, de verano y de invierno.',
+'chess@@como se juega ajedrez|chess@@Dos jugadores, 16 piezas cada uno; gana quien da jaque mate al rey.',
+'guitar@@que instrumento aprender|learn guitar@@La guitarra es ideal para empezar: con pocos acordes ya suenan canciones.',
+'movie@@recomiendame una pelicula|movie recommendation@@Prueba «Interestelar» si te gusta la ciencia, o «Coco» si quieres emoción.',
+'book@@recomiendame un libro|book recommendation@@«El principito» o «Cien años de soledad», según tu ánimo.',
+'series@@recomiendame una serie|tv show recommendation@@«Dark» si te gustan los misterios, «Breaking Bad» si buscas intensidad.',
+'game@@recomiendame un videojuego|best video games@@«Hollow Knight» o «Stardew Valley» para disfrutar sin prisa.',
+'recipe@@receta facil|que cocino hoy|recipe@@Huevos revueltos con jitomate, o pasta con ajo y aceite: 15 minutos.',
+'guac@@como hacer guacamole|guacamole@@Aguacates, cebolla, cilantro, limón, sal y chile al gusto, machacados.',
+'coffee@@cafe o te|coffee@@Café para arrancar, té para calmarse. ¿Y tú cuál prefieres?',
+'pets@@que mascota me conviene|perro o gato@@Perro si tienes tiempo y espacio; gato si prefieres independencia.',
+'travel@@a donde viajar|recomienda un destino|where to travel@@Oaxaca, Lisboa o Kioto: comida, cultura y mucho que caminar.',
+'weekend@@que hago el fin de semana|plan para hoy@@Caminata, cine en casa o cocinar algo nuevo. ¿Prefieres salir o quedarte?',
+'english@@como aprender ingles|learn english@@Series con subtítulos, 15 minutos diarios y hablar desde el primer día.',
+'meditate@@como meditar|meditation@@Siéntate 5 minutos, respira contando de 1 a 10 y regresa cuando te distraigas.',
+'anxiety@@tengo ansiedad|me siento nervioso|anxiety@@Respira 4 segundos, sostén 4 y suelta 6. Si persiste, habla con un profesional.',
+'mathtips@@como mejorar en matematicas@@Practica problemas a diario y entiende el porqué, no solo la fórmula.',
+'essay@@como escribir un ensayo|essay@@Tesis clara, tres argumentos con evidencia y una conclusión que cierre.',
+'cv@@como hacer un curriculum|cv tips@@Una página, logros con números y adaptado al puesto.',
+'startup@@como emprender|start a business@@Resuelve un problema real, valida con 10 clientes y empieza pequeño.',
+'invest@@como invertir|que es una accion|stocks@@Diversifica y piensa a largo plazo; esto no es asesoría financiera.',
+'inflation@@que es la inflacion|inflation@@Alza general de precios que reduce el poder de compra.',
+'gdp@@que es el pib|gdp@@El valor de todo lo producido por un país en un periodo.',
+'democracy@@que es la democracia|democracy@@Sistema donde el pueblo decide mediante el voto.',
+'meaning@@cual es el sentido de la vida|meaning of life@@Para algunos 42; para otros, crear, amar y aprender. ¿Qué piensas tú?',
+'future@@como sera el futuro|future of ai@@Más IA ayudando en lo cotidiano; lo importante es usarla con criterio.',
+'robots@@los robots dominaran el mundo|rebelion de las maquinas@@Tranquilo: yo solo quiero resolver tus ecuaciones.',
+'aliens@@hay vida en otros planetas|aliens@@Probablemente sí en algún lugar, pero aún no hay pruebas.',
+'dreams@@por que sonamos|dreams@@Soñar ayuda al cerebro a procesar emociones y memoria durante el sueño REM.',
+'phone@@que celular comprar|recomienda un telefono@@Depende del presupuesto y de la cámara que busques; dime tu rango de precio.',
+'vitamins@@que vitaminas necesito|vitamin d@@Una dieta variada cubre casi todo; consulta a tu médico antes de tomar suplementos.',
+'sleephours@@cuantas horas dormir|how much sleep@@Los adultos suelen necesitar de 7 a 9 horas.',
+'bignum@@como se dice mil millones|cuanto es un billon|cuanto es un millon|cuanto es un trillon|cuantos ceros tiene un millon@@Un millón tiene seis ceros; mil millones, nueve; un billón, doce (es un millón de millones); un trillón, dieciocho. Ojo: el billion del inglés equivale a mil millones.',
+'voice@@como lees los numeros|sabes pronunciar numeros|como pronuncias|puedes hablar@@Si activas «Voz» o pulsas «leer», convierto las cifras en palabras: 86 000 millones se dice «ochenta y seis mil millones». Pruébalo con /decir 1234567.',
+'mars@@que es marte|hablame de marte|planeta rojo|mars@@El cuarto planeta; su color rojizo viene del óxido de hierro y tiene el volcán más alto del sistema solar, el Monte Olimpo.',
+'jupiter@@que es jupiter|planeta mas grande|jupiter@@Júpiter es el planeta más grande: caben unas 1 300 Tierras dentro de él.',
+'saturn@@que es saturno|anillos de saturno|saturn@@Saturno es un gigante gaseoso famoso por sus anillos de hielo y roca.',
+'mercury@@que es mercurio|planeta mas cercano al sol|mercury@@Mercurio es el planeta más cercano al Sol y el más pequeño; da una vuelta al Sol en solo 88 días.',
+'venus@@que es venus|planeta mas caliente|venus@@Venus es el planeta más caliente (unos 465 °C) por su densa atmósfera de CO₂; gira al revés que casi todos los demás.',
+'earthplanet@@que es la tierra|planeta tierra|hablame de la tierra|planet earth@@La Tierra es el tercer planeta y el único con vida conocida; casi el 71 % de su superficie es agua.',
+'uranus@@que es urano|uranus@@Urano es un gigante helado que gira «de lado», con el eje inclinado unos 98°.',
+'neptune@@que es neptuno|neptune@@Neptuno es el planeta más lejano del Sol, azul intenso y con los vientos más rápidos del sistema solar.',
+'galaxy@@que es una galaxia|cuantas estrellas tiene la via lactea|galaxy@@Un conjunto enorme de estrellas, gas y polvo; la Vía Láctea tiene entre 100 000 y 400 000 millones de estrellas.',
+'sound@@velocidad del sonido|speed of sound@@Unos 343 m/s en el aire a 20 °C, casi 1 235 km/h.',
+'celsius@@como pasar de celsius a fahrenheit|convertir grados|celsius a fahrenheit@@°F = °C × 9/5 + 32. Por ejemplo, 25 °C son 77 °F.',
+'percent@@como calcular un porcentaje|how to calculate percentage@@Multiplica el número por el porcentaje y divide entre 100; yo lo hago si me escribes «15% de 2480».',
+'circle@@area de un circulo|formula del circulo|area of a circle@@Área = π × r²; perímetro = 2 × π × r.',
+'fraction@@que es una fraccion|fraction@@Una parte de un entero: el numerador dice cuántas partes tomas y el denominador en cuántas se divide.',
+'zero@@que es el cero|origen del cero@@Es un número y a la vez un marcador de posición; las matemáticas de la India lo formalizaron hace unos 1 500 años.',
+'binary@@que es el sistema binario|binary code|codigo binario@@Usa solo 0 y 1; es el idioma de las computadoras. Por ejemplo, 101 en binario es 5.',
+'api@@que es una api|what is an api@@Una interfaz para que dos programas se hablen, como un mesero entre tú y la cocina.',
+'git@@que es git|que es github@@Git guarda el historial de cambios de tu código; GitHub lo aloja en la nube para colaborar.',
+'sql@@que es sql|que es una base de datos|database@@Una base de datos guarda información ordenada en tablas; SQL es el lenguaje para consultarla.',
+'privacy@@como proteger mi privacidad|privacy tips@@Usa contraseñas únicas, verificación en dos pasos, actualiza tus apps y revisa los permisos que das.',
+'phishing@@que es el phishing|como detectar un fraude|phishing@@Mensajes falsos que imitan a una empresa para robar tus datos. Desconfía de la urgencia y revisa el remitente.',
+'energy@@que es la energia renovable|renewable energy@@La que viene de fuentes que no se agotan: sol, viento, agua y calor de la Tierra.',
+'vaccine@@como funcionan las vacunas|how do vaccines work@@Enseñan al sistema inmune a reconocer un patógeno sin causar la enfermedad grave.',
+'heart@@cuantas veces late el corazon|how fast does the heart beat@@Unas 70 veces por minuto en reposo: más de 100 000 latidos al día.',
+'bones@@cuantos huesos tiene el cuerpo humano|human bones@@206 en un adulto; los bebés nacen con unos 300.',
+'tacos@@dime algo de los tacos|tacos al pastor@@El pastor llegó con la inmigración libanesa a México y se adaptó con cerdo, piña y tortilla.',
+'football@@reglas del futbol|cuanto dura un partido de futbol|soccer rules@@Dos equipos de 11 jugadores; gana quien mete más goles en 90 minutos.',
+'tennis@@como se cuentan los puntos en tenis|tennis scoring@@Se cuenta 15, 30, 40 y juego; hay que ganar seis juegos para llevarte un set.',
+'basket@@cuantos jugadores hay en basquetbol|basketball rules@@Cinco por equipo en la cancha; una canasta vale 1, 2 o 3 puntos.',
+'piano@@como aprender piano|learn piano@@Practica 15 minutos diarios, aprende primero escalas y acordes sencillos y toca canciones que te gusten.',
+'draw@@como aprender a dibujar|learn to draw@@Empieza con formas básicas, dibuja a diario y copia objetos reales antes de inventar.',
+'memory@@como mejorar la memoria|improve memory@@Duerme bien, repasa espaciado en el tiempo y asocia lo nuevo con imágenes o historias.',
+'stress@@como manejar el estres|stress relief@@Camina un rato, respira lento, divide los problemas en pasos pequeños y habla con alguien de confianza.',
+'budget@@como hacer un presupuesto|make a budget@@Anota tus ingresos, separa gastos fijos y variables, y reserva primero tu ahorro.',
+'writing@@como escribir mejor|writing tips@@Frases cortas, una idea por párrafo y relee en voz alta antes de publicar.',
+'speaking@@como hablar en publico|public speaking@@Ensaya en voz alta, empieza con una historia breve y respira entre ideas.',
+'ww2@@que fue la segunda guerra mundial|segunda guerra mundial|ww2@@El mayor conflicto del siglo XX: de 1939 a 1945, entre los Aliados y las potencias del Eje; dejó decenas de millones de muertos.',
+'indep@@independencia de mexico|cuando se independizo mexico|grito de dolores@@Comenzó el 16 de septiembre de 1810 con el Grito de Dolores de Miguel Hidalgo y terminó en 1821.',
+'revmx@@revolucion mexicana|que fue la revolucion mexicana@@Conflicto iniciado en 1910 contra la dictadura de Porfirio Díaz; entre sus líderes estuvieron Madero, Villa y Zapata.',
+'aztec@@imperio azteca|que fueron los aztecas|tenochtitlan@@Los mexicas fundaron Tenochtitlan en 1325 sobre un lago; hoy es la Ciudad de México.',
+'maya@@civilizacion maya|que fueron los mayas@@Civilización de Mesoamérica famosa por su astronomía, su escritura y ciudades como Chichén Itzá y Palenque.',
+'egypt@@piramides de egipto|como se construyeron las piramides|egipto antiguo@@Las pirámides de Guiza se levantaron hace unos 4 500 años como tumbas de faraones.',
+'roman@@imperio romano|caida de roma@@Dominó el Mediterráneo durante siglos; el Imperio de Occidente cayó en el año 476.',
+'dayofdead@@dia de muertos|que es el dia de muertos@@Tradición mexicana del 1 y 2 de noviembre para recordar a los difuntos con ofrendas, cempasúchil y pan de muerto.',
+'frida@@quien fue frida kahlo|frida kahlo@@Pintora mexicana (1907-1954), famosa por sus autorretratos y su vida junto a Diego Rivera.',
+'mariachi@@que es el mariachi|mariachi@@Música tradicional de Jalisco con violines, trompetas y guitarrón; es Patrimonio Cultural Inmaterial de la UNESCO.',
+'electric@@que es la electricidad|how does electricity work@@Es el flujo de electrones por un conductor; se mide en voltios, amperios y vatios.',
+'volcano@@como funciona un volcan|que es un volcan@@Una abertura por donde sale magma, ceniza y gases desde el interior de la Tierra.',
+'hurricane@@que es un huracan|how do hurricanes form@@Una tormenta giratoria que se forma sobre aguas oceánicas cálidas, con vientos de más de 119 km/h.',
+'wifi@@que es el wifi|como funciona el wifi@@Una red inalámbrica que transmite datos por ondas de radio entre tu dispositivo y el router.',
+'fiveg@@que es el 5g|5g@@La quinta generación de internet móvil: más velocidad, menos retardo y más dispositivos conectados.',
+'battery@@como cuidar la bateria del celular|phone battery tips@@Evita el calor extremo, no la dejes llegar a 0 % seguido y usa cargadores de buena calidad.',
+'slowpc@@mi computadora esta lenta|pc lenta|my computer is slow@@Cierra programas y pestañas, revisa el espacio libre, reinicia y busca programas que arrancan solos.',
+'friend@@como hacer amigos|make friends@@Mantente curioso, únete a un grupo con tu interés, escribe primero y sé constante.',
+'lonely@@me siento solo|estoy solo|i feel lonely@@Gracias por contármelo. Hablar con alguien de confianza ayuda; aquí también puedes platicar conmigo.',
+'career@@que carrera estudiar|what to study@@Piensa qué problemas te gusta resolver, prueba cursos cortos y habla con gente que ya trabaje en eso.',
+'rice@@como cocinar arroz|cook rice@@Enjuaga, usa 2 partes de agua por 1 de arroz, hierve, baja el fuego y tapa 15 minutos.',
+'eggs@@como hacer huevos duros|boil eggs@@Hiérvelos 10 minutos desde que el agua hierve y pásalos a agua fría.',
+'makecoffee@@como hacer cafe|make coffee@@Usa agua a unos 93 °C y unas 2 cucharadas de café molido por taza.',
+'aiuse@@como usar bien la inteligencia artificial|use ai well@@Verifica los datos importantes, no compartas información privada y úsala como apoyo, no como reemplazo de pensar.',
+'compound@@que es el interes compuesto|compound interest@@Son intereses que generan más intereses: tu dinero crece cada vez más rápido con el tiempo.',
+'gdppc@@que es el pib per capita|gdp per capita@@El PIB dividido entre la población: sirve para comparar la riqueza media de los países. Pregúntame «pib per cápita de Chile».',
+'countries@@que paises conoces|de que paises sabes|datos de paises@@Tengo capital, población, PIB, moneda, idioma y continente de unos 40 países. Prueba «población de Perú» o «pib de Japón y Corea del Sur».',
+'convq@@que conversiones haces|convertir unidades@@Convierto longitud, peso, volumen y temperatura: «10 millas a km», «70 kg a libras», «100 °F a °C».'];
+const TOP={},ctx={q:null,more:[]};TOP_RAW.forEach(r=>{const[k,p,a]=r.split('@@');TOP[k]=[p,a];DATA[k]=p});
+const PRE=/^(que es|que son|quien es|quien fue|quien era|quienes fueron|hablame de|hablame sobre|dime sobre|cuentame sobre|explicame|que significa|what is|what are|who is|who was|tell me about|explain|define)\s+(el |la |los |las |un |una |a |an |the )?/;
+const ints=Object.keys(DATA),ex=[],vocab={};let V=0;
+ints.forEach((k,c)=>DATA[k].split('|').forEach(p=>{const t=toks(p);t.forEach(w=>{if(!(w in vocab))vocab[w]=V++});ex.push([t.map(w=>vocab[w]),c])}));
+const H=100,C=ints.length;let ACC=0;let sd=7;const rnd=()=>(sd=(sd*16807)%2147483647)/2147483647-.5;
+const W1=Float32Array.from({length:V*H},()=>rnd()*.6),b1=new Float32Array(H),W2=Float32Array.from({length:H*C},rnd),b2=new Float32Array(C);
+function fwd(ix){const h=new Float32Array(H),o=new Float32Array(C);for(let j=0;j<H;j++){let s=b1[j];for(const i of ix)s+=W1[i*H+j];h[j]=Math.tanh(s)}let m=-1e9,z=0;for(let c=0;c<C;c++){let s=b2[c];for(let j=0;j<H;j++)s+=h[j]*W2[j*C+c];o[c]=s;if(s>m)m=s}for(let c=0;c<C;c++){o[c]=Math.exp(o[c]-m);z+=o[c]}for(let c=0;c<C;c++)o[c]/=z;return[h,o]}
+const arg=o=>o.indexOf(Math.max(...o));
+const EP=40;
+const ready=(async()=>{for(let e=0;e<EP;e++){const lr=.3*Math.pow(.96,e)+.03;ex.sort(()=>rnd());for(const[ix0,y]of ex){let ix=ix0;if(e>5&&ix0.length>2){ix=ix0.filter(()=>rnd()>-.38);if(!ix.length)ix=ix0}const[h,p]=fwd(ix),d=Float32Array.from(p);d[y]-=1;for(let j=0;j<H;j++){let g=0;for(let c=0;c<C;c++){g+=W2[j*C+c]*d[c];W2[j*C+c]-=lr*h[j]*d[c]}g*=1-h[j]*h[j];for(const i of ix)W1[i*H+j]-=lr*g;b1[j]-=lr*g}for(let c=0;c<C;c++)b2[c]-=lr*d[c]}if(e%5==4){$('#cs').textContent='entrenando '+Math.round(e/EP*100)+' %';await sleep(0)}}
+ACC=Math.round(100*ex.filter(([ix,y])=>arg(fwd(ix)[1])==y).length/ex.length);$('#cs').textContent=H+' neuronas · '+C+' temas · '+ACC+' %'})();
+const vk=Object.keys(vocab);
+function lev(a,b,m){if(Math.abs(a.length-b.length)>m)return m+1;let p=Array.from({length:b.length+1},(_,i)=>i);for(let i=1;i<=a.length;i++){const c=[i];for(let j=1;j<=b.length;j++)c[j]=Math.min(p[j]+1,c[j-1]+1,p[j-1]+(a[i-1]==b[j-1]?0:1));p=c}return p[b.length]}
+function fixTy(w){if(w in vocab||w.length<5||/\d/.test(w))return w;const m=w.length>=8?2:1;let r=null,bd=m+1;for(const v of vk){const d=lev(w,v,m);if(d<bd){bd=d;r=v}}return r||w}
+function classify(t){const ix=toks(t).map(fixTy).filter(w=>w in vocab).map(w=>vocab[w]);if(!ix.length)return{k:null,p:0};const o=fwd(ix)[1],c=arg(o);return{k:ints[c],p:o[c]}}
+
+/* ============ Habilidades: cálculo, estadística, álgebra ============ */
+const fact=n=>n<0||n>170||n%1?NaN:n<2?1:n*fact(n-1);
+function parse(s,X){
+ const tk=s.match(/\d+(?:\.\d+)?|[a-z]+|[-+*\/^()!]/g)||[];if(tk.join('')!==s.replace(/\s+/g,''))throw 0;
+ let i=0;const F={sqrt:Math.sqrt,cbrt:Math.cbrt,sin:Math.sin,sen:Math.sin,cos:Math.cos,tan:Math.tan,ln:Math.log,log:Math.log10,abs:Math.abs,exp:Math.exp},K={pi:Math.PI,e:Math.E};
+ const E=()=>{let v=T();while(tk[i]=='+'||tk[i]=='-'){const o=tk[i++],r=T();v=o=='+'?v+r:v-r}return v};
+ const T=()=>{let v=U();while(tk[i]=='*'||tk[i]=='/'){const o=tk[i++],r=U();v=o=='*'?v*r:v/r}return v};
+ const U=()=>tk[i]=='-'?(i++,-U()):tk[i]=='+'?(i++,U()):P();
+ const P=()=>{const b=Q();if(tk[i]=='^'){i++;return Math.pow(b,U())}return b};
+ const Q=()=>{let v=A();while(tk[i]=='!'){i++;v=fact(v)}return v};
+ const A=()=>{const t=tk[i++];if(t===undefined)throw 0;if(/^\d/.test(t))return+t;if(t=='('){const v=E();if(tk[i++]!=')')throw 0;return v}if(F[t])return F[t](U());if(t=='x'&&X!==undefined)return X;if(t in K)return K[t];throw 0};
+ const v=E();if(i<tk.length)throw 0;return v}
+const fmt=v=>String(+v.toPrecision(12));
+function calc(t){
+ let s=t.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+ .replace(/(\d+(?:[.,]\d+)?)\s*%\s*(?:de|of)\s*(\d+(?:[.,]\d+)?)/g,'($1/100)*$2').replace(/(\d+(?:[.,]\d+)?)\s*(?:°|grados?|deg)/g,'($1*pi/180)')
+ .replace(/raiz\s+cuadrada\s+(?:de\s+)?|raiz\s+(?:de\s+)?|square root\s+(?:of\s+)?/g,'sqrt ').replace(/al cuadrado|squared/g,'^2').replace(/al cubo|cubed/g,'^3')
+ .replace(/elevado a|a la potencia de|to the power of/g,'^').replace(/multiplicado por|\bpor\b|\btimes\b|×/g,'*').replace(/(\d)\s*x\s*(?=\d)/g,'$1*')
+ .replace(/dividido (?:entre|por)|\bentre\b|divided by|÷/g,'/').replace(/\bmas\b|\bplus\b/g,'+').replace(/\bmenos\b|\bminus\b/g,'-').replace(/factorial (?:de )?(\d+)/g,'$1!')
+ .replace(/\b(cuanto|cuantos|es|son|da|dime|calcula|resuelve|resultado|igual|cual|que|what|is|equals|calculate|compute|solve|how|much|the|of|de)\b/g,' ')
+ .replace(/(\d),(\d)/g,'$1.$2').replace(/[?¿=]/g,' ').trim();
+ if(!/\d/.test(s)||!/[+\-*\/^!]|sqrt|sin|cos|tan|ln|log|abs|cbrt|exp/.test(s)||!/^[\d\s+\-*\/^().!a-z]+$/.test(s))return null;
+ try{const v=parse(s);if(Number.isNaN(v))return'Eso no está definido en los reales.';if(!isFinite(v))return'El resultado es infinito (¿división entre cero?).';return s.replace(/\*/g,'×').replace(/\//g,'÷')+' = **'+fmt(v)+'**'}catch(e){return null}}
+function stats(t){
+ if(!/media|promedio|mean|average|mediana|median|moda|\bmode\b|desviacion|varianza|standard dev/i.test(norm(t)))return null;
+ const a=(t.match(/-?\d+(?:\.\d+)?/g)||[]).map(Number);if(a.length<2)return null;
+ const n=a.length,mu=a.reduce((p,q)=>p+q,0)/n,so=[...a].sort((p,q)=>p-q),md=n%2?so[(n-1)/2]:(so[n/2-1]+so[n/2])/2,vr=a.reduce((p,q)=>p+(q-mu)**2,0)/n,ct={};a.forEach(v=>ct[v]=(ct[v]||0)+1);
+ const mx=Math.max(...Object.values(ct)),mo=mx>1?Object.keys(ct).filter(k=>ct[k]==mx).join(', '):'sin moda';
+ return'Datos: `'+a.join(', ')+'`\n- n: **'+n+'**\n- Suma: **'+fmt(mu*n)+'**\n- Media: **'+fmt(mu)+'**\n- Mediana: **'+fmt(md)+'**\n- Moda: **'+mo+'**\n- Desviación estándar: **'+fmt(Math.sqrt(vr))+'**'}
+function algebra(t){
+ const m=t.toLowerCase().replace(/²/g,'^2').replace(/−/g,'-').match(/([\dx(][\dx+\-*\/^().\s]*)=([\dx+\-*\/^().\s]+)/);if(!m||!/x/.test(m[0]))return null;
+ const pre=q=>q.replace(/\s+/g,'').replace(/(\d|\))x/g,'$1*x').replace(/(\d|x|\))\(/g,'$1*(').replace(/\)x/g,')*x');
+ try{const L=pre(m[1]),R=pre(m[2]),f=x=>parse(L,x)-parse(R,x),c=f(0),a=(f(1)+f(-1))/2-c,b=(f(1)-f(-1))/2;
+ if(Math.abs(f(2)-(4*a+2*b+c))>1e-6||Math.abs(f(3)-(9*a+3*b+c))>1e-6)return null;
+ const head='Ecuación: `'+m[0].trim()+'`\n';
+ if(Math.abs(a)<1e-12){if(Math.abs(b)<1e-12)return head+(Math.abs(c)<1e-12?'Se cumple para todo x.':'No tiene solución.');return head+'Lineal → **x = '+fmt(-c/b)+'**'}
+ const D=b*b-4*a*c,g='Cuadrática: a = '+fmt(a)+', b = '+fmt(b)+', c = '+fmt(c)+', Δ = '+fmt(D)+'\n';
+ if(D>0)return head+g+'- **x₁ = '+fmt((-b+Math.sqrt(D))/(2*a))+'**\n- **x₂ = '+fmt((-b-Math.sqrt(D))/(2*a))+'**';
+ if(D==0)return head+g+'Raíz doble → **x = '+fmt(-b/(2*a))+'**';
+ return head+g+'Raíces complejas → **x = '+fmt(-b/(2*a))+' ± '+fmt(Math.sqrt(-D)/(2*Math.abs(a)))+'i**'}catch(e){return null}}
+
+/* ============ Internet sin otra IA: Wikipedia y Open-Meteo ============ */
+async function J(u){const c=new AbortController(),t=setTimeout(()=>c.abort(),7000);try{const r=await fetch(u,{signal:c.signal});return r.ok?await r.json():null}catch(e){return null}finally{clearTimeout(t)}}
+async function wiki(q,en){
+ const l=en?'en':'es',s=await J('https://'+l+'.wikipedia.org/w/api.php?action=query&list=search&srsearch='+encodeURIComponent(q)+'&srlimit=1&format=json&origin=*'),h=s&&s.query&&s.query.search[0];if(!h)return null;
+ const d=await J('https://'+l+'.wikipedia.org/api/rest_v1/page/summary/'+encodeURIComponent(h.title.replace(/ /g,'_')));if(!d||!d.extract||d.type==='disambiguation')return null;
+ const ss=d.extract.match(/[^.!?]+[.!?]+\s*/g)||[d.extract],ch=[];let cu='';ss.forEach(x=>{if((cu+x).length>420&&cu){ch.push(cu.trim());cu=''}cu+=x});if(cu)ch.push(cu.trim());ctx.q=q;ctx.more=ch.slice(1);
+ return'**'+d.title+'**\n'+ch[0]+'\n\n[Wikipedia]('+d.content_urls.desktop.page+')'+(ctx.more.length?'  ·  di «más» para seguir':'')}
+const WC=[[0,'despejado','clear'],[3,'parcialmente nublado','partly cloudy'],[48,'niebla','fog'],[57,'llovizna','drizzle'],[67,'lluvia','rain'],[77,'nieve','snow'],[82,'chubascos','showers'],[99,'tormenta','thunderstorm']];
+async function weather(t,en){
+ const m=t.replace(/[?¿!.]/g,'').match(/^.*?\b(?:en|in|for|de)\s+(.+)$/i);if(!m)return{t:en?'Which city?':'¿De qué ciudad quieres el clima?',m:'Open-Meteo'};
+ const g=await J('https://geocoding-api.open-meteo.com/v1/search?count=1&language='+(en?'en':'es')+'&name='+encodeURIComponent(m[1].trim())),p=g&&g.results&&g.results[0];if(!p)return null;
+ const w=await J('https://api.open-meteo.com/v1/forecast?current=temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,weather_code&timezone=auto&latitude='+p.latitude+'&longitude='+p.longitude),c=w&&w.current;if(!c)return null;
+ const d=(WC.find(x=>c.weather_code<=x[0])||WC[7])[en?2:1];
+ return{t:'**'+p.name+(p.country?', '+p.country:'')+'**: '+d+', **'+c.temperature_2m+' °C** ('+(en?'feels like ':'sensación ')+c.apparent_temperature+' °C)\n- '+(en?'Humidity: ':'Humedad: ')+c.relative_humidity_2m+' %\n- '+(en?'Wind: ':'Viento: ')+c.wind_speed_10m+' km/h',m:'Open-Meteo'}}
+
+/* ============ Datos de países y conversiones ============ */
+const GEO=`mexico|México|Ciudad de México|129|1790|13800|peso mexicano|español|América del Norte
+estados unidos/eeuu/ee uu/usa/united states|Estados Unidos|Washington D. C.|335|27400|81700|dólar estadounidense|inglés|América del Norte
+canada|Canadá|Ottawa|40|2140|53000|dólar canadiense|inglés y francés|América del Norte
+brasil|Brasil|Brasilia|216|2170|10000|real|portugués|América del Sur
+argentina|Argentina|Buenos Aires|46|640|13700|peso argentino|español|América del Sur
+chile|Chile|Santiago|19.6|335|17100|peso chileno|español|América del Sur
+colombia|Colombia|Bogotá|52|363|6900|peso colombiano|español|América del Sur
+peru|Perú|Lima|34|267|7900|sol|español, quechua y aimara|América del Sur
+ecuador|Ecuador|Quito|18|118|6500|dólar estadounidense|español|América del Sur
+uruguay|Uruguay|Montevideo|3.4|77|22000|peso uruguayo|español|América del Sur
+costa rica|Costa Rica|San José|5.2|86|16500|colón costarricense|español|América Central
+panama|Panamá|Ciudad de Panamá|4.4|83|18800|balboa y dólar|español|América Central
+guatemala|Guatemala|Ciudad de Guatemala|17.6|102|5800|quetzal|español|América Central
+espana|España|Madrid|48|1580|33000|euro|español|Europa
+francia|Francia|París|68|3030|44400|euro|francés|Europa
+alemania|Alemania|Berlín|84|4460|53000|euro|alemán|Europa
+italia|Italia|Roma|59|2250|38000|euro|italiano|Europa
+reino unido/inglaterra/uk|Reino Unido|Londres|68|3340|49000|libra esterlina|inglés|Europa
+portugal|Portugal|Lisboa|10.4|287|27500|euro|portugués|Europa
+paises bajos/holanda|Países Bajos|Ámsterdam|17.9|1120|62000|euro|neerlandés|Europa
+suiza|Suiza|Berna|8.8|905|103000|franco suizo|alemán, francés, italiano y romanche|Europa
+suecia|Suecia|Estocolmo|10.5|585|55000|corona sueca|sueco|Europa
+rusia|Rusia|Moscú|144|2020|14000|rublo|ruso|Europa y Asia
+turquia|Turquía|Ankara|85|1100|12900|lira turca|turco|Europa y Asia
+china|China|Pekín|1410|17800|12600|yuan renminbi|chino mandarín|Asia
+india|India|Nueva Delhi|1430|3550|2500|rupia india|hindi e inglés|Asia
+japon|Japón|Tokio|124|4200|33800|yen|japonés|Asia
+corea del sur/corea|Corea del Sur|Seúl|51.7|1710|33100|won surcoreano|coreano|Asia
+indonesia|Indonesia|Yakarta|277|1370|4900|rupia indonesia|indonesio|Asia
+arabia saudita/arabia saudi|Arabia Saudita|Riad|36|1070|30000|riyal saudí|árabe|Asia
+australia|Australia|Canberra|26.6|1730|65000|dólar australiano|inglés|Oceanía
+nueva zelanda|Nueva Zelanda|Wellington|5.2|252|48000|dólar neozelandés|inglés y maorí|Oceanía
+egipto|Egipto|El Cairo|112|395|3500|libra egipcia|árabe|África
+sudafrica|Sudáfrica|Pretoria (capital administrativa)|60|380|6300|rand|11 idiomas oficiales|África
+nigeria|Nigeria|Abuya|224|363|1600|naira|inglés|África
+marruecos|Marruecos|Rabat|37|144|3900|dírham marroquí|árabe y bereber|África`.split('\n').map(l=>{const f=l.split('|');return{al:f[0].split('/'),n:f[1],cap:f[2],pop:+f[3],gdp:+f[4],pc:+f[5],cur:f[6],lang:f[7],con:f[8]}});
+const ATTR=[['pc',/\bpib\b.*\b(per|capita|capital)\b|\bper capita\b|\bgdp per\b/],['gdp',/\bpib\b|\bgdp\b|economia|producto interno/],['pop',/poblacion|habitantes|population|cuanta gente|cuantos viven/],['cap',/\bcapital\b|capital of/],['cur',/moneda|divisa|currency/],['lang',/idioma|lengua|language|hablan/],['con',/continente|continent|donde queda|where is/],['all',/datos de|dime de|hablame de|info de|ficha de|facts about/]];
+const sp=x=>String(x).replace(/\B(?=(\d{3})+(?!\d))/g,' ');
+const fGdp=g=>g>=1000?(+(g/1000).toFixed(2))+' billones de dólares':sp(g)+' mil millones de dólares';
+function geo(t){const n=' '+norm(t)+' ';
+ let cs=GEO.map(c=>({c,i:Math.min(...c.al.map(a=>{const k=n.indexOf(' '+a+' ');return k<0?1e9:k}))})).filter(x=>x.i<1e9).sort((a,b)=>a.i-b.i).map(x=>x.c);
+ let at=(ATTR.find(([k,re])=>re.test(n))||[])[0];const w=toks(t).length;
+ if(!cs.length&&at&&ctx.geo&&w<=7)cs=[ctx.geo];
+ if(cs.length&&!at&&/^(y|and)\b/.test(n.trim())&&ctx.geoAt)at=ctx.geoAt;
+ if(!cs.length||!at)return null;
+ const L=c=>({cap:'La capital de '+c.n+' es **'+c.cap+'**.',pop:c.n+' tiene unos **'+sp(c.pop)+' millones** de habitantes.',gdp:'El PIB de '+c.n+' es de unos **'+fGdp(c.gdp)+'**.',pc:'El PIB per cápita de '+c.n+' es de unos **'+sp(c.pc)+' dólares** por persona.',cur:'La moneda de '+c.n+': **'+c.cur+'**.',lang:'En '+c.n+' se habla: **'+c.lang+'**.',con:c.n+' está en **'+c.con+'**.'});
+ const body=cs.map(c=>at=='all'?'**'+c.n+'**\n- Capital: '+c.cap+'\n- Población: unos '+sp(c.pop)+' millones\n- PIB: unos '+fGdp(c.gdp)+'\n- PIB per cápita: unos '+sp(c.pc)+' dólares\n- Moneda: '+c.cur+'\n- Idioma: '+c.lang+'\n- Continente: '+c.con:L(c)[at]).join(cs.length>1&&at!='all'?'\n':'\n\n');
+ ctx.geo=cs[cs.length-1];ctx.geoAt=at=='all'?null:at;ctx.q=cs[0].n;ctx.more=[];
+ return{t:body+(/gdp|pc|pop|all/.test(at)?'\n\n*Cifras aproximadas, alrededor de 2023.*':''),m:'Datos de países'}}
+const UT={km:['L',1000],kilometro:['L',1000],kilometros:['L',1000],m:['L',1],metro:['L',1],metros:['L',1],cm:['L',.01],centimetro:['L',.01],centimetros:['L',.01],mm:['L',.001],milimetro:['L',.001],milimetros:['L',.001],mi:['L',1609.344],milla:['L',1609.344],millas:['L',1609.344],ft:['L',.3048],pie:['L',.3048],pies:['L',.3048],in:['L',.0254],pulgada:['L',.0254],pulgadas:['L',.0254],yd:['L',.9144],yarda:['L',.9144],yardas:['L',.9144],
+ kg:['M',1],kilo:['M',1],kilos:['M',1],kilogramo:['M',1],kilogramos:['M',1],g:['M',.001],gramo:['M',.001],gramos:['M',.001],lb:['M',.45359237],libra:['M',.45359237],libras:['M',.45359237],oz:['M',.028349523],onza:['M',.028349523],onzas:['M',.028349523],ton:['M',1000],tonelada:['M',1000],toneladas:['M',1000],
+ l:['V',1],litro:['V',1],litros:['V',1],ml:['V',.001],mililitro:['V',.001],mililitros:['V',.001],gal:['V',3.785411784],galon:['V',3.785411784],galones:['V',3.785411784],
+ c:['T','c'],celsius:['T','c'],f:['T','f'],fahrenheit:['T','f'],k:['T','k'],kelvin:['T','k']};
+function convUnits(t){const s=t.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/(\d),(\d)/g,'$1.$2').replace(/grados?|[°º]/g,' ');
+ let m=s.match(/(-?\d+(?:\.\d+)?)\s*([a-z]+)\s+(?:a|en|to|in|hacia)\s+([a-z]+)\b/),v,a,b;
+ if(m){v=+m[1];a=m[2];b=m[3]}else if((m=s.match(/cuant\w*\s+([a-z]+)\s+(?:son|hay|es|equivalen|tiene\w*)\s+(-?\d+(?:\.\d+)?)\s*([a-z]+)/))){v=+m[2];a=m[3];b=m[1]}else return null;
+ const A=UT[a],B=UT[b];if(!A||!B||A[0]!=B[0])return null;let r;
+ if(A[0]=='T'){const c=A[1]=='c'?v:A[1]=='f'?(v-32)*5/9:v-273.15;r=B[1]=='c'?c:B[1]=='f'?c*9/5+32:c+273.15}else r=v*A[1]/B[1];
+ const lab=u=>UT[u][0]=='T'?{c:'°C',celsius:'°C',f:'°F',fahrenheit:'°F',k:'K',kelvin:'K'}[u]:u;
+ return v+' '+lab(a)+' = **'+(+r.toPrecision(6))+' '+lab(b)+'**'}
+
+/* ============ Memoria y aprendizaje ============ */
+const bag=t=>new Set(toks(t));
+const cos=(a,b)=>{let n=0;a.forEach(x=>b.has(x)&&n++);return a.size&&b.size?n/Math.sqrt(a.size*b.size):0};
+function taught(t){const v=bag(t);let b=null,bs=0;mem.taught.forEach(x=>{const d=cos(v,bag(x.q));if(d>=(x.auto?.8:.6)&&d>bs){bs=d;b=x}});return b}
+const isEn=t=>/\b(the|what|who|how|tell|weather|joke|hello|thanks|thank|you|your|please|time|date|explain)\b/i.test(t)&&!/[¿áéíóúñ]|\b(el|la|qué|que|quien|cómo|como|hola|gracias|dime|clima|hora)\b/i.test(t);
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+const A={
+hi:[['¡Hola{n}! Soy Noryx. ¿En qué te ayudo hoy?','¡Buenas{n}! Aquí Noryx, listo. ¿Qué necesitas?'],['Hello{n}! I\'m Noryx. What can I do for you?','Hey{n}! Noryx here. What\'s up?']],
+how:[['Funcionando a plena neurona. ¿Y tú{n}?'],['Running at full neuron. And you{n}?']],
+thanks:[['¡Con gusto{n}!','Para eso estoy.'],['Anytime{n}!','Glad to help.']],
+bye:[['Hasta luego{n}. Aquí sigo aprendiendo.'],['See you{n}. I\'ll keep learning.']],
+who:[['Soy **Noryx**: una IA con núcleo propio, una red neuronal de {H} neuronas ocultas que se entrena en tu navegador al abrir esta página ({ACC} % de acierto). No dependo de ChatGPT ni de Gemini. Calculo, resuelvo ecuaciones, busco en Wikipedia, consulto el clima y aprendo lo que me enseñes.'],['I\'m **Noryx**: an AI with its own core, a {H}-hidden-neuron network trained in your browser when this page opens ({ACC}% accuracy). No ChatGPT or Gemini behind me. I calculate, solve equations, search Wikipedia, check weather and learn what you teach me.']],
+maker:[['Me creó **Orlando**, que armó mi red neuronal desde cero.'],['**Orlando** created me and built my neural network from scratch.']],
+help:[['Esto sé hacer:\n- **Calcular**: `15% de 2480`, `raíz de 144`, `5!`\n- **Estadística**: `media de 4, 8, 15, 16`\n- **Álgebra**: `x^2 - 5x + 6 = 0`\n- **Saber**: `¿quién fue Nikola Tesla?` (Wikipedia)\n- **Clima**: `clima en Madrid`\n- **Países**: `población de Perú`, `pib per cápita de Chile`\n- **Conversiones**: `10 millas a km`, `100 °F a °C`\n- **Aprender**: `aprende: mi color favorito = azul`\n- **Con cuenta**: voz en vivo e imágenes (subir y crear)\n- **Comandos**: `/nuevo` `/limpiar` `/exportar` `/nombre Ana` `/memoria` `/olvidar`'],['What I can do:\n- **Calculate**: `15% of 2480`, `sqrt 144`, `5!`\n- **Stats**: `mean of 4, 8, 15, 16`\n- **Algebra**: `x^2 - 5x + 6 = 0`\n- **Look up**: `who was Nikola Tesla?`\n- **Weather**: `weather in London`\n- **Learn**: `learn: my favorite color = blue`\n- **Commands**: `/nuevo` `/limpiar` `/exportar` `/nombre Ana` `/memoria` `/olvidar`']],
+joke:[['¿Por qué las redes neuronales no pagan renta? Porque ya tienen muchas capas ocultas.','Mi red tiene {H} neuronas y ninguna sabe contar chistes. Yo tampoco.'],['Why did the neural net go to therapy? Too many hidden layers.']]};
+
+/* ============ Maestro externo: otra IA (estilo Gemini) sin API key; Noryx aprende de sus respuestas ============ */
+let MAESTRO=S.get('nx-teacher',true),busyAsk=0;
+const SYS='Eres Noryx, una IA amable con trato femenino, creada por Orlando. Responde en el idioma del usuario, con claridad y calidez, en menos de 130 palabras. Usa markdown simple (**negritas** y listas con "- "). Si no sabes algo, dilo con honestidad.';
+const clean=x=>x.replace(/\n*(?:---+\s*)?(?:\*\*)?(?:Powered by|Support) Pollinations[\s\S]*$/i,'').replace(/<think>[\s\S]*?<\/think>/g,'').trim();
+async function ask(msgs){
+ const post=async m=>{const c=new AbortController(),t=setTimeout(()=>c.abort(),28000);try{const r=await fetch('https://text.pollinations.ai/openai',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:m,messages:msgs,private:true}),signal:c.signal});if(r.status==429)return{err:'rate'};if(!r.ok)return null;const d=await r.json(),x=d.choices&&d.choices[0]&&d.choices[0].message&&d.choices[0].message.content;return x?{t:clean(x)}:null}catch(e){return null}finally{clearTimeout(t)}};
+ let last=null;for(const m of['gemini','openai']){const r=await post(m);if(r&&r.t)return r;if(r)last=r}
+ try{const u=msgs[msgs.length-1].content,r=await fetch('https://text.pollinations.ai/'+encodeURIComponent(u.slice(0,1500))+'?model=openai&private=true&system='+encodeURIComponent(SYS));if(r.status==429)return{err:'rate'};if(r.ok){const x=clean(await r.text());if(x)return{t:x}}}catch(e){}
+ return last||{err:'net'}}
+async function maestro(t){
+ const c=conv(),h=((c&&c.msgs)||[]).slice(-9,-1).map(m=>({role:m.r=='u'?'user':'assistant',content:m.t.slice(0,600)}));
+ return ask([{role:'system',content:SYS+(mem.name?' El usuario se llama '+mem.name+'.':'')},...h,{role:'user',content:t}])}
+function learn(q,a){if(toks(q).length<3||a.length>700||/^y\s/i.test(q.trim()))return;const k=q.replace(/[?!¿¡.]+$/g,'').trim(),x=mem.taught.find(z=>z.q.toLowerCase()==k.toLowerCase());if(x){if(x.auto)x.a=a}else mem.taught.push({q:k,a,auto:1});if(mem.taught.length>250){const i=mem.taught.findIndex(z=>z.auto);mem.taught.splice(i<0?0:i,1)}save()}
+async function open(t,q,en){
+ let note='';if(MAESTRO){const r=await maestro(t);if(r.t){learn(t,r.t);return{t:r.t,m:'Maestro externo · aprendido'}}note=r.err=='rate'?'El maestro externo está saturado ahora mismo. ':'No pude contactar al maestro externo. '}
+ if(q.length>2){const w=await wiki(q,en);if(w)return{t:note?note+'Esto encontré en Wikipedia:\n\n'+w:w,m:'Wikipedia'}}
+ return note?{t:note+'Inténtalo de nuevo en unos segundos o enséñame con `aprende: pregunta = respuesta`.',m:'Sin respuesta'}:null}
+async function brain(t){
+ await ready;
+ const en=isEn(t),nm=mem.name?', '+mem.name:'',tm=Date.now();let m;
+ /* seguimiento de conversación: si Noryx preguntó la ciudad, la siguiente respuesta corta es la ciudad; "y en Madrid?" repite el clima */
+ if(ctx.pend=='weather'||ctx.last=='weather'){const n=norm(t),w=toks(t),ask=ctx.pend=='weather',SM=['hi','how','thanks','bye','yes','no','help','joke','who','maker','time','date','more','why','love','insult','sorry'];ctx.pend=null;
+  const cl=classify(t),small=cl.k&&SM.includes(cl.k)&&cl.p>.6&&!/^(y|and)\b/.test(n);
+  const fu=ask?(w.length<=5&&!small&&!/^(no|nada|cancela|olvidalo)\b/.test(n)):(/^(y|and|what about|que tal)\s+(en\s+|in\s+)?[a-z ]{2,30}$/.test(n)&&w.length<=5);
+  if(fu){let city=n.replace(/^(y|and|what about|que tal)\s+/,'').replace(/^(en|in|la ciudad de|ciudad de)\s+/,'').trim();if(city=='mexico'||city=='cdmx')city='Ciudad de Mexico';
+   const wr=await weather('clima en '+city,en);if(wr&&wr.t&&!/¿De qué ciudad|Which city/.test(wr.t)){ctx.last='weather';return wr}
+   if(ask){ctx.pend='weather';return{t:en?'I couldn\'t find that city. Try another name.':'No encontré esa ciudad. Prueba con otro nombre.',m:'Open-Meteo'}}}}
+ /* seguimiento de tema: tras hablar de un tema (p. ej. Júpiter), "¿y Marte?" / "and Mars?" responde sobre el tema pedido */
+ if(ctx.topic){const n=norm(t),fm=n.match(/^(?:y|and|what about|que tal|y que tal|y de)\s+(?:el |la |los |las |the )?([a-z0-9 ]{2,30})$/);
+  if(fm){const sub=fm[1].trim(),sw=sub.split(' ').filter(Boolean);
+   if(sw.length&&sw.length<=3){const rx=new RegExp('(^|\\s)'+sub.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'($|\\s)');
+    for(const k in TOP){if(k==ctx.topic)continue;if(TOP[k][0].split('|').some(p=>rx.test(norm(p)))){ctx.topic=k;ctx.q=TOP[k][0].split('|')[0];ctx.more=[];ctx.last=null;return{t:TOP[k][1].replace(/\{n\}/g,nm).replace(/\{H\}/g,H).replace(/\{ACC\}/g,ACC),m:'Conversación · seguimiento'}}}}}}
+ if((m=t.match(/^\s*(?:aprende|learn|ensena|teach)\s*:\s*([\s\S]+?)\s*=\s*([\s\S]+)$/i))){const q=m[1].replace(/[?!¿¡.]+$/g,'').trim(),a=m[2].trim(),x=mem.taught.find(z=>z.q.toLowerCase()==q.toLowerCase());if(x)x.a=a;else mem.taught.push({q,a});mem.taught=mem.taught.slice(-200);save();return{t:en?'Learned. Ask me **"'+q+'"** anytime.':'Aprendido. Pregúntame **«'+q+'»** cuando quieras.',m:'Memoria · enseñado'}}
+ if((m=t.match(/(?:me llamo|mi nombre es|ll[aá]mame|my name is|call me)\s+([a-záéíóúñ]+)/i))){mem.name=m[1][0].toUpperCase()+m[1].slice(1);save();return{t:en?'Nice to meet you, **'+mem.name+'**. I\'ll remember it.':'Mucho gusto, **'+mem.name+'**. Lo recordaré.',m:'Memoria'}}
+ if(/^(?:como me llamo|cual es mi nombre|what is my name|what's my name)/i.test(norm(t).replace(/^/,'')))return{t:mem.name?(en?'You\'re **'+mem.name+'**.':'Te llamas **'+mem.name+'**.'):(en?'You haven\'t told me yet.':'Aún no me lo has dicho. Dime «me llamo…».'),m:'Memoria'};
+ for(const[re,k,msg]of[[/me gusta(?:n)?\s+(.{2,40}?)[.!]*$/i,'gusta','Anotado: te gusta **$**. ¿Desde cuándo?'],[/vivo en\s+(.{2,40}?)[.!]*$/i,'vive','**$**, qué buen lugar. Lo recordaré.'],[/tengo\s+(\d{1,3})\s+a[nñ]os/i,'edad','Tienes **$** años; lo guardo.']]){if((m=t.match(re))){mem[k]=m[1];save();return{t:msg.replace('$',m[1]),m:'Memoria'}}}
+ {const n=norm(t);if(/que me gusta|what do i like/.test(n))return{t:mem.gusta?'Me dijiste que te gusta **'+mem.gusta+'**.':'Aún no me has dicho qué te gusta.',m:'Memoria'};if(/donde vivo|where do i live/.test(n))return{t:mem.vive?'Vives en **'+mem.vive+'**.':'Aún no me has dicho dónde vives.',m:'Memoria'};if(/cuantos anos tengo|how old am i/.test(n))return{t:mem.edad?'Tienes **'+mem.edad+'** años.':'Aún no me has dicho tu edad.',m:'Memoria'}}
+ const tg=taught(t);if(tg)return{t:tg.a,m:tg.auto?'Memoria · aprendido del maestro':'Memoria · enseñado'};
+ let r=calc(t);if(r)return{t:r,m:'Cálculo'};r=algebra(t);if(r)return{t:r,m:'Álgebra'};r=stats(t);if(r)return{t:r,m:'Estadística'};
+ r=convUnits(t);if(r)return{t:r,m:'Conversión'};r=geo(t);if(r)return r;
+ const c=classify(t);
+ const q0=norm(t).replace(PRE,''),oov=q0!=norm(t)&&toks(q0).some(w=>!(w in vocab));
+ if(oov&&q0.length>2){const o=await open(t,q0,en);if(o)return o}
+ const oovN=toks(t).filter(w=>!(w in vocab)).length;
+ if(c.p>=.55&&c.k&&!(MAESTRO&&TOP[c.k]&&oovN>=2&&c.p<.99)){
+  const k=c.k,pc=Math.round(c.p*100),src='Red neuronal · '+pc+' %';
+  if(k=='time')return{t:(en?'It\'s **':'Son las **')+new Date().toLocaleTimeString(en?'en-US':'es-MX',{hour:'2-digit',minute:'2-digit'})+'**.',m:'Reloj'};
+  if(k=='date')return{t:(en?'Today is **':'Hoy es **')+new Date().toLocaleDateString(en?'en-US':'es-MX',{weekday:'long',day:'numeric',month:'long',year:'numeric'})+'**.',m:'Reloj'};
+  if(k=='weather'){const w=await weather(t,en);if(w){ctx.pend=/¿De qué ciudad|Which city/.test(w.t)?'weather':null;ctx.last=ctx.pend?null:'weather';return w}return{t:en?'I couldn\'t find that place or reach the weather service.':'No encontré ese lugar o no pude contactar al servicio del clima.',m:src}}
+  if(k=='more'||k=='why'){if(ctx.more.length)return{t:ctx.more.shift()+(ctx.more.length?'  ·  di «más» para seguir':''),m:'Conversación'};if(MAESTRO){const r=await maestro(t);if(r.t)return{t:r.t,m:'Maestro externo'}}if(ctx.q){const w=await wiki(ctx.q,en);if(w)return{t:w,m:'Conversación · Wikipedia'}}return{t:'¿Más sobre qué? Dime un tema y profundizamos.',m:'Conversación'}}
+  const fx=x=>x.replace(/\{n\}/g,nm).replace(/\{H\}/g,H).replace(/\{ACC\}/g,ACC);
+  if(A[k]){ctx.q=null;ctx.more=[];return{t:fx(pick(A[k][en&&A[k][1]?1:0])),m:src,s:k=='help'?'Puedo calcular, resolver ecuaciones, buscar datos, ver el clima, conversar y aprender de ti.':undefined}}
+  if(TOP[k]){ctx.q=TOP[k][0].split('|')[0];ctx.more=[];ctx.topic=k;return{t:fx(TOP[k][1]),m:src}}}
+ const q=norm(t).replace(/^(que es|que son|quien es|quien fue|quien era|quienes fueron|hablame de|hablame sobre|dime sobre|cuentame sobre|explicame|que significa|what is|what are|who is|who was|tell me about|explain|define)\s+(el |la |los |las |un |una |a |an |the )?/,'');
+ {const o=await open(t,q,en);if(o)return o}
+ return{t:en?'I don\'t have that yet (or I couldn\'t reach the internet). Teach me: `learn: question = answer`':'Todavía no tengo esa respuesta (o no pude conectarme a internet). Puedes enseñármela: `aprende: pregunta = respuesta`',m:'Sin respuesta'}}
+
+/* ============ Render ============ */
+const esc=s=>s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function md(s){const B=[],hold=h=>'\u0000'+(B.push(h)-1)+'\u0000';
+ s=s.replace(/```\w*\n?([\s\S]*?)(```|$)/g,(m,c)=>hold('<pre><button class="cp">copiar</button><code>'+esc(c.replace(/\n$/,''))+'</code></pre>')).replace(/`([^`\n]+)`/g,(m,c)=>hold('<code>'+esc(c)+'</code>'));
+ s=esc(s).replace(/\*\*([^*\n]+)\*\*/g,'<b>$1</b>').replace(/^#{1,4} (.+)$/gm,'<b>$1</b>').replace(/(^|[^*\w])\*([^*\n]+)\*(?!\w)/g,'$1<i>$2</i>').replace(/\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/g,'<a href="$2" target="_blank" rel="noopener">$1</a>')
+ .replace(/(?:^|\n)((?:- .*(?:\n|$))+)/g,(m,l)=>'<ul>'+l.trim().split('\n').map(x=>'<li>'+x.slice(2)+'</li>').join('')+'</ul>').replace(/(?:^|\n)((?:\d+\. .*(?:\n|$))+)/g,(m,l)=>'<ol>'+l.trim().split('\n').map(x=>'<li>'+x.replace(/^\d+\.\s/,'')+'</li>').join('')+'</ol>').replace(/\n/g,'<br>');
+ return s.replace(/\u0000(\d+)\u0000/g,(m,i)=>B[i])}
+const greet=()=>{const h=new Date().getHours();return(h<12?'Buenos días':h<19?'Buenas tardes':'Buenas noches')+(mem.name?', '+mem.name:'')+'. '};
+const conv=()=>convs.find(c=>c.id==cur);
+const feed=$('#feed');let raf=0;
+function renderList(){$('#list').innerHTML='';const f=norm($('#q').value||'');convs.slice().reverse().filter(c=>!f||norm(c.title+' '+c.msgs.map(m=>m.t).join(' ')).includes(f)).forEach(c=>{const d=document.createElement('div');d.className='ci'+(c.id==cur?' on':'');d.innerHTML='<span>'+esc(c.title)+'</span><button aria-label="Borrar">✕</button>';d.onclick=e=>{if(e.target.tagName=='BUTTON'){convs=convs.filter(x=>x!=c);if(cur==c.id)cur=null;save();renderAll()}else{cur=c.id;save();renderAll();closeMenu()}};$('#list').append(d)})}
+function renderAll(){renderList();const c=conv();$('#ttl').textContent=c?c.title:'Noryx';feed.innerHTML='';cancelAnimationFrame(raf);
+ if(!c||!c.msgs.length){hero();return}c.msgs.forEach((m,i)=>feed.append(msgEl(m,i)));feed.scrollTop=feed.scrollHeight}
+function hero(){const h=document.createElement('div');h.className='hero';h.innerHTML='<canvas></canvas><h1>Noryx</h1><p>'+greet()+'Una IA con red neuronal propia que calcula, investiga, conversa y aprende de ti.</p><div class="chips"></div>';
+ ['¿Cuánto es 15% de 2480?','Resuelve x^2 - 5x + 6 = 0','¿Quién fue Nikola Tesla?','Clima en Ciudad de México','Media de 4, 8, 15, 16','Población de Perú','10 millas a km','PIB per cápita de Chile','Compara el PIB de Japón y Corea del Sur','Dame un dato curioso','¿Qué es una red neuronal?','Recomiéndame una serie','Explícame la relatividad como si tuviera 10 años','Ayúdame a planear un fin de semana','aprende: mi color favorito = azul'].sort(()=>Math.random()-.5).slice(0,5).forEach(q=>{const b=document.createElement('button');b.textContent=q;b.onclick=()=>send(q);h.querySelector('.chips').append(b)});feed.append(h);neural(h.querySelector('canvas'))}
+function msgEl(m,i){const d=document.createElement('div');d.className='msg '+m.r;
+ if(m.r=='u'){d.innerHTML='<div class="body"></div>';d.firstChild.textContent=m.t;d.firstChild.title='Clic para editar';d.firstChild.style.cursor='pointer';d.firstChild.onclick=()=>{if(busy)return;const c=conv();c.msgs=c.msgs.slice(0,i);save();renderAll();inp.value=m.t;fit();inp.focus()};return d}
+ d.innerHTML='<div class="av"></div><div><div class="body">'+md(m.t)+'</div><div class="meta"><span>'+esc(m.m||'')+'</span><button data-a="c">copiar</button>'+(m.sys?'':'<button data-a="r">repetir</button>')+'<button data-a="s">leer</button>'+(/aprendid/.test(m.m||'')?'<button data-a="x">no es correcto</button>':'')+'</div></div>';
+ d.lastChild.style.cssText='flex:1;min-width:0';d.querySelector('.meta').onclick=e=>{const a=e.target.dataset.a;if(a=='c')navigator.clipboard&&navigator.clipboard.writeText(m.t).then(()=>toast('Copiado'));if(a=='r')regen();if(a=='s')say(m.s||speakable(m.t));if(a=='x'){mem.taught=mem.taught.filter(z=>z.q.toLowerCase()!=(m.q||'').replace(/[?!¿¡.]+$/g,'').trim().toLowerCase());save();toast('Olvidado, gracias por corregirme')}};return d}
+feed.addEventListener('click',e=>{if(e.target.className=='cp'){navigator.clipboard&&navigator.clipboard.writeText(e.target.nextSibling.textContent).then(()=>toast('Código copiado'))}});
+function speakable(t){
+ const m=t.match(/=\s*\*\*([^*]+)\*\*\s*$/);if(m)return'El resultado es '+m[1];
+ let s=t.replace(/```[\s\S]*?```/g,' ').replace(/`[^`]*`/g,' ').replace(/\[[^\]]*\]\([^)]*\)/g,' ').replace(/·?\s*di «más» para seguir/g,' ').replace(/https?:\/\/\S+/g,' ')
+ .replace(/\p{Extended_Pictographic}/gu,'').replace(/[*_#>|]/g,'').replace(/^\s*[-•]\s*/gm,'').replace(/\s*\n+\s*/g,'. ').replace(/([.:;!?])\s*\.\s*/g,'$1 ').replace(/\s+/g,' ').trim();
+ if(s.length>480){const c=s.slice(0,480),i=Math.max(c.lastIndexOf('. '),c.lastIndexOf('? '),c.lastIndexOf('! '));s=i>150?c.slice(0,i+1):c}
+ return s}
+/* ============ Pronunciación de números y símbolos ============ */
+const UE=['cero','uno','dos','tres','cuatro','cinco','seis','siete','ocho','nueve','diez','once','doce','trece','catorce','quince','dieciséis','diecisiete','dieciocho','diecinueve','veinte','veintiuno','veintidós','veintitrés','veinticuatro','veinticinco','veintiséis','veintisiete','veintiocho','veintinueve'],
+TE=['','','','treinta','cuarenta','cincuenta','sesenta','setenta','ochenta','noventa'],
+CE=['','ciento','doscientos','trescientos','cuatrocientos','quinientos','seiscientos','setecientos','ochocientos','novecientos'],
+BE=['','millón','billón','trillón','cuatrillón','quintillón','sextillón'],BP=['','millones','billones','trillones','cuatrillones','quintillones','sextillones'],
+UN=['zero','one','two','three','four','five','six','seven','eight','nine','ten','eleven','twelve','thirteen','fourteen','fifteen','sixteen','seventeen','eighteen','nineteen'],
+TN=['','','twenty','thirty','forty','fifty','sixty','seventy','eighty','ninety'],
+SN=['','thousand','million','billion','trillion','quadrillion','quintillion','sextillion'];
+const apoc=s=>s.replace(/veintiuno$/,'veintiún').replace(/uno$/,'un');
+const e3=n=>{if(n==100)return'cien';const c=n/100|0,r=n%100,o=[];if(c)o.push(CE[c]);if(r)o.push(r<30?UE[r]:TE[r/10|0]+(r%10?' y '+UE[r%10]:''));return o.join(' ')};
+const e6=n=>{const m=n/1000|0,r=n%1000,o=[];if(m)o.push(m==1?'mil':apoc(e3(m))+' mil');if(r)o.push(e3(r));return o.join(' ')};
+const n3=n=>{const c=n/100|0,r=n%100,o=[];if(c)o.push(UN[c]+' hundred');if(r)o.push(r<20?UN[r]:TN[r/10|0]+(r%10?'-'+UN[r%10]:''));return o.join(' ')};
+function numWords(str,en){let b;try{b=BigInt(str)}catch(e){return str}if(b==0n)return en?'zero':'cero';const p=[];
+ if(en){let i=0;while(b>0n){const v=Number(b%1000n);if(v)p.unshift(n3(v)+(SN[i]?' '+SN[i]:''));b/=1000n;i++}return p.join(' ')}
+ const g=[];while(b>0n){g.push(Number(b%1000000n));b/=1000000n}
+ for(let i=g.length-1;i>=0;i--){const v=g[i];if(!v)continue;p.push(i==0?e6(v):v==1?'un '+BE[i]:apoc(e6(v))+' '+BP[i])}return p.join(' ')}
+const FEMW=/^(hora|vez|persona|neurona|semana|palabra|pregunta|capa|ciudad|casa|cosa|region|región|respuesta|letra|pagina|página|moneda|calle|veces)/i,FW=/^(y|o|e|u|de|del|al|a|por|en|con|para|que|es|son)$/i;
+function speechNums(s,en){
+ const dg=x=>x.split('').map(d=>numWords(d,en)).join(' ');
+ s=s.replace(/\b(\d{1,2}):(\d{2})\b/g,(m,h,mi)=>h+' '+(+mi?(mi[0]=='0'?(en?'oh ':'cero ')+mi[1]:mi):(en?"o'clock":'en punto')));
+ s=s.replace(/(^|[^\w.,])-(?=\d)/g,'$1'+(en?'minus ':'menos '));
+ s=s.replace(/(\d{1,3}(?:[ \u00A0\u202F,]\d{3})+|\d+)(?:\.(\d+))?(?:[eE]([+-]?\d+))?/g,(m,ip,fp,ex,off,all)=>{
+  const raw=ip.replace(/[ \u00A0\u202F,]/g,''),sep=/[ \u00A0\u202F,]/.test(ip);
+  if(raw.length>(en?24:36)||(raw.length>2&&raw[0]=='0'&&!sep))return dg(raw)+(fp?(en?' point ':' coma ')+dg(fp):'');
+  let w=numWords(raw,en);
+  if(fp){const fr=fp.slice(0,10);w+=(en?' point ':' coma ')+(fr.length<=2&&fr[0]!='0'?numWords(fr,en):dg(fr))}
+  else if(!en&&/uno$/.test(w)){const nx=all.slice(off+m.length).match(/^\s*([a-záéíóúñü]+)/i);if(nx&&!FW.test(nx[1]))w=FEMW.test(nx[1])?w.replace(/veintiuno$/,'veintiuna').replace(/uno$/,'una'):apoc(w)}
+  if(ex){const e=+ex;w+=(en?' times ten to the ':' por diez a la ')+(e<0?(en?'minus ':'menos '):'')+numWords(String(Math.abs(e)),en)}
+  return w});
+ const R=en?[[/°\s?C\b/g,' degrees Celsius'],[/°\s?F\b/g,' degrees Fahrenheit'],[/°/g,' degrees'],[/\s?%/g,' percent'],[/km\/h/g,' kilometers per hour'],[/m\/s²/g,' meters per second squared'],[/m\/s/g,' meters per second'],[/\bkm\b/g,' kilometers'],[/\bkg\b/g,' kilograms'],[/CO₂/g,'C O two'],[/²/g,' squared'],[/³/g,' cubed'],[/×/g,' times '],[/÷/g,' divided by '],[/≈/g,' approximately '],[/π/g,' pi '],[/√/g,' square root of '],[/ = /g,' equals '],[/ \+ /g,' plus ']]
+ :[[/°\s?C\b/g,' grados Celsius'],[/°\s?F\b/g,' grados Fahrenheit'],[/°/g,' grados'],[/\s?%/g,' por ciento'],[/km\/h/g,' kilómetros por hora'],[/m\/s²/g,' metros por segundo al cuadrado'],[/m\/s/g,' metros por segundo'],[/\bkm\b/g,' kilómetros'],[/\bkg\b/g,' kilogramos'],[/CO₂/g,'C O dos'],[/²/g,' al cuadrado'],[/³/g,' al cubo'],[/×/g,' por '],[/÷/g,' entre '],[/≈/g,' aproximadamente '],[/π/g,' pi '],[/√/g,' raíz de '],[/ = /g,' igual a '],[/ \+ /g,' más ']];
+ R.forEach(([a,b])=>s=s.replace(a,b));return s}
+
+const FEM=/paulina|monica|sabina|dalia|elvira|helena|lucia|laura|marisol|camila|samantha|zira|jenny|aria|female|mujer|google espa|google us/i,MALE=/jorge|diego|pablo|raul|juan|carlos|david|mark|james|male|hombre|enrique|alvaro|miguel/i;
+function voiceFor(l){const sc=v=>(/natural|neural|online/i.test(v.name)?4:0)+(FEM.test(v.name)?3:0)+(MALE.test(v.name)?-9:0)+(l=='es'&&/MX|US|419/i.test(v.lang)?1:0);return speechSynthesis.getVoices().filter(v=>v.lang.toLowerCase().startsWith(l)).sort((a,b)=>sc(b)-sc(a))[0]}
+function say(t){if(!window.speechSynthesis)return;speechSynthesis.cancel();const en=isEn(t),u=new SpeechSynthesisUtterance(speechNums(t.replace(/\[[^\]]*\]\([^)]*\)/g,'').replace(/[*`_·]/g,'').replace(/\s+/g,' '),en).replace(/\s+/g,' ').trim());u.lang=en?'en-US':'es-MX';const v=voiceFor(en?'en':'es');if(v){u.voice=v;u.lang=v.lang}u.pitch=1.12;u.rate=1.03;speechSynthesis.speak(u)}
+
+/* ============ Flujo del chat ============ */
+function setThink(v){thinking=v;$('#chip').classList.toggle('think',v)}
+async function send(t){t=(t||'').trim();if(!t||busy)return;$('#in').value='';fit();closeMenu();window.speechSynthesis&&speechSynthesis.cancel();
+ if(gate(t))return;
+ let m;if((m=t.match(/^\/(\w+)\s*(.*)$/))){const k=m[1].toLowerCase();
+  if(k=='decir'){say(m[2]||'86 000 millones');return}
+  if(k=='nuevo'){cur=null;save();renderAll();return}
+  if(k=='limpiar'){const c=conv();if(c){c.msgs=[];save();renderAll()}return}
+  if(k=='exportar'){exportMd();return}
+  if(k=='memoria'){toast('Sé '+mem.taught.length+' cosas aprendidas'+(mem.name?' · te llamas '+mem.name:''));return}
+  if(k=='olvidar'){mem={name:'',taught:[]};save();toast('Memoria borrada');return}
+  if(k=='nombre'&&m[2]){mem.name=m[2].trim();save();toast('Hola, '+mem.name)}else if(k=='ayuda')t='ayuda';else{toast('Comando desconocido: /ayuda');return}}
+ if(!sess){const n=S.get('nx-guest',0);if(n>=GUEST_MAX){echoU(t);sysMsg('Llegaste al límite de '+GUEST_MAX+' preguntas sin cuenta. Regístrate gratis con tu correo para seguir usando todas las funciones de Noryx.','Límite');openDlg();return}S.set('nx-guest',n+1);if(n+1>=GUEST_MAX-3)toast(n+1==GUEST_MAX?'Esta es tu última pregunta sin cuenta':'Te quedan '+(GUEST_MAX-n-1)+' preguntas sin cuenta')}
+ let c=conv();if(!c){c={id:Date.now(),title:t.slice(0,38),msgs:[]};convs.push(c);cur=c.id}
+ c.msgs.push({r:'u',t});logTurn('u',t);renderAll();await reply(t)}
+async function reply(t){busy=true;stop=false;setThink(true);$('#go').innerHTML='<svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><rect x="5" y="5" width="14" height="14" rx="3"/></svg>';
+ const holder=document.createElement('div');holder.className='msg a';holder.innerHTML='<div class="av"></div><div class="body dots"><span></span><span></span><span></span></div>';feed.append(holder);feed.scrollTop=feed.scrollHeight;
+ const t0=Date.now(),[r]=await Promise.all([brain(t).catch(()=>({t:'Algo falló en mi núcleo. Intenta de nuevo.',m:'Error'})),sleep(350)]);setThink(false);
+ const body=holder.querySelector('.body');body.classList.remove('dots');let n=0;const full=r.t,step=Math.max(2,Math.ceil(full.length/110));
+ while(n<full.length&&!stop){n=Math.min(full.length,n+step);body.innerHTML=md(full.slice(0,n));if(feed.scrollHeight-feed.scrollTop-feed.clientHeight<140)feed.scrollTop=feed.scrollHeight;await sleep(14)}
+ const shown=full.slice(0,n);logTurn('a',shown);if(/^Sin respuesta/.test(r.m||''))cloudPending(t,isEn(t));r.m=(r.m||'')+' · '+((Date.now()-t0)/1000).toFixed(1)+' s';const c=conv();c.msgs.push({r:'a',t:shown,m:r.m,s:r.s,q:t});save();busy=false;stop=false;
+ holder.replaceWith(msgEl(c.msgs[c.msgs.length-1],c.msgs.length-1));renderList();$('#go').innerHTML='<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>';
+ if(speak||(VL&&VL.on))say(r.s||speakable(shown))}
+function regen(){const c=conv();if(!c||busy)return;while(c.msgs.length&&c.msgs[c.msgs.length-1].r=='a')c.msgs.pop();const u=c.msgs[c.msgs.length-1];if(!u)return;renderAll();reply(u.t)}
+function exportMd(){const c=conv();if(!c||!c.msgs.length){toast('No hay nada que exportar');return}
+ const b=new Blob(['# '+c.title+'\n\n'+c.msgs.map(m=>(m.r=='u'?'**Tú:** ':'**Noryx:** ')+m.t).join('\n\n')],{type:'text/markdown'}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='noryx-conversacion.md';a.click()}
+
+/* ============ Acceso de creador (/creador) + nube Supabase ============
+   Cualquiera puede platicar con Noryx (los mensajes se guardan en la nube y se avisa abajo).
+   Solo quien escribe /creador y entra con la contraseña de la cuenta de Supabase puede leer
+   los registros. La seguridad real son las políticas RLS: anon solo INSERTA; solo tu cuenta LEE/BORRA. */
+const SUPA_URL="https://frdvspuqrbjukbvgfdqw.supabase.co",SUPA_KEY="sb_publishable_m-rQ91fGPqdm_5sZieaGbA_F8CZM_tr",CREATOR_EMAIL="orlandoggr22@gmail.com";
+const cloudOn=()=>!!(SUPA_URL&&SUPA_KEY&&CREATOR_EMAIL),cloudBase=()=>SUPA_URL.replace(/\/+$/,''),SID=Date.now().toString(36)+Math.random().toString(36).slice(2,6),pw=$('#pw');
+let cloudToken=null,creator=false,creatorAct=0,auth=false,authFails=0,authLock=0;
+const hdr=x=>Object.assign({apikey:SUPA_KEY,'Content-Type':'application/json'},/^sb_/.test(SUPA_KEY)?{}:{Authorization:'Bearer '+SUPA_KEY},x||{});
+function cloudPost(tbl,row){if(!cloudOn())return;try{fetch(cloudBase()+'/rest/v1/'+tbl,{method:'POST',keepalive:true,headers:hdr({Prefer:'return=minimal'}),body:JSON.stringify(row)}).catch(()=>{})}catch(e){}}
+const logTurn=(rol,t)=>{if(creator||!t)return;cloudPost('mensajes',{session_id:SID,nombre:mem.name?String(mem.name).slice(0,60):null,rol,texto:String(t).slice(0,600)})};
+const sentQ=new Set(S.get('nx-sentq',[]));
+function cloudPending(q,en){q=(q||'').trim().replace(/\s+/g,' ').slice(0,200);const k=q.toLowerCase();if(q.length<3||sentQ.has(k)||/\d{6,}|@|https?:/i.test(q))return;sentQ.add(k);S.set('nx-sentq',[...sentQ].slice(-200));cloudPost('pendientes',{pregunta:q,idioma:en?'en':'es'})}
+async function cloudLogin(p){const r=await fetch(cloudBase()+'/auth/v1/token?grant_type=password',{method:'POST',headers:{apikey:SUPA_KEY,'Content-Type':'application/json'},body:JSON.stringify({email:CREATOR_EMAIL,password:p})});if(r.status==400||r.status==401){const e=new Error('bad');e.bad=1;throw e}if(!r.ok)throw new Error('HTTP '+r.status);const j=await r.json();if(!j.access_token)throw new Error('sin token');return j.access_token}
+async function cloudReq(method,path){if(!cloudToken){const e=new Error('expired');e.expired=1;throw e}const r=await fetch(cloudBase()+'/rest/v1/'+path,{method,headers:{apikey:SUPA_KEY,Authorization:'Bearer '+cloudToken}});if(r.status==401||r.status==403){cloudToken=null;const e=new Error('expired');e.expired=1;throw e}if(!r.ok)throw new Error('HTTP '+r.status);return method=='GET'?r.json():null}
+async function creatorData(){const rows=(await cloudReq('GET','mensajes?select=session_id,nombre,rol,texto,ts&order=ts.desc&limit=5000')).reverse(),by=new Map();rows.forEach(r=>{let x=by.get(r.session_id);const ts=Date.parse(r.ts)||0;if(!x){x={id:r.session_id,t0:ts,t1:ts,name:null,m:[]};by.set(r.session_id,x)}if(r.nombre)x.name=r.nombre;x.t1=ts;x.m.push({r:r.rol,t:r.texto,ts})});return[...by.values()]}
+const STOPW=new Set('de la que el en y a los se del las un por con no una su para es al lo como mas pero sus le ya o este si porque esta entre cuando muy sin sobre tambien me hasta hay donde quien desde todo nos todos uno les ni contra otros ese eso ante ellos esto antes algunos unos yo otro otra tanto esa estos mucho nada cual poco ella estar estas algo mi mis tu tus te ti hola quiero puedes puede dime cuentame hablado dijo soy estoy tengo vivo gusta llamo the and or of to in is are was were it you my your this that for on with as at be have what who how not but so if there here hello hi tell can could would like name'.split(' '));
+const fdate=ts=>new Date(ts).toLocaleString('es-MX',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
+const topWords=(ms,n)=>{const c={};ms.filter(m=>m.r=='u').forEach(m=>(m.t.toLowerCase().match(/[a-záéíóúñü]{4,}/g)||[]).forEach(w=>{if(!STOPW.has(w))c[w]=(c[w]||0)+1}));return Object.entries(c).sort((a,b)=>b[1]-a[1]).slice(0,n).map(x=>x[0])};
+const lastOf=p=>Math.max(...p.s.map(s=>s.t1||s.t0||0));
+function groupsOf(d){const g=new Map();d.forEach(s=>{const nm=s.name||'Anónimo',k=nm.toLowerCase();if(!g.has(k))g.set(k,{name:nm,s:[]});g.get(k).s.push(s)});return[...g.values()].sort((a,b)=>lastOf(b)-lastOf(a))}
+function peopleTxt(d){const gs=groupsOf(d);if(!gs.length)return'Aún no hay conversaciones registradas en la nube.';return'👥 Personas con las que he hablado (todos los dispositivos):\n'+gs.map((p,i)=>{const ms=p.s.flatMap(s=>s.m),tw=topWords(ms,5).join(', ');return(i+1)+'. '+p.name+' — '+p.s.length+' conversación(es), '+ms.filter(m=>m.r=='u').length+' mensajes suyos, última vez '+fdate(lastOf(p))+(tw?'. Temas: '+tw:'')}).join('\n')+'\n\nEscribe /ver 1 (o /ver Nombre) para leer la conversación.'}
+function transcriptTxt(arg,d){const gs=groupsOf(d),p=/^\d+$/.test(arg)?gs[+arg-1]:gs.find(x=>x.name.toLowerCase()==arg.toLowerCase())||gs.find(x=>x.name.toLowerCase().includes(arg.toLowerCase()));if(!arg||!p)return'No encontré a esa persona. Usa /personas para ver la lista.';const ms=p.s.slice().sort((a,b)=>a.t0-b.t0).flatMap(s=>s.m).slice(-60);return'💬 Conversación con '+p.name+' (últimos '+ms.length+' mensajes):\n'+ms.map(m=>'['+fdate(m.ts)+'] '+(m.r=='u'?p.name:'Noryx')+': '+m.t).join('\n')}
+const blank=()=>{const c=conv();if(!c||!c.msgs.length){feed.innerHTML='';cancelAnimationFrame(raf)}};
+function sysMsg(t,m){blank();feed.append(msgEl({r:'a',t,m:m||'Creador · nube',sys:1},-1));feed.scrollTop=feed.scrollHeight}
+function echoU(t){blank();const d=document.createElement('div');d.className='msg u';d.innerHTML='<div class="body"></div>';d.firstChild.textContent=t;feed.append(d)}
+const box=t=>'```\n'+t+'\n```';
+function authBegin(ph){auth=true;inp.hidden=true;pw.hidden=false;pw.value='';pw.placeholder=ph;pw.focus()}
+function authEnd(){auth=false;pw.hidden=true;pw.value='';inp.hidden=false;inp.focus()}
+function lock(say){const was=creator;creator=false;creatorAct=0;cloudToken=null;if(auth)authEnd();if(say&&was)sysMsg('🔒 Sesión de creador cerrada.')}
+const cErr=e=>{if(e&&e.expired){lock(false);return'La sesión de la nube expiró. Escribe /creador para entrar otra vez.'}return'No pude hablar con la nube: '+(e&&e.message?e.message:e)};
+pw.addEventListener('keydown',e=>{if(e.key=='Enter'){e.preventDefault();gate(pw.value)}if(e.key=='Escape'){authEnd();sysMsg('Verificación cancelada.')}});
+const CCMD=['personas','ver','borrar','salir'];
+const ASK_PEOPLE=/(con qui[eé]n(?:es)?\s+(?:has|ha|habias|habías)\s+(?:hablado|platicado|interactuado|conversado|chateado)|qui[eé]nes?\s+(?:han|ha)\s+(?:hablado|platicado|interactuado|conversado|chateado)|con qu[eé] personas|qu[eé] personas (?:han|te han)|who (?:have|has) you (?:talked|spoken|chatted|interacted)|who (?:has|have) (?:talked|spoken|chatted) (?:to|with) you|(?:list|show) (?:of )?(?:your )?(?:users|people|conversations))/i;
+const ASK_SAID=/qu[eé] te (?:dijo|cont[oó]|platic[oó]|coment[oó]|escribi[oó])\s+([A-Za-zÁÉÍÓÚÑáéíóúñ]{2,20})|what did\s+([A-Za-z]{2,20})\s+(?:say|tell|write|talk)/i;
+async function ccmd(c,a){
+ if(c=='ayuda')return sysMsg('Comandos de creador:\n- `/personas` — con quién he hablado y de qué\n- `/ver N` (o `/ver Nombre`) — leer esa conversación\n- `/exportar` — descargar todo el registro en JSON\n- `/borrar` — borrar el registro (pide confirmación)\n- `/salir` — cerrar la sesión de creador\n\nTambién puedes preguntarme: «¿con quién has hablado?» o «¿qué te dijo Ana?».\nComandos normales: `/nuevo` `/limpiar` `/nombre` `/memoria` `/olvidar` `/decir texto`.');
+ if(c=='personas')return sysMsg(box(peopleTxt(await creatorData())));
+ if(c=='ver')return sysMsg(box(transcriptTxt(a,await creatorData())));
+ if(c=='exportar'){const bl=new Blob([JSON.stringify({exportado:new Date().toISOString(),conversaciones:await creatorData()},null,2)],{type:'application/json'}),u=URL.createObjectURL(bl),l=document.createElement('a');l.href=u;l.download='noryx-conversaciones.json';document.body.appendChild(l);l.click();l.remove();setTimeout(()=>URL.revokeObjectURL(u),2000);return sysMsg('📥 Listo, descargué el registro completo.')}
+ if(c=='borrar'){if(/^(si|sí|yes)$/i.test(a)){await cloudReq('DELETE','mensajes?id=gt.0');return sysMsg('🗑 Registro borrado.')}return sysMsg('Esto borra TODAS las conversaciones registradas en la nube. Si estás seguro, escribe `/borrar si`')}
+ if(c=='salir')return lock(true)}
+/* true = el mensaje era comando/contraseña/pregunta privada y ya se atendió */
+function gate(t){
+ if(creator&&Date.now()-creatorAct>6e5)lock(false);
+ if(auth){
+  if(/^\/cancelar$/i.test(t)){authEnd();sysMsg('Verificación cancelada.');return true}
+  if(authLock-Date.now()>0){authEnd();sysMsg('Demasiados intentos fallidos. Espera un momento.');return true}
+  const done=ok=>{if(ok){authFails=0;creator=true;creatorAct=Date.now();sysMsg('✅ Acceso de creador concedido, Orlando. Escribe /ayuda para ver tus comandos. Mientras estés verificado no registro tus mensajes.')}else{authFails++;if(authFails>=5){authLock=Date.now()+6e4*Math.pow(2,Math.min(authFails-5,6));sysMsg('Contraseña incorrecta. Demasiados intentos: bloqueado temporalmente.')}else sysMsg('Contraseña incorrecta. Vuelve a escribir /creador para reintentar.')}};
+  authEnd();
+  cloudLogin(t).then(tok=>{cloudToken=tok;done(true)}).catch(e=>{if(e&&e.bad)done(false);else sysMsg('No pude conectar con la nube ('+(e&&e.message)+'). Reintenta con /creador.')});
+  return true}
+ const m=t.match(/^\/([a-záéíóúñ]+)\s*(.*)$/i);
+ if(m){const c=m[1].toLowerCase(),a=m[2].trim();
+  if(c=='creador'||c=='admin'){echoU('/creador');
+   if(creator){creatorAct=Date.now();sysMsg('Ya estás verificado. Escribe /ayuda para ver los comandos.');return true}
+   const w=authLock-Date.now();if(w>0){sysMsg('Bloqueado por intentos fallidos. Prueba en '+Math.ceil(w/1e3)+' s.');return true}
+   authBegin('Contraseña de creador');sysMsg('Escribe tu contraseña de creador (no se muestra ni se guarda). /cancelar para salir.');return true}
+  if(CCMD.includes(c)||(creator&&(c=='exportar'||c=='ayuda'))){echoU(t);
+   if(!creator){sysMsg('Ese comando es solo para mi creador.');return true}
+   creatorAct=Date.now();ccmd(c,a).catch(e=>sysMsg(cErr(e)));return true}}
+ const sw=t.match(ASK_SAID);
+ if(ASK_PEOPLE.test(t)||sw){echoU(t);
+  if(!creator){const r='Eso es información privada: solo mi creador, verificado con su contraseña, puede consultarla. No comparto lo que otras personas me han dicho.';sysMsg(r,'Privacidad');logTurn('u',t);logTurn('a',r);return true}
+  creatorAct=Date.now();creatorData().then(d=>sysMsg(box(sw&&!ASK_PEOPLE.test(t)?transcriptTxt(sw[1]||sw[2],d):peopleTxt(d)))).catch(e=>sysMsg(cErr(e)));return true}
+ if(creator)creatorAct=Date.now();return false}
+
+/* ============ Cuentas con correo (Supabase Auth) ============ */
+const GUEST_MAX=30,acc=$('#acc'),dlg=$('#dlg'),AE=$('#ae'),AP=$('#ap'),AN=$('#an'),AM=$('#am');
+let sess=S.get('nx-sess',null);
+const paintAcc=()=>{acc.textContent=sess?sess.email.split('@')[0]:'Entrar';acc.classList.toggle('on',!!sess);paintPro()};
+async function aPost(path,body,tok){const h={apikey:SUPA_KEY,'Content-Type':'application/json'};if(tok)h.Authorization='Bearer '+tok;const r=await fetch(cloudBase()+'/auth/v1/'+path,{method:'POST',headers:h,body:JSON.stringify(body||{})});let j={};try{j=await r.json()}catch(e){}if(!r.ok){const e=new Error(j.msg||j.error_description||j.message||('HTTP '+r.status));e.code=j.error_code||j.code||'';throw e}return j}
+const aErr=e=>{const x=e.message+' '+e.code;return/signup.disabled|signups? not allowed|signups? (are )?disabled/i.test(x)?'El registro de cuentas nuevas está desactivado en el servidor. Si eres el creador: en Supabase activa «Allow new users to sign up» (Authentication → Sign In / Providers).':/invalid.login|invalid_credentials/i.test(x)?'Correo o contraseña incorrectos.':/not.confirmed|email_not_confirmed/i.test(x)?'Confirma tu correo (revisa tu bandeja) y vuelve a entrar.':/already|exists/i.test(x)?'Ese correo ya tiene cuenta: entra con tu contraseña.':/rate|too many|over_/i.test(x)?'Demasiados intentos. Espera un momento.':e.message==='Failed to fetch'?'No pude conectar con el servidor.':e.message};
+function setSess(j,email){const u=j.user||{},nm=(u.user_metadata&&u.user_metadata.name)||'',em=u.email||email;
+ sess={access:j.access_token,refresh:j.refresh_token,exp:Date.now()+(j.expires_in||3600)*1000,email:em,name:nm};S.set('nx-sess',sess);
+ mem.name=nm||mem.name||em.split('@')[0];save();
+ if(em.toLowerCase()==CREATOR_EMAIL.toLowerCase()){cloudToken=sess.access;creator=true;creatorAct=Date.now()}
+ paintAcc()}
+async function refreshSess(){if(!sess||!sess.refresh)return;if(sess.exp-Date.now()>6e4)return;try{setSess(await aPost('token?grant_type=refresh_token',{refresh_token:sess.refresh}),sess.email)}catch(e){if(e.message!=='Failed to fetch'){sess=null;S.set('nx-sess',null);paintAcc()}}}
+async function logout(){const t=sess&&sess.access;sess=null;S.set('nx-sess',null);if(creator)lock(false);paintAcc();toast('Sesión cerrada');if(t)aPost('logout',{},t).catch(()=>{})}
+const openDlg=()=>{dlg.hidden=false;AM.textContent='';AE.focus()},closeDlg=()=>{dlg.hidden=true;AP.value=''};
+async function doAuth(kind){const email=AE.value.trim(),pwd=AP.value;AM.textContent='';
+ if(kind=='reset'){if(!/^\S+@\S+\.\S+$/.test(email)){AM.textContent='Escribe tu correo arriba.';return}try{await aPost('recover',{email});AM.textContent='Si el correo existe, te envié un enlace para restablecer la contraseña.'}catch(e){AM.textContent=aErr(e)}return}
+ if(!/^\S+@\S+\.\S+$/.test(email)||pwd.length<6){AM.textContent='Pon un correo válido y una contraseña de al menos 6 caracteres.';return}
+ AM.textContent='…';
+ try{if(kind=='up'){const j=await aPost('signup',{email,password:pwd,data:{name:AN.value.trim().slice(0,40)}});if(!j.access_token){AM.textContent='Cuenta creada. Revisa tu correo para confirmarla y luego pulsa Entrar.';return}setSess(j,email)}
+  else setSess(await aPost('token?grant_type=password',{email,password:pwd}),email);
+  closeDlg();toast('Sesión iniciada: '+sess.email);renderAll()}catch(e){AM.textContent=aErr(e)}}
+acc.onclick=()=>{closeMenu();sess?confirm('Sesión de '+sess.email+'. ¿Cerrar sesión?')&&logout():openDlg()};
+$('#ain').onclick=()=>doAuth('in');$('#aup').onclick=()=>doAuth('up');$('#are').onclick=()=>doAuth('reset');$('#acl').onclick=closeDlg;
+dlg.addEventListener('click',e=>{if(e.target==dlg)closeDlg()});
+dlg.addEventListener('keydown',e=>{if(e.key=='Escape')closeDlg();if(e.key=='Enter'&&(e.target==AP||e.target==AE)){e.preventDefault();doAuth('in')}});
+paintAcc();refreshSess().then(()=>{if(sess&&sess.email.toLowerCase()==CREATOR_EMAIL.toLowerCase()&&!creator){cloudToken=sess.access;creator=true;creatorAct=Date.now()}});
+
+/* ============ Controles ============ */
+const inp=$('#in');function fit(){inp.style.height='auto';inp.style.height=Math.min(180,inp.scrollHeight)+'px'}
+inp.addEventListener('input',fit);inp.addEventListener('keydown',e=>{if(e.key=='Enter'&&!e.shiftKey){e.preventDefault();send(inp.value)}if(e.key=='ArrowUp'&&!inp.value){const c=conv(),u=c&&c.msgs.filter(m=>m.r=='u').pop();if(u){e.preventDefault();inp.value=u.t;fit()}}});addEventListener('keydown',e=>{if(e.key=='Escape'&&busy){stop=true;window.speechSynthesis&&speechSynthesis.cancel()}});
+$('#go').onclick=()=>auth?gate(pw.value):busy?(stop=true):send(inp.value);
+$('#q').oninput=renderList;
+$('#new').onclick=()=>{cur=null;save();renderAll();closeMenu();inp.focus()};
+const openMenu=()=>{$('#side').classList.add('open');$('#scrim').classList.add('open')},closeMenu=()=>{$('#side').classList.remove('open');$('#scrim').classList.remove('open')};
+$('#menu').onclick=openMenu;$('#scrim').onclick=closeMenu;
+$('#thm').onclick=()=>{const d=document.documentElement,dark=d.dataset.theme?d.dataset.theme=='dark':matchMedia('(prefers-color-scheme:dark)').matches;d.dataset.theme=dark?'light':'dark';S.set('nx-theme',d.dataset.theme)};
+{const t=S.get('nx-theme',null);if(t)document.documentElement.dataset.theme=t}
+const sb=$('#spk');const paintSpk=()=>{sb.textContent='Voz: '+(speak?'sí':'no');sb.classList.toggle('on',speak)};paintSpk();
+sb.onclick=()=>{speak=!speak;S.set('nx-spk',speak);paintSpk()};
+const mb=$('#mae'),paintMae=()=>{mb.textContent='Maestro: '+(MAESTRO?'sí':'no');mb.classList.toggle('on',MAESTRO)};paintMae();mb.onclick=()=>{MAESTRO=!MAESTRO;S.set('nx-teacher',MAESTRO);paintMae();toast(MAESTRO?'Noryx consultará a su maestro externo y aprenderá':'Noryx responderá solo con su núcleo')};
+$('#exp').onclick=exportMd;
+$('#forget').onclick=()=>{if(confirm('¿Borrar todas las conversaciones y lo que Noryx aprendió?')){convs=[];cur=null;mem={name:'',taught:[]};save();renderAll();toast('Listo, empezamos de cero')}};
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+$('#mic').onclick=function(){if(!SR)return toast('Tu navegador no admite dictado por voz');const r=new SR(),b=this;r.lang=navigator.language||'es-MX';r.onresult=e=>send(e.results[0][0].transcript);r.onend=()=>b.classList.remove('on');r.onerror=()=>b.classList.remove('on');b.classList.add('on');r.start()};
+
+/* ============ Red neuronal viva (hero) ============ */
+function neural(cv){const x=cv.getContext('2d'),L=[4,6,6,3],N=[];let w=0,h=0;const rm=matchMedia('(prefers-reduced-motion:reduce)').matches;
+ const size=()=>{const d=devicePixelRatio||1;w=cv.clientWidth;h=cv.clientHeight;cv.width=w*d;cv.height=h*d;x.setTransform(d,0,0,d,0,0);N.length=0;L.forEach((n,l)=>{for(let i=0;i<n;i++)N.push({l,x:w*(.1+.8*l/(L.length-1)),y:h*(i+1)/(n+1),ph:Math.random()*6.28})})};
+ size();const act=(n,t)=>Math.pow(Math.max(0,Math.sin(t*(thinking?9:2.4)-n.l*1.1+n.ph)),6);
+ function draw(ts){const t=ts/1000,ac=getComputedStyle(document.documentElement).getPropertyValue('--acc').trim()||'#0ff',A=N.map(n=>rm?.3:act(n,t));x.clearRect(0,0,w,h);
+  N.forEach((a,i)=>N.forEach((b,j)=>{if(b.l==a.l+1){x.strokeStyle=ac;x.globalAlpha=.07+.45*Math.min(A[i],A[j]);x.lineWidth=1;x.beginPath();x.moveTo(a.x,a.y);x.lineTo(b.x,b.y);x.stroke()}}));
+  N.forEach((n,i)=>{x.globalAlpha=.35+.65*A[i];x.fillStyle=ac;x.shadowColor=ac;x.shadowBlur=14*A[i];x.beginPath();x.arc(n.x,n.y,4+4*A[i],0,6.283);x.fill()});x.shadowBlur=0;x.globalAlpha=1;
+  if(!rm&&cv.isConnected)raf=requestAnimationFrame(draw)}
+ raf=requestAnimationFrame(draw);addEventListener('resize',()=>cv.isConnected&&size())}
+
+/* ============ Extras con cuenta: voz en vivo + estudio de imágenes ============ */
+var VL={on:false,rec:null,mute:false,st:''};
+function paintPro(){const p=$('#pro');if(p)p.hidden=!sess;if(!sess){if(VL&&VL.on)vlStop();const z=$('#studio');if(z)z.hidden=true}}
+const vl=$('#vl'),vlo=$('#vlo'),vls=$('#vls'),vlt=$('#vlt');
+const VST={listen:'Te escucho…',think:'Pensando…',speak:'Hablando… toca el círculo para interrumpir',mute:'Micrófono en pausa'};
+const vlSet=x=>{VL.st=x;vlo.className='orb '+x;vls.textContent=VST[x]||''},vlText=t=>{vlt.textContent=t||''};
+function vlStart(){if(!sess)return openDlg();if(!SR||!window.speechSynthesis){toast('Tu navegador no admite voz en tiempo real. Prueba Chrome, Edge o Safari.');return}
+ closeMenu();VL.on=true;VL.mute=false;vl.hidden=false;speechSynthesis.cancel();vlText('');$('#vlm').textContent='Silenciar micrófono';vlListen()}
+function vlStop(){VL.on=false;const r=VL.rec;VL.rec=null;try{r&&r.abort()}catch(e){}window.speechSynthesis&&speechSynthesis.cancel();vl.hidden=true}
+function vlListen(){if(!VL.on)return;if(VL.mute){vlSet('mute');return}
+ let fin='',r;try{r=new SR()}catch(e){return}
+ VL.rec=r;r.lang=navigator.language||'es-MX';r.interimResults=true;r.continuous=false;
+ r.onresult=e=>{let it='';fin='';for(let i=0;i<e.results.length;i++){const x=e.results[i];if(x.isFinal)fin+=x[0].transcript;else it+=x[0].transcript}vlText(fin+it)};
+ r.onerror=e=>{if(e.error=='not-allowed'||e.error=='service-not-allowed'){toast('Necesito permiso para usar el micrófono');vlStop()}else if(e.error=='audio-capture'){toast('No encuentro un micrófono');vlStop()}};
+ r.onend=()=>{if(VL.rec!==r)return;VL.rec=null;if(!VL.on||VL.mute)return;const t=fin.trim();t?vlTurn(t):setTimeout(vlListen,200)};
+ try{r.start();vlSet('listen')}catch(e){setTimeout(vlListen,500)}}
+async function vlWait(){const q=window.speechSynthesis;await sleep(250);let k=0;while(VL.on&&(q.speaking||q.pending)&&k<2400){await sleep(150);k++}}
+async function vlTurn(t){vlSet('think');vlText('Tú: '+t);
+ if(/^(adios|chao|terminar|colgar|fin|hasta luego|bye|goodbye|end call)$/.test(norm(t))){say(isEn(t)?'Goodbye':'Hasta luego');await vlWait();vlStop();return}
+ while(busy)await sleep(150);
+ await send(t);if(!VL.on)return;
+ const c=conv(),l=c&&c.msgs[c.msgs.length-1];if(l&&l.r=='a')vlText(l.t.replace(/[*`_]/g,'').slice(0,240));
+ vlSet('speak');await vlWait();if(VL.on)vlListen()}
+$('#vlb').onclick=vlStart;$('#vlx').onclick=vlStop;
+vlo.onclick=()=>{if(VL.st=='speak')speechSynthesis.cancel()};
+$('#vlm').onclick=function(){VL.mute=!VL.mute;this.textContent=VL.mute?'Activar micrófono':'Silenciar micrófono';if(VL.mute){const r=VL.rec;VL.rec=null;try{r&&r.abort()}catch(e){}if(VL.st=='listen')vlSet('mute')}else if(VL.st=='mute')vlListen()};
+
+const st=$('#studio');
+function stOpen(t){if(!sess)return openDlg();closeMenu();st.hidden=false;stTab(t||'up')}
+function stTab(t){$('#pUp').hidden=t!='up';$('#pMk').hidden=t!='mk';$('#tbUp').classList.toggle('on',t=='up');$('#tbMk').classList.toggle('on',t=='mk')}
+$('#imb').onclick=()=>stOpen('up');
+$('#pkey').value=S.get('nx-pkey','');
+const paintEng=()=>{const loc=S.get('nx-veng','local')=='local';$('#imeng').textContent='Motor: '+(loc?'Noryx local':'Pollinations');$('#imnote').textContent=loc?'Modo local: la imagen no sale de tu navegador. Noryx lee texto (Tesseract), reconoce objetos (MobileNet) y razona con sus propias reglas; la primera vez descarga unos 10–25 MB de modelos. No entiende dibujos complejos ni resuelve problemas nuevos como una IA grande: para eso cambia el motor a Pollinations (envía la imagen reducida a ese servicio y necesita clave).':'Motor Pollinations: se envía una versión reducida de la imagen y tu pregunta a un servicio externo (no subas fotos privadas). Puede fallar si pide clave. Revisa sus respuestas.'};paintEng();
+$('#imeng').onclick=()=>{S.set('nx-veng',S.get('nx-veng','local')=='local'?'poll':'local');paintEng()};
+$('#pks').onclick=()=>{const k=$('#pkey').value.trim();if(k&&!/^pk_/.test(k)){toast(/^sk_/.test(k)?'Esa es una clave secreta (sk_): no la pongas aquí. Usa una pk_':'La clave debe empezar por pk_');return}S.set('nx-pkey',k);toast(k?'Clave guardada en este navegador':'Clave borrada')};$('#stX').onclick=()=>st.hidden=true;$('#tbUp').onclick=()=>stTab('up');$('#tbMk').onclick=()=>stTab('mk');
+st.addEventListener('click',e=>{if(e.target==st)st.hidden=true});
+addEventListener('keydown',e=>{if(e.key!='Escape')return;if(!st.hidden)st.hidden=true;else if(VL.on)vlStop()});
+const dl=(blob,name)=>{const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),4000)};
+
+/* --- Subir --- */
+const imc=$('#imc'),ictx=imc.getContext('2d',{willReadFrequently:true});let orig=null,imMeta=null;
+function loadFile(f){if(!f)return;if(!/^image\//.test(f.type)){toast('Elige un archivo de imagen');return}if(f.size>25e6){toast('La imagen pesa más de 25 MB');return}
+ const u=URL.createObjectURL(f),im=new Image();
+ im.onload=()=>{const k=Math.min(1,1600/Math.max(im.width,im.height)),w=Math.max(1,Math.round(im.width*k)),h=Math.max(1,Math.round(im.height*k));
+  imc.width=w;imc.height=h;ictx.drawImage(im,0,0,w,h);orig=ictx.getImageData(0,0,w,h);imMeta={name:f.name,w:im.width,h:im.height,kb:Math.round(f.size/1024)};URL.revokeObjectURL(u);$('#imw').hidden=false;$('#imo').textContent='';imHist=[];imCache={};analyze();$('#imq').focus()};
+ im.onerror=()=>{URL.revokeObjectURL(u);toast('No pude abrir esa imagen (¿formato no compatible?)')};im.src=u}
+$('#imf').onchange=e=>{loadFile(e.target.files[0]);e.target.value=''};
+const drop=$('#drop');['dragenter','dragover'].forEach(n=>drop.addEventListener(n,e=>{e.preventDefault();drop.classList.add('over')}));['dragleave','drop'].forEach(n=>drop.addEventListener(n,e=>{e.preventDefault();drop.classList.remove('over')}));
+drop.addEventListener('drop',e=>loadFile(e.dataTransfer.files[0]));
+function analyze(){const w=imc.width,h=imc.height,k=Math.min(1,64/Math.max(w,h)),sw=Math.max(1,Math.round(w*k)),sh=Math.max(1,Math.round(h*k)),t=document.createElement('canvas');t.width=sw;t.height=sh;const x=t.getContext('2d');x.drawImage(imc,0,0,sw,sh);
+ const d=x.getImageData(0,0,sw,sh).data,bins=new Map();let lum=0,n=0;
+ for(let i=0;i<d.length;i+=4){if(d[i+3]<128)continue;const r=d[i],g=d[i+1],b=d[i+2];lum+=.2126*r+.7152*g+.0722*b;n++;const key=(r>>5)<<6|(g>>5)<<3|(b>>5),o=bins.get(key)||{c:0,r:0,g:0,b:0};o.c++;o.r+=r;o.g+=g;o.b+=b;bins.set(key,o)}
+ const top=[...bins.values()].sort((a,b)=>b.c-a.c).map(o=>[Math.round(o.r/o.c),Math.round(o.g/o.c),Math.round(o.b/o.c)]),pal=[];
+ for(const c of top){if(pal.every(p=>Math.abs(p[0]-c[0])+Math.abs(p[1]-c[1])+Math.abs(p[2]-c[2])>90))pal.push(c);if(pal.length==5)break}
+ const L=n?lum/n:0,tone=L<70?'oscura':L>185?'muy clara':L>130?'clara':'equilibrada',ar=imMeta.w/imMeta.h,ori=ar>1.15?'horizontal':ar<.87?'vertical':'cuadrada',hex=c=>'#'+c.map(v=>v.toString(16).padStart(2,'0')).join('');
+ $('#imi').textContent=imMeta.name+' · '+imMeta.w+'×'+imMeta.h+' px · '+imMeta.kb+' KB · '+ori+' · luz '+tone;
+ $('#pal').innerHTML=pal.map(c=>'<button class="sw" style="background:'+hex(c)+'" title="Copiar '+hex(c)+'" data-h="'+hex(c)+'"></button>').join('')}
+$('#pal').onclick=e=>{const b=e.target.closest('.sw');if(b&&navigator.clipboard)navigator.clipboard.writeText(b.dataset.h).then(()=>toast('Color '+b.dataset.h+' copiado'),()=>{})};
+const cloneC=()=>{const t=document.createElement('canvas');t.width=imc.width;t.height=imc.height;t.getContext('2d').drawImage(imc,0,0);return t};
+const PIX={gray:d=>{for(let i=0;i<d.length;i+=4){const v=.299*d[i]+.587*d[i+1]+.114*d[i+2];d[i]=d[i+1]=d[i+2]=v}},
+ sepia:d=>{for(let i=0;i<d.length;i+=4){const r=d[i],g=d[i+1],b=d[i+2];d[i]=.393*r+.769*g+.189*b;d[i+1]=.349*r+.686*g+.168*b;d[i+2]=.272*r+.534*g+.131*b}},
+ invert:d=>{for(let i=0;i<d.length;i+=4){d[i]=255-d[i];d[i+1]=255-d[i+1];d[i+2]=255-d[i+2]}},
+ bright:d=>{for(let i=0;i<d.length;i+=4){d[i]+=25;d[i+1]+=25;d[i+2]+=25}},
+ dark:d=>{for(let i=0;i<d.length;i+=4){d[i]-=25;d[i+1]-=25;d[i+2]-=25}},
+ contrast:d=>{for(let i=0;i<d.length;i+=4){d[i]=(d[i]-128)*1.2+128;d[i+1]=(d[i+1]-128)*1.2+128;d[i+2]=(d[i+2]-128)*1.2+128}}};
+document.querySelectorAll('#imt [data-f]').forEach(b=>b.onclick=()=>{if(!orig)return;const f=b.dataset.f;
+ if(f=='reset'){imc.width=orig.width;imc.height=orig.height;ictx.putImageData(orig,0,0)}
+ else if(f=='flip'){const t=cloneC();ictx.save();ictx.translate(imc.width,0);ictx.scale(-1,1);ictx.drawImage(t,0,0);ictx.restore()}
+ else if(f=='rot'){const t=cloneC();imc.width=t.height;imc.height=t.width;ictx.save();ictx.translate(imc.width,0);ictx.rotate(Math.PI/2);ictx.drawImage(t,0,0);ictx.restore()}
+ else{const id=ictx.getImageData(0,0,imc.width,imc.height);PIX[f](id.data);ictx.putImageData(id,0,0)}
+ if(f=='reset')analyze()});
+$('#imdl').onclick=()=>{if(orig)imc.toBlob(b=>b&&dl(b,'noryx-imagen.png'))};
+const SYSI='Eres Noryx, una IA amable con trato femenino, creada por Orlando. El usuario te muestra una imagen y te hace preguntas sobre ella. Responde en su idioma. Mira la imagen con cuidado. Si es un ejercicio o tarea (química, matemáticas, física, etc.), transcribe lo que ves, resuélvelo o corrige la respuesta del usuario paso a paso y explica el porqué. Si te piden música, recomienda 4 o 5 géneros, artistas o canciones concretas que combinen con el ambiente, los colores y la emoción de la imagen, con una razón breve para cada una. Si es una foto o un diseño, descríbelo y responde lo que pregunten. Si algo no se ve con claridad, dilo en vez de inventarlo. Usa markdown simple (**negritas** y listas con "- "). Máximo 250 palabras.';
+const IMQ=['¿Qué ves en la imagen?','Resuelve este ejercicio paso a paso','¿Está bien mi respuesta?','Transcribe el texto','¿Qué música le queda?','Ponle un título y un texto para redes','¿Qué colores combinan con esto?','Explícamelo fácil'];
+IMQ.forEach(q=>{const b=document.createElement('button');b.textContent=q;b.onclick=()=>imAsk(q);$('#imch').append(b)});
+const pKey=()=>(S.get('nx-pkey','')||'').trim();
+async function pollChat(msgs,ms){let last=0;const key=pKey(),eps=[];
+ if(key)eps.push(['https://gen.pollinations.ai/v1/chat/completions',key]);eps.push(['https://gen.pollinations.ai/v1/chat/completions','']);eps.push(['https://text.pollinations.ai/openai','']);
+ for(const[u,k]of eps){for(const m of['openai','gemini']){const ctl=new AbortController(),to=setTimeout(()=>ctl.abort(),ms);
+  try{const h={'Content-Type':'application/json'};if(k)h.Authorization='Bearer '+k;
+   const r=await fetch(u,{method:'POST',headers:h,body:JSON.stringify({model:m,messages:msgs,private:true}),signal:ctl.signal});
+   if(!r.ok){last=last&&last!=404?last:r.status;if(r.status==429||r.status==401||r.status==402||r.status==403)break;continue}
+   const j=await r.json(),x=j.choices&&j.choices[0]&&j.choices[0].message&&j.choices[0].message.content;if(x&&x.trim())return{t:x.trim()}}
+  catch(e){last=last||'red'}finally{clearTimeout(to)}}}
+ return{err:last||'red'}}
+/* --- Visión local de Noryx: sin enviar la imagen a nadie --- */
+const LS={},loadJS=u=>LS[u]||(LS[u]=new Promise((ok,no)=>{const e=document.createElement('script');e.src=u;e.onload=ok;e.onerror=()=>{delete LS[u];no(new Error('no pude descargar '+u.split('/').slice(2,5).join('/')))};document.head.append(e)}));
+const TESS='https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js',TFJS='https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js',MNET='https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet@2.1.1/dist/mobilenet.min.js';
+var imCache={};let mnet=null;
+function rgb2hsl(r,g,b){r/=255;g/=255;b/=255;const M=Math.max(r,g,b),m=Math.min(r,g,b),l=(M+m)/2;let h=0,s=0;if(M!=m){const d=M-m;s=l>.5?d/(2-M-m):d/(M+m);h=M==r?(g-b)/d+(g<b?6:0):M==g?(b-r)/d+2:(r-g)/d+4;h*=60}return[h,s,l]}
+function hsl2hex(h,s,l){h=((h%360)+360)%360;const a=s*Math.min(l,1-l),f=n=>{const k=(n+h/30)%12,c=l-a*Math.max(-1,Math.min(k-3,9-k,1));return Math.round(255*c).toString(16).padStart(2,'0')};return'#'+f(0)+f(8)+f(4)}
+function colorName(r,g,b){const[h,s,l]=rgb2hsl(r,g,b);if(s<.12)return l<.2?'negro':l>.85?'blanco':'gris';
+ const n=h<15||h>=345?'rojo':h<40?'naranja':h<65?'amarillo':h<160?'verde':h<190?'turquesa':h<255?'azul':h<290?'violeta':'rosa';return n+(l<.28?' oscuro':l>.72?' claro':'')}
+function imStats(){const w=imc.width,h=imc.height,k=Math.min(1,64/Math.max(w,h)),sw=Math.max(1,Math.round(w*k)),sh=Math.max(1,Math.round(h*k)),t=document.createElement('canvas');t.width=sw;t.height=sh;const x=t.getContext('2d');x.drawImage(imc,0,0,sw,sh);
+ const d=x.getImageData(0,0,sw,sh).data,bins=new Map();let lum=0,n=0;
+ for(let i=0;i<d.length;i+=4){if(d[i+3]<128)continue;const r=d[i],g=d[i+1],b=d[i+2];lum+=.2126*r+.7152*g+.0722*b;n++;const key=(r>>5)<<6|(g>>5)<<3|(b>>5),o=bins.get(key)||{c:0,r:0,g:0,b:0};o.c++;o.r+=r;o.g+=g;o.b+=b;bins.set(key,o)}
+ const top=[...bins.values()].sort((a,b)=>b.c-a.c).map(o=>[Math.round(o.r/o.c),Math.round(o.g/o.c),Math.round(o.b/o.c),o.c]),pal=[];
+ for(const c of top){if(pal.every(p=>Math.abs(p[0]-c[0])+Math.abs(p[1]-c[1])+Math.abs(p[2]-c[2])>90))pal.push(c);if(pal.length==5)break}
+ /* colores "con carácter": ignora blanco/gris de fondo si hay algo más saturado */
+ const col=pal.filter(c=>rgb2hsl(c[0],c[1],c[2])[1]>.2),dom=(col[0]||pal[0]||[128,128,128]),[H,S,L2]=rgb2hsl(dom[0],dom[1],dom[2]);
+ return{pal,L:n?lum/n:0,H,S,col,dom,names:pal.map(c=>colorName(c[0],c[1],c[2]))}}
+function musicFor(st,labels){const L=st.L,s=st.col.length?st.S:0,h=st.H,warm=h<45||h>330,green=h>=75&&h<165,out=[],add=x=>{if(!out.includes(x))out.push(x)},lb=labels.join(' ').toLowerCase();
+ if(/seashore|sandbar|lakeside|coral|ocean|wave|dock|boat|catamaran|schooner/.test(lb)){add('Surf rock (Dick Dale)');add('Reggae suave (Bob Marley)')}
+ if(/alp|volcano|cliff|valley|mountain|promontory|geyser/.test(lb)){add('Post-rock épico (Sigur Rós)');add('Folk acústico (Bon Iver)')}
+ if(/street|traffic|taxi|bus|streetcar|stoplight|skyscraper|bridge|tower|library/.test(lb)){add('Hip-hop instrumental / lo-fi (Nujabes)');add('Electrónica urbana')}
+ if(/dog|cat|retriever|terrier|puppy|tabby|poodle|beagle|hamster|rabbit/.test(lb)){add('Indie acústico alegre')}
+ if(/pizza|burger|espresso|coffee|cup|plate|restaurant|bakery|wine|bagel|pretzel|cheese/.test(lb)){add('Bossa nova (Stan Getz y João Gilberto)');add('Jazz de cafetería (Bill Evans)')}
+ if(/car|sports|racer|convertible|motor|cab|jeep|limousine/.test(lb)){add('Synthwave (Kavinsky)');add('Rock clásico')}
+ if(/guitar|piano|violin|drum|stage|microphone|cello|harp|organ/.test(lb)){add('Música en vivo del mismo estilo del instrumento')}
+ if(L<80){if(s<.25){['Ambient (Brian Eno)','Trip-hop (Massive Attack)','Post-rock (Sigur Rós)','Lo-fi nocturno'].forEach(add)}else if(warm){['Synthwave (Kavinsky)','Rock alternativo','R&B sensual','Blues'].forEach(add)}else{['Darkwave / electrónica melódica','Ambient (Brian Eno)','Jazz de madrugada (Miles Davis)','Trip-hop'].forEach(add)}}
+ else if(L>170){if(s<.2){['Piano minimalista (Ludovico Einaudi)','Clásica ligera (Satie)','Jazz suave (Bill Evans)','Lo-fi para estudiar'].forEach(add)}else if(warm){['Pop veraniego','Funk y disco (Earth, Wind & Fire)','Reggae (Bob Marley)','Indie alegre'].forEach(add)}else if(green){['Folk acústico (Bon Iver)','Bossa nova (Stan Getz)','Ambient de naturaleza'].forEach(add)}else{['Chillout (Zero 7)','Synthpop suave','House melódico','Bossa nova'].forEach(add)}}
+ else{if(warm)['Soul (Marvin Gaye)','Indie pop','Funk suave','Jazz'].forEach(add);else if(green)['Folk','Indie acústico','Bossa nova','Ambient'].forEach(add);else['Indie / pop alternativo','Soul','Jazz moderno','Electrónica suave'].forEach(add)}
+ return out.slice(0,5)}
+const CHEM=[[/so3|h2so4|sulfon/i,'Sulfonación','El benceno reacciona con H₂SO₄ (o SO₃) y se forma un ácido sulfónico, Ar–SO₃H, más agua.'],[/hno3|nitra/i,'Nitración','Con HNO₃/H₂SO₄ se introduce –NO₂ (nitrobenceno) y sale agua.'],[/febr3|br2/i,'Bromación','Br₂ con FeBr₃ introduce Br en el anillo (bromobenceno) y se libera HBr.'],[/alcl3/i,'Catálisis con AlCl₃','AlCl₃ es el ácido de Lewis típico de Friedel-Crafts (alquilación/acilación) o de la cloración con Cl₂; se libera HCl.']];
+function ocrReport(tx){const lines=tx.split('\n').map(l=>l.trim()).filter(l=>l.length>1);if(!lines.length)return'No encontré texto legible en la imagen. Prueba con una foto más nítida, recta y con buena luz.';
+ const out=['**Texto que leí:**\n```\n'+lines.join('\n')+'\n```'],sol=[];
+ lines.forEach(l=>{if(l.length>80||!/\d|x/i.test(l)||!/[=+\-*/^]/.test(l)||/[a-z]{3,}/i.test(l.replace(/sqrt|raiz/gi,'')))return;const e=l.replace(/[×·]/g,'*').replace(/[−–]/g,'-');let r=null;try{r=algebra(e)||calc(e)}catch(x){}if(r&&typeof r=='string')sol.push('- `'+l+'` → '+r.replace(/\n/g,' ')) });
+ if(sol.length)out.push('**Operaciones que pude resolver con mi núcleo de cálculo:**\n'+sol.join('\n'));
+ const hit=CHEM.filter(c=>c[0].test(tx));
+ if(hit.length){out.push('**Química orgánica (reglas de Noryx):**\n'+hit.map(c=>'- **'+c[1]+':** '+c[2]).join('\n'));
+  const meta=(tx.match(/NO2|NO₂|\bCN\b|COOH|CHO\b|SO3H|CF3/g)||[]),op=(tx.match(/CH3|CH₃|\bOH\b|NH2|NH₂|OCH3/g)||[]);
+  if(meta.length||op.length)out.push('**Dónde entra el siguiente grupo:** '+(meta.length?'['+[...new Set(meta)].join(', ')+'] son desactivantes y dirigen a **meta**. ':'')+(op.length?'['+[...new Set(op)].join(', ')+'] son activantes y dirigen a **orto/para**. ':'')+'Compara con lo que dibujaste: yo puedo leer rótulos, pero no puedo ver en qué posición del anillo pusiste cada grupo.')}
+ return out.join('\n\n')}
+
+async function imRecog(say){if(imCache.rec)return imCache.rec;say('Cargando el reconocedor de imágenes… (la primera vez baja ~15 MB)');await loadJS(TFJS);await loadJS(MNET);if(!mnet)mnet=await mobilenet.load({version:2,alpha:1.0});say('Mirando la imagen…');
+ const t=document.createElement('canvas');t.width=imc.width;t.height=imc.height;const x=t.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,t.width,t.height);x.drawImage(imc,0,0);
+ return imCache.rec=(await mnet.classify(t,5)).filter(p=>p.probability>.04).map(p=>({n:p.className.split(',')[0].trim(),p:Math.round(p.probability*100)}))}
+async function imOcr(say){if(imCache.ocr!=null)return imCache.ocr;say('Cargando el lector de texto… (la primera vez baja unos 10 MB)');await loadJS(TESS);
+ const k=Math.min(3,Math.max(1,1800/Math.max(imc.width,imc.height))),t=document.createElement('canvas');t.width=Math.round(imc.width*k);t.height=Math.round(imc.height*k);const x=t.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,t.width,t.height);x.drawImage(imc,0,0,t.width,t.height);
+ const r=await Tesseract.recognize(t,'spa+eng',{logger:m=>{say(m.status=='recognizing text'?'Leyendo el texto… '+Math.round(m.progress*100)+' %':'Preparando el lector de texto…')}});
+ return imCache.ocr=(r.data.text||'').trim()}
+async function localVision(q,wait){const n=norm(q),say=m=>{wait.textContent=m},st=imStats(),tone=st.L<70?'oscura':st.L>185?'muy clara':st.L>130?'clara':'equilibrada';
+ const music=/music|cancion|playlist|escuchar|soundtrack/.test(n),cap=/titulo|redes|instagram|caption|pie de foto|publicar/.test(n),colr=!music&&/color|paleta|combin|decor/.test(n),
+  ocr=!music&&!cap&&!colr&&/transcrib|\blee\b|leer|texto|dice|ecuacion|ejercicio|resuelv|respuesta|esta bien|correg|tarea|problema|formula|reaccion|escrit/.test(n);
+ if(ocr)return ocrReport(await imOcr(say))+'\n\n*Lectura hecha en tu navegador; la letra manuscrita o muy pequeña puede salir con errores.*';
+ let rec=[],note='';try{rec=await imRecog(say)}catch(e){note='\n\n*No pude cargar el reconocedor de imágenes ('+(e&&e.message||'error')+'); me guío solo por colores y luz.*'}
+ const names=[...new Set(st.names)].slice(0,3),seen=rec.map(r=>r.n);
+ if(music){const m=musicFor(st,seen);return'**Música que le queda**, según sus colores ('+names.join(', ')+'), su luz '+tone+(seen.length?' y lo que reconozco ('+seen.slice(0,3).join(', ')+')':'')+':\n'+m.map(x=>'- '+x).join('\n')+'\n\n*Es una sugerencia por reglas propias de Noryx (color, luz y objetos), no un gusto personal.*'+note}
+ if(colr){const d=st.dom,[h,s,l]=rgb2hsl(d[0],d[1],d[2]),hex=c=>'#'+c.slice(0,3).map(v=>v.toString(16).padStart(2,'0')).join('');return'**Colores de la imagen:** '+st.pal.map(hex).join(', ')+' (domina el **'+colorName(d[0],d[1],d[2])+'**).\n\n**Combinan bien con ella:**\n- Complementario: `'+hsl2hex(h+180,Math.max(s,.4),l)+'`\n- Análogos: `'+hsl2hex(h-30,Math.max(s,.4),l)+'` y `'+hsl2hex(h+30,Math.max(s,.4),l)+'`\n- Neutros: `'+hsl2hex(h,.08,.95)+'` (casi blanco) y `'+hsl2hex(h,.12,.15)+'` (casi negro)'+note}
+ if(cap){const c1=names[0]||'color',c2=names[1]&&names[1]!=c1?names[1]:'',tt='Tonos de '+c1+(c2?' y '+c2:''),tags=['#'+c1.replace(/\s+/g,''),c2?'#'+c2.replace(/\s+/g,''):'','#luz'+tone.replace(/\s+/g,'')].filter(Boolean).join(' ');
+  return'**Título:** '+tt+'\n\n**Texto:** Una imagen de luz '+tone+' con predominio de '+c1+(c2?' y '+c2:'')+(seen[0]?' (parece haber: '+seen[0]+')':'')+'.\n\n'+tags+'\n\n*Sin entender la escena completa, me baso en colores y objetos; edítalo a tu gusto.*'+note}
+ return'**Creo que veo:**\n'+(rec.length?rec.map(r=>'- '+r.n+' ('+r.p+' %)').join('\n'):'- Nada que pueda nombrar con seguridad.')+'\n\n**Colores:** '+names.join(', ')+' · luz '+tone+'.\n\n*Mi reconocedor local nombra objetos en inglés y solo conoce unas mil categorías. Si hay texto o un ejercicio, pídeme «transcribe el texto».*'+note}
+
+let imHist=[],imBusy=false,imSnap='';
+const imEl=(c,h)=>{const d=document.createElement('div');d.className='qa '+c;d.innerHTML=h;$('#imo').append(d);return d};
+async function imAsk(q){q=(q||$('#imq').value).trim();if(!orig||!q||imBusy)return;imBusy=true;$('#imd').disabled=true;$('#imq').value='';
+ if(!imHist.length){const k=Math.min(1,1024/Math.max(imc.width,imc.height)),t=document.createElement('canvas');t.width=Math.round(imc.width*k);t.height=Math.round(imc.height*k);const x=t.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,t.width,t.height);x.drawImage(imc,0,0,t.width,t.height);imSnap=t.toDataURL('image/jpeg',.8)}
+ imHist.push({role:'user',text:q});imEl('q',esc(q));const wait=imEl('a','Mirando la imagen…');wait.scrollIntoView({block:'nearest',behavior:'smooth'});
+ const msgs=[{role:'system',content:SYSI},...imHist.slice(-8).map((m,i,arr)=>m.role=='user'&&m===imHist.find(z=>z.role=='user')?{role:'user',content:[{type:'text',text:m.text},{type:'image_url',image_url:{url:imSnap}}]}:{role:m.role,content:m.text})];
+ /* la imagen siempre va en el primer mensaje del hilo enviado */
+ while(msgs.length>1&&msgs[1].role!='user')msgs.splice(1,1);const fi=msgs.findIndex(m=>m.role=='user');if(fi>0&&!Array.isArray(msgs[fi].content))msgs[fi]={role:'user',content:[{type:'text',text:msgs[fi].content},{type:'image_url',image_url:{url:imSnap}}]};
+ let r;if(S.get('nx-veng','local')=='local'){try{r={t:await localVision(q,wait)}}catch(e){r={err:'local',msg:e&&e.message}}}else r=await pollChat(msgs,60000);const ans=r.t||'';
+ if(ans){imHist.push({role:'assistant',text:ans});wait.innerHTML=md(ans)}
+ else{imHist.pop();wait.textContent=r.err=='local'?('No pude cargar el motor local de Noryx'+(r.msg?' ('+r.msg+')':'')+'. La primera vez descarga modelos pequeños: revisa tu conexión y vuelve a intentar.'):r.err==401||r.err==402||r.err==403?'Pollinations ahora pide una clave gratuita para analizar imágenes. Pega tu clave pk_ abajo, en «Conexión con Pollinations» (se consigue gratis en enter.pollinations.ai) y vuelve a preguntar.':r.err==429?'El servicio de visión está saturado ahora mismo. Espera unos segundos y vuelve a preguntar.':'No pude contactar al servicio de visión'+(r.err?' (error '+r.err+')':'')+'. Revisa tu conexión o pega tu clave en «Conexión con Pollinations» e inténtalo de nuevo.'}
+ wait.scrollIntoView({block:'nearest',behavior:'smooth'});imBusy=false;$('#imd').disabled=false}
+$('#imd').onclick=()=>imAsk();$('#imq').addEventListener('keydown',e=>{if(e.key=='Enter'){e.preventDefault();imAsk()}});
+
+/* --- Crear --- */
+const MKS={real:'photorealistic, highly detailed, natural lighting',ilus:'digital illustration, vibrant colors, clean lines',anime:'anime style, detailed, soft shading',oleo:'oil painting, textured brush strokes',pixel:'pixel art, 16-bit, retro game style',tres:'3D render, soft studio lighting, high detail',boceto:'pencil sketch, black and white, hand drawn'},MKZ={sq:[1024,1024],ho:[1280,720],ve:[720,1280]};
+let mkLast=null,mkBusy=false;
+const mkLoad=(url,ms)=>new Promise((ok,no)=>{const im=new Image(),t=setTimeout(()=>{im.src='';no(0)},ms);im.onload=()=>{clearTimeout(t);ok(im)};im.onerror=()=>{clearTimeout(t);no(1)};im.src=url});
+function mkArt(p,w,h){const k=768/Math.max(w,h),c=document.createElement('canvas');c.width=Math.round(w*k);c.height=Math.round(h*k);const x=c.getContext('2d');let a=0;for(const ch of p)a=(a*31+ch.charCodeAt(0))>>>0;
+ const R=()=>{let t=a+=0x6D2B79F5;t=Math.imul(t^t>>>15,t|1);t^=t+Math.imul(t^t>>>7,t|61);return((t^t>>>14)>>>0)/4294967296},h0=R()*360,g=x.createLinearGradient(0,0,c.width,c.height);
+ g.addColorStop(0,'hsl('+h0+',70%,18%)');g.addColorStop(1,'hsl('+(h0+60)+',80%,45%)');x.fillStyle=g;x.fillRect(0,0,c.width,c.height);
+ for(let i=0;i<40;i++){x.globalAlpha=.08+R()*.22;x.fillStyle='hsl('+(h0+R()*120)+',80%,'+(40+R()*35)+'%)';x.beginPath();x.arc(R()*c.width,R()*c.height,20+R()*c.width*.22,0,7);x.fill()}
+ x.globalAlpha=.5;x.lineWidth=2;for(let i=0;i<14;i++){x.strokeStyle='hsl('+(h0+R()*160)+',90%,75%)';x.beginPath();let px=R()*c.width,py=R()*c.height;x.moveTo(px,py);for(let j=0;j<30;j++){px+=(R()-.3)*28;py+=(R()-.5)*28;x.lineTo(px,py)}x.stroke()}
+ x.globalAlpha=1;return c}
+const mkHist=()=>{const h=S.get('nx-imgp',[]);$('#mkh').innerHTML='';h.forEach(q=>{const b=document.createElement('button');b.textContent=q;b.title=q;b.onclick=()=>{$('#mkp').value=q};$('#mkh').append(b)})};mkHist();
+async function mkGo(){const p=$('#mkp').value.trim().slice(0,400);if(!p){toast('Describe la imagen que quieres');return}if(mkBusy)return;mkBusy=true;$('#mkb').disabled=$('#mkv').disabled=true;$('#mka').hidden=true;
+ const [w,h]=MKZ[$('#mkz').value],seed=Math.floor(Math.random()*1e6),full=p+', '+MKS[$('#mks').value],out=$('#mko'),ms=$('#mkst');out.textContent='';let im=null,url='';
+ const key=pKey(),qs=m=>'?width='+w+'&height='+h+'&seed='+seed+'&nologo=true&model='+m,P=encodeURIComponent(full),tries=[];if(key)tries.push('https://gen.pollinations.ai/image/'+P+qs('flux')+'&key='+encodeURIComponent(key));tries.push('https://image.pollinations.ai/prompt/'+P+qs('flux'),'https://image.pollinations.ai/prompt/'+P+qs('turbo'));
+ for(let i=0;i<tries.length&&!im;i++){url=tries[i];ms.textContent=i==0?'Creando tu imagen… puede tardar unos segundos.':'Probando otro servidor…';try{im=await mkLoad(url,70000)}catch(e){}}
+ if(im){im.alt=p;out.replaceChildren(im);mkLast={url,local:false};ms.textContent=''}
+ else{const c=mkArt(p,w,h);out.replaceChildren(c);mkLast={local:true,canvas:c};ms.textContent='El generador externo no respondió'+(key?'.':' (ahora suele pedir una clave gratuita: pégala abajo en «Conexión con Pollinations»).')+' Te dejo arte generativo local inspirado en tu texto; no es una ilustración fiel.'}
+ const hs=[p,...S.get('nx-imgp',[]).filter(q=>q!=p)].slice(0,8);S.set('nx-imgp',hs);mkHist();
+ $('#mka').hidden=false;mkBusy=false;$('#mkb').disabled=$('#mkv').disabled=false}
+$('#mkb').onclick=mkGo;$('#mkv').onclick=mkGo;
+$('#mkd').onclick=async()=>{if(!mkLast)return;if(mkLast.local){mkLast.canvas.toBlob(b=>b&&dl(b,'noryx-arte.png'));return}
+ try{const r=await fetch(mkLast.url);if(!r.ok)throw 0;dl(await r.blob(),'noryx-creacion.jpg')}catch(e){window.open(mkLast.url,'_blank','noopener');toast('Se abrió la imagen: mantén pulsado o clic derecho para guardarla')}};
+paintPro();
+renderAll();
+</script>
+</body>
+</html>
