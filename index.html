@@ -731,7 +731,7 @@ async function send(t){t=(t||'').trim();if(!t||busy)return;$('#in').value='';fit
  if(gate(t))return;
  let m;if((m=t.match(/^\/(\w+)\s*(.*)$/))){const k=m[1].toLowerCase();
   if(k=='mic'||k.startsWith('micr')){mdOpen();return}
-  if(k=='noryx'||k=='puente'||k=='atajo'||k=='rutina'){if(k!='puente')echoU(t);await noryxEntry(k,m[2]);return}
+  if(k=='noryx'||k=='puente'||k=='atajo'||k=='rutina'||k=='ytkey'){if(k!='puente')echoU(t);await noryxEntry(k,m[2]);return}
   if(k=='jarvis'){echoU(t);sysMsg('El comando ahora es `/noryx`.','Noryx');return}
   if(k=='solicitar'){echoU(t);await requestAccess(m[2]);return}
   if(k=='acceso'){echoU(t);await showAccess();return}
@@ -1163,6 +1163,77 @@ async function jvPhysical(nm,on){const who=jvWho(),scr=/\b(monitor|pantalla|disp
  const ej=scr?'monitor':nm;
  return jvR('No puedo '+(on?'encender':'apagar')+' '+nm+' directamente desde el navegador, '+who+'. Si lo enlaza con un puente, lo hago.'+extra,{m:'Noryx · límite honesto',show:'Un navegador no tiene acceso al hardware. Para esto crea un «puente»: un webhook (Home Assistant, IFTTT, Shelly, Tuya…) que encienda o apague el aparato.\nEjemplo: /puente '+ej+' on https://tu-webhook-encender\n         /puente '+ej+' off https://tu-webhook-apagar'+extra})}
 
+/* ---- YouTube: buscar, «el más reciente de…», recomendar ---- */
+const YTSP={fecha:'CAISAhAB',vistas:'CAMSAhAB',canal:'EgIQAg%3D%3D',vivo:'EgJAAQ%3D%3D',corto:'EgIYAQ%3D%3D',largo:'EgIYAg%3D%3D',semana:'EgIIAw%3D%3D',hoy:'EgIIAg%3D%3D',lista:'EgIQAw%3D%3D'};
+const ytUrl=(q,sp)=>'https://www.youtube.com/results?search_query='+encodeURIComponent(q)+(sp?'&sp='+sp:'');
+const ytWatch=id=>'https://www.youtube.com/watch?v='+id;
+const ytKey=()=>S.get('nx-ytkey','');
+const ytDec=t=>String(t||'').replace(/&quot;/g,'"').replace(/&#39;/g,"'").replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>');
+async function ytApi(path,params){const k=ytKey();if(!k)return null;try{const r=await fetch('https://www.googleapis.com/youtube/v3/'+path+'?'+new URLSearchParams({...params,key:k}));if(!r.ok)return null;return await r.json()}catch(e){return null}}
+const ytTitle=s=>s.replace(/\b\w/g,c=>c.toUpperCase());
+function ytClean(q){return q.replace(/\b(?:por favor|porfa|en youtube|de youtube|en yt|youtube|el video|un video|videos?|el canal de|canal de|del youtuber|de el youtuber|el youtuber|youtuber)\b/g,' ').replace(/\s+/g,' ').trim()}
+function ytOpenR(u,say,show,chips,log){const ok=jvOpen(u),who=jvWho();return jvR(say+(ok?'':' El navegador bloqueó la ventana; toque el botón.'),{chips:[{label:'▶ Abrir en YouTube',href:u},...(chips||[])],log:'▶ '+log,m:'Noryx · YouTube',show:show||say})}
+const YTMOODS=[
+ {k:/divertid|gracios|comedi|risa|reir|chistos/,n:'algo divertido',q:['los mejores momentos de comedia','videos graciosos que te harán reír','stand up comedia mexicana completa','bloopers y momentos graciosos']},
+ {k:/relaj|calma|tranquil|dormir|descans/,n:'algo relajante',q:['paisajes relajantes 4k con música','lofi para relajarse','sonidos de lluvia para dormir','documental de naturaleza relajante']},
+ {k:/document|aprender|ensen|cultura|interesan|curios/,n:'un documental o algo para aprender',q:['documental corto interesante','datos curiosos que no sabías','como funciona el universo documental','historia que no te contaron']},
+ {k:/miedo|terror|suspenso|misterio|paranormal|creepy/,n:'algo de misterio',q:['casos misteriosos sin resolver','historias de terror reales','misterios de internet explicados','lugares abandonados exploracion']},
+ {k:/cocin|receta|comida|food/,n:'algo de cocina',q:['recetas faciles y rapidas mexicanas','street food mexico tour','chef reta cocinar en casa','comida callejera del mundo']},
+ {k:/tecnolog|gadget|celular|compu|ia|inteligencia artificial|programa/,n:'algo de tecnología',q:['lo ultimo en inteligencia artificial explicado','review de gadgets del año','tecnologia que cambiara el futuro','setup gamer tour']},
+ {k:/gaming|juego|videojuego|gamer|gameplay/,n:'algo de videojuegos',q:['mejores momentos gaming del año','gameplay épico sin comentarios','speedrun increible','retro gaming documental']},
+ {k:/motiva|inspira|supera|exito|reflexi/,n:'algo motivador',q:['discurso motivacional en español','historias de superación reales','habitos para cambiar tu vida','entrevista inspiradora']},
+ {k:/musica|cancion|concierto|rola/,n:'música',q:['conciertos completos en vivo','sesiones acusticas en vivo','mejores canciones en español playlist','tiny desk concert']},
+ {k:/deporte|futbol|nba|box|gol/,n:'algo de deportes',q:['mejores jugadas de la historia','goles imposibles resumen','documental deportivo','entrevistas a leyendas del deporte']},
+ {k:/ciencia|espacio|universo|fisica|nasa/,n:'algo de ciencia',q:['ciencia explicada de forma sencilla','misterios del universo','experimentos cientificos increibles','lo que descubrio la nasa']},
+ {k:/viaj|turismo|mundo|lugares/,n:'algo de viajes',q:['viaje por mexico tour completo','los lugares mas bonitos del mundo 4k','vlog de viaje increible','pueblos magicos que visitar']}];
+const YTANY=['experimentos sociales en la calle','retos locos que salieron bien','los mejores momentos de youtube en español','historias increibles que parecen mentira','videos que te harán el día','documentales cortos que enganchan','cosas curiosas que no sabías del mundo','momentos virales mas graciosos','mejores cortometrajes animados','vlogs de aventuras extremas','comedia en español para reír sin parar','datos curiosos mexico','talentos increibles sorprenden al jurado'];
+const ytPick=a=>a[Math.floor(Math.random()*a.length)];
+async function ytRecommend(txt){const who=jvWho();let mood=YTMOODS.find(x=>x.k.test(txt));const q=ytPick(mood?mood.q:YTANY),what=mood?mood.n:'algo entretenido';
+ const d=await ytApi('search',{part:'snippet',q,type:'video',maxResults:'15',order:'relevance',regionCode:'MX',relevanceLanguage:'es',videoEmbeddable:'true',safeSearch:'moderate'});
+ const it=d&&d.items&&d.items.length?ytPick(d.items):null;
+ if(it){const u=ytWatch(it.id.videoId),t=ytDec(it.snippet.title),c=ytDec(it.snippet.channelTitle);
+  return ytOpenR(u,'Le recomiendo «'+t+'», de '+c+'. Se lo abro, '+who+'.','Recomendación ('+what+'): '+t+'\nCanal: '+c+'\n'+u,[{label:'🎲 Otro distinto',fn:()=>jvInput('recomiendame otro video '+(mood?txt:'entretenido'))}],t.slice(0,60))}
+ const u=ytUrl(q,YTSP.vistas);
+ return ytOpenR(u,'Le busco '+what+', '+who+': «'+q+'». Le abro los más vistos.','Búsqueda recomendada ('+what+'): «'+q+'», ordenada por popularidad.\nTip: con /ytkey abro directo un video concreto en vez de los resultados.',[{label:'🎲 Otra sugerencia',fn:()=>jvInput('recomiendame otro video '+(mood?txt:'entretenido'))}],q)}
+async function ytLatest(name){const who=jvWho();let u=ytUrl(name,YTSP.fecha);
+ const ch=await ytApi('search',{part:'snippet',q:name,type:'channel',maxResults:'1'});
+ const c=ch&&ch.items&&ch.items[0];
+ if(c){const cid=c.snippet.channelId||c.id.channelId,cn=ytDec(c.snippet.channelTitle),
+  v=await ytApi('search',{part:'snippet',channelId:cid,type:'video',order:'date',maxResults:'1'}),it=v&&v.items&&v.items[0];
+  if(it){const t=ytDec(it.snippet.title),f=new Date(it.snippet.publishedAt).toLocaleDateString('es-MX',{day:'numeric',month:'long'});
+   return ytOpenR(ytWatch(it.id.videoId),'El más reciente de '+cn+' es «'+t+'», publicado el '+f+'. Se lo pongo, '+who+'.','Último video de '+cn+': '+t+' ('+f+')\n'+ytWatch(it.id.videoId),[{label:'📺 Canal',href:'https://www.youtube.com/channel/'+cid},{label:'📅 Más recientes',href:'https://www.youtube.com/channel/'+cid+'/videos'}],cn+' · '+t.slice(0,50))}}
+ return ytOpenR(u,'Abriendo los videos más recientes de '+ytTitle(name)+', '+who+'. Ya van ordenados por fecha.','Resultados de «'+name+'» ordenados por fecha de subida.'+(ytKey()?'':'\nTip: con /ytkey TU_CLAVE (YouTube Data API, gratis) abro directo el último video del canal.'),[{label:'📺 Buscar el canal',href:ytUrl(name,YTSP.canal)}],name+' · más reciente')}
+async function ytCmd(n,raw){const who=jvWho();let q,m;
+ /* recomendaciones */
+ if(/\b(?:recomiend\w*|sugier\w*|sugerenc\w*|aconsej\w*|ponme algo|pon algo|algo para ver|que (?:video )?(?:puedo|veo|vemos)|dame un video|ensename un video|sorprendeme|estoy aburrid\w*)\b/.test(n)&&/\b(?:video|videos|youtube|yt|ver|veo|vemos|entreten\w*|divertid\w*|document\w*|aburrid\w*|sorprend\w*)\b/.test(n)&&(/\b(?:video|videos|youtube|yt)\b/.test(n)||!/\b(?:pelicula|peliculas|serie|series|libro|libros|musica|cancion|canciones|juego|juegos|restaurante|anime|podcast|app)\b/.test(n)))return ytRecommend(n);
+ /* el más reciente / último video de X */
+ if(/\b(?:video|videos|youtube|youtuber|yt|canal|vlog|episodio|subio|publico|ponme|pon|reproduce|reproduceme|muestrame|ensename|quiero ver)\b/.test(n)&&(m=n.match(/\b(?:(?:el|la|los|las)\s+)?(?:mas\s+reciente|ultimo|ultima|nuevo|nueva|recien\s+subido|recien\s+salido|mas\s+nuevo)s?\s+(?:video|videos|vlog|episodio|upload|subida)?\s*(?:de|del|por)\s+(.+)$/)||n.match(/\b(?:video|videos|vlog|episodio)\s+(?:mas\s+reciente|ultimo|nuevo|mas\s+nuevo)\s+(?:de|del)\s+(.+)$/)||n.match(/^(?:que\s+)?(?:subio|publico|saco)\s+(?:hoy\s+|ultimamente\s+|recientemente\s+)?(.+)$/))){const nm=ytClean(m[1].replace(/\b(?:hoy|ultimamente|recientemente|ahorita|ahora)\b/g,' '));if(nm)return ytLatest(nm)}
+ /* canal */
+ if(m=n.match(/^(?:abre|abreme|ve a|ir a|muestrame|ensename|busca|buscame|pon|ponme)\s+(?:el\s+)?canal\s+(?:de\s+)?(.+?)(?:\s+(?:en|de)\s+youtube)?$/)){const nm=ytClean(m[1]);if(nm)return ytOpenR(ytUrl(nm,YTSP.canal),'Abriendo el canal de '+ytTitle(nm)+', '+who+'.',null,null,'canal '+nm)}
+ /* en vivo */
+ if(m=n.match(/^(?:busca|buscame|pon|ponme|abre|muestrame)\s+(?:un\s+)?(?:en\s+vivo|directo|live|stream|transmision)\s+(?:de\s+)?(.+?)(?:\s+en\s+youtube)?$/)){const nm=ytClean(m[1]);if(nm)return ytOpenR(ytUrl(nm,YTSP.vivo),'Buscando transmisiones en vivo de '+nm+', '+who+'.',null,null,'vivo '+nm)}
+ /* búsqueda directa de video: «busca/pon/reproduce X en youtube», «youtube X» */
+ const wantsYT=/\b(?:en|de|por|desde|con|on)\s+(?:youtube|yt)\b|^(?:youtube|yt)\s+\S/.test(n);
+ if(wantsYT||/\b(?:video|videos|trailers?|tutoriales?|clips?|entrevistas?|capitulos?|episodios?|documentales?|stand up|reaccion\w*)\b/.test(n)&&/^(?:busca|buscame|pon|ponme|reproduce|reproduceme|muestrame|ensename|quiero ver|quiero mirar|play|ver)\b/.test(n)){
+  m=n.match(/^(?:busca|buscame|pon|ponme|pones|reproduce|reproduceme|muestrame|ensename|quiero ver|quiero mirar|quiero escuchar|play|ver|abre|youtube|yt)\s+(?:en\s+youtube\s+)?(.+)$/);
+  let s=ytClean(m?m[1]:n);
+  if(/\b(?:musica|cancion|canciones|playlist|disco|album|rolas?|lofi)\b/.test(s)&&!/\bvideo\b/.test(n))return null;
+  s=s.replace(/^(?:el|la|los|las|un|una)\s+(?=\S)/,'').trim();
+  let sp=null,tag='';
+  if(/\b(?:en vivo|directo|live)\b/.test(s)&&!/concierto/.test(s)){sp=YTSP.vivo;tag=' en vivo'}
+  else if(/\b(?:de hoy|hoy)\b$/.test(s)){sp=YTSP.hoy;s=s.replace(/\bhoy$/,'').replace(/\bde$/,'').trim();tag=' de hoy'}
+  else if(/\besta semana\b/.test(s)){sp=YTSP.semana;s=s.replace(/\besta semana\b/,'').trim();tag=' de esta semana'}
+  else if(/\b(?:mas vistos?|mas populares?|mas famosos?)\b/.test(s)){sp=YTSP.vistas;s=s.replace(/\b(?:los\s+)?mas (?:vistos?|populares?|famosos?)\b(?:\s+de)?/,'').trim()}
+  else if(/\b(?:cortos?|rapidos?)\b$/.test(s)){sp=YTSP.corto}
+  else if(/\b(?:completos?|largos?)\b$/.test(s)&&!/documental/.test(s)){sp=YTSP.largo}
+  if(!s)return ytOpenR('https://www.youtube.com','Abriendo YouTube, '+who+'.',null,null,'YouTube');
+  const dir=/^(?:pon|ponme|reproduce|reproduceme|play|quiero ver|quiero mirar)\b/.test(n);
+  if(dir&&ytKey()){const d=await ytApi('search',{part:'snippet',q:s,type:'video',maxResults:'1',regionCode:'MX'}),it=d&&d.items&&d.items[0];
+   if(it){const t=ytDec(it.snippet.title);return ytOpenR(ytWatch(it.id.videoId),'Poniendo «'+t+'», '+who+'.','Reproduciendo: '+t+'\nCanal: '+ytDec(it.snippet.channelTitle),[{label:'🔎 Ver más resultados',href:ytUrl(s)}],t.slice(0,60))}}
+  const u=ytUrl(s,sp),lucky='https://www.google.com/search?btnI=1&q='+encodeURIComponent('site:youtube.com/watch '+s);
+  return ytOpenR(u,(dir?'Buscando ':'Buscando ')+'«'+s+'»'+tag+' en YouTube, '+who+'.','Resultados de YouTube para «'+s+'»'+tag+'.\nSi quieres que abra directo el primer video, guarda una clave con /ytkey.',[{label:'🍀 Primer resultado',href:lucky}],s)}
+ return null}
+
 /* ---- resúmenes ---- */
 async function jvStatus(){const b=await jvBatt(),cn=navigator.connection&&navigator.connection.effectiveType,who=jvWho();
  const l=['Núcleo: '+H+' neuronas · '+ACC+' % de precisión','Batería: '+(b?b.p+' %'+(b.c?' (cargando)':''):'no disponible en este navegador'),'Red: '+(navigator.onLine?'conectado'+(cn?' ('+cn+')':''):'sin conexión'),'Memoria: '+mem.taught.length+' enseñanzas','Temporizadores activos: '+JV.timers.length,'Maestro externo: '+(MAESTRO?'activo':'apagado')];
@@ -1178,7 +1249,7 @@ async function jvBrief(n){const d=new Date(),h=d.getHours(),b=await jvBatt(),tk=
 async function jvRoutine(name,steps){const ch=[],out=[];for(const s of steps.slice(0,10)){const r=await jvCmd(s,jvPlain(s).replace(/[^a-z0-9 ]/g,' ').trim(),true);if(r){(r.chips||[]).forEach(c=>ch.push(c));out.push('• '+(r.show||r.say))}else out.push('• ?'+s);await sleep(400)}
  return jvR('Rutina '+name+' ejecutada, '+jvWho()+'.',{chips:ch,show:'Rutina «'+name+'»:\n'+out.join('\n'),m:'Noryx · rutina'})}
 
-const JHELP='Esto puedo hacer en modo Noryx:\n• Sitios: «abre YouTube», «abre github.com»\n• Música: «pon música de Soda Stereo», «reproduce jazz en YouTube», «abre Spotify y pon lofi»\n• Buscar: «busca recetas de pozole», «cómo llego a la Torre Eiffel»\n• Tiempo: «temporizador de 10 minutos», «recuérdame en 20 minutos que saque la ropa», «pomodoro»\n• Notas y tareas: «anota que compré leche», «agrega pan a mi lista», «qué tengo pendiente», «completa la tarea 2»\n• Sistema: «diagnóstico», «batería», «mantén la pantalla encendida», «pantalla completa», «modo claro»\n• Aparatos: «enciende el monitor» (con /puente)\n• Rutinas: «buenos días», «modo trabajo» (con /rutina)\n• Extras: tira un dado, lanza una moneda, copia un texto, habla más rápido\n• Y charlamos de lo que quieras.';
+const JHELP='Esto puedo hacer en modo Noryx:\n• Sitios: «abre YouTube», «abre github.com»\n• YouTube: «busca luisito comunica en youtube», «ponme el video más reciente de Fernanfloo», «recomiéndame un video entretenido» (o «divertido», «relajante», «documental», «de terror»…), «abre el canal de Mark Rober», «en vivo de noticias»; con /ytkey abro el video directo\n• Música: «pon música de Soda Stereo», «reproduce jazz en YouTube», «abre Spotify y pon lofi»\n• Buscar: «busca recetas de pozole», «cómo llego a la Torre Eiffel»\n• Tiempo: «temporizador de 10 minutos», «recuérdame en 20 minutos que saque la ropa», «pomodoro»\n• Notas y tareas: «anota que compré leche», «agrega pan a mi lista», «qué tengo pendiente», «completa la tarea 2»\n• Sistema: «diagnóstico», «batería», «mantén la pantalla encendida», «pantalla completa», «modo claro»\n• Aparatos: «enciende el monitor» (con /puente)\n• Rutinas: «buenos días», «modo trabajo» (con /rutina)\n• Extras: tira un dado, lanza una moneda, copia un texto, habla más rápido\n• Y charlamos de lo que quieras.';
 
 /* ---- intérprete de órdenes: devuelve null si no es una orden (entonces se charla) ---- */
 const JSPLIT=/\s+(?:y\s+)?(?:luego|despues|ademas|y despues)\s+|\s+y\s+(?=(?:abre|abrir|pon|ponme|reproduce|toca|busca|enciende|prende|apaga|activa|desactiva|anota|apunta|recuerdame|avisame|temporizador|cambia|dime|cuentame|agrega|manten|tira|lanza)\b)/;
@@ -1252,6 +1323,8 @@ async function jvCmd(raw,pm,ns){
  if(m=n.match(/^(?:dame\s+)?(?:un\s+)?numero aleatorio(?:\s+entre\s+(\d+)\s+y\s+(\d+))?$/)){let a=+m[1]||1,b=+m[2]||100;if(a>b)[a,b]=[b,a];return R('El número es '+(a+Math.floor(Math.random()*(b-a+1)))+'.')}
  if(q=X(/^(?:copia|copiame)\s+(?:esto\s*|al portapapeles\s*)?(.+)$/)){const tx=q[1];let ok=false;try{await navigator.clipboard.writeText(tx);ok=true}catch(e){}return ok?R('Copiado al portapapeles.'):R('El navegador no me deja copiar sin un toque suyo. Use el botón.',{chips:[{label:'📋 Copiar',fn:()=>navigator.clipboard.writeText(tx).then(()=>toast('Copiado'),()=>toast('No se pudo copiar'))}]})}
  if(T(/^(?:pausa|pausar|pausa la musica|reanuda|reanuda la musica|continua la musica|siguiente cancion|cancion siguiente|cancion anterior|salta (?:la )?cancion|sube el volumen|baja el volumen|sube volumen|baja volumen|mutea|silencia la musica)$/))return R('Desde el navegador no puedo controlar la reproducción ni el volumen de otras aplicaciones, '+who+'. Para eso necesitaría conectar la API de Spotify o un puente.',{m:'Noryx · límite honesto'});
+ /* YouTube */
+ {const yr=await ytCmd(n,raw);if(yr)return yr}
  /* música */
  if(m=n.match(/^(reproduce|reproduceme|toca|tocame|quiero escuchar|quiero oir|play|escuchar|pon|ponme|pones)\s+(.+)$/)){let rest=m[2],pv=null;const pm2=rest.match(/\s+(?:en|on|por|con|desde)\s+(spotify|youtube music|yt music|youtube|apple music|deezer)$/);if(pm2){pv=pm2[1]=='yt music'?'youtube music':pm2[1];rest=rest.slice(0,pm2.index)}
   const soft=/^(?:pon|ponme|pones)$/.test(m[1]),musical=/\b(?:musica|cancion|canciones|playlist|album|disco|algo de|algo para|tema de|temazo|rola|rolas|lofi|jazz|rock|salsa|cumbia|reggaeton|clasica|pop|rap)\b/.test(rest);
@@ -1334,6 +1407,11 @@ function jvAdmin(k,a){a=(a||'').trim();let m;const J='Noryx';
   if(m=a.match(/^(.+?)\s+(on|off|encender|apagar)\s+(https?:\/\/\S+)$/i)){const x=norm(m[1]),act=/^(?:on|encender)$/i.test(m[2])?'on':'off';B[x]=B[x]||{};B[x][act]=m[3];S.set('nx-jbridge',B);return sysMsg('✅ Puente «'+x+'» ('+act+') guardado. Envío un POST con {"accion":"'+act+'"}; si pones {accion} en la URL lo reemplazo por on/off.'+(/^http:/i.test(m[3])&&location.protocol=='https:'?'\n⚠ Esta página está en https: el navegador bloqueará esa dirección http.':''),J)}
   if(m=a.match(/^(.+?)\s+(https?:\/\/\S+)$/i)){const x=norm(m[1]);B[x]={on:m[2],off:m[2]};S.set('nx-jbridge',B);return sysMsg('✅ Puente «'+x+'» guardado (misma URL para encender y apagar; envío {"accion":"on|off"}).',J)}
   return sysMsg('Uso: `/puente nombre on https://…`, `/puente nombre off https://…` o `/puente borrar nombre`.',J)}
+ if(k=='ytkey'){
+  if(!a){return sysMsg(S.get('nx-ytkey','')?'Clave de YouTube guardada en este navegador. Con ella reproduzco directo «el más reciente de…» y recomiendo videos populares. Para quitarla: `/ytkey borrar`.':'Sin clave de YouTube. Funciona igual (abro los resultados ya ordenados), pero con una clave gratuita de la YouTube Data API v3 abro el video directo.\n`/ytkey TU_CLAVE`\n`/ytkey borrar`',J)}
+  if(/^borrar$/i.test(a)){S.set('nx-ytkey','');return sysMsg('Clave de YouTube borrada.',J)}
+  if(/^[\w-]{30,60}$/.test(a)){S.set('nx-ytkey',a);return sysMsg('✅ Clave de YouTube guardada solo en este navegador. Prueba: «ponme el video más reciente de Luisito Comunica».',J)}
+  return sysMsg('Uso: `/ytkey TU_CLAVE` o `/ytkey borrar`.',J)}
  if(k=='atajo'){const A=S.get('nx-jsites',{});
   if(!a){const ks=Object.keys(A);return sysMsg(ks.length?'Atajos:\n'+ks.map(x=>'- '+x+' → '+A[x]).join('\n'):'Sin atajos. Crea uno: `/atajo mi blog = https://ejemplo.com` y di «abre mi blog».',J)}
   if(m=a.match(/^borrar\s+(.+)$/i)){const x=norm(m[1]);delete A[x];S.set('nx-jsites',A);return sysMsg('Atajo «'+x+'» borrado.',J)}
