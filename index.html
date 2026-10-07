@@ -122,7 +122,7 @@ textarea{flex:1;resize:none;border:0;outline:0;background:none;color:var(--ink);
   <button id="new">Nueva conversación <span>+</span></button>
   <div id="pro" hidden><button id="vlb"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>Voz en vivo</button><button id="imb"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="9" cy="10" r="1.8"/><path d="M21 16l-5-5-8 8"/></svg>Imágenes</button></div>
   <input id="q" placeholder="Buscar en conversaciones" aria-label="Buscar"><nav id="list"></nav>
-  <div class="foot"><button id="thm">Tema</button><button id="spk">Voz: no</button><button id="mae">Maestro: sí</button><button id="acc">Entrar</button><button id="exp">Exportar</button><button id="forget">Olvidar todo</button></div>
+  <div class="foot"><button id="thm">Tema</button><button id="spk">Voz: no</button><button id="acc">Entrar</button><button id="exp">Exportar</button><button id="forget">Olvidar todo</button></div>
  </aside>
  <div id="scrim"></div>
  <main>
@@ -135,7 +135,7 @@ textarea{flex:1;resize:none;border:0;outline:0;background:none;color:var(--ink);
     <button class="ib" id="mic" aria-label="Hablar"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button>
     <button class="ib" id="go" aria-label="Enviar"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>
    </div>
-   <div class="note">Noryx piensa en tu navegador con su propia red neuronal de 100 neuronas. Aprende sola de su maestro IA y de ti: aprende: pregunta = respuesta.</div>
+   <div class="note">Noryx piensa en tu navegador con su propia red neuronal de 100 neuronas. Aprende de ti y de los testers: aprende: pregunta = respuesta.</div>
   </div>
  </main>
 </div>
@@ -179,6 +179,7 @@ textarea{flex:1;resize:none;border:0;outline:0;background:none;color:var(--ink);
 const $=s=>document.querySelector(s),sleep=ms=>new Promise(r=>setTimeout(r,ms));
 const S={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 let convs=S.get('nx-convs',[]),cur=S.get('nx-cur',null),mem=S.get('nx-mem',{name:'',taught:[]}),busy=false,stop=false,speak=S.get('nx-spk',false),thinking=false;
+mem.taught=(mem.taught||[]).filter(x=>!x.auto);
 const save=()=>{S.set('nx-convs',convs.slice(-60));S.set('nx-cur',cur);S.set('nx-mem',mem)};
 const toast=t=>{const e=$('#toast');e.textContent=t;e.classList.add('on');setTimeout(()=>e.classList.remove('on'),1800)};
 
@@ -433,8 +434,8 @@ async function J(u){const c=new AbortController(),t=setTimeout(()=>c.abort(),700
 async function wiki(q,en){
  const l=en?'en':'es',s=await J('https://'+l+'.wikipedia.org/w/api.php?action=query&list=search&srsearch='+encodeURIComponent(q)+'&srlimit=1&format=json&origin=*'),h=s&&s.query&&s.query.search[0];if(!h)return null;
  const d=await J('https://'+l+'.wikipedia.org/api/rest_v1/page/summary/'+encodeURIComponent(h.title.replace(/ /g,'_')));if(!d||!d.extract||d.type==='disambiguation')return null;
- const ss=d.extract.match(/[^.!?]+[.!?]+\s*/g)||[d.extract],ch=[];let cu='';ss.forEach(x=>{if((cu+x).length>420&&cu){ch.push(cu.trim());cu=''}cu+=x});if(cu)ch.push(cu.trim());ctx.q=q;ctx.more=ch.slice(1);
- return'**'+d.title+'**\n'+ch[0]+'\n\n[Wikipedia]('+d.content_urls.desktop.page+')'+(ctx.more.length?'  ·  di «más» para seguir':'')}
+ const ss=d.extract.match(/[^.!?]+[.!?]+\s*/g)||[d.extract],ch=[];let cu='';ss.forEach(x=>{if((cu+x).length>420&&cu){ch.push(cu.trim());cu=''}cu+=x});if(cu)ch.push(cu.trim());ctx.q=q;ctx.more=ch.slice(1);ctx.src={t:d.title,u:d.content_urls.desktop.page};
+ return'**'+d.title+'**\n'+ch[0]+(ctx.more.length?'\n\ndi «más» para seguir':'')}
 const WC=[[0,'despejado','clear'],[3,'parcialmente nublado','partly cloudy'],[48,'niebla','fog'],[57,'llovizna','drizzle'],[67,'lluvia','rain'],[77,'nieve','snow'],[82,'chubascos','showers'],[99,'tormenta','thunderstorm']];
 async function weather(t,en){
  const m=t.replace(/[?¿!.]/g,'').match(/^.*?\b(?:en|in|for|de)\s+(.+)$/i);if(!m)return{t:en?'Which city?':'¿De qué ciudad quieres el clima?',m:'Open-Meteo'};
@@ -527,25 +528,10 @@ maker:[['Me creó **Orlando**, que armó mi red neuronal desde cero.'],['**Orlan
 help:[['Esto sé hacer:\n- **Calcular**: `15% de 2480`, `raíz de 144`, `5!`\n- **Estadística**: `media de 4, 8, 15, 16`\n- **Álgebra**: `x^2 - 5x + 6 = 0`\n- **Saber**: `¿quién fue Nikola Tesla?` (Wikipedia)\n- **Clima**: `clima en Madrid`\n- **Países**: `población de Perú`, `pib per cápita de Chile`\n- **Conversiones**: `10 millas a km`, `100 °F a °C`\n- **Aprender**: `aprende: mi color favorito = azul`\n- **Con cuenta**: voz en vivo e imágenes (subir y crear)\n- **Comandos**: `/nuevo` `/limpiar` `/exportar` `/nombre Ana` `/memoria` `/olvidar`'],['What I can do:\n- **Calculate**: `15% of 2480`, `sqrt 144`, `5!`\n- **Stats**: `mean of 4, 8, 15, 16`\n- **Algebra**: `x^2 - 5x + 6 = 0`\n- **Look up**: `who was Nikola Tesla?`\n- **Weather**: `weather in London`\n- **Learn**: `learn: my favorite color = blue`\n- **Commands**: `/nuevo` `/limpiar` `/exportar` `/nombre Ana` `/memoria` `/olvidar`']],
 joke:[['¿Por qué las redes neuronales no pagan renta? Porque ya tienen muchas capas ocultas.','Mi red tiene {H} neuronas y ninguna sabe contar chistes. Yo tampoco.'],['Why did the neural net go to therapy? Too many hidden layers.']]};
 
-/* ============ Maestro externo: otra IA (estilo Gemini) sin API key; Noryx aprende de sus respuestas ============ */
-let MAESTRO=S.get('nx-teacher',true),busyAsk=0;
-const SYS='Eres Noryx, una IA amable con trato femenino, creada por Orlando. Responde en el idioma del usuario, con claridad y calidez, en menos de 130 palabras. Usa markdown simple (**negritas** y listas con "- "). Si no sabes algo, dilo con honestidad.';
-const clean=x=>x.replace(/\n*(?:---+\s*)?(?:\*\*)?(?:Powered by|Support) Pollinations[\s\S]*$/i,'').replace(/<think>[\s\S]*?<\/think>/g,'').trim();
-async function ask(msgs){
- const post=async m=>{const c=new AbortController(),t=setTimeout(()=>c.abort(),28000);try{const r=await fetch('https://text.pollinations.ai/openai',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:m,messages:msgs,private:true}),signal:c.signal});if(r.status==429)return{err:'rate'};if(!r.ok)return null;const d=await r.json(),x=d.choices&&d.choices[0]&&d.choices[0].message&&d.choices[0].message.content;return x?{t:clean(x)}:null}catch(e){return null}finally{clearTimeout(t)}};
- let last=null;for(const m of['gemini','openai']){const r=await post(m);if(r&&r.t)return r;if(r)last=r}
- try{const u=msgs[msgs.length-1].content,r=await fetch('https://text.pollinations.ai/'+encodeURIComponent(u.slice(0,1500))+'?model=openai&private=true&system='+encodeURIComponent(SYS));if(r.status==429)return{err:'rate'};if(r.ok){const x=clean(await r.text());if(x)return{t:x}}}catch(e){}
- return last||{err:'net'}}
-async function maestro(t){
- const c=conv(),h=((c&&c.msgs)||[]).slice(-9,-1).map(m=>({role:m.r=='u'?'user':'assistant',content:m.t.slice(0,600)}));
- return ask([{role:'system',content:SYS+(mem.name?' El usuario se llama '+mem.name+'.':'')},...h,{role:'user',content:t}])}
-function learn(q,a){if(toks(q).length<3||a.length>700||/^y\s/i.test(q.trim()))return;const k=q.replace(/[?!¿¡.]+$/g,'').trim(),same=mem.taught.filter(z=>z.q.toLowerCase()==k.toLowerCase());if(same.some(z=>!z.auto||z.a==a)||same.length>=4)return;mem.taught.push({q:k,a,auto:1});if(mem.taught.length>250){const i=mem.taught.findIndex(z=>z.auto);mem.taught.splice(i<0?0:i,1)}save()}
-async function open(t,q,en){
- let note='';if(MAESTRO){const r=await maestro(t);if(r.t){learn(t,r.t);return{t:r.t,m:'Maestro externo · aprendido'}}note=r.err=='rate'?'El maestro externo está saturado ahora mismo. ':'No pude contactar al maestro externo. '}
- if(q.length>2){const w=await wiki(q,en);if(w)return{t:note?note+'Esto encontré en Wikipedia:\n\n'+w:w,m:'Wikipedia'}}
- return note?{t:note+'Inténtalo de nuevo en unos segundos o enséñame con `aprende: pregunta = respuesta`.',m:'Sin respuesta'}:null}
+async function open(t,q,en){if(q.length>2){const w=await wiki(q,en);if(w)return{t:w,m:'Wikipedia'}}return null}
 async function brain(t){
  await ready;
+ const prevSrc=ctx.src;ctx.src=null;
  const en=isEn(t),nm=mem.name?', '+mem.name:'',tm=Date.now();let m;
  /* seguimiento de conversación: si Noryx preguntó la ciudad, la siguiente respuesta corta es la ciudad; "y en Madrid?" repite el clima */
  if(ctx.pend=='weather'||ctx.last=='weather'){const n=norm(t),w=toks(t),ask=ctx.pend=='weather',SM=['hi','how','thanks','bye','yes','no','help','joke','who','maker','time','date','more','why','love','insult','sorry'];ctx.pend=null;
@@ -564,25 +550,25 @@ async function brain(t){
  if(/^(?:como me llamo|cual es mi nombre|what is my name|what's my name)/i.test(norm(t).replace(/^/,'')))return{t:mem.name?(en?'You\'re **'+mem.name+'**.':'Te llamas **'+mem.name+'**.'):(en?'You haven\'t told me yet.':'Aún no me lo has dicho. Dime «me llamo…».'),m:'Memoria'};
  for(const[re,k,msg]of[[/me gusta(?:n)?\s+(.{2,40}?)[.!]*$/i,'gusta','Anotado: te gusta **$**. ¿Desde cuándo?'],[/vivo en\s+(.{2,40}?)[.!]*$/i,'vive','**$**, qué buen lugar. Lo recordaré.'],[/tengo\s+(\d{1,3})\s+a[nñ]os/i,'edad','Tienes **$** años; lo guardo.']]){if((m=t.match(re))){mem[k]=m[1];save();return{t:msg.replace('$',m[1]),m:'Memoria'}}}
  {const n=norm(t);if(/que me gusta|what do i like/.test(n))return{t:mem.gusta?'Me dijiste que te gusta **'+mem.gusta+'**.':'Aún no me has dicho qué te gusta.',m:'Memoria'};if(/donde vivo|where do i live/.test(n))return{t:mem.vive?'Vives en **'+mem.vive+'**.':'Aún no me has dicho dónde vives.',m:'Memoria'};if(/cuantos anos tengo|how old am i/.test(n))return{t:mem.edad?'Tienes **'+mem.edad+'** años.':'Aún no me has dicho tu edad.',m:'Memoria'}}
- const tg=taught(t);if(tg){if(tg.auto&&!tg.cloud&&MAESTRO&&tg.n<3&&Math.random()<.3){const rv=await maestro(t);if(rv.t&&rv.t!=tg.a){learn(t,rv.t);return{t:rv.t,m:'Maestro externo · variante aprendida'}}}return{t:tg.a,m:(tg.n>1?'1 de '+tg.n+' variantes · ':'')+(tg.cloud?'Memoria · enseñada por testers':tg.auto?'Memoria · aprendido del maestro':'Memoria · enseñado')}}
+ if(prevSrc&&/^(?:(?:cual|cuales|dame|dime|pasame|mandame|y)\s+(?:es\s+|son\s+)?(?:la |las |el |los )?)?(?:fuente|fuentes|bibliografia|referencia|referencias|enlace|link|liga|url|source|sources)\b|de donde (?:lo |la )?(?:sacaste|obtuviste|salio|sale)|where (?:did you|is) .*(?:get|source)/.test(norm(t))){ctx.src=prevSrc;return{t:'**Fuente:** [Wikipedia: '+prevSrc.t+']('+prevSrc.u+')',m:'Wikipedia'}}
+ const tg=taught(t);if(tg){return{t:tg.a,m:(tg.n>1?'1 de '+tg.n+' variantes · ':'')+(tg.cloud?'Memoria · enseñada por testers':'Memoria · enseñado')}}
  let r=calc(t);if(r)return{t:r,m:'Cálculo'};r=algebra(t);if(r)return{t:r,m:'Álgebra'};r=stats(t);if(r)return{t:r,m:'Estadística'};
  r=convUnits(t);if(r)return{t:r,m:'Conversión'};r=geo(t);if(r)return r;
  const c=classify(t);
  const q0=norm(t).replace(PRE,''),oov=q0!=norm(t)&&toks(q0).some(w=>!(w in vocab));
  if(oov&&q0.length>2){const o=await open(t,q0,en);if(o)return o}
- const oovN=toks(t).filter(w=>!(w in vocab)).length;
- if(c.p>=.55&&c.k&&!(MAESTRO&&TOP[c.k]&&oovN>=2&&c.p<.99)){
+  if(c.p>=.55&&c.k){
   const k=c.k,pc=Math.round(c.p*100),src='Red neuronal · '+pc+' %';
   if(k=='time')return{t:(en?'It\'s **':'Son las **')+new Date().toLocaleTimeString(en?'en-US':'es-MX',{hour:'2-digit',minute:'2-digit'})+'**.',m:'Reloj'};
   if(k=='date')return{t:(en?'Today is **':'Hoy es **')+new Date().toLocaleDateString(en?'en-US':'es-MX',{weekday:'long',day:'numeric',month:'long',year:'numeric'})+'**.',m:'Reloj'};
   if(k=='weather'){const w=await weather(t,en);if(w){ctx.pend=/¿De qué ciudad|Which city/.test(w.t)?'weather':null;ctx.last=ctx.pend?null:'weather';return w}return{t:en?'I couldn\'t find that place or reach the weather service.':'No encontré ese lugar o no pude contactar al servicio del clima.',m:src}}
-  if(k=='more'||k=='why'){if(ctx.more.length)return{t:ctx.more.shift()+(ctx.more.length?'  ·  di «más» para seguir':''),m:'Conversación'};if(MAESTRO){const r=await maestro(t);if(r.t)return{t:r.t,m:'Maestro externo'}}if(ctx.q){const w=await wiki(ctx.q,en);if(w)return{t:w,m:'Conversación · Wikipedia'}}return{t:'¿Más sobre qué? Dime un tema y profundizamos.',m:'Conversación'}}
+  if(k=='more'||k=='why'){if(ctx.more.length){ctx.src=prevSrc;return{t:ctx.more.shift()+(ctx.more.length?'\n\ndi «más» para seguir':''),m:'Conversación'}}if(ctx.q){const w=await wiki(ctx.q,en);if(w)return{t:w,m:'Conversación · Wikipedia'}}return{t:'¿Más sobre qué? Dime un tema y profundizamos.',m:'Conversación'}}
   const fx=x=>x.replace(/\{n\}/g,nm).replace(/\{H\}/g,H).replace(/\{ACC\}/g,ACC);
   if(A[k]){ctx.q=null;ctx.more=[];return{t:fx(pick(A[k][en&&A[k][1]?1:0])),m:src,s:k=='help'?'Puedo calcular, resolver ecuaciones, buscar datos, ver el clima, conversar y aprender de ti.':undefined}}
   if(TOP[k]){ctx.q=TOP[k][0].split('|')[0];ctx.more=[];ctx.topic=k;return{t:fx(TOP[k][1]),m:src}}}
  const q=norm(t).replace(/^(que es|que son|quien es|quien fue|quien era|quienes fueron|hablame de|hablame sobre|dime sobre|cuentame sobre|explicame|que significa|what is|what are|who is|who was|tell me about|explain|define)\s+(el |la |los |las |un |una |a |an |the )?/,'');
  {const o=await open(t,q,en);if(o)return o}
- return{t:en?'I don\'t have that yet (or I couldn\'t reach the internet). Teach me: `learn: question = answer`':'Todavía no tengo esa respuesta (o no pude conectarme a internet). Puedes enseñármela: `aprende: pregunta = respuesta`',m:'Sin respuesta'}}
+ return{t:en?'I don\'t know the answer to that.':'No sé la respuesta a eso.',m:'Sin respuesta'}}
 
 /* ============ Render ============ */
 const esc=s=>s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -653,6 +639,7 @@ async function send(t){t=(t||'').trim();if(!t||busy)return;$('#in').value='';fit
  if(gate(t))return;
  let m;if((m=t.match(/^\/(\w+)\s*(.*)$/))){const k=m[1].toLowerCase();
   if(k=='decir'){say(m[2]||'86 000 millones');return}
+  if(k=='clave'){const kk=m[2].trim();if(kk&&!/^pk_/.test(kk)){toast(/^sk_/.test(kk)?'Esa es una clave secreta (sk_): usa una pk_':'La clave debe empezar por pk_');return}S.set('nx-pkey',kk);$('#pkey').value=kk;toast(kk?'Clave guardada: reintenta tu pregunta':'Clave borrada');return}
   if(k=='nuevo'){cur=null;save();renderAll();return}
   if(k=='limpiar'){const c=conv();if(c){c.msgs=[];save();renderAll()}return}
   if(k=='exportar'){exportMd();return}
@@ -817,7 +804,6 @@ $('#thm').onclick=()=>{const d=document.documentElement,dark=d.dataset.theme?d.d
 {const t=S.get('nx-theme',null);if(t)document.documentElement.dataset.theme=t}
 const sb=$('#spk');const paintSpk=()=>{sb.textContent='Voz: '+(speak?'sí':'no');sb.classList.toggle('on',speak)};paintSpk();
 sb.onclick=()=>{speak=!speak;S.set('nx-spk',speak);paintSpk()};
-const mb=$('#mae'),paintMae=()=>{mb.textContent='Maestro: '+(MAESTRO?'sí':'no');mb.classList.toggle('on',MAESTRO)};paintMae();mb.onclick=()=>{MAESTRO=!MAESTRO;S.set('nx-teacher',MAESTRO);paintMae();toast(MAESTRO?'Noryx consultará a su maestro externo y aprenderá':'Noryx responderá solo con su núcleo')};
 $('#exp').onclick=exportMd;
 $('#forget').onclick=()=>{if(confirm('¿Borrar todas las conversaciones y lo que Noryx aprendió?')){convs=[];cur=null;mem={name:'',taught:[]};save();renderAll();toast('Listo, empezamos de cero')}};
 const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
@@ -908,7 +894,8 @@ $('#imdl').onclick=()=>{if(orig)imc.toBlob(b=>b&&dl(b,'noryx-imagen.png'))};
 const SYSI='Eres Noryx, una IA amable con trato femenino, creada por Orlando. El usuario te muestra una imagen y te hace preguntas sobre ella. Responde en su idioma. Mira la imagen con cuidado. Si es un ejercicio o tarea (química, matemáticas, física, etc.), transcribe lo que ves, resuélvelo o corrige la respuesta del usuario paso a paso y explica el porqué. Si te piden música, recomienda 4 o 5 géneros, artistas o canciones concretas que combinen con el ambiente, los colores y la emoción de la imagen, con una razón breve para cada una. Si es una foto o un diseño, descríbelo y responde lo que pregunten. Si algo no se ve con claridad, dilo en vez de inventarlo. Usa markdown simple (**negritas** y listas con "- "). Máximo 250 palabras.';
 const IMQ=['¿Qué ves en la imagen?','Resuelve este ejercicio paso a paso','¿Está bien mi respuesta?','Transcribe el texto','¿Qué música le queda?','Ponle un título y un texto para redes','¿Qué colores combinan con esto?','Explícamelo fácil'];
 IMQ.forEach(q=>{const b=document.createElement('button');b.textContent=q;b.onclick=()=>imAsk(q);$('#imch').append(b)});
-const pKey=()=>(S.get('nx-pkey','')||'').trim();
+const POLLI_KEY='';/* opcional: clave pk_ de Pollinations para el estudio de imágenes de todos los usuarios */
+const pKey=()=>(S.get('nx-pkey','')||POLLI_KEY).trim();
 async function pollChat(msgs,ms){let last=0;const key=pKey(),eps=[];
  if(key)eps.push(['https://gen.pollinations.ai/v1/chat/completions',key]);eps.push(['https://gen.pollinations.ai/v1/chat/completions','']);eps.push(['https://text.pollinations.ai/openai','']);
  for(const[u,k]of eps){for(const m of['openai','gemini']){const ctl=new AbortController(),to=setTimeout(()=>ctl.abort(),ms);
