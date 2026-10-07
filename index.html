@@ -113,6 +113,53 @@ textarea{flex:1;resize:none;border:0;outline:0;background:none;color:var(--ink);
 #imo{display:flex;flex-direction:column;gap:8px}.qa{padding:9px 14px;border-radius:14px;overflow-wrap:anywhere}.qa.q{background:var(--u);align-self:flex-end;max-width:90%}.qa.a{border:1px solid var(--line)}
 #studio details.ed summary{cursor:pointer;color:var(--mute);font-size:14px;padding:4px 0}#studio details.ed[open] summary{color:var(--ink)}#studio details.ed .tb{margin-top:8px}
 #studio canvas{max-height:34vh!important}
+#jvb{border:1px solid var(--acc);border-radius:12px;padding:10px 14px;text-align:left;font-weight:600;display:flex;gap:10px;align-items:center}#jvb[hidden]{display:none}#jvb:hover{background:color-mix(in srgb,var(--acc) 10%,transparent)}
+#jv{position:fixed;inset:0;z-index:45;background:radial-gradient(ellipse at 50% 30%,color-mix(in srgb,var(--acc) 13%,var(--bg)),var(--bg) 68%);display:flex;flex-direction:column;align-items:center;gap:12px;padding:calc(16px + env(safe-area-inset-top,0px)) 16px calc(14px + env(safe-area-inset-bottom,0px));overflow:auto;text-align:center}
+#jv[hidden]{display:none}
+.jvtop{width:100%;max-width:900px;display:flex;justify-content:space-between;font:500 12px 'JetBrains Mono',monospace;color:var(--mute);letter-spacing:.14em;text-transform:uppercase}.jvtop b{color:var(--acc)}
+.rx{position:relative;width:min(230px,52vw);aspect-ratio:1;flex:none;margin:4px 0;border:0;background:none;padding:0;cursor:pointer}
+.rx i{position:absolute;border-radius:50%;inset:0;display:block}
+.rx .r1{border:2px dashed color-mix(in srgb,var(--acc) 65%,transparent);animation:jvr 16s linear infinite}
+.rx .r2{inset:11%;border:3px solid transparent;border-top-color:var(--acc);border-bottom-color:var(--acc);animation:jvr 6s linear infinite reverse}
+.rx .r3{inset:22%;border:1px dotted var(--acc);animation:jvr 22s linear infinite}
+.rx .core{inset:33%;background:radial-gradient(circle at 38% 33%,#fff,var(--acc) 46%,color-mix(in srgb,var(--acc) 35%,#000));box-shadow:0 0 54px color-mix(in srgb,var(--acc) 65%,transparent);transition:opacity .3s}
+.rx.listen .core{animation:vlp 1.8s ease-in-out infinite}.rx.think .r2{animation-duration:.9s}.rx.think .core{opacity:.7}.rx.speak .core{animation:vlp .5s ease-in-out infinite}.rx.speak .r1{animation-duration:5s}.rx.mute .core{opacity:.28;box-shadow:none}.rx.mute i{animation-play-state:paused}
+@keyframes jvr{to{transform:rotate(360deg)}}
+#jvs{font:700 20px 'Bricolage Grotesque',sans-serif}#jvt{max-width:680px;min-height:2.8em;color:var(--mute);overflow-wrap:anywhere}
+.jvc{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}.jvc a,.jvc button{border:1px solid var(--acc);border-radius:999px;padding:7px 16px;font-size:14px;color:var(--ink);text-decoration:none}.jvc a:hover,.jvc button:hover{background:color-mix(in srgb,var(--acc) 14%,transparent)}
+.jvgrid{width:100%;max-width:900px;display:grid;grid-template-columns:2fr 1fr;gap:10px;text-align:left}
+.jvp{border:1px solid var(--line);border-radius:14px;padding:10px 12px;background:color-mix(in srgb,var(--panel) 80%,transparent);min-width:0}
+.jvp h4{margin:0 0 6px;font:500 11px 'JetBrains Mono',monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--acc)}
+#jvl,#jvtm{font:400 12.5px/1.5 'JetBrains Mono',monospace;color:var(--mute);white-space:pre-line;overflow-wrap:anywhere}#jvl{max-height:24vh;overflow:auto}
+.jvin{width:100%;max-width:900px;display:flex;gap:8px}.jvin input{flex:1;min-width:0;border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:999px;padding:9px 16px;font:inherit}.jvin input:focus{outline:0;border-color:var(--acc)}.jvin button,.jvrow button{border:1px solid var(--line);border-radius:999px;padding:7px 15px;font-size:14px}.jvin button:hover,.jvrow button:hover{border-color:var(--acc)}
+.jvrow{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}.jvrow .end{background:#c0392b;color:#fff;border-color:#c0392b}
+#jvn{font-size:12.5px;color:var(--mute);max-width:560px}
+@media (max-width:640px){.jvgrid{grid-template-columns:1fr}}
+#md{position:fixed;inset:0;z-index:50;background:#000a;display:grid;place-items:center}#md[hidden]{display:none}
+#md .card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:18px;width:min(580px,96vw);max-height:92vh;overflow:auto;display:flex;flex-direction:column;gap:12px}
+#md .sh{display:flex;align-items:center;gap:12px}#md .sh b{font:800 20px 'Bricolage Grotesque',sans-serif;flex:1}
+#mdl{display:flex;flex-direction:column;gap:7px}#mdl div{display:flex;gap:8px;align-items:flex-start;font-size:14px;line-height:1.45}#mdl i{font-style:normal;flex:none;width:20px}
+#md select{border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:10px;padding:8px 10px;font:inherit;width:100%}
+.mdm{height:16px;border-radius:999px;background:var(--code);border:1px solid var(--line);overflow:hidden}.mdm b{display:block;height:100%;width:0;background:var(--acc);transition:width .08s}
+#md .row{display:flex;gap:8px;flex-wrap:wrap}#md .row button,#md .sh button{border:1px solid var(--line);border-radius:999px;padding:7px 15px;font-size:14px}#md .row button:hover{border-color:var(--acc)}#md .pri{background:var(--acc);color:var(--bg);border-color:var(--acc)!important;font-weight:600}
+#mdo,#mdw{display:none;border-left:4px solid var(--line);padding:9px 12px;border-radius:8px;background:var(--code);font-size:14px;line-height:1.5;white-space:pre-line}
+#mdo.ok{display:block;border-color:#2e9e5b}#mdo.bad{display:block;border-color:#d33}#mdo.warn{display:block;border-color:var(--acc2)}#mdw.on{display:block;border-color:var(--acc2)}
+#mdlog{font:400 12.5px/1.6 'JetBrains Mono',monospace;color:var(--mute)}#mdn{color:var(--mute);font-size:13px}
+#gx{position:fixed;inset:0;z-index:55;background:#000a;display:grid;place-items:center}#gx[hidden]{display:none}
+#gx .card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:18px;width:min(660px,96vw);max-height:92vh;overflow:auto;display:flex;flex-direction:column;gap:10px}
+#gx .sh{display:flex;align-items:center;gap:10px}#gx .sh b{font:800 20px 'Bricolage Grotesque',sans-serif;flex:1}
+#gx .qh{font:700 15px 'Bricolage Grotesque',sans-serif;margin-top:6px}
+#gx input,#gx select{border:1px solid var(--line);background:none;color:var(--ink);border-radius:10px;padding:8px 12px;font:inherit;min-width:0}#gx select{background:var(--panel)}#gx input:focus{outline:0;border-color:var(--acc)}
+#gx .row{display:flex;gap:8px;flex-wrap:wrap}#gx .row>input{flex:1}
+#gx button{border:1px solid var(--line);border-radius:999px;padding:6px 14px;font-size:13.5px}#gx button:hover:not(:disabled){border-color:var(--acc)}#gx button:disabled{opacity:.5;cursor:wait}#gx .pri{background:var(--acc);color:var(--bg);border-color:var(--acc);font-weight:600}
+#gx .gr{display:flex;gap:8px;align-items:center;flex-wrap:wrap;border:1px solid var(--line);border-left-width:4px;border-radius:12px;padding:8px 12px}#gx .gr .i{flex:1;min-width:190px;overflow-wrap:anywhere;font-size:14px}#gx .gr .st{font:400 12px 'JetBrains Mono',monospace;color:var(--mute)}#gx .gr .bs{display:flex;gap:6px;flex-wrap:wrap}
+#gx .gr.act{border-left-color:#2e9e5b}#gx .gr.exp{border-left-color:var(--acc2)}#gx .gr.rev{border-left-color:#d33}#gx .gr.req{border-left-color:var(--acc)}
+#gxw{display:none;border-left:4px solid var(--acc2);padding:9px 12px;border-radius:8px;background:var(--code);font-size:14px;line-height:1.5}#gxw.on{display:block}
+#gx pre{background:var(--code);border:1px solid var(--line);border-radius:10px;padding:10px;font:400 12px/1.5 'JetBrains Mono',monospace;white-space:pre-wrap;max-height:260px;overflow:auto;margin:6px 0}
+#gx details summary{cursor:pointer;color:var(--mute);font-size:14px}#gx small{color:var(--mute);font-size:13px}
+#slash{max-width:780px;margin:0 auto 6px;display:flex;flex-wrap:wrap;gap:6px;padding:0 4px}#slash[hidden]{display:none}
+#slash button{border:1px solid var(--line);border-radius:999px;padding:4px 12px;font-size:13px;color:var(--mute)}#slash button:hover{border-color:var(--acc);color:var(--ink)}#slash button b{color:var(--ink);font-weight:600}
+.jvq{margin-top:-2px}.jvq button{font-size:13px;padding:5px 12px}
 </style>
 </head>
 <body>
@@ -121,21 +168,22 @@ textarea{flex:1;resize:none;border:0;outline:0;background:none;color:var(--ink);
   <div class="brand"><i></i>noryx</div>
   <button id="new">Nueva conversación <span>+</span></button>
   <div id="pro" hidden><button id="vlb"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>Voz en vivo</button><button id="imb"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="9" cy="10" r="1.8"/><path d="M21 16l-5-5-8 8"/></svg>Imágenes</button></div>
+  <button id="jvb" hidden><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/></svg>Modo Noryx</button>
   <input id="q" placeholder="Buscar en conversaciones" aria-label="Buscar"><nav id="list"></nav>
-  <div class="foot"><button id="thm">Tema</button><button id="spk">Voz: no</button><button id="acc">Entrar</button><button id="exp">Exportar</button><button id="forget">Olvidar todo</button></div>
+  <div class="foot"><button id="thm">Tema</button><button id="spk">Voz: no</button><button id="mdopen">Micrófono</button><button id="mae">Maestro: sí</button><button id="acc">Entrar</button><button id="exp">Exportar</button><button id="forget">Olvidar todo</button><button id="bk" title="Descargar una copia de tus conversaciones y memoria">Respaldo</button><button id="gxb" hidden>Accesos</button></div>
  </aside>
  <div id="scrim"></div>
  <main>
   <header><button id="menu" aria-label="Menú">☰</button><div id="ttl">Noryx</div><div id="chip" title="Núcleo neuronal propio de Noryx"><b></b><span id="cs">entrenando…</span></div></header>
   <section id="feed" aria-live="polite"></section>
   <div id="comp">
-   <div class="box">
+   <div id="slash" hidden></div><div class="box">
     <textarea id="in" rows="1" placeholder="Escribe a Noryx… (/ayuda para ver comandos)" aria-label="Mensaje"></textarea>
     <input id="pw" type="password" autocomplete="off" hidden aria-label="Contraseña de creador">
     <button class="ib" id="mic" aria-label="Hablar"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button>
     <button class="ib" id="go" aria-label="Enviar"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>
    </div>
-   <div class="note">Noryx piensa en tu navegador con su propia red neuronal de 100 neuronas. Aprende de ti y de los testers: aprende: pregunta = respuesta.</div>
+   <div class="note">Noryx piensa en tu navegador con su propia red neuronal de 100 neuronas. Aprende sola de su maestro IA y de ti: aprende: pregunta = respuesta.</div>
   </div>
  </main>
 </div>
@@ -143,7 +191,7 @@ textarea{flex:1;resize:none;border:0;outline:0;background:none;color:var(--ink);
 <div id="vl" hidden role="dialog" aria-label="Voz en vivo con Noryx">
  <button class="orb" id="vlo" aria-label="Interrumpir a Noryx"></button>
  <div id="vls">Te escucho…</div><div id="vlt" aria-live="polite"></div>
- <div class="row"><button id="vlm">Silenciar micrófono</button><button id="vlx" class="end">Terminar</button></div>
+ <div class="row"><button id="vlm">Silenciar micrófono</button><button id="vlmic">Detector de micrófono</button><button id="vlx" class="end">Terminar</button></div>
  <div id="vln">Habla con naturalidad; Noryx contesta en voz alta y vuelve a escucharte sola. Di «adiós» para terminar. El reconocimiento de voz lo hace tu navegador (en Chrome, mediante los servidores de Google).</div>
 </div>
 <div id="studio" hidden><div class="card" role="dialog" aria-label="Estudio de imágenes">
@@ -174,12 +222,47 @@ textarea{flex:1;resize:none;border:0;outline:0;background:none;color:var(--ink);
   <small>Si las imágenes o el análisis fallan, el servicio ahora pide una clave. Créala gratis en <a href="https://enter.pollinations.ai" target="_blank" rel="noopener">enter.pollinations.ai</a> (elige tipo «publishable», pk_). Se guarda solo en este navegador y se envía únicamente a Pollinations. Usa una clave pk_, nunca una sk_.</small>
  </details>
 </div></div>
+<div id="jv" hidden role="dialog" aria-label="Modo Noryx">
+ <div class="jvtop"><span><b>Noryx</b> · asistente de voz</span><span id="jvclk"></span></div>
+ <button class="rx" id="jvo" aria-label="Interrumpir a Noryx"><i class="r1"></i><i class="r2"></i><i class="r3"></i><i class="core"></i></button>
+ <div id="jvs">Te escucho…</div><div id="jvt" aria-live="polite"></div>
+ <div id="jvc" class="jvc"></div>
+ <div id="jvq" class="jvc jvq"></div>
+ <div class="jvgrid"><div class="jvp"><h4>Registro</h4><div id="jvl"></div></div><div class="jvp"><h4>Temporizadores</h4><div id="jvtm">Ninguno</div></div></div>
+ <div class="jvin"><input id="jvi" type="text" placeholder="…o escríbeme una orden" autocomplete="off" aria-label="Orden por texto"><button id="jvsend">Enviar</button></div>
+ <div class="jvrow"><button id="jvm">Silenciar micrófono</button><button id="jvw">Palabra clave: no</button><button id="jvh">Comandos</button><button id="jvmic">Micrófono</button><button id="jvx" class="end">Terminar</button></div>
+ <div id="jvn">Habla con naturalidad. El reconocimiento de voz lo hace tu navegador (en Chrome, mediante los servidores de Google). Los avisos de temporizador solo funcionan mientras esta pestaña siga abierta.</div>
+</div>
+<div id="md" hidden role="dialog" aria-label="Detector de micrófono"><div class="card">
+ <div class="sh"><b>Detector de micrófono</b><button id="mdx" aria-label="Cerrar">✕</button></div>
+ <div id="mdw"></div>
+ <div id="mdl"></div>
+ <select id="mds" aria-label="Micrófono a probar"></select>
+ <div class="mdm"><b id="mdb"></b></div><div id="mdn">Pulsa «Probar micrófono» y habla o aplaude.</div>
+ <div class="row"><button class="pri" id="mdt">Probar micrófono</button><button id="mdr">Probar reconocimiento de voz</button><button id="mdd">Volver a detectar</button><button id="mdc">Copiar ruta de ajustes</button></div>
+ <div id="mdo" aria-live="polite"></div>
+ <div id="mdlog"></div>
+</div></div>
+<div id="gx" hidden role="dialog" aria-label="Accesos"><div class="card">
+ <div class="sh"><b>Accesos</b><button id="gxr" title="Actualizar" aria-label="Actualizar">↻</button><button id="gxx" aria-label="Cerrar">✕</button></div>
+ <small>Tú decides quién puede usar el modo Noryx o enseñarle a Noryx, y por cuánto tiempo. Cuando el tiempo se acaba, el acceso se corta solo.</small>
+ <div id="gxw"></div>
+ <div id="gxq"></div>
+ <div class="qh">Conceder o ampliar acceso</div>
+ <input id="gxe" type="email" list="gxdl" placeholder="Correo de la persona (su cuenta de Noryx)" autocomplete="off"><datalist id="gxdl"></datalist>
+ <input id="gxn" type="text" placeholder="Nombre (opcional)" maxlength="60" autocomplete="off">
+ <div class="row"><select id="gxs" aria-label="Permiso"><option value="noryx">Modo Noryx (voz y órdenes)</option><option value="ensenar">Enseñar a Noryx (tester)</option></select></div>
+ <div class="row"><input id="gxv" type="number" min="1" value="1" style="max-width:110px;flex:none" aria-label="Cantidad"><select id="gxu" aria-label="Unidad"><option value="m">minutos</option><option value="h" selected>horas</option><option value="d">días</option><option value="w">semanas</option><option value="p">permanente</option></select><button class="pri" id="gxg">Conceder</button></div>
+ <div class="chips2" id="gxc"></div>
+ <div class="qh">Accesos concedidos</div><div id="gxl" style="display:flex;flex-direction:column;gap:8px"></div>
+ <details id="gxsq"><summary>SQL de las tablas de accesos (se ejecuta una sola vez)</summary><pre id="gxpre"></pre><button id="gxcp">Copiar SQL</button></details>
+</div></div>
+<input type="file" id="bkf" accept="application/json,.json" hidden>
 <div id="toast"></div>
 <script>
 const $=s=>document.querySelector(s),sleep=ms=>new Promise(r=>setTimeout(r,ms));
 const S={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
 let convs=S.get('nx-convs',[]),cur=S.get('nx-cur',null),mem=S.get('nx-mem',{name:'',taught:[]}),busy=false,stop=false,speak=S.get('nx-spk',false),thinking=false;
-mem.taught=(mem.taught||[]).filter(x=>!x.auto);
 const save=()=>{S.set('nx-convs',convs.slice(-60));S.set('nx-cur',cur);S.set('nx-mem',mem)};
 const toast=t=>{const e=$('#toast');e.textContent=t;e.classList.add('on');setTimeout(()=>e.classList.remove('on'),1800)};
 
@@ -434,8 +517,8 @@ async function J(u){const c=new AbortController(),t=setTimeout(()=>c.abort(),700
 async function wiki(q,en){
  const l=en?'en':'es',s=await J('https://'+l+'.wikipedia.org/w/api.php?action=query&list=search&srsearch='+encodeURIComponent(q)+'&srlimit=1&format=json&origin=*'),h=s&&s.query&&s.query.search[0];if(!h)return null;
  const d=await J('https://'+l+'.wikipedia.org/api/rest_v1/page/summary/'+encodeURIComponent(h.title.replace(/ /g,'_')));if(!d||!d.extract||d.type==='disambiguation')return null;
- const ss=d.extract.match(/[^.!?]+[.!?]+\s*/g)||[d.extract],ch=[];let cu='';ss.forEach(x=>{if((cu+x).length>420&&cu){ch.push(cu.trim());cu=''}cu+=x});if(cu)ch.push(cu.trim());ctx.q=q;ctx.more=ch.slice(1);ctx.src={t:d.title,u:d.content_urls.desktop.page};
- return'**'+d.title+'**\n'+ch[0]+(ctx.more.length?'\n\ndi «más» para seguir':'')}
+ const ss=d.extract.match(/[^.!?]+[.!?]+\s*/g)||[d.extract],ch=[];let cu='';ss.forEach(x=>{if((cu+x).length>420&&cu){ch.push(cu.trim());cu=''}cu+=x});if(cu)ch.push(cu.trim());ctx.q=q;ctx.more=ch.slice(1);
+ return'**'+d.title+'**\n'+ch[0]+'\n\n[Wikipedia]('+d.content_urls.desktop.page+')'+(ctx.more.length?'  ·  di «más» para seguir':'')}
 const WC=[[0,'despejado','clear'],[3,'parcialmente nublado','partly cloudy'],[48,'niebla','fog'],[57,'llovizna','drizzle'],[67,'lluvia','rain'],[77,'nieve','snow'],[82,'chubascos','showers'],[99,'tormenta','thunderstorm']];
 async function weather(t,en){
  const m=t.replace(/[?¿!.]/g,'').match(/^.*?\b(?:en|in|for|de)\s+(.+)$/i);if(!m)return{t:en?'Which city?':'¿De qué ciudad quieres el clima?',m:'Open-Meteo'};
@@ -509,28 +592,7 @@ function convUnits(t){const s=t.toLowerCase().normalize('NFD').replace(/[\u0300-
 /* ============ Memoria y aprendizaje ============ */
 const bag=t=>new Set(toks(t));
 const cos=(a,b)=>{let n=0;a.forEach(x=>b.has(x)&&n++);return a.size&&b.size?n/Math.sqrt(a.size*b.size):0};
-const lastT={},TKW=new WeakMap();
-const SW=new Set('de la el los las un una unos unas del al lo en y o e u con para me te se mi tu su sus es son ser fue era eran hay esta estan este esto eso ese esa a ante bajo sin sobre entre hasta desde que cual cuales quiero saber podrias puedes puede decir favor oye hola dime dame cuentame hablame explicame necesito ayudame the an of is are was to in on and or for do does please tell give about'.split(' ')),IQ=new Set('quien quienes como cuando donde cuanto cuantos cuanta cuantas por what who how when where why which'.split(' '));
-const TQ=new WeakMap();
-const qtype=s=>{const n=' '+norm(s)+' ';return/ (quien|quienes|who) /.test(n)?'w':/ (donde|where) /.test(n)?'d':/ (cuando|when) /.test(n)?'t':/ cuant\w* | how (much|many) /.test(n)?'n':/ por que | porque | why /.test(n)?'y':/ como | how /.test(n)?'h':/ (que|cual|cuales|what|which) (es|son|significa|era|eran)? ?|^ ?(que|what) /.test(n)&&/ (que|cual|cuales|what|which) /.test(n)?'q':''};
-const tq=x=>{let r=TQ.get(x);if(r===undefined){r=qtype(x.q);TQ.set(x,r)}return r};
-const stem=w=>w.length>4?w.replace(/(es|s)$/,''):w;
-function ctoks(s){const a=toks(s),b=a.filter(w=>!SW.has(w));return(b.length?b:a).map(stem)}
-const tk=x=>{let r=TKW.get(x);if(!r){r=ctoks(x.q);TKW.set(x,r)}return r};
-let IDFC={k:'',m:{}};
-function tIdf(all){const k=all.length+':'+mem.taught.length+':'+(CT[0]&&CT[0].id);if(IDFC.k==k)return IDFC.m;const df={};all.forEach(x=>new Set(tk(x)).forEach(t=>df[t]=(df[t]||0)+1));const N=all.length||1,m={};for(const t in df)m[t]=Math.log(1+N/df[t]);m.__max=Math.log(1+N)+.5;IDFC={k,m};return m}
-const same=(a,b)=>a==b||(a.length>=5&&b.length>=5&&lev(a,b,a.length>=8?2:1)<=(a.length>=8?2:1))||(a.length>=4&&b.length>=4&&Math.abs(a.length-b.length)<=2&&(a.startsWith(b)||b.startsWith(a)));
-/* similitud sin importar el orden: cobertura ponderada por rareza de cada palabra (F1 entre ambos lados) */
-function wsim(A,B,idf){const w=t=>(idf[t]||idf.__max||2)*(IQ.has(t)?.5:1);let sa=0,sb=0,oa=0,ob=0;
- A.forEach(t=>sa+=w(t));B.forEach(t=>sb+=w(t));
- A.forEach(a=>{if(B.some(b=>same(a,b)))oa+=w(a)});B.forEach(b=>{if(A.some(a=>same(a,b)))ob+=w(b)});
- if(!sa||!sb)return 0;const ca=oa/sa,cb=ob/sb;return ca>=.75&&cb>=.5&&ca+cb?2*ca*cb/(ca+cb):0}
-function taught(t){const qt=ctoks(t),ty=qtype(t);if(!qt.length)return null;const all=mem.taught.concat(CT),idf=tIdf(all),pool=[];let best=0;
- all.forEach(x=>{const tx=tq(x);if(ty&&tx&&ty!=tx)return;const d=wsim(qt,tk(x),idf);if(d>=(x.auto?.8:.7)){pool.push([x,d]);if(d>best)best=d}});
- let c=pool.filter(p=>p[1]>=best-.03).map(p=>p[0]);if(!c.length)return null;
- const loc=c.filter(x=>!x.cloud&&!x.auto);if(loc.length)c=loc;
- const key=norm(c[0].q);let o=c.length>1?c.filter(x=>x.a!==lastT[key]):c;if(!o.length)o=c;
- const r=o[Math.floor(Math.random()*o.length)];lastT[key]=r.a;return Object.assign({},r,{n:c.length})}
+function taught(t){const v=bag(t);let b=null,bs=0;mem.taught.concat(CT).forEach(x=>{const d=cos(v,bag(x.q));if(d>=(x.auto?.8:.6)&&d>bs){bs=d;b=x}});return b}
 const isEn=t=>/\b(the|what|who|how|tell|weather|joke|hello|thanks|thank|you|your|please|time|date|explain)\b/i.test(t)&&!/[¿áéíóúñ]|\b(el|la|qué|que|quien|cómo|como|hola|gracias|dime|clima|hora)\b/i.test(t);
 const pick=a=>a[Math.floor(Math.random()*a.length)];
 const A={
@@ -540,13 +602,28 @@ thanks:[['¡Con gusto{n}!','Para eso estoy.'],['Anytime{n}!','Glad to help.']],
 bye:[['Hasta luego{n}. Aquí sigo aprendiendo.'],['See you{n}. I\'ll keep learning.']],
 who:[['Soy **Noryx**: una IA con núcleo propio, una red neuronal de {H} neuronas ocultas que se entrena en tu navegador al abrir esta página ({ACC} % de acierto). No dependo de ChatGPT ni de Gemini. Calculo, resuelvo ecuaciones, busco en Wikipedia, consulto el clima y aprendo lo que me enseñes.'],['I\'m **Noryx**: an AI with its own core, a {H}-hidden-neuron network trained in your browser when this page opens ({ACC}% accuracy). No ChatGPT or Gemini behind me. I calculate, solve equations, search Wikipedia, check weather and learn what you teach me.']],
 maker:[['Me creó **Orlando**, que armó mi red neuronal desde cero.'],['**Orlando** created me and built my neural network from scratch.']],
-help:[['Esto sé hacer:\n- **Calcular**: `15% de 2480`, `raíz de 144`, `5!`\n- **Estadística**: `media de 4, 8, 15, 16`\n- **Álgebra**: `x^2 - 5x + 6 = 0`\n- **Saber**: `¿quién fue Nikola Tesla?` (Wikipedia)\n- **Clima**: `clima en Madrid`\n- **Países**: `población de Perú`, `pib per cápita de Chile`\n- **Conversiones**: `10 millas a km`, `100 °F a °C`\n- **Aprender**: `aprende: mi color favorito = azul`\n- **Con cuenta**: voz en vivo e imágenes (subir y crear)\n- **Comandos**: `/nuevo` `/limpiar` `/exportar` `/nombre Ana` `/memoria` `/olvidar`'],['What I can do:\n- **Calculate**: `15% of 2480`, `sqrt 144`, `5!`\n- **Stats**: `mean of 4, 8, 15, 16`\n- **Algebra**: `x^2 - 5x + 6 = 0`\n- **Look up**: `who was Nikola Tesla?`\n- **Weather**: `weather in London`\n- **Learn**: `learn: my favorite color = blue`\n- **Commands**: `/nuevo` `/limpiar` `/exportar` `/nombre Ana` `/memoria` `/olvidar`']],
+help:[['Esto sé hacer:\n- **Calcular**: `15% de 2480`, `raíz de 144`, `5!`\n- **Estadística**: `media de 4, 8, 15, 16`\n- **Álgebra**: `x^2 - 5x + 6 = 0`\n- **Saber**: `¿quién fue Nikola Tesla?` (Wikipedia)\n- **Clima**: `clima en Madrid`\n- **Países**: `población de Perú`, `pib per cápita de Chile`\n- **Conversiones**: `10 millas a km`, `100 °F a °C`\n- **Aprender**: `aprende: mi color favorito = azul`\n- **Con cuenta**: voz en vivo e imágenes (subir y crear)\n- **Comandos**: `/nuevo` `/limpiar` `/exportar` `/nombre Ana` `/memoria` `/olvidar` `/respaldo` `/restaurar`\n- **Asistente de voz**: `/noryx` (con acceso), `/acceso` para ver el tuyo, `/solicitar` para pedirlo al creador'],['What I can do:\n- **Calculate**: `15% of 2480`, `sqrt 144`, `5!`\n- **Stats**: `mean of 4, 8, 15, 16`\n- **Algebra**: `x^2 - 5x + 6 = 0`\n- **Look up**: `who was Nikola Tesla?`\n- **Weather**: `weather in London`\n- **Learn**: `learn: my favorite color = blue`\n- **Commands**: `/nuevo` `/limpiar` `/exportar` `/nombre Ana` `/memoria` `/olvidar`']],
 joke:[['¿Por qué las redes neuronales no pagan renta? Porque ya tienen muchas capas ocultas.','Mi red tiene {H} neuronas y ninguna sabe contar chistes. Yo tampoco.'],['Why did the neural net go to therapy? Too many hidden layers.']]};
 
-async function open(t,q,en){if(q.length>2){const w=await wiki(q,en);if(w)return{t:w,m:'Wikipedia'}}return null}
+/* ============ Maestro externo: otra IA (estilo Gemini) sin API key; Noryx aprende de sus respuestas ============ */
+let MAESTRO=S.get('nx-teacher',true),busyAsk=0;
+const SYS='Eres Noryx, una IA amable con trato femenino, creada por Orlando. Responde en el idioma del usuario, con claridad y calidez, en menos de 130 palabras. Usa markdown simple (**negritas** y listas con "- "). Si no sabes algo, dilo con honestidad.';
+const clean=x=>x.replace(/\n*(?:---+\s*)?(?:\*\*)?(?:Powered by|Support) Pollinations[\s\S]*$/i,'').replace(/<think>[\s\S]*?<\/think>/g,'').trim();
+async function ask(msgs){
+ const post=async m=>{const c=new AbortController(),t=setTimeout(()=>c.abort(),28000);try{const r=await fetch('https://text.pollinations.ai/openai',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:m,messages:msgs,private:true}),signal:c.signal});if(r.status==429)return{err:'rate'};if(!r.ok)return null;const d=await r.json(),x=d.choices&&d.choices[0]&&d.choices[0].message&&d.choices[0].message.content;return x?{t:clean(x)}:null}catch(e){return null}finally{clearTimeout(t)}};
+ let last=null;for(const m of['gemini','openai']){const r=await post(m);if(r&&r.t)return r;if(r)last=r}
+ try{const u=msgs[msgs.length-1].content,r=await fetch('https://text.pollinations.ai/'+encodeURIComponent(u.slice(0,1500))+'?model=openai&private=true&system='+encodeURIComponent(SYS));if(r.status==429)return{err:'rate'};if(r.ok){const x=clean(await r.text());if(x)return{t:x}}}catch(e){}
+ return last||{err:'net'}}
+async function maestro(t){
+ const c=conv(),h=((c&&c.msgs)||[]).slice(-9,-1).map(m=>({role:m.r=='u'?'user':'assistant',content:m.t.slice(0,600)}));
+ return ask([{role:'system',content:SYS+(mem.name?' El usuario se llama '+mem.name+'.':'')},...h,{role:'user',content:t}])}
+function learn(q,a){if(toks(q).length<3||a.length>700||/^y\s/i.test(q.trim()))return;const k=q.replace(/[?!¿¡.]+$/g,'').trim(),x=mem.taught.find(z=>z.q.toLowerCase()==k.toLowerCase());if(x){if(x.auto)x.a=a}else mem.taught.push({q:k,a,auto:1});if(mem.taught.length>250){const i=mem.taught.findIndex(z=>z.auto);mem.taught.splice(i<0?0:i,1)}save()}
+async function askOpen(t,q,en){
+ let note='';if(MAESTRO){const r=await maestro(t);if(r.t){learn(t,r.t);return{t:r.t,m:'Maestro externo · aprendido'}}note=r.err=='rate'?'El maestro externo está saturado ahora mismo. ':'No pude contactar al maestro externo. '}
+ if(q.length>2){const w=await wiki(q,en);if(w)return{t:note?note+'Esto encontré en Wikipedia:\n\n'+w:w,m:'Wikipedia'}}
+ return note?{t:note+'Inténtalo de nuevo en unos segundos o enséñame con `aprende: pregunta = respuesta`.',m:'Sin respuesta'}:null}
 async function brain(t){
  await ready;
- const prevSrc=ctx.src;ctx.src=null;
  const en=isEn(t),nm=mem.name?', '+mem.name:'',tm=Date.now();let m;
  /* seguimiento de conversación: si Noryx preguntó la ciudad, la siguiente respuesta corta es la ciudad; "y en Madrid?" repite el clima */
  if(ctx.pend=='weather'||ctx.last=='weather'){const n=norm(t),w=toks(t),ask=ctx.pend=='weather',SM=['hi','how','thanks','bye','yes','no','help','joke','who','maker','time','date','more','why','love','insult','sorry'];ctx.pend=null;
@@ -565,25 +642,25 @@ async function brain(t){
  if(/^(?:como me llamo|cual es mi nombre|what is my name|what's my name)/i.test(norm(t).replace(/^/,'')))return{t:mem.name?(en?'You\'re **'+mem.name+'**.':'Te llamas **'+mem.name+'**.'):(en?'You haven\'t told me yet.':'Aún no me lo has dicho. Dime «me llamo…».'),m:'Memoria'};
  for(const[re,k,msg]of[[/me gusta(?:n)?\s+(.{2,40}?)[.!]*$/i,'gusta','Anotado: te gusta **$**. ¿Desde cuándo?'],[/vivo en\s+(.{2,40}?)[.!]*$/i,'vive','**$**, qué buen lugar. Lo recordaré.'],[/tengo\s+(\d{1,3})\s+a[nñ]os/i,'edad','Tienes **$** años; lo guardo.']]){if((m=t.match(re))){mem[k]=m[1];save();return{t:msg.replace('$',m[1]),m:'Memoria'}}}
  {const n=norm(t);if(/que me gusta|what do i like/.test(n))return{t:mem.gusta?'Me dijiste que te gusta **'+mem.gusta+'**.':'Aún no me has dicho qué te gusta.',m:'Memoria'};if(/donde vivo|where do i live/.test(n))return{t:mem.vive?'Vives en **'+mem.vive+'**.':'Aún no me has dicho dónde vives.',m:'Memoria'};if(/cuantos anos tengo|how old am i/.test(n))return{t:mem.edad?'Tienes **'+mem.edad+'** años.':'Aún no me has dicho tu edad.',m:'Memoria'}}
- if(prevSrc&&/^(?:(?:cual|cuales|dame|dime|pasame|mandame|y)\s+(?:es\s+|son\s+)?(?:la |las |el |los )?)?(?:fuente|fuentes|bibliografia|referencia|referencias|enlace|link|liga|url|source|sources)\b|de donde (?:lo |la )?(?:sacaste|obtuviste|salio|sale)|where (?:did you|is) .*(?:get|source)/.test(norm(t))){ctx.src=prevSrc;return{t:'**Fuente:** [Wikipedia: '+prevSrc.t+']('+prevSrc.u+')',m:'Wikipedia'}}
- const tg=taught(t);if(tg){return{t:tg.a,m:(tg.n>1?'1 de '+tg.n+' variantes · ':'')+(tg.cloud?'Memoria · enseñada por testers':'Memoria · enseñado')}}
+ const tg=taught(t);if(tg)return{t:tg.a,m:tg.cloud?'Memoria · enseñada por testers':tg.auto?'Memoria · aprendido del maestro':'Memoria · enseñado'};
  let r=calc(t);if(r)return{t:r,m:'Cálculo'};r=algebra(t);if(r)return{t:r,m:'Álgebra'};r=stats(t);if(r)return{t:r,m:'Estadística'};
  r=convUnits(t);if(r)return{t:r,m:'Conversión'};r=geo(t);if(r)return r;
  const c=classify(t);
  const q0=norm(t).replace(PRE,''),oov=q0!=norm(t)&&toks(q0).some(w=>!(w in vocab));
- if(oov&&q0.length>2){const o=await open(t,q0,en);if(o)return o}
-  if(c.p>=.55&&c.k){
+ if(oov&&q0.length>2){const o=await askOpen(t,q0,en);if(o)return o}
+ const oovN=toks(t).filter(w=>!(w in vocab)).length;
+ if(c.p>=.55&&c.k&&!(MAESTRO&&TOP[c.k]&&oovN>=2&&c.p<.99)){
   const k=c.k,pc=Math.round(c.p*100),src='Red neuronal · '+pc+' %';
   if(k=='time')return{t:(en?'It\'s **':'Son las **')+new Date().toLocaleTimeString(en?'en-US':'es-MX',{hour:'2-digit',minute:'2-digit'})+'**.',m:'Reloj'};
   if(k=='date')return{t:(en?'Today is **':'Hoy es **')+new Date().toLocaleDateString(en?'en-US':'es-MX',{weekday:'long',day:'numeric',month:'long',year:'numeric'})+'**.',m:'Reloj'};
   if(k=='weather'){const w=await weather(t,en);if(w){ctx.pend=/¿De qué ciudad|Which city/.test(w.t)?'weather':null;ctx.last=ctx.pend?null:'weather';return w}return{t:en?'I couldn\'t find that place or reach the weather service.':'No encontré ese lugar o no pude contactar al servicio del clima.',m:src}}
-  if(k=='more'||k=='why'){if(ctx.more.length){ctx.src=prevSrc;return{t:ctx.more.shift()+(ctx.more.length?'\n\ndi «más» para seguir':''),m:'Conversación'}}if(ctx.q){const w=await wiki(ctx.q,en);if(w)return{t:w,m:'Conversación · Wikipedia'}}return{t:'¿Más sobre qué? Dime un tema y profundizamos.',m:'Conversación'}}
+  if(k=='more'||k=='why'){if(ctx.more.length)return{t:ctx.more.shift()+(ctx.more.length?'  ·  di «más» para seguir':''),m:'Conversación'};if(MAESTRO){const r=await maestro(t);if(r.t)return{t:r.t,m:'Maestro externo'}}if(ctx.q){const w=await wiki(ctx.q,en);if(w)return{t:w,m:'Conversación · Wikipedia'}}return{t:'¿Más sobre qué? Dime un tema y profundizamos.',m:'Conversación'}}
   const fx=x=>x.replace(/\{n\}/g,nm).replace(/\{H\}/g,H).replace(/\{ACC\}/g,ACC);
   if(A[k]){ctx.q=null;ctx.more=[];return{t:fx(pick(A[k][en&&A[k][1]?1:0])),m:src,s:k=='help'?'Puedo calcular, resolver ecuaciones, buscar datos, ver el clima, conversar y aprender de ti.':undefined}}
   if(TOP[k]){ctx.q=TOP[k][0].split('|')[0];ctx.more=[];ctx.topic=k;return{t:fx(TOP[k][1]),m:src}}}
  const q=norm(t).replace(/^(que es|que son|quien es|quien fue|quien era|quienes fueron|hablame de|hablame sobre|dime sobre|cuentame sobre|explicame|que significa|what is|what are|who is|who was|tell me about|explain|define)\s+(el |la |los |las |un |una |a |an |the )?/,'');
- {const o=await open(t,q,en);if(o)return o}
- return{t:en?'I don\'t know the answer to that.':'No sé la respuesta a eso.',m:'Sin respuesta'}}
+ {const o=await askOpen(t,q,en);if(o)return o}
+ return{t:en?'I don\'t have that yet (or I couldn\'t reach the internet). Teach me: `learn: question = answer`':'Todavía no tengo esa respuesta (o no pude conectarme a internet). Puedes enseñármela: `aprende: pregunta = respuesta`',m:'Sin respuesta'}}
 
 /* ============ Render ============ */
 const esc=s=>s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -646,15 +723,21 @@ function speechNums(s,en){
 
 const FEM=/paulina|monica|sabina|dalia|elvira|helena|lucia|laura|marisol|camila|samantha|zira|jenny|aria|female|mujer|google espa|google us/i,MALE=/jorge|diego|pablo|raul|juan|carlos|david|mark|james|male|hombre|enrique|alvaro|miguel/i;
 function voiceFor(l){const sc=v=>(/natural|neural|online/i.test(v.name)?4:0)+(FEM.test(v.name)?3:0)+(MALE.test(v.name)?-9:0)+(l=='es'&&/MX|US|419/i.test(v.lang)?1:0);return speechSynthesis.getVoices().filter(v=>v.lang.toLowerCase().startsWith(l)).sort((a,b)=>sc(b)-sc(a))[0]}
-function say(t){if(!window.speechSynthesis)return;speechSynthesis.cancel();const en=isEn(t),u=new SpeechSynthesisUtterance(speechNums(t.replace(/\[[^\]]*\]\([^)]*\)/g,'').replace(/[*`_·]/g,'').replace(/\s+/g,' '),en).replace(/\s+/g,' ').trim());u.lang=en?'en-US':'es-MX';const v=voiceFor(en?'en':'es');if(v){u.voice=v;u.lang=v.lang}u.pitch=1.12;u.rate=1.03;speechSynthesis.speak(u)}
+function say(t){if(!window.speechSynthesis)return;speechSynthesis.cancel();const en=isEn(t),u=new SpeechSynthesisUtterance(speechNums(t.replace(/\[[^\]]*\]\([^)]*\)/g,'').replace(/[*`_·]/g,'').replace(/\s+/g,' '),en).replace(/\s+/g,' ').trim());u.lang=en?'en-US':'es-MX';const v=voiceFor(en?'en':'es');if(v){u.voice=v;u.lang=v.lang}u.pitch=S.get('nx-vp',1.12);u.rate=S.get('nx-vr',1.03);speechSynthesis.speak(u)}
 
 /* ============ Flujo del chat ============ */
 function setThink(v){thinking=v;$('#chip').classList.toggle('think',v)}
 async function send(t){t=(t||'').trim();if(!t||busy)return;$('#in').value='';fit();closeMenu();window.speechSynthesis&&speechSynthesis.cancel();
  if(gate(t))return;
  let m;if((m=t.match(/^\/(\w+)\s*(.*)$/))){const k=m[1].toLowerCase();
+  if(k=='mic'||k.startsWith('micr')){mdOpen();return}
+  if(k=='noryx'||k=='puente'||k=='atajo'||k=='rutina'){if(k!='puente')echoU(t);await noryxEntry(k,m[2]);return}
+  if(k=='jarvis'){echoU(t);sysMsg('El comando ahora es `/noryx`.','Noryx');return}
+  if(k=='solicitar'){echoU(t);await requestAccess(m[2]);return}
+  if(k=='acceso'){echoU(t);await showAccess();return}
+  if(k=='respaldo'){backup();return}
+  if(k=='restaurar'){$('#bkf').click();return}
   if(k=='decir'){say(m[2]||'86 000 millones');return}
-  if(k=='clave'){const kk=m[2].trim();if(kk&&!/^pk_/.test(kk)){toast(/^sk_/.test(kk)?'Esa es una clave secreta (sk_): usa una pk_':'La clave debe empezar por pk_');return}S.set('nx-pkey',kk);$('#pkey').value=kk;toast(kk?'Clave guardada: reintenta tu pregunta':'Clave borrada');return}
   if(k=='nuevo'){cur=null;save();renderAll();return}
   if(k=='limpiar'){const c=conv();if(c){c.msgs=[];save();renderAll()}return}
   if(k=='exportar'){exportMd();return}
@@ -687,17 +770,16 @@ let cloudToken=null,creator=false,creatorAct=0,auth=false,authFails=0,authLock=0
 const TESTER_EMAILS=["proacsonicoyoutu@gmail.com"];
 const isTesterMail=e=>TESTER_EMAILS.some(x=>x.toLowerCase()==String(e||'').toLowerCase());
 let tester=false,tstep=0,tmail='',authFor='creator',privMail='',CT=S.get('nx-ct',[]);
-async function loadCT(){try{const r=await fetch(cloudBase()+'/rest/v1/ensenanzas?select=id,pregunta,respuesta,autor&order=id.desc&limit=1500',{headers:hdr()});if(!r.ok)return;const rows=await r.json(),seen=new Set();CT=[];rows.forEach(x=>{const k=String(x.pregunta).toLowerCase()+'\u0001'+String(x.respuesta).trim().toLowerCase();if(seen.has(k))return;seen.add(k);CT.push({id:x.id,q:x.pregunta,a:x.respuesta,by:x.autor,cloud:1})});S.set('nx-ct',CT)}catch(e){}}
-async function cloudWrite(method,path,body){if(!cloudToken){const e=new Error('expired');e.expired=1;throw e}const r=await fetch(cloudBase()+'/rest/v1/'+path,{method,headers:{apikey:SUPA_KEY,Authorization:'Bearer '+cloudToken,'Content-Type':'application/json',Prefer:'return=representation'},body:body?JSON.stringify(body):undefined});if(r.status==401){cloudToken=null;const e=new Error('expired');e.expired=1;throw e}if(r.status==403)throw new Error('sin permiso (¿ejecutaste el SQL de testers en Supabase?)');if(!r.ok)throw new Error('HTTP '+r.status);return r.json()}
+async function loadCT(){try{const r=await fetch(cloudBase()+'/rest/v1/ensenanzas?select=id,pregunta,respuesta,autor&order=id.desc&limit=1500',{headers:hdr()});if(!r.ok)return;const rows=await r.json(),seen=new Set();CT=[];rows.forEach(x=>{const k=String(x.pregunta).toLowerCase();if(seen.has(k))return;seen.add(k);CT.push({id:x.id,q:x.pregunta,a:x.respuesta,by:x.autor,cloud:1})});S.set('nx-ct',CT)}catch(e){}}
+async function cloudWrite(method,path,body,pref){if(!cloudToken){const e=new Error('expired');e.expired=1;throw e}const r=await fetch(cloudBase()+'/rest/v1/'+path,{method,headers:{apikey:SUPA_KEY,Authorization:'Bearer '+cloudToken,'Content-Type':'application/json',Prefer:pref||'return=representation'},body:body?JSON.stringify(body):undefined});if(r.status==401){cloudToken=null;const e=new Error('expired');e.expired=1;throw e}if(r.status==403)throw new Error('sin permiso (¿ejecutaste el SQL de accesos en Supabase? Míralo en el panel /accesos)');if(!r.ok)throw new Error('HTTP '+r.status);return r.json()}
 const cut=(x,n)=>x.length>n?x.slice(0,n)+'…':x;
 async function tcmd(c,a){
  if(/^ense[nñ]ar$/.test(c)){const m=a.match(/^([\s\S]+?)\s*=\s*([\s\S]+)$/);if(!m)return sysMsg('Uso: `/ensenar pregunta = respuesta`','Tester · nube');
   const q=m[1].replace(/[?!¿¡.]+$/g,'').trim(),r=m[2].trim();
   if(q.length<3||q.length>200||r.length<2||r.length>700)return sysMsg('La pregunta debe tener de 3 a 200 caracteres y la respuesta de 2 a 700.','Tester · nube');
-  if(CT.some(x=>x.q.toLowerCase()==q.toLowerCase()&&x.a.trim().toLowerCase()==r.toLowerCase()))return sysMsg('Esa misma respuesta ya la tenía para esa pregunta.','Tester · nube');
   const row=await cloudWrite('POST','ensenanzas',{pregunta:q,respuesta:r,autor:privMail}),id=row[0]&&row[0].id;
-  CT.unshift({id,q,a:r,by:privMail,cloud:1});S.set('nx-ct',CT);const nv=CT.filter(x=>x.q.toLowerCase()==q.toLowerCase()).length;
-  return sysMsg('✅ Aprendido para todos: «'+q+'» (#'+id+'). Ahora tengo '+nv+' respuesta(s) para esa pregunta y las alterno al azar.','Tester · nube')}
+  CT=CT.filter(x=>x.q.toLowerCase()!=q.toLowerCase());CT.unshift({id,q,a:r,by:privMail,cloud:1});S.set('nx-ct',CT);
+  return sysMsg('✅ Aprendido para todos los usuarios: «'+q+'» (#'+id+'). Pruébalo preguntándomelo.','Tester · nube')}
  if(/^ense[nñ]ados$/.test(c)){const rows=await cloudWrite('GET','ensenanzas?select=id,pregunta,respuesta,autor,ts&order=id.desc&limit=100'),mine=creator?rows:rows.filter(x=>x.autor==privMail);
   return sysMsg(mine.length?box((creator?'📚 Enseñanzas de todos los testers':'📚 Tus enseñanzas')+' (más recientes primero):\n'+mine.map(x=>'#'+x.id+' ['+fdate(Date.parse(x.ts)||0)+'] '+(creator?x.autor.split('@')[0]+': ':'')+cut(x.pregunta,60)+' → '+cut(x.respuesta,80)).join('\n')+'\n\n/quitar N para borrar una.'):'Aún no hay enseñanzas.','Tester · nube')}
  if(c=='quitar'){const id=parseInt(a,10);if(!id)return sysMsg('Uso: `/quitar N` (el número de /ensenados)','Tester · nube');
@@ -726,14 +808,15 @@ function echoU(t){blank();const d=document.createElement('div');d.className='msg
 const box=t=>'```\n'+t+'\n```';
 function authBegin(ph){auth=true;inp.hidden=true;pw.hidden=false;pw.value='';pw.placeholder=ph;pw.focus()}
 function authEnd(){auth=false;pw.hidden=true;pw.value='';inp.hidden=false;inp.focus()}
-function lock(say){const was=creator||tester;creator=false;tester=false;tstep=0;creatorAct=0;cloudToken=null;if(auth)authEnd();if(say&&was)sysMsg('🔒 Sesión cerrada.')}
+function lock(say){const was=creator||tester;creator=false;tester=false;tstep=0;creatorAct=0;cloudToken=null;GRX=[];if(auth)authEnd();if(say&&was)sysMsg('🔒 Sesión cerrada.')}
 const cErr=e=>{if(e&&e.expired){lock(false);return'La sesión de la nube expiró. Escribe /creador o /tester para entrar otra vez.'}return'No pude hablar con la nube: '+(e&&e.message?e.message:e)};
 pw.addEventListener('keydown',e=>{if(e.key=='Enter'){e.preventDefault();gate(pw.value)}if(e.key=='Escape'){authEnd();sysMsg('Verificación cancelada.')}});
-const CCMD=['personas','ver','borrar','testers'],TCMD=['ensenar','enseñar','ensenados','enseñados','quitar'];
+const CCMD=['personas','ver','borrar','testers','accesos'],TCMD=['ensenar','enseñar','ensenados','enseñados','quitar'];
 const ASK_PEOPLE=/(con qui[eé]n(?:es)?\s+(?:has|ha|habias|habías)\s+(?:hablado|platicado|interactuado|conversado|chateado)|qui[eé]nes?\s+(?:han|ha)\s+(?:hablado|platicado|interactuado|conversado|chateado)|con qu[eé] personas|qu[eé] personas (?:han|te han)|who (?:have|has) you (?:talked|spoken|chatted|interacted)|who (?:has|have) (?:talked|spoken|chatted) (?:to|with) you|(?:list|show) (?:of )?(?:your )?(?:users|people|conversations))/i;
 const ASK_SAID=/qu[eé] te (?:dijo|cont[oó]|platic[oó]|coment[oó]|escribi[oó])\s+([A-Za-zÁÉÍÓÚÑáéíóúñ]{2,20})|what did\s+([A-Za-z]{2,20})\s+(?:say|tell|write|talk)/i;
 async function ccmd(c,a){
- if(c=='ayuda')return sysMsg('Comandos de creador:\n- `/personas` — con quién he hablado y de qué\n- `/ver N` (o `/ver Nombre`) — leer esa conversación\n- `/exportar` — descargar todo el registro en JSON\n- `/borrar` — borrar el registro (pide confirmación)\n- `/testers` — qué han enseñado los testers\n- `/ensenar p = r`, `/ensenados`, `/quitar N` — enseñar a Noryx para todos y supervisar lo enseñado (puedes borrar la de cualquiera)\n- `/salir` — cerrar la sesión\n\nTambién puedes preguntarme: «¿con quién has hablado?» o «¿qué te dijo Ana?».\nComandos normales: `/nuevo` `/limpiar` `/nombre` `/memoria` `/olvidar` `/decir texto`.');
+ if(c=='ayuda')return sysMsg('Comandos de creador:\n- `/personas` — con quién he hablado y de qué\n- `/ver N` (o `/ver Nombre`) — leer esa conversación\n- `/exportar` — descargar todo el registro en JSON\n- `/borrar` — borrar el registro (pide confirmación)\n- `/testers` — qué han enseñado los testers\n- `/ensenar p = r`, `/ensenados`, `/quitar N` — enseñar a Noryx para todos y supervisar lo enseñado (puedes borrar la de cualquiera)\n- `/noryx` — modo Noryx: charla por voz y órdenes (abrir sitios, música, temporizadores, notas, rutinas…)\n- `/puente`, `/atajo`, `/rutina` — configurar aparatos (webhooks), atajos web y rutinas de Noryx\n- `/accesos` — panel para dar o quitar acceso (por horas, días o permanente)\n- `/microfono` — detector de micrófono (diagnóstico)\n- `/salir` — cerrar la sesión\n\nTambién puedes preguntarme: «¿con quién has hablado?» o «¿qué te dijo Ana?».\nComandos normales: `/nuevo` `/limpiar` `/nombre` `/memoria` `/olvidar` `/decir texto`.');
+ if(c=='accesos'){gxOpen();return}
  if(c=='personas')return sysMsg(box(peopleTxt(await creatorData())));
  if(c=='ver')return sysMsg(box(transcriptTxt(a,await creatorData())));
  if(c=='exportar'){const bl=new Blob([JSON.stringify({exportado:new Date().toISOString(),conversaciones:await creatorData()},null,2)],{type:'application/json'}),u=URL.createObjectURL(bl),l=document.createElement('a');l.href=u;l.download='noryx-conversaciones.json';document.body.appendChild(l);l.click();l.remove();setTimeout(()=>URL.revokeObjectURL(u),2000);return sysMsg('📥 Listo, descargué el registro completo.')}
@@ -745,14 +828,14 @@ function gate(t){
  if(tstep==1){tstep=0;
   if(/^\/cancelar$/i.test(t)){sysMsg('Verificación cancelada.');return true}
   const em=t.trim().toLowerCase();
-  if(!isTesterMail(em)){sysMsg('Ese correo no está autorizado como tester.','Tester');return true}
+  if(!/^\S+@\S+\.\S+$/.test(em)){sysMsg('Escribe un correo válido o /cancelar.','Tester');tstep=1;return true}
   tmail=em;authFor='tester';authBegin('Contraseña de tester');sysMsg('Escribe tu contraseña de tester (no se muestra ni se guarda). /cancelar para salir.','Tester');return true}
  if(auth){
   if(/^\/cancelar$/i.test(t)){authEnd();sysMsg('Verificación cancelada.');return true}
   if(authLock-Date.now()>0){authEnd();sysMsg('Demasiados intentos fallidos. Espera un momento.');return true}
   const done=ok=>{if(ok){authFails=0;creatorAct=Date.now();if(authFor=='tester'){tester=true;privMail=tmail;sysMsg('✅ Acceso de tester concedido. Con `/ensenar pregunta = respuesta` enseñas a Noryx para todos los usuarios. Escribe /ayuda para ver tus comandos. Tu sesión de pruebas queda registrada para que el creador la supervise.','Tester')}else{creator=true;privMail=CREATOR_EMAIL;sysMsg('✅ Acceso de creador concedido, Orlando. Escribe /ayuda para ver tus comandos. Mientras estés verificado no registro tus mensajes.')}}else{authFails++;if(authFails>=5){authLock=Date.now()+6e4*Math.pow(2,Math.min(authFails-5,6));sysMsg('Contraseña incorrecta. Demasiados intentos: bloqueado temporalmente.')}else sysMsg('Contraseña incorrecta. Vuelve a escribir '+(authFor=='tester'?'/tester':'/creador')+' para reintentar.')}};
   authEnd();
-  cloudLogin(t,authFor=='tester'?tmail:CREATOR_EMAIL).then(tok=>{cloudToken=tok;done(true)}).catch(e=>{if(e&&e.bad)done(false);else sysMsg('No pude conectar con la nube ('+(e&&e.message)+'). Reintenta con /creador.')});
+  cloudLogin(t,authFor=='tester'?tmail:CREATOR_EMAIL).then(async tok=>{if(authFor=='tester'){const rows=await fetchGrants(tok,tmail);if(rows!==undefined&&!rows.some(g=>grOk(g,'ensenar'))){sysMsg('Tu cuenta no tiene un acceso de tester vigente. Entra con tu cuenta y escribe /solicitar enseñar para pedírselo al creador.','Tester');return}if(rows===undefined&&!isTesterMail(tmail)){sysMsg('Ese correo no está autorizado como tester.','Tester');return}GRX=rows||[{feature:'ensenar',expira:null,revocado:false}]}cloudToken=tok;done(true)}).catch(e=>{if(e&&e.bad)done(false);else sysMsg('No pude conectar con la nube ('+(e&&e.message)+'). Reintenta con /creador.')});
   return true}
  const m=t.match(/^\/([a-záéíóúñ]+)\s*(.*)$/i);
  if(m){const c=m[1].toLowerCase(),a=m[2].trim();
@@ -763,7 +846,7 @@ function gate(t){
   if(c=='tester'){echoU('/tester');
    if(tester||creator){creatorAct=Date.now();sysMsg('Ya estás verificado. Escribe /ayuda para ver los comandos.','Tester');return true}
    const w2=authLock-Date.now();if(w2>0){sysMsg('Bloqueado por intentos fallidos. Prueba en '+Math.ceil(w2/1e3)+' s.');return true}
-   if(sess&&isTesterMail(sess.email)){cloudToken=sess.access;tester=true;privMail=sess.email.toLowerCase();creatorAct=Date.now();sysMsg('✅ Acceso de tester concedido con tu cuenta. Escribe /ayuda.','Tester');return true}
+   if(sess){applyGrants().then(()=>{if(tester){creatorAct=Date.now();sysMsg('✅ Acceso de tester concedido con tu cuenta. Escribe /ayuda.','Tester')}else sysMsg('Tu cuenta no tiene un acceso de tester vigente. Escribe `/solicitar enseñar` para pedírselo al creador.','Tester')});return true}
    tstep=1;sysMsg('Escribe tu correo de tester. /cancelar para salir.','Tester');return true}
   if(TCMD.includes(c)||(tester&&(c=='ayuda'||c=='salir'))){echoU(t);
    if(!tester&&!creator){sysMsg('Ese comando es solo para testers y para mi creador.');return true}
@@ -789,10 +872,10 @@ const aErr=e=>{const x=e.message+' '+e.code;return/signup.disabled|signups? not 
 function setSess(j,email){const u=j.user||{},nm=(u.user_metadata&&u.user_metadata.name)||'',em=u.email||email;
  sess={access:j.access_token,refresh:j.refresh_token,exp:Date.now()+(j.expires_in||3600)*1000,email:em,name:nm};S.set('nx-sess',sess);
  mem.name=nm||mem.name||em.split('@')[0];save();
- if(em.toLowerCase()==CREATOR_EMAIL.toLowerCase()){cloudToken=sess.access;creator=true;privMail=CREATOR_EMAIL;creatorAct=Date.now()}else if(isTesterMail(em)){cloudToken=sess.access;tester=true;privMail=em.toLowerCase();creatorAct=Date.now()}
+ if(em.toLowerCase()==CREATOR_EMAIL.toLowerCase()){cloudToken=sess.access;creator=true;privMail=CREATOR_EMAIL;creatorAct=Date.now()}else{applyGrants()}
  paintAcc()}
 async function refreshSess(){if(!sess||!sess.refresh)return;if(sess.exp-Date.now()>6e4)return;try{setSess(await aPost('token?grant_type=refresh_token',{refresh_token:sess.refresh}),sess.email)}catch(e){if(e.message!=='Failed to fetch'){sess=null;S.set('nx-sess',null);paintAcc()}}}
-async function logout(){const t=sess&&sess.access;sess=null;S.set('nx-sess',null);if(creator||tester)lock(false);paintAcc();toast('Sesión cerrada');if(t)aPost('logout',{},t).catch(()=>{})}
+async function logout(){const t=sess&&sess.access;sess=null;GR=null;GRX=[];S.set('nx-sess',null);if(creator||tester)lock(false);paintAcc();toast('Sesión cerrada');if(t)aPost('logout',{},t).catch(()=>{})}
 const openDlg=()=>{dlg.hidden=false;AM.textContent='';AE.focus()},closeDlg=()=>{dlg.hidden=true;AP.value=''};
 async function doAuth(kind){const email=AE.value.trim(),pwd=AP.value;AM.textContent='';
  if(kind=='reset'){if(!/^\S+@\S+\.\S+$/.test(email)){AM.textContent='Escribe tu correo arriba.';return}try{await aPost('recover',{email});AM.textContent='Si el correo existe, te envié un enlace para restablecer la contraseña.'}catch(e){AM.textContent=aErr(e)}return}
@@ -805,7 +888,7 @@ acc.onclick=()=>{closeMenu();sess?confirm('Sesión de '+sess.email+'. ¿Cerrar s
 $('#ain').onclick=()=>doAuth('in');$('#aup').onclick=()=>doAuth('up');$('#are').onclick=()=>doAuth('reset');$('#acl').onclick=closeDlg;
 dlg.addEventListener('click',e=>{if(e.target==dlg)closeDlg()});
 dlg.addEventListener('keydown',e=>{if(e.key=='Escape')closeDlg();if(e.key=='Enter'&&(e.target==AP||e.target==AE)){e.preventDefault();doAuth('in')}});
-paintAcc();refreshSess().then(()=>{if(sess&&sess.email.toLowerCase()==CREATOR_EMAIL.toLowerCase()&&!creator){cloudToken=sess.access;creator=true;privMail=CREATOR_EMAIL;creatorAct=Date.now()}else if(sess&&isTesterMail(sess.email)&&!tester&&!creator){cloudToken=sess.access;tester=true;privMail=sess.email.toLowerCase();creatorAct=Date.now()}});
+paintAcc();refreshSess().then(()=>{if(sess&&sess.email.toLowerCase()==CREATOR_EMAIL.toLowerCase()&&!creator){cloudToken=sess.access;creator=true;privMail=CREATOR_EMAIL;creatorAct=Date.now()}else if(sess&&!creator){applyGrants()}});
 
 /* ============ Controles ============ */
 const inp=$('#in');function fit(){inp.style.height='auto';inp.style.height=Math.min(180,inp.scrollHeight)+'px'}
@@ -819,10 +902,17 @@ $('#thm').onclick=()=>{const d=document.documentElement,dark=d.dataset.theme?d.d
 {const t=S.get('nx-theme',null);if(t)document.documentElement.dataset.theme=t}
 const sb=$('#spk');const paintSpk=()=>{sb.textContent='Voz: '+(speak?'sí':'no');sb.classList.toggle('on',speak)};paintSpk();
 sb.onclick=()=>{speak=!speak;S.set('nx-spk',speak);paintSpk()};
+const mb=$('#mae'),paintMae=()=>{mb.textContent='Maestro: '+(MAESTRO?'sí':'no');mb.classList.toggle('on',MAESTRO)};paintMae();mb.onclick=()=>{MAESTRO=!MAESTRO;S.set('nx-teacher',MAESTRO);paintMae();toast(MAESTRO?'Noryx consultará a su maestro externo y aprenderá':'Noryx responderá solo con su núcleo')};
 $('#exp').onclick=exportMd;
 $('#forget').onclick=()=>{if(confirm('¿Borrar todas las conversaciones y lo que Noryx aprendió?')){convs=[];cur=null;mem={name:'',taught:[]};save();renderAll();toast('Listo, empezamos de cero')}};
 const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-$('#mic').onclick=function(){if(!SR)return toast('Tu navegador no admite dictado por voz');const r=new SR(),b=this;r.lang=navigator.language||'es-MX';r.onresult=e=>send(e.results[0][0].transcript);r.onend=()=>b.classList.remove('on');r.onerror=()=>b.classList.remove('on');b.classList.add('on');r.start()};
+$('#mic').onclick=async function(){const b=this;if(!SR)return toast('Tu navegador no admite dictado por voz. Prueba Chrome, Edge o Safari.');if(b.classList.contains('on'))return;
+ if(!await micPrime())return;
+ let tries=0;const go=()=>{const r=new SR();let got=false,err=false,heard=false;r.lang=navigator.language||'es-MX';
+  r.onaudiostart=()=>{heard=true};r.onresult=e=>{got=true;micOk();send(e.results[0][0].transcript)};
+  r.onerror=e=>{err=true;b.classList.remove('on');micFail(e&&e.error)};
+  r.onend=()=>{if(got||err){b.classList.remove('on');return}if(!heard&&tries++<1){setTimeout(go,150);return}b.classList.remove('on');micFail('no-speech')};
+  b.classList.add('on');try{r.start()}catch(e){b.classList.remove('on')}};go()};
 
 /* ============ Red neuronal viva (hero) ============ */
 function neural(cv){const x=cv.getContext('2d'),L=[4,6,6,3],N=[];let w=0,h=0;const rm=matchMedia('(prefers-reduced-motion:reduce)').matches;
@@ -840,14 +930,14 @@ function paintPro(){const p=$('#pro');if(p)p.hidden=!sess;if(!sess){if(VL&&VL.on
 const vl=$('#vl'),vlo=$('#vlo'),vls=$('#vls'),vlt=$('#vlt');
 const VST={listen:'Te escucho…',think:'Pensando…',speak:'Hablando… toca el círculo para interrumpir',mute:'Micrófono en pausa'};
 const vlSet=x=>{VL.st=x;vlo.className='orb '+x;vls.textContent=VST[x]||''},vlText=t=>{vlt.textContent=t||''};
-function vlStart(){if(!sess)return openDlg();if(!SR||!window.speechSynthesis){toast('Tu navegador no admite voz en tiempo real. Prueba Chrome, Edge o Safari.');return}
- closeMenu();VL.on=true;VL.mute=false;vl.hidden=false;speechSynthesis.cancel();vlText('');$('#vlm').textContent='Silenciar micrófono';vlListen()}
+function vlStart(){if(window.JV&&JV.on)jvStop();if(!sess)return openDlg();if(!SR||!window.speechSynthesis){toast('Tu navegador no admite voz en tiempo real. Prueba Chrome, Edge o Safari.');return}
+ closeMenu();VL.on=true;VL.mute=false;vl.hidden=false;speechSynthesis.cancel();vlText('');$('#vlm').textContent='Silenciar micrófono';micPrime().then(ok=>{if(VL.on){if(ok)vlListen();else vlStop()}})}
 function vlStop(){VL.on=false;const r=VL.rec;VL.rec=null;try{r&&r.abort()}catch(e){}window.speechSynthesis&&speechSynthesis.cancel();vl.hidden=true}
-function vlListen(){if(!VL.on)return;if(VL.mute){vlSet('mute');return}
+function vlListen(){if(!VL.on||!mdEl.hidden)return;if(VL.mute){vlSet('mute');return}
  let fin='',r;try{r=new SR()}catch(e){return}
  VL.rec=r;r.lang=navigator.language||'es-MX';r.interimResults=true;r.continuous=false;
- r.onresult=e=>{let it='';fin='';for(let i=0;i<e.results.length;i++){const x=e.results[i];if(x.isFinal)fin+=x[0].transcript;else it+=x[0].transcript}vlText(fin+it)};
- r.onerror=e=>{if(e.error=='not-allowed'||e.error=='service-not-allowed'){toast('Necesito permiso para usar el micrófono');vlStop()}else if(e.error=='audio-capture'){toast('No encuentro un micrófono');vlStop()}};
+ r.onresult=e=>{let it='';fin='';for(let i=0;i<e.results.length;i++){const x=e.results[i];if(x.isFinal)fin+=x[0].transcript;else it+=x[0].transcript}vlText(fin+it);micOk()};
+ r.onerror=e=>{const hard=e.error=='not-allowed'||e.error=='service-not-allowed'||e.error=='audio-capture';if(hard)vlStop();micFail(e.error,!hard)};
  r.onend=()=>{if(VL.rec!==r)return;VL.rec=null;if(!VL.on||VL.mute)return;const t=fin.trim();t?vlTurn(t):setTimeout(vlListen,200)};
  try{r.start();vlSet('listen')}catch(e){setTimeout(vlListen,500)}}
 async function vlWait(){const q=window.speechSynthesis;await sleep(250);let k=0;while(VL.on&&(q.speaking||q.pending)&&k<2400){await sleep(150);k++}}
@@ -909,8 +999,7 @@ $('#imdl').onclick=()=>{if(orig)imc.toBlob(b=>b&&dl(b,'noryx-imagen.png'))};
 const SYSI='Eres Noryx, una IA amable con trato femenino, creada por Orlando. El usuario te muestra una imagen y te hace preguntas sobre ella. Responde en su idioma. Mira la imagen con cuidado. Si es un ejercicio o tarea (química, matemáticas, física, etc.), transcribe lo que ves, resuélvelo o corrige la respuesta del usuario paso a paso y explica el porqué. Si te piden música, recomienda 4 o 5 géneros, artistas o canciones concretas que combinen con el ambiente, los colores y la emoción de la imagen, con una razón breve para cada una. Si es una foto o un diseño, descríbelo y responde lo que pregunten. Si algo no se ve con claridad, dilo en vez de inventarlo. Usa markdown simple (**negritas** y listas con "- "). Máximo 250 palabras.';
 const IMQ=['¿Qué ves en la imagen?','Resuelve este ejercicio paso a paso','¿Está bien mi respuesta?','Transcribe el texto','¿Qué música le queda?','Ponle un título y un texto para redes','¿Qué colores combinan con esto?','Explícamelo fácil'];
 IMQ.forEach(q=>{const b=document.createElement('button');b.textContent=q;b.onclick=()=>imAsk(q);$('#imch').append(b)});
-const POLLI_KEY='';/* opcional: clave pk_ de Pollinations para el estudio de imágenes de todos los usuarios */
-const pKey=()=>(S.get('nx-pkey','')||POLLI_KEY).trim();
+const pKey=()=>(S.get('nx-pkey','')||'').trim();
 async function pollChat(msgs,ms){let last=0;const key=pKey(),eps=[];
  if(key)eps.push(['https://gen.pollinations.ai/v1/chat/completions',key]);eps.push(['https://gen.pollinations.ai/v1/chat/completions','']);eps.push(['https://text.pollinations.ai/openai','']);
  for(const[u,k]of eps){for(const m of['openai','gemini']){const ctl=new AbortController(),to=setTimeout(()=>ctl.abort(),ms);
@@ -1014,7 +1103,530 @@ async function mkGo(){const p=$('#mkp').value.trim().slice(0,400);if(!p){toast('
 $('#mkb').onclick=mkGo;$('#mkv').onclick=mkGo;
 $('#mkd').onclick=async()=>{if(!mkLast)return;if(mkLast.local){mkLast.canvas.toBlob(b=>b&&dl(b,'noryx-arte.png'));return}
  try{const r=await fetch(mkLast.url);if(!r.ok)throw 0;dl(await r.blob(),'noryx-creacion.jpg')}catch(e){window.open(mkLast.url,'_blank','noopener');toast('Se abrió la imagen: mantén pulsado o clic derecho para guardarla')}};
+/* ============ MODO NORYX (asistente de voz; creador y personas con acceso) ============
+   Conversación de voz continua con Noryx + órdenes que un navegador SÍ puede ejecutar.
+   Lo que un navegador no puede (encender un monitor, controlar Spotify por dentro…) se hace con
+   «puentes» (webhooks) que configuras con /puente. */
+var JV={on:false,rec:null,mute:false,st:'',wake:false,proc:false,h:[],last:'',timers:[],seq:0,wl:null,pin:false,music:S.get('nx-jmusic','spotify')};
+const jvEl=$('#jv'),jvs=$('#jvs'),jvt=$('#jvt'),jvl=$('#jvl'),jvc=$('#jvc'),jvtm=$('#jvtm'),jvi=$('#jvi');
+const JST={listen:'Te escucho…',think:'Procesando…',speak:'Hablando… toca el reactor para interrumpir',mute:'Micrófono en pausa'};
+const jvSet=x=>{JV.st=x;$('#jvo').className='rx '+x;jvs.textContent=JST[x]||''},jvText=t=>{jvt.textContent=t||''},jvWho=()=>mem.name||'señor';
+const jvPad=x=>String(x).padStart(2,'0'),jvPlain=s=>s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+const jvR=(say,o)=>Object.assign({say,m:'Noryx · acción'},o||{});
+const jvLog=t=>{const d=document.createElement('div'),n=new Date();d.textContent=jvPad(n.getHours())+':'+jvPad(n.getMinutes())+'  '+t;jvl.prepend(d);while(jvl.children.length>40)jvl.lastChild.remove()};
+function jvChips(l){jvc.replaceChildren();(l||[]).forEach(c=>{let e;if(c.href){e=document.createElement('a');e.href=c.href;if(/^https?:/i.test(c.href)){e.target='_blank';e.rel='noopener'}}else{e=document.createElement('button');e.onclick=c.fn}e.textContent=c.label;jvc.append(e)})}
+const jvOpen=u=>{const w=window.open(u,'_blank');if(w){try{w.opener=null}catch(e){}return true}return false};
+const jvUri=u=>{const a=document.createElement('a');a.href=u;a.style.display='none';document.body.appendChild(a);a.click();a.remove()};
+const jvFmt=s=>{s=Math.max(0,Math.round(s));const h=Math.floor(s/3600),m=Math.floor(s%3600/60),c=s%60;return(h?h+':'+jvPad(m):String(m))+':'+jvPad(c)};
+const jvSpoken=s=>{const h=Math.floor(s/3600),m=Math.floor(s%3600/60),c=s%60,p=[];if(h)p.push(h+(h>1?' horas':' hora'));if(m)p.push(m+(m>1?' minutos':' minuto'));if(c)p.push(c+(c>1?' segundos':' segundo'));return p.join(' y ')||'0 segundos'};
+const jvClean=t=>String(t||'').replace(/\[([^\]]*)\]\([^)]*\)/g,'$1').replace(/[*_`#>]/g,'').replace(/^\s*[-•]\s+/gm,'').replace(/\s*\n+\s*/g,'. ').replace(/\.\s*\./g,'.').replace(/\s+/g,' ').trim();
+const jvShort=t=>{if(t.length<=420)return t;const s=t.match(/[^.!?]+[.!?]+/g)||[t];let o='';for(const x of s){if((o+x).length>420)break;o+=x}return o||t.slice(0,420)};
+async function jvWake(on){try{if(on){if(!navigator.wakeLock||JV.wl)return !!JV.wl;JV.wl=await navigator.wakeLock.request('screen');JV.wl.addEventListener('release',()=>{JV.wl=null});return true}if(JV.wl){await JV.wl.release();JV.wl=null}return true}catch(e){return false}}
+addEventListener('visibilitychange',()=>{if(document.visibilityState=='visible'&&(JV.on||JV.pin)&&!JV.wl)jvWake(true)});
+async function jvBatt(){try{const b=await navigator.getBattery();return{p:Math.round(b.level*100),c:b.charging}}catch(e){return null}}
+
+/* ---- duración en lenguaje natural ---- */
+const JNW={un:1,uno:1,una:1,dos:2,tres:3,cuatro:4,cinco:5,seis:6,siete:7,ocho:8,nueve:9,diez:10,once:11,doce:12,trece:13,catorce:14,quince:15,dieciseis:16,diecisiete:17,dieciocho:18,diecinueve:19,veinte:20,veinticinco:25,treinta:30,cuarenta:40,cincuenta:50,sesenta:60};
+function jvDur(s){const W='\\d+(?:\\.\\d+)?|un|una|uno|dos|tres|cuatro|cinco|seis|siete|ocho|nueve|diez|doce';
+ s=s.replace(/,/g,'.').replace(/\b(veinte|treinta|cuarenta|cincuenta)\s+y\s+(un|uno|dos|tres|cuatro|cinco|seis|siete|ocho|nueve)\b/g,(m,a,b)=>JNW[a]+JNW[b])
+  .replace(/\bmedia hora\b/g,'30 minutos').replace(/\bun cuarto de hora\b/g,'15 minutos')
+  .replace(new RegExp('\\b('+W+')\\s+horas?\\s+y\\s+media\\b','g'),'$1 horas 30 minutos').replace(/\bhora y media\b/g,'90 minutos')
+  .replace(new RegExp('\\b('+Object.keys(JNW).join('|')+')\\b','g'),w=>JNW[w]);
+ let tot=0,ok=0;s.replace(/(\d+(?:\.\d+)?)\s*(horas?|hrs?|h|minutos?|mins?|min|segundos?|segs?)\b/g,(m,v,u)=>{v=parseFloat(v);tot+=/^h/.test(u)?v*3600:/^m/.test(u)?v*60:v;ok=1;return m});
+ return ok?Math.round(tot):0}
+
+/* ---- temporizadores ---- */
+function jvBeep(){try{const a=new (window.AudioContext||window.webkitAudioContext)();[0,.25,.5].forEach(d=>{const o=a.createOscillator(),g=a.createGain(),t=a.currentTime+d;o.frequency.value=880;o.connect(g);g.connect(a.destination);g.gain.setValueAtTime(.001,t);g.gain.exponentialRampToValueAtTime(.25,t+.02);g.gain.exponentialRampToValueAtTime(.001,t+.2);o.start(t);o.stop(t+.22)});setTimeout(()=>a.close&&a.close(),1500)}catch(e){}}
+function jvTick(){const now=Date.now();jvtm.textContent=JV.timers.length?JV.timers.map(t=>(t.label||'Temporizador')+'  '+jvFmt((t.end-now)/1000)).join('\n'):'Ninguno'}
+async function jvAlert(t){let k=0;while(window.speechSynthesis&&speechSynthesis.speaking&&k<100){await sleep(200);k++}say(t)}
+function jvFire(id){const t=JV.timers.find(x=>x.id==id);if(!t)return;JV.timers=JV.timers.filter(x=>x.id!=id);jvSave();jvBeep();const w=jvWho(),msg=t.label=='pomodoro'?w[0].toUpperCase()+w.slice(1)+', terminó el pomodoro. Tome un descanso de cinco minutos.':t.label?'Recordatorio, '+w+': '+t.label+'.':'Su temporizador ha terminado, '+w+'.';toast('⏰ '+msg);jvNotify(msg);jvLog('⏰ '+msg);jvAlert(msg);jvTick()}
+function jvTimer(sec,label){const id=++JV.seq,t={id,end:Date.now()+sec*1000,label,to:setTimeout(()=>jvFire(id),sec*1000)};JV.timers.push(t);jvSave();jvAskNotif();jvTick();return t}
+
+/* ---- música, web y dispositivos ---- */
+const JMUS={spotify:{n:'Spotify',app:q=>q?'spotify:search:'+encodeURIComponent(q):'spotify:',web:q=>q?'https://open.spotify.com/search/'+encodeURIComponent(q):'https://open.spotify.com'},
+ youtube:{n:'YouTube',web:q=>q?'https://www.youtube.com/results?search_query='+encodeURIComponent(q):'https://www.youtube.com'},
+ 'youtube music':{n:'YouTube Music',web:q=>q?'https://music.youtube.com/search?q='+encodeURIComponent(q):'https://music.youtube.com'},
+ 'apple music':{n:'Apple Music',web:q=>q?'https://music.apple.com/search?term='+encodeURIComponent(q):'https://music.apple.com'},
+ deezer:{n:'Deezer',web:q=>q?'https://www.deezer.com/search/'+encodeURIComponent(q):'https://www.deezer.com'}};
+const JSITES={youtube:'https://www.youtube.com',google:'https://www.google.com',gmail:'https://mail.google.com',correo:'https://mail.google.com',mapas:'https://www.google.com/maps',maps:'https://www.google.com/maps',whatsapp:'https://web.whatsapp.com',github:'https://github.com',netflix:'https://www.netflix.com',twitter:'https://x.com',instagram:'https://www.instagram.com',facebook:'https://www.facebook.com',drive:'https://drive.google.com',calendario:'https://calendar.google.com',calendar:'https://calendar.google.com',wikipedia:'https://es.wikipedia.org',chatgpt:'https://chatgpt.com',claude:'https://claude.ai',twitch:'https://www.twitch.tv',reddit:'https://www.reddit.com',linkedin:'https://www.linkedin.com',amazon:'https://www.amazon.com','mercado libre':'https://www.mercadolibre.com',tiktok:'https://www.tiktok.com',traductor:'https://translate.google.com',noticias:'https://news.google.com',fotos:'https://photos.google.com',supabase:'https://supabase.com'};
+function jvPlay(pv,q){const p=JMUS[pv]||JMUS.spotify,who=jvWho(),ch=[];let ok;
+ if(p.app){jvUri(p.app(q));ok=true;ch.push({label:'♪ '+p.n+' (app)',href:p.app(q)},{label:'♪ '+p.n+' web',href:p.web(q)})}
+ else{ok=jvOpen(p.web(q));ch.push({label:'♪ '+p.n,href:p.web(q)})}
+ return jvR((q?'Buscando '+q+' en '+p.n+', '+who+'.':'Abriendo '+p.n+', '+who+'.')+(ok?'':' El navegador bloqueó la ventana; toque el botón.'),{chips:ch,log:'♪ '+p.n+(q?' · '+q:''),m:'Noryx · música',
+  show:(q?'Buscando «'+q+'» en '+p.n+'.':'Abriendo '+p.n+'.')+(pv=='spotify'?' Si el navegador pregunta si abrir la app de Spotify, acepta. La búsqueda se abre lista, pero darle play automático requiere conectar la API de Spotify.':' Se abren los resultados; el play lo das tú.')})}
+function jvWeb(u,what,site){const ok=jvOpen(u),who=jvWho();return jvR(ok?'Abriendo '+what+', '+who+'.':'El navegador bloqueó la ventana emergente, '+who+'. Toque el botón, o permita las ventanas emergentes de esta página para que lo haga sola.',{chips:[{label:'↗ '+(site||what),href:u}],log:'🌐 '+u.replace(/^https?:\/\//,'').slice(0,60),m:'Noryx · web'})}
+async function jvBridge(key,u,on){const act=on?'on':'off',url=u.replace(/\{accion\}/g,act),who=jvWho();
+ try{await fetch(url,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body:JSON.stringify({accion:act,origen:'noryx'})});return jvR('Orden de '+(on?'encender':'apagar')+' enviada a '+key+', '+who+'.',{show:'Orden «'+act+'» enviada al puente «'+key+'» (el dispositivo no confirma la ejecución).',log:'🔌 '+key+' → '+act,m:'Noryx · puente'})}
+ catch(e){return jvR('No logré alcanzar el puente '+key+', '+who+'.'+(/^http:/i.test(url)&&location.protocol=='https:'?' El navegador bloquea direcciones http desde una página https.':''),{m:'Noryx · error'})}}
+async function jvPhysical(nm,on){const who=jvWho(),scr=/\b(monitor|pantalla|display)\b/.test(nm);let extra='';
+ if(scr){JV.pin=on;if(on){await jvWake(true);extra=on?' Mientras tanto mantengo la pantalla despierta para que no se apague.':''}else extra=' Dejaré que la pantalla se apague sola al cerrar el modo Noryx.'}
+ const ej=scr?'monitor':nm;
+ return jvR('No puedo '+(on?'encender':'apagar')+' '+nm+' directamente desde el navegador, '+who+'. Si lo enlaza con un puente, lo hago.'+extra,{m:'Noryx · límite honesto',show:'Un navegador no tiene acceso al hardware. Para esto crea un «puente»: un webhook (Home Assistant, IFTTT, Shelly, Tuya…) que encienda o apague el aparato.\nEjemplo: /puente '+ej+' on https://tu-webhook-encender\n         /puente '+ej+' off https://tu-webhook-apagar'+extra})}
+
+/* ---- resúmenes ---- */
+async function jvStatus(){const b=await jvBatt(),cn=navigator.connection&&navigator.connection.effectiveType,who=jvWho();
+ const l=['Núcleo: '+H+' neuronas · '+ACC+' % de precisión','Batería: '+(b?b.p+' %'+(b.c?' (cargando)':''):'no disponible en este navegador'),'Red: '+(navigator.onLine?'conectado'+(cn?' ('+cn+')':''):'sin conexión'),'Memoria: '+mem.taught.length+' enseñanzas','Temporizadores activos: '+JV.timers.length,'Maestro externo: '+(MAESTRO?'activo':'apagado')];
+ return jvR('Diagnóstico completo, '+who+'. Núcleo de '+H+' neuronas al '+ACC+' por ciento de precisión. '+(b?'Batería al '+b.p+' por ciento. ':'')+(navigator.onLine?'Conexión activa. ':'Sin conexión. ')+JV.timers.length+' temporizadores activos.',{show:l.join('\n'),m:'Noryx · diagnóstico'})}
+async function jvBrief(n){const d=new Date(),h=d.getHours(),b=await jvBatt(),tk=S.get('nx-jtasks',[]),w=jvWho(),noche=/noches/.test(n);
+ const g=noche?'Buenas noches':/tardes/.test(n)?'Buenas tardes':h<12?'Buenos días':h<20?'Buenas tardes':'Buenas noches';
+ const p=[g+', '+w+'.','Son las '+(h%12||12)+':'+jvPad(d.getMinutes())+', '+d.toLocaleDateString('es-MX',{weekday:'long',day:'numeric',month:'long'})+'.'];
+ p.push(tk.length?'Tiene '+tk.length+(tk.length>1?' pendientes':' pendiente')+(tk.length<=3?': '+tk.join(', '):'; el primero: '+tk[0])+'.':'No tiene tareas pendientes.');
+ if(JV.timers.length)p.push('Hay '+JV.timers.length+(JV.timers.length>1?' temporizadores activos.':' temporizador activo.'));
+ if(b&&b.p<30&&!b.c)p.push('La batería está al '+b.p+' por ciento; conviene cargar.');
+ if(noche)p.push('Que descanse.');
+ return jvR(p.join(' '),{m:'Noryx · resumen'})}
+async function jvRoutine(name,steps){const ch=[],out=[];for(const s of steps.slice(0,10)){const r=await jvCmd(s,jvPlain(s).replace(/[^a-z0-9 ]/g,' ').trim(),true);if(r){(r.chips||[]).forEach(c=>ch.push(c));out.push('• '+(r.show||r.say))}else out.push('• ?'+s);await sleep(400)}
+ return jvR('Rutina '+name+' ejecutada, '+jvWho()+'.',{chips:ch,show:'Rutina «'+name+'»:\n'+out.join('\n'),m:'Noryx · rutina'})}
+
+const JHELP='Esto puedo hacer en modo Noryx:\n• Sitios: «abre YouTube», «abre github.com»\n• Música: «pon música de Soda Stereo», «reproduce jazz en YouTube», «abre Spotify y pon lofi»\n• Buscar: «busca recetas de pozole», «cómo llego a la Torre Eiffel»\n• Tiempo: «temporizador de 10 minutos», «recuérdame en 20 minutos que saque la ropa», «pomodoro»\n• Notas y tareas: «anota que compré leche», «agrega pan a mi lista», «qué tengo pendiente», «completa la tarea 2»\n• Sistema: «diagnóstico», «batería», «mantén la pantalla encendida», «pantalla completa», «modo claro»\n• Aparatos: «enciende el monitor» (con /puente)\n• Rutinas: «buenos días», «modo trabajo» (con /rutina)\n• Extras: tira un dado, lanza una moneda, copia un texto, habla más rápido\n• Y charlamos de lo que quieras.';
+
+/* ---- intérprete de órdenes: devuelve null si no es una orden (entonces se charla) ---- */
+const JSPLIT=/\s+(?:y\s+)?(?:luego|despues|ademas|y despues)\s+|\s+y\s+(?=(?:abre|abrir|pon|ponme|reproduce|toca|busca|enciende|prende|apaga|activa|desactiva|anota|apunta|recuerdame|avisame|temporizador|cambia|dime|cuentame|agrega|manten|tira|lanza)\b)/;
+async function jvMulti(ps){const out=[],ch=[],ln=[];
+ for(let i=0;i<ps.length;i++){const p=ps[i],mp=p.match(/^(?:abre|abrir|open|lanza)\s+(spotify|youtube music|youtube|deezer|apple music)$/);
+  if(mp&&ps[i+1]&&/^(?:reproduce|toca|tocame|pon|ponme|play|quiero escuchar)\b/.test(ps[i+1])){ps[i+1]+=' en '+mp[1];continue}
+  const r=await jvCmd(p,p,true);
+  if(r){if(r.say)out.push(r.say);ln.push('• '+(r.show||r.say));(r.chips||[]).forEach(c=>ch.push(c))}else{out.push('No entendí «'+p+'».');ln.push('• ? '+p)}}
+ return jvR(out.join(' '),{show:ln.join('\n'),chips:ch,m:'Noryx · varias acciones'})}
+async function jvCmd(raw,pm,ns){
+ const n=pm.replace(/\s+/g,' ').trim(),who=jvWho(),R=jvR,pl=jvPlain(raw);
+ const T=re=>re.test(n),X=re=>{const r=new RegExp(re.source,re.flags.replace('d','')+'d'),m=r.exec(pm);return m?m.map((g,i)=>g==null?g:raw.slice(m.indices[i][0],m.indices[i][1])):null};
+ if(!ns){const ps=n.split(JSPLIT).map(s=>s.trim()).filter(Boolean);if(ps.length>1)return jvMulti(ps)}
+ let q,m;
+ if(T(/^(?:callate|silencio|basta|detente|para|stop|cancela|ya basta|shh+)$/)){window.speechSynthesis&&speechSynthesis.cancel();return R('',{show:'Entendido.',m:'Noryx · control'})}
+ if(T(/^(?:repite|repitelo|repite eso|que dijiste|otra vez|say again|repeat)$/))return R(JV.last||'Aún no he dicho nada, '+who+'.',{m:'Noryx · control'});
+ if(T(/^(?:que (?:puedes|sabes) hacer|que funciones tienes|lista de comandos|comandos|ayuda|capacidades|que haces|what can you do|help)$/))return R('Puedo abrir sitios, poner música, buscar, programar temporizadores, llevar notas y tareas, ejecutar rutinas y accionar dispositivos enlazados. La lista completa está en pantalla, '+who+'.',{show:JHELP,m:'Noryx · ayuda'});
+ if(T(/^(?:que hora es|dime la hora|la hora|hora actual|what time is it)$/)){const d=new Date(),h=d.getHours(),hh=h%12||12;return R((hh==1?'Es la ':'Son las ')+hh+':'+jvPad(d.getMinutes())+(h<12?' de la mañana':h<19?' de la tarde':' de la noche')+', '+who+'.')}
+ if(T(/^(?:que dia es(?: hoy)?|que fecha es(?: hoy)?|fecha de hoy|dime la fecha|what day is it)$/))return R('Hoy es '+new Date().toLocaleDateString('es-MX',{weekday:'long',day:'numeric',month:'long',year:'numeric'})+', '+who+'.');
+ if(T(/^(?:buenos dias|buen dia|buenas tardes|buenas noches|good morning|resumen del dia|dame el resumen|dame el reporte del dia|que hay para hoy|mi agenda)$/))return jvBrief(n);
+ if(T(/(?:diagnostico|estado del sistema|estado de los sistemas|reporte de estado|como estan tus sistemas|status report|system status)/))return jvStatus();
+ if(T(/\bbateria\b/)&&!/(ahorro|configura|cambia)/.test(n)){const b=await jvBatt();return R(b?'La batería está al '+b.p+' por ciento'+(b.c?' y cargando':'')+', '+who+'.':'Este navegador no me deja leer la batería, '+who+'.')}
+ if(T(/^(?:tengo internet|hay internet|estoy conectado|hay conexion|estado de la red)$/))return R(navigator.onLine?'Conexión activa, '+who+'.':'Sin conexión a internet, '+who+'.');
+ /* temporizadores y recordatorios */
+ if(T(/\b(?:temporizador|temporizadores|cronometro|cuenta regresiva|alarma|alarmas|avisame|recuerdame|pomodoro|timer|recordatorio|despiertame)\b/)){
+  if(T(/\b(?:cancela|quita|borra|elimina|deten|apaga|olvida)\b/)){const k=JV.timers.length;JV.timers.forEach(t=>clearTimeout(t.to));JV.timers=[];jvSave();jvTick();return R(k?'Listo, cancelé '+(k>1?'los '+k+' temporizadores':'el temporizador')+', '+who+'.':'No hay temporizadores activos, '+who+'.')}
+  let sec=jvDur(pl)||jvAt(pl);
+  if(T(/\b(?:que|cuales|cuantos|cuanto|lista)\b/)&&!sec){if(!JV.timers.length)return R('No hay temporizadores activos, '+who+'.');const now=Date.now();return R(JV.timers.map(t=>(t.label||'Temporizador')+': faltan '+jvSpoken(Math.max(1,Math.round((t.end-now)/1000)))).join('. ')+'.')}
+  let label='';if(/pomodoro/.test(n)){sec=sec||1500;label='pomodoro'}
+  if(!sec)return R('¿De cuánto tiempo, '+who+'? Por ejemplo: temporizador de diez minutos.');
+  if(sec>86400)return R('El máximo es de 24 horas, '+who+'.');
+  if(!label){const lm=X(/(?:recuerdame|avisame|recordatorio)\s+(?:de\s+)?(?:que\s+|para\s+)?(.+?)\s+(?:en|dentro de|a la|a las)\s+\d/)||X(/(?:en|dentro de)\s+.+?\s+(?:que|para)\s+(.+)$/);if(lm)label=lm[1].trim()}
+  jvTimer(sec,label);
+  return R(label=='pomodoro'?'Pomodoro de '+jvSpoken(sec)+' en marcha, '+who+'. A concentrarse.':label?'Anotado. Le aviso en '+jvSpoken(sec)+': '+label+'.':'Temporizador de '+jvSpoken(sec)+' en marcha, '+who+'.',{log:'⏱ '+jvSpoken(sec)+(label?' · '+label:''),m:'Noryx · temporizador'})}
+ /* tareas */
+ if(q=X(/^(?:agrega|agregame|anade|anademe|pon|ponme|mete|apunta|anota)\s+(.+?)\s+(?:a|en)\s+(?:mi\s+|la\s+|mis\s+)?(?:lista(?:\s+de\s+(?:tareas|pendientes|compras|el super))?|tareas|pendientes)$/)){const L=S.get('nx-jtasks',[]);L.push(q[1].trim());S.set('nx-jtasks',L.slice(-100));return R('Agregado a su lista: '+q[1].trim()+'. Tiene '+L.length+(L.length>1?' pendientes':' pendiente')+'.',{m:'Noryx · tareas'})}
+ if(T(/^(?:que tengo pendiente|que pendientes tengo|mis tareas|mi lista|mis pendientes|lee mi lista|lee mis tareas|lee mis pendientes|que hay en mi lista|dime mis pendientes|cuales son mis tareas|que tengo que hacer)$/)){const L=S.get('nx-jtasks',[]);return L.length?R('Tiene '+L.length+(L.length>1?' pendientes':' pendiente')+': '+L.map((x,i)=>(i+1)+', '+x).join('. ')+'.',{show:L.map((x,i)=>(i+1)+'. '+x).join('\n'),m:'Noryx · tareas'}):R('Su lista está vacía, '+who+'. Un día tranquilo.')}
+ if(q=X(/^(?:completa|termina|tacha|marca como hecha|marca como hecho|ya hice|ya termine)\s+(?:la\s+)?(?:tarea\s+)?(?:numero\s+)?(.+?)(?:\s+de\s+(?:mi\s+)?(?:lista|tareas|pendientes))?$/)){const L=S.get('nx-jtasks',[]),k=q[1].trim(),kn=norm(k);let i=/^\d+$/.test(k)?+k-1:JNW[kn]?JNW[kn]-1:L.findIndex(x=>norm(x).includes(kn));
+  if(i<0||i>=L.length)return R('No encuentro esa tarea, '+who+'.');const d=L.splice(i,1)[0];S.set('nx-jtasks',L);return R('Hecho: '+d+'. Quedan '+L.length+'.',{m:'Noryx · tareas'})}
+ if(T(/^(?:borra|limpia|vacia|elimina)\s+(?:mi\s+|la\s+|toda mi\s+|todas mis\s+)?(?:lista|tareas|pendientes)(?:\s+de\s+tareas)?$/)){S.set('nx-jtasks',[]);return R('Lista vaciada, '+who+'.',{m:'Noryx · tareas'})}
+ /* notas */
+ if(q=X(/^(?:anota|apunta|toma nota(?:\s+de)?|guarda (?:una )?nota|nota)\b\s*(?:de\s+|que\s+)?(.+)$/)){const L=S.get('nx-jnotes',[]);L.push({t:q[1].trim(),ts:Date.now()});S.set('nx-jnotes',L.slice(-200));return R('Anotado, '+who+'.',{log:'📝 '+q[1].trim().slice(0,70),m:'Noryx · notas'})}
+ if(T(/^(?:(?:lee|leeme|dime|muestrame|cuales son)\s+(?:mis\s+)?notas|mis notas|que notas tengo)$/)){const L=S.get('nx-jnotes',[]);return L.length?R('Sus últimas notas: '+L.slice(-5).map(x=>x.t).join('. ')+'.',{show:L.map((x,i)=>(i+1)+'. '+x.t).join('\n'),m:'Noryx · notas'}):R('No tiene notas guardadas, '+who+'.')}
+ if(T(/^(?:borra|elimina|limpia)\s+(?:mis\s+)?notas$/)){S.set('nx-jnotes',[]);return R('Notas borradas, '+who+'.',{m:'Noryx · notas'})}
+ /* preferencias de música */
+ if(m=n.match(/^(?:usa|usemos|prefiero|cambia a|pon como predeterminado)\s+(spotify|youtube music|youtube|apple music|deezer)(?:\s+para\s+(?:la\s+)?(?:musica|canciones))?$/)){JV.music=m[1];S.set('nx-jmusic',m[1]);return R('Listo, usaré '+JMUS[m[1]].n+' para la música.',{m:'Noryx · música'})}
+ /* rutinas del creador */
+ {const RT=S.get('nx-jrut',{}),rm=n.match(/^(?:ejecuta|activa|inicia|lanza|corre|modo|rutina|haz)\s+(?:la\s+)?(?:rutina\s+|modo\s+)?(.+)$/),key=rm&&RT[rm[1]]?rm[1]:RT[n]?n:null;if(key)return jvRoutine(key,RT[key])}
+ /* pantalla completa y pantalla despierta */
+ if(T(/\b(?:salir de|sal de|quita|desactiva|cierra)\s+(?:la\s+)?pantalla completa\b/)){try{document.fullscreenElement&&await document.exitFullscreen()}catch(e){}return R('Pantalla normal, '+who+'.')}
+ if(T(/pantalla completa|full ?screen/)){let ok=false;try{await document.documentElement.requestFullscreen();ok=true}catch(e){}return ok?R('Pantalla completa activada.'):R('El navegador solo permite la pantalla completa con un toque suyo, '+who+'. Use el botón.',{chips:[{label:'⛶ Pantalla completa',fn:()=>document.documentElement.requestFullscreen().catch(()=>toast('Tu navegador no lo permitió'))}]})}
+ if(T(/(?:manten|deja)\b.*\bpantalla\b.*\b(?:encendida|despierta|activa|prendida)\b|no dejes que (?:la )?pantalla se apague/)){JV.pin=true;const ok=await jvWake(true);return R(ok?'De acuerdo, mantendré la pantalla despierta.':'Este navegador no me permite evitar que la pantalla se apague, '+who+'.',{m:'Noryx · sistema'})}
+ if(T(/\b(?:deja|permite)\b.*\bpantalla\b.*\bse apague\b/)){JV.pin=false;if(!JV.on)await jvWake(false);return R('De acuerdo, la pantalla podrá apagarse sola al cerrar el modo Noryx.',{m:'Noryx · sistema'})}
+ /* puentes (webhooks) y aparatos físicos */
+ {const B=S.get('nx-jbridge',{}),bm=n.match(/^(enciende|prende|activa|conecta|arranca|abre|sube|inicia|apaga|desactiva|desconecta|cierra|baja)\s+(?:el\s+|la\s+|los\s+|las\s+|mi\s+|mis\s+)?(.+)$/);
+  if(bm){const on=/^(?:enciende|prende|activa|conecta|arranca|abre|sube|inicia)$/.test(bm[1]),nm=bm[2],key=Object.keys(B).find(k=>(' '+nm+' ').includes(' '+k+' '));
+   if(key){const u=B[key][on?'on':'off'];if(!u)return R('El puente '+key+' no tiene configurada la acción de '+(on?'encender':'apagar')+', '+who+'.');return jvBridge(key,u,on)}
+   if(/\b(monitor|pantalla|display|television|tele|luz|luces|foco|focos|lampara|ventilador|enchufe|aire acondicionado|cafetera|computadora|compu|pc|laptop|impresora|persiana|persianas|cortina|cortinas|puerta|cochera|calefaccion|router|bocina|bocinas|proyector)\b/.test(nm))return jvPhysical(nm,on)}}
+ /* tema */
+ {const th=d=>{document.documentElement.dataset.theme=d;S.set('nx-theme',d)};
+  if(T(/\b(?:modo|tema)\s+(?:oscuro|noche|nocturno)\b|\b(?:oscuro|nocturno)\s+(?:modo|tema)\b/)){th('dark');return R('Modo oscuro activado.',{m:'Noryx · sistema'})}
+  if(T(/\b(?:modo|tema)\s+(?:claro|dia|diurno)\b/)){th('light');return R('Modo claro activado.',{m:'Noryx · sistema'})}
+  if(T(/^cambia\s+(?:el\s+)?(?:tema|modo)$/)){$('#thm').click();return R('Tema cambiado.',{m:'Noryx · sistema'})}}
+ /* voz de Noryx */
+ if(m=n.match(/\b(?:habla|hablame|di|dilo|dime)\s+(?:mas\s+)?(rapido|lento|despacio)\b/)){const r=Math.min(1.5,Math.max(.7,S.get('nx-vr',1.03)+(m[1]=='rapido'?.12:-.12)));S.set('nx-vr',r);return R(m[1]=='rapido'?'De acuerdo, hablaré más rápido.':'De acuerdo, hablaré más despacio.',{m:'Noryx · voz'})}
+ if(m=n.match(/\b(?:voz|tono)\s+(?:mas\s+)?(grave|agudo|aguda|baja|alta)\b/)){const up=/^(?:agudo|aguda|alta)$/.test(m[1]),p=Math.min(1.6,Math.max(.7,S.get('nx-vp',1.12)+(up?.1:-.1)));S.set('nx-vp',p);return R('De acuerdo, ¿así está mejor?',{m:'Noryx · voz'})}
+ if(T(/^(?:voz normal|restablece la voz|vuelve a tu voz)$/)){S.set('nx-vr',1.03);S.set('nx-vp',1.12);return R('Voz restablecida.',{m:'Noryx · voz'})}
+ /* extras */
+ if(m=n.match(/^(?:tira|lanza|echa|tirame)\s+(?:un\s+)?dado(?:\s+de\s+(\d+)(?:\s+caras)?)?$/)){const k=Math.min(1000,Math.max(2,+m[1]||6));return R('Salió un '+(1+Math.floor(Math.random()*k))+', '+who+'.')}
+ if(T(/^(?:(?:tira|lanza|echa|vuela|tirame)\s+(?:una\s+)?moneda|cara o cruz)$/))return R(Math.random()<.5?'Cara.':'Cruz.');
+ if(m=n.match(/^(?:dame\s+)?(?:un\s+)?numero aleatorio(?:\s+entre\s+(\d+)\s+y\s+(\d+))?$/)){let a=+m[1]||1,b=+m[2]||100;if(a>b)[a,b]=[b,a];return R('El número es '+(a+Math.floor(Math.random()*(b-a+1)))+'.')}
+ if(q=X(/^(?:copia|copiame)\s+(?:esto\s*|al portapapeles\s*)?(.+)$/)){const tx=q[1];let ok=false;try{await navigator.clipboard.writeText(tx);ok=true}catch(e){}return ok?R('Copiado al portapapeles.'):R('El navegador no me deja copiar sin un toque suyo. Use el botón.',{chips:[{label:'📋 Copiar',fn:()=>navigator.clipboard.writeText(tx).then(()=>toast('Copiado'),()=>toast('No se pudo copiar'))}]})}
+ if(T(/^(?:pausa|pausar|pausa la musica|reanuda|reanuda la musica|continua la musica|siguiente cancion|cancion siguiente|cancion anterior|salta (?:la )?cancion|sube el volumen|baja el volumen|sube volumen|baja volumen|mutea|silencia la musica)$/))return R('Desde el navegador no puedo controlar la reproducción ni el volumen de otras aplicaciones, '+who+'. Para eso necesitaría conectar la API de Spotify o un puente.',{m:'Noryx · límite honesto'});
+ /* música */
+ if(m=n.match(/^(reproduce|reproduceme|toca|tocame|quiero escuchar|quiero oir|play|escuchar|pon|ponme|pones)\s+(.+)$/)){let rest=m[2],pv=null;const pm2=rest.match(/\s+(?:en|on|por|con|desde)\s+(spotify|youtube music|yt music|youtube|apple music|deezer)$/);if(pm2){pv=pm2[1]=='yt music'?'youtube music':pm2[1];rest=rest.slice(0,pm2.index)}
+  const soft=/^(?:pon|ponme|pones)$/.test(m[1]),musical=/\b(?:musica|cancion|canciones|playlist|album|disco|algo de|algo para|tema de|temazo|rola|rolas|lofi|jazz|rock|salsa|cumbia|reggaeton|clasica|pop|rap)\b/.test(rest);
+  if(!soft||pv||musical){const F=/^(?:algo de|algo para|un poco de|musica de|musica para|musica|la musica de|una cancion de|la cancion|cancion de|cancion|el album|la playlist|playlist de|playlist|mi musica|rolas de|un tema de|temazos de)\s+/;let s=rest.trim();s=s.replace(F,'').replace(F,'').replace(/^(?:musica|cancion|canciones)$/,'').trim();return jvPlay(pv||JV.music,s)}}
+ /* mapas y búsqueda */
+ if(q=X(/^(?:como llego a|como llegar a|ruta a|ruta hacia|llevame a|navega a|direcciones a|how do i get to)\s+(.+)$/))return jvWeb('https://www.google.com/maps/dir/?api=1&destination='+encodeURIComponent(q[1]),'la ruta a '+q[1],'Google Maps');
+ if(q=X(/^(?:mapa de|muestrame el mapa de|muestrame en el mapa)\s+(.+)$/))return jvWeb('https://www.google.com/maps/search/'+encodeURIComponent(q[1]),'el mapa de '+q[1],'Google Maps');
+ if(q=X(/^(?:busca|buscame|googlea|googleame|search for|search)\s+(?:en\s+(google|youtube|maps|mapas|wikipedia|amazon|internet|la web)\s+)?(?:informacion\s+(?:de|sobre)\s+)?(.+)$/)){const s=norm(q[1]||'google'),B={google:'https://www.google.com/search?q=',internet:'https://www.google.com/search?q=','la web':'https://www.google.com/search?q=',youtube:'https://www.youtube.com/results?search_query=',maps:'https://www.google.com/maps/search/',mapas:'https://www.google.com/maps/search/',wikipedia:'https://es.wikipedia.org/w/index.php?search=',amazon:'https://www.amazon.com/s?k='};return jvWeb(B[s]+encodeURIComponent(q[2]),'la búsqueda de '+q[2],q[1]?q[1][0].toUpperCase()+q[1].slice(1):'Google')}
+ /* abrir sitios y apps */
+ if(q=X(/^(?:abre|abrir|abreme|open|ve a|ir a|lanza|muestrame|ensename)\s+(?:(?:la\s+)?(?:pagina|web|app|aplicacion)\s+(?:de\s+)?|el sitio\s+(?:de\s+)?|el\s+|la\s+)?(.+)$/)){const w=norm(q[1]);
+  if(/\bspotify\b/.test(w))return jvPlay('spotify','');
+  const sites={...JSITES,...S.get('nx-jsites',{})},key=Object.keys(sites).sort((a,b)=>b.length-a.length).find(k=>(' '+w+' ').includes(' '+k+' '));
+  if(key)return jvWeb(sites[key],key,key);
+  const dm=q[1].trim().match(/^(https?:\/\/)?([a-z0-9-]+(?:\.[a-z0-9-]+)+)(\/\S*)?$/i);if(dm)return jvWeb((dm[1]||'https://')+dm[2]+(dm[3]||''),dm[2],dm[2]);
+  if(w.split(' ').length<=3)return R('No conozco «'+q[1]+'», '+who+'. Dígame la dirección o créeme un atajo con /atajo nombre = https://…',{m:'Noryx · acción'})}
+ return null}
+
+/* ---- charla (personalidad Jarvis) ---- */
+const jvSys=()=>'Eres Noryx en «modo asistente de voz»: la asistente de voz personal de tu creador, Orlando, que te habla en tiempo real. Tu estilo es el de J.A.R.V.I.S. de Iron Man (elegante, ingeniosa, leal, con humor seco y sutil), pero eres Noryx, con trato femenino, y nunca finges ser otra IA ni otro personaje. Trátalo de «señor» salvo que pida otra cosa'+(mem.name?' (él pidió que lo llames '+mem.name+')':'')+'. Puedes conversar de cualquier tema, opinar, bromear, aconsejar, explicar y ayudarle a pensar. Responde en el idioma que use, como se habla en voz alta: máximo 3 frases cortas (unas 60 palabras), sin markdown, sin listas, sin emojis. Las acciones del sistema (abrir sitios, música, temporizadores, notas, dispositivos) las ejecuta el programa cuando el creador da una orden clara; tú NUNCA afirmes haber ejecutado una acción ni tienes control directo del computador. Si te piden algo así que no se ejecutó, pídele que lo diga como orden directa (por ejemplo «abre YouTube» o «temporizador de 5 minutos»). No inventes datos en tiempo real. Ahora es '+new Date().toLocaleString('es-MX',{dateStyle:'full',timeStyle:'short'})+'.';
+async function jvChat(raw){const who=jvWho();
+ const local=/(?:clima|weather|temperatura en|llueve|\d\s*[+\-*/^x×÷%]\s*\d|raiz|porcentaje|% de|media de|mediana|ecuacion|convierte|\ba km\b|millas|aprende\s*:|factorial)/.test(jvPlain(raw));
+ if(!MAESTRO||local){const r=await brain(raw);return jvR(r.s||jvClean(r.t),{show:jvClean(r.t),m:'Noryx · '+(r.m||'núcleo')})}
+ JV.h.push({role:'user',content:raw});
+ const r=await ask([{role:'system',content:jvSys()},...JV.h.slice(-13)]);
+ if(r.t){JV.h.push({role:'assistant',content:r.t.slice(0,600)});JV.h=JV.h.slice(-14);return jvR(jvClean(r.t),{m:'Noryx · maestro externo'})}
+ JV.h.pop();const b=await brain(raw);
+ return jvR((r.err=='rate'?'Mi maestro externo está saturado, '+who+'. ':'No logro contactar a mi maestro externo, '+who+'. ')+jvClean(b.t),{m:'Noryx · núcleo local'})}
+function jvLogChat(u,a,m){let c=conv();if(!c){c={id:Date.now(),title:'Noryx · '+u.slice(0,30),msgs:[]};convs.push(c);cur=c.id}c.msgs.push({r:'u',t:u},{r:'a',t:a,m:m||'Noryx',q:u});save();renderAll()}
+
+/* ---- sesión de voz ---- */
+function jvStart(){
+ if(!jvAllowed()){sysMsg('El modo Noryx requiere acceso. Escribe /solicitar para pedírselo al creador.','Noryx');return}
+ if(!window.speechSynthesis){toast('Tu navegador no admite voz. Prueba Chrome, Edge o Safari.');return}
+ if(typeof VL!='undefined'&&VL.on)vlStop();
+ closeMenu();creatorAct=Date.now();JV.on=true;JV.mute=!SR;JV.proc=false;JV.h=[];JV.last='';jvEl.hidden=false;jvl.replaceChildren();jvChips([]);jvTick();jvWake(true);
+ $('#jvm').textContent=JV.mute?'Activar micrófono':'Silenciar micrófono';$('#jvm').hidden=!SR;
+ const h=new Date().getHours(),g=(h<12?'Buenos días':h<20?'Buenas tardes':'Buenas noches')+', '+jvWho()+'. Noryx a sus órdenes.'+(SR?'':' Su navegador no admite micrófono: escríbame las órdenes.');
+ jvText(g);jvLog('Noryx: '+g);jvSet('speak');speechSynthesis.cancel();say(g);Promise.all([jvWait(),SR?micPrime():true]).then(([_,ok])=>{if(!JV.on)return;if(ok===false){JV.mute=true;$('#jvm').textContent='Activar micrófono';jvSet('mute');return}jvListen()})}
+function jvStop(){JV.on=false;const r=JV.rec;JV.rec=null;try{r&&r.abort()}catch(e){}window.speechSynthesis&&speechSynthesis.cancel();jvEl.hidden=true;JV.proc=false;if(!JV.pin)jvWake(false)}
+function jvListen(){if(!JV.on||!mdEl.hidden)return;if(JV.mute||!SR){jvSet('mute');return}
+ if(Date.now()-creatorAct>6e5){jvStop();if(creator)lock(false);sysMsg('🔒 Modo Noryx cerrado por inactividad (10 min). '+(creator?'Escribe /creador para entrar otra vez.':'Escribe /noryx para volver a entrar.'),'Noryx');return}
+ if(!jvAllowed()){jvStop();sysMsg('⏳ Tu acceso al modo Noryx terminó.','Noryx');return}
+ let fin='',r;try{r=new SR()}catch(e){return}
+ JV.rec=r;r.lang=navigator.language||'es-MX';r.interimResults=true;r.continuous=false;
+ r.onresult=e=>{let it='';fin='';for(let i=0;i<e.results.length;i++){const x=e.results[i];if(x.isFinal)fin+=x[0].transcript;else it+=x[0].transcript}jvText(fin+it);micOk()};
+ r.onerror=e=>{const hard=e.error=='not-allowed'||e.error=='service-not-allowed'||e.error=='audio-capture';if(hard){JV.mute=true;JV.rec=null;$('#jvm').textContent='Activar micrófono';jvSet('mute')}micFail(e.error,!hard)};
+ r.onend=()=>{if(JV.rec!==r)return;JV.rec=null;if(!JV.on||JV.mute)return;const t=fin.trim();t?jvTurn(t):setTimeout(jvListen,250)};
+ try{r.start();jvSet('listen')}catch(e){setTimeout(jvListen,600)}}
+async function jvWait(){const q=window.speechSynthesis;await sleep(250);let k=0;while(JV.on&&(q.speaking||q.pending)&&k<2400){await sleep(150);k++}}
+const JBYE=/^(?:adios|chao|hasta luego|terminar|terminar sesion|colgar|desconectate|apagate|goodbye|bye|end session|salir|cierra el modo jarvis|cierra el modo noryx)$/;
+async function jvTurn(raw0,typed){
+ if(JV.proc)return;JV.proc=true;
+ try{
+  if(!jvAllowed()||Date.now()-creatorAct>6e5){jvStop();if(creator)lock(false);sysMsg('🔒 Modo Noryx cerrado: '+(creator?'la verificación de creador expiró (10 min sin actividad). Escribe /creador para entrar otra vez.':'tu acceso terminó o pasaron 10 min sin actividad. Escribe /noryx para volver a intentarlo.'),'Noryx');return}
+  let raw=raw0.trim(),pm=jvPlain(raw);if(pm.length!==raw.length)raw=pm;pm=pm.replace(/[^a-z0-9 ]/g,' ');
+  const sm=pm.match(/^\s*(?:(?:oye|hey|ok|okay|ey)\s+)?((?:noryx|jarvis)\b\s*)?(?:por favor\s+|porfa\s+)?/),woke=!!(sm&&sm[1]);
+  if(JV.wake&&!typed&&!woke&&!/\b(?:noryx|jarvis)\b/.test(pm.slice(0,40)))return;
+  const cut=sm?sm[0].length:0;raw=raw.slice(cut);pm=pm.slice(cut);
+  const e=pm.length-pm.trimEnd().length;if(e){raw=raw.slice(0,raw.length-e);pm=pm.slice(0,pm.length-e)}
+  creatorAct=Date.now();jvSet('think');jvText('Tú: '+raw0);jvChips([]);jvLog('» '+raw0);
+  const n=pm.replace(/\s+/g,' ').trim(),who=jvWho();
+  if(JBYE.test(n)){const b='Hasta luego, '+who+'. Quedo en espera.';jvText(b);jvSet('speak');say(b);await jvWait();jvStop();return}
+  let out=null;
+  if(!n)out=jvR('A sus órdenes, '+who+'.');
+  else{try{out=await jvCmd(raw,pm)}catch(er){out=jvR('Algo falló al ejecutar eso, '+who+'.',{m:'Noryx · error'})}
+   if(!out)out=await jvChat(raw)}
+  const show=out.show||out.say||'';
+  jvText(out.say||show);jvChips(out.chips);if(out.log)jvLog(out.log);jvLog('Noryx: '+show);
+  jvLogChat(raw0,show,out.m);
+  if(out.say){JV.last=out.say;jvSet('speak');say(jvShort(out.say));await jvWait()}
+ }catch(er){jvLog('⚠ '+(er&&er.message||er))}
+ finally{JV.proc=false;if(JV.on)jvListen()}}
+function jvInput(t){if(!t||!JV.on)return;if(JV.proc){toast('Un momento, estoy procesando');return}const r=JV.rec;JV.rec=null;try{r&&r.abort()}catch(e){}window.speechSynthesis&&speechSynthesis.cancel();jvTurn(t,true)}
+
+/* ---- comandos escritos: /noryx /puente /atajo /rutina ---- */
+function jvAdmin(k,a){a=(a||'').trim();let m;const J='Noryx';
+ if(k=='puente'){const B=S.get('nx-jbridge',{});
+  if(!a){const ks=Object.keys(B);return sysMsg(ks.length?'Puentes enlazados (las direcciones se guardan solo en este navegador):\n'+ks.map(x=>'- '+x+': '+['on','off'].filter(z=>B[x][z]).join(' / ')).join('\n')+'\n\nDi «enciende el '+ks[0]+'» o «apaga el '+ks[0]+'».':'No hay puentes todavía. Un puente conecta a Noryx con tus aparatos mediante un webhook (Home Assistant, IFTTT, Shelly, Tuya…):\n`/puente monitor on https://…` — URL que enciende\n`/puente monitor off https://…` — URL que apaga\n`/puente borrar monitor`\n\nEl navegador solo puede llamar direcciones https (o http si abres esta página desde tu propio equipo).',J)}
+  if(m=a.match(/^borrar\s+(.+)$/i)){const x=norm(m[1]);if(B[x]){delete B[x];S.set('nx-jbridge',B);return sysMsg('Puente «'+x+'» borrado.',J)}return sysMsg('No existe ese puente.',J)}
+  if(m=a.match(/^(.+?)\s+(on|off|encender|apagar)\s+(https?:\/\/\S+)$/i)){const x=norm(m[1]),act=/^(?:on|encender)$/i.test(m[2])?'on':'off';B[x]=B[x]||{};B[x][act]=m[3];S.set('nx-jbridge',B);return sysMsg('✅ Puente «'+x+'» ('+act+') guardado. Envío un POST con {"accion":"'+act+'"}; si pones {accion} en la URL lo reemplazo por on/off.'+(/^http:/i.test(m[3])&&location.protocol=='https:'?'\n⚠ Esta página está en https: el navegador bloqueará esa dirección http.':''),J)}
+  if(m=a.match(/^(.+?)\s+(https?:\/\/\S+)$/i)){const x=norm(m[1]);B[x]={on:m[2],off:m[2]};S.set('nx-jbridge',B);return sysMsg('✅ Puente «'+x+'» guardado (misma URL para encender y apagar; envío {"accion":"on|off"}).',J)}
+  return sysMsg('Uso: `/puente nombre on https://…`, `/puente nombre off https://…` o `/puente borrar nombre`.',J)}
+ if(k=='atajo'){const A=S.get('nx-jsites',{});
+  if(!a){const ks=Object.keys(A);return sysMsg(ks.length?'Atajos:\n'+ks.map(x=>'- '+x+' → '+A[x]).join('\n'):'Sin atajos. Crea uno: `/atajo mi blog = https://ejemplo.com` y di «abre mi blog».',J)}
+  if(m=a.match(/^borrar\s+(.+)$/i)){const x=norm(m[1]);delete A[x];S.set('nx-jsites',A);return sysMsg('Atajo «'+x+'» borrado.',J)}
+  if(m=a.match(/^(.+?)\s*=\s*(https?:\/\/\S+)$/i)){A[norm(m[1])]=m[2];S.set('nx-jsites',A);return sysMsg('✅ Atajo «'+norm(m[1])+'» guardado. Di «abre '+norm(m[1])+'».',J)}
+  return sysMsg('Uso: `/atajo nombre = https://…`',J)}
+ if(k=='rutina'){const RT=S.get('nx-jrut',{});
+  if(!a){const ks=Object.keys(RT);return sysMsg(ks.length?'Rutinas:\n'+ks.map(x=>'- '+x+' = '+RT[x].join('; ')).join('\n')+'\n\nDi «modo '+ks[0]+'».':'Sin rutinas. Ejemplo: `/rutina trabajo = abre gmail; abre github; pon música de lofi; temporizador de 25 minutos` y luego di «modo trabajo».',J)}
+  if(m=a.match(/^borrar\s+(.+)$/i)){const x=norm(m[1]);delete RT[x];S.set('nx-jrut',RT);return sysMsg('Rutina «'+x+'» borrada.',J)}
+  if(m=a.match(/^(.+?)\s*=\s*(.+)$/)){const st=m[2].split(';').map(s=>s.trim()).filter(Boolean).slice(0,10);if(!st.length)return sysMsg('La rutina necesita al menos un paso.',J);RT[norm(m[1])]=st;S.set('nx-jrut',RT);return sysMsg('✅ Rutina «'+norm(m[1])+'» guardada con '+st.length+' paso(s). Di «modo '+norm(m[1])+'».',J)}
+  return sysMsg('Uso: `/rutina nombre = paso 1; paso 2; …`',J)}}
+
+$('#jvb').onclick=jvStart;$('#jvx').onclick=jvStop;
+$('#jvo').onclick=()=>{if(JV.st=='speak')speechSynthesis.cancel()};
+$('#jvm').onclick=function(){JV.mute=!JV.mute;this.textContent=JV.mute?'Activar micrófono':'Silenciar micrófono';if(JV.mute){const r=JV.rec;JV.rec=null;try{r&&r.abort()}catch(e){}if(JV.st=='listen')jvSet('mute')}else if(JV.on&&!JV.proc&&JV.st!='speak')jvListen()};
+$('#jvw').onclick=function(){JV.wake=!JV.wake;this.textContent='Palabra clave: '+(JV.wake?'sí':'no');toast(JV.wake?'Solo responderé si dices «Noryx» al inicio':'Responderé a todo lo que oiga')};
+$('#jvh').onclick=()=>jvInput('que puedes hacer');
+const jvSendTxt=()=>{const t=jvi.value.trim();jvi.value='';jvInput(t)};
+jvi.addEventListener('keydown',e=>{if(e.key=='Enter'){e.preventDefault();jvSendTxt()}});$('#jvsend').onclick=jvSendTxt;
+addEventListener('keydown',e=>{if(e.key=='Escape'&&JV.on)jvStop()});
+setInterval(()=>{const b=$('#jvb');if(b)b.hidden=!jvAllowed();const gb=$('#gxb');if(gb)gb.hidden=!creator;
+ if(tester&&!creator&&!grantActive('ensenar')){lock(false);toast('Tu acceso de tester terminó')}
+ if(JV.on){if(!jvAllowed()){jvStop();sysMsg('⏳ Tu acceso al modo Noryx terminó.','Noryx');return}const d=new Date(),gl=creator?'':grantLeft('noryx');$('#jvclk').textContent=jvPad(d.getHours())+':'+jvPad(d.getMinutes())+':'+jvPad(d.getSeconds())+(gl?' · acceso: '+gl:'');jvTick()}},1000);
+
+/* ============ Detector de micrófono ============
+   Comprueba contexto seguro, permiso, dispositivos, nivel de señal real y reconocimiento de voz,
+   y dice con palabras claras en qué paso falla. También se abre solo cuando el dictado falla. */
+var MD={stream:null,ctx:null,raf:0,peak:0,t0:0,rec:null,to:0,perm:'',ok:0,silent:0},MDs={streak:0,last:0};
+const mdEl=$('#md'),mdl=$('#mdl'),mds=$('#mds'),mdb=$('#mdb'),mdn=$('#mdn'),mdo=$('#mdo'),mdw=$('#mdw'),mdlog=$('#mdlog');
+const MIC_WHY={'not-allowed':'El navegador bloqueó el micrófono para esta página.','service-not-allowed':'El navegador bloqueó el reconocimiento de voz para esta página.','audio-capture':'No se pudo capturar audio: no hay micrófono disponible o otro programa lo está usando.','network':'El reconocimiento de voz no pudo conectar con su servicio (Chrome envía el audio a Google). Revisa tu internet; Brave y algunos bloqueadores lo impiden.','no-speech':'No se oyó ninguna voz.','language-not-supported':'El idioma no es compatible con el reconocimiento de voz de este navegador.'};
+const mdVerdict=(k,t)=>{mdo.className=k;mdo.textContent=t};
+const mdAdd=t=>{const d=document.createElement('div');d.textContent=t;mdlog.append(d)};
+const mdSettings=()=>(/Edg\//.test(navigator.userAgent)?'edge':'chrome')+'://settings/content/microphone';
+function micOk(){MDs.streak=0}
+function micFail(code,loop,why){
+ if(!code||code=='aborted'||!mdEl.hidden)return;
+ if(code=='no-speech'){const n=++MDs.streak;if(n<(loop?4:2)){if(!loop)toast('No te escuché. Inténtalo de nuevo.');return}MDs.streak=0}
+ if(code=='network'&&Date.now()-MDs.last<60000)return;
+ MDs.last=Date.now();mdOpen((MIC_WHY[code]||'Error de micrófono: '+code)+(why?' ('+why+')':''))}
+/* Pide el permiso ANTES de iniciar el reconocimiento: así la sesión de voz no caduca mientras el navegador muestra el aviso. */
+async function micPrime(){
+ if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia)return true;
+ try{let st='';try{st=(await navigator.permissions.query({name:'microphone'})).state}catch(e){}
+  if(st=='granted')return true;
+  const s=await navigator.mediaDevices.getUserMedia({audio:true});s.getTracks().forEach(t=>t.stop());await sleep(250);return true}
+ catch(e){const n=e&&e.name;micFail(n=='NotFoundError'||n=='NotReadableError'?'audio-capture':'not-allowed',false,n);return false}}
+async function mdScan(){
+ const L=[],add=(ok,t)=>L.push([ok,t]);
+ add(!window.isSecureContext?false:location.protocol=='file:'?null:true,!window.isSecureContext?'La página no es segura (http): el navegador no deja usar el micrófono. Ábrela por https o localhost.':location.protocol=='file:'?'Página abierta como archivo local (file://). Funciona, pero Chrome puede volver a pedir el permiso cada vez; es mejor servirla por https o localhost.':'Conexión segura (necesaria para usar el micrófono).');
+ if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){add(false,'Este navegador no ofrece acceso al micrófono. Si abriste Noryx desde dentro de otra app (WhatsApp, Instagram…), ábrela en Chrome, Edge o Safari.');MD.perm=''}
+ else{
+  let ps='';try{const p=await navigator.permissions.query({name:'microphone'});ps=p.state;p.onchange=()=>{if(!mdEl.hidden)mdScan()}}catch(e){}
+  MD.perm=ps;
+  add(ps=='granted'?true:ps=='denied'?false:null,ps=='granted'?'Permiso del navegador: concedido.':ps=='denied'?'Permiso del navegador: BLOQUEADO. Toca el candado (o el icono de ajustes) junto a la dirección → Micrófono → Permitir, y recarga la página.':ps=='prompt'?'Permiso: aún no lo has concedido. Pulsa «Probar micrófono» y elige Permitir.':'Permiso: tu navegador no informa su estado; se comprueba al probar.');
+  let ds=[];try{ds=(await navigator.mediaDevices.enumerateDevices()).filter(d=>d.kind=='audioinput')}catch(e){}
+  const lab=ds.some(d=>d.label),keep=S.get('nx-micdev','default');
+  add(ds.length?true:false,ds.length?ds.length+(ds.length>1?' micrófonos detectados':' micrófono detectado')+(lab?'.':' (los nombres aparecen cuando concedes el permiso).'):'No se detecta ningún micrófono. Revisa que esté conectado y que ningún otro programa (Zoom, Teams, Meet) lo esté usando.');
+  mds.replaceChildren();const o0=document.createElement('option');o0.value='default';o0.textContent='Predeterminado del sistema';mds.append(o0);
+  ds.forEach((d,i)=>{if(d.deviceId=='default')return;const o=document.createElement('option');o.value=d.deviceId;o.textContent=d.label||'Micrófono '+(i+1);mds.append(o)});
+  mds.value=[...mds.options].some(o=>o.value==keep)?keep:'default'}
+ add(SR?true:false,SR?'Reconocimiento de voz disponible en este navegador.':'Este navegador no tiene reconocimiento de voz (Firefox no lo incluye). Usa Chrome, Edge o Safari.');
+ let brave=false;try{brave=!!(navigator.brave&&await navigator.brave.isBrave())}catch(e){}
+ if(brave)add(null,'Brave bloquea el reconocimiento de voz de Google: suele fallar con el error «network». Usa Chrome o Edge para la voz.');
+ add(navigator.onLine?true:false,navigator.onLine?'Conexión a internet activa (el reconocimiento de voz de Chrome la necesita).':'Sin internet: el reconocimiento de voz de Chrome no funciona sin conexión.');
+ mdl.replaceChildren();L.forEach(([ok,t])=>{const d=document.createElement('div'),i=document.createElement('i'),s=document.createElement('span');i.textContent=ok===true?'✅':ok===false?'❌':'⚠️';s.textContent=t;d.append(i,s);mdl.append(d)})}
+function mdStop(){cancelAnimationFrame(MD.raf);if(MD.stream){MD.stream.getTracks().forEach(t=>{t.onmute=t.onended=null;t.stop()});MD.stream=null}if(MD.ctx){try{MD.ctx.close()}catch(e){}MD.ctx=null}mdb.style.width='0'}
+function mdFail(e){const n=e&&e.name;mdVerdict('bad',n=='NotAllowedError'||n=='SecurityError'?'❌ Permiso denegado. Toca el candado (o el icono de ajustes) junto a la dirección → Micrófono → Permitir, y recarga. Si tienes la página abierta como archivo local (file://) o dentro de otra app, ábrela en Chrome por https o localhost.':n=='NotFoundError'?'❌ No hay ningún micrófono conectado o habilitado en el sistema.':n=='NotReadableError'?'❌ El micrófono existe pero no se puede abrir: otro programa lo está usando (Zoom, Teams, Meet, Discord…) o el sistema lo bloquea.\nWindows: Configuración → Privacidad → Micrófono (permitir apps de escritorio).\nmacOS: Ajustes → Privacidad → Micrófono (activa tu navegador).':'❌ No pude abrir el micrófono: '+(n||e))}
+async function mdTest(){
+ mdStop();mdlog.textContent='';mdo.className='';mdn.textContent='Abriendo micrófono…';
+ const id=mds.value;let st;
+ try{st=await navigator.mediaDevices.getUserMedia({audio:{deviceId:id&&id!='default'?{exact:id}:undefined,echoCancellation:false,noiseSuppression:false,autoGainControl:false}})}
+ catch(e){if(e&&e.name=='OverconstrainedError'&&id!='default'){mds.value='default';return mdTest()}mdn.textContent='';return mdFail(e)}
+ MD.stream=st;S.set('nx-micdev',id);
+ const tr=st.getAudioTracks()[0];
+ tr.onmute=()=>mdVerdict('bad','❌ El sistema acaba de SILENCIAR este micrófono (interruptor de privacidad, tecla de silencio o ajuste del sistema operativo).');
+ tr.onended=()=>mdVerdict('bad','❌ El micrófono se desconectó o el navegador lo cerró.');
+ mdScan().then(()=>{if(MD.stream)mds.value=[...mds.options].some(o=>o.value==id)?id:'default'});
+ mdn.textContent='Escuchando «'+(tr.label||'micrófono')+'» ('+(tr.muted?'silenciado por el sistema':'activo')+'). Habla o aplaude…';
+ const C=window.AudioContext||window.webkitAudioContext;MD.ctx=new C();try{await MD.ctx.resume()}catch(e){}
+ const src=MD.ctx.createMediaStreamSource(st),an=MD.ctx.createAnalyser();an.fftSize=1024;src.connect(an);
+ const buf=new Float32Array(an.fftSize);MD.peak=0;MD.t0=Date.now();MD.ok=0;MD.silent=0;
+ const loop=()=>{if(!MD.stream)return;an.getFloatTimeDomainData(buf);let s=0;for(let i=0;i<buf.length;i++)s+=buf[i]*buf[i];const rms=Math.sqrt(s/buf.length);MD.peak=Math.max(MD.peak,rms);mdb.style.width=Math.min(100,rms*800)+'%';
+  if(MD.peak>.02&&!MD.ok){MD.ok=1;mdVerdict('ok','✅ El navegador SÍ te oye por este micrófono. Si el dictado igual no responde, pulsa «Probar reconocimiento de voz»: así sabremos si el fallo está en el reconocimiento y no en el micrófono.')}
+  else if(!MD.ok&&!MD.silent&&Date.now()-MD.t0>4000){MD.silent=1;mdVerdict('bad','❌ El permiso está concedido, pero no llega sonido. Causas típicas:\n1) Este no es el micrófono que usas: elígelo en la lista de arriba y vuelve a probar.\n2) Está silenciado o con volumen en 0 (Windows: Configuración → Sistema → Sonido → Entrada; macOS: Ajustes → Sonido → Entrada).\n3) Interruptor físico o tecla de silencio del portátil o de los auriculares.\n4) Windows: Configuración → Privacidad → Micrófono → permitir apps de escritorio. macOS: Ajustes → Privacidad → Micrófono → activar tu navegador.\n5) Auriculares Bluetooth: al activar el micrófono cambian de perfil y a veces dejan de captar; prueba con el micrófono del equipo.')}
+  MD.raf=requestAnimationFrame(loop)};
+ loop()}
+function mdRec(){
+ if(!SR){mdVerdict('bad','❌ Este navegador no tiene reconocimiento de voz. Usa Chrome, Edge o Safari.');return}
+ mdStop();clearTimeout(MD.to);if(MD.rec){try{MD.rec.abort()}catch(e){}MD.rec=null}mdlog.textContent='';mdo.className='';
+ const r=new SR(),ev={audio:0,sound:0,speech:0,fin:0,err:''},lang=navigator.language||'es-MX';MD.rec=r;
+ r.lang=lang;r.interimResults=true;r.continuous=false;
+ r.onstart=()=>{mdAdd('▶ Reconocimiento iniciado. Di algo como «hola Noryx»…');mdn.textContent='Habla ahora…'};
+ r.onaudiostart=()=>{ev.audio=1;mdAdd('🎧 El navegador empezó a capturar audio')};
+ r.onsoundstart=()=>{ev.sound=1;mdAdd('🔊 Detecta sonido')};
+ r.onspeechstart=()=>{ev.speech=1;mdAdd('🗣 Detecta voz')};
+ r.onresult=e=>{const last=e.results[e.results.length-1];let t='';for(let i=0;i<e.results.length;i++)t+=e.results[i][0].transcript;if(last.isFinal){ev.fin=1;mdAdd('✅ Entendí: «'+t+'»')}else mdn.textContent='… '+t};
+ r.onerror=e=>{ev.err=e.error;mdAdd('⚠ Error: '+e.error)};
+ r.onend=()=>{if(MD.rec!==r)return;MD.rec=null;clearTimeout(MD.to);mdn.textContent='';
+  if(ev.fin)mdVerdict('ok','✅ El reconocimiento de voz funciona de punta a punta. Si Noryx no responde en el chat, recarga la página y vuelve a intentarlo.');
+  else if(ev.err)mdVerdict('bad','❌ '+(MIC_WHY[ev.err]||'Error del reconocimiento: '+ev.err)+(ev.err=='not-allowed'||ev.err=='service-not-allowed'?'\nAbre el candado junto a la dirección → Micrófono → Permitir, y recarga.':''));
+  else if(!ev.audio)mdVerdict('bad','❌ El reconocimiento no llegó a capturar audio. Prueba con «Probar micrófono» para ver si el permiso y el dispositivo están bien, y recarga la página.');
+  else if(!ev.sound)mdVerdict('bad','❌ El reconocimiento captura audio pero solo recibe silencio. Chrome usa SU micrófono predeterminado, que puede ser distinto al que probaste arriba (el selector solo afecta a la prueba de nivel). Cámbialo en Ajustes de Chrome → Privacidad y seguridad → Configuración de sitios → Micrófono (menú superior), y revisa también el dispositivo de entrada predeterminado del sistema. Botón «Copiar ruta de ajustes» abajo.');
+  else mdVerdict('warn','⚠️ Detecta ruido pero no entiende palabras. Habla más cerca y claro, o revisa que el idioma ('+lang+') sea el tuyo.')};
+ MD.to=setTimeout(()=>{try{r.stop()}catch(e){}},9000);
+ try{r.start()}catch(e){MD.rec=null;mdVerdict('bad','❌ No pude iniciar el reconocimiento: '+(e&&e.message||e))}}
+async function mdOpen(reason){
+ if(typeof JV!='undefined'&&JV.rec){const r=JV.rec;JV.rec=null;try{r.abort()}catch(e){}}
+ if(typeof VL!='undefined'&&VL.rec){const r=VL.rec;VL.rec=null;try{r.abort()}catch(e){}}
+ window.speechSynthesis&&speechSynthesis.cancel();
+ mdEl.hidden=false;mdo.className='';mdlog.textContent='';mdb.style.width='0';mdn.textContent='Pulsa «Probar micrófono» y habla o aplaude.';
+ mdw.className=reason?'on':'';mdw.textContent=reason?'Motivo: '+reason:'';
+ await mdScan();
+ if(MD.perm=='granted'&&navigator.mediaDevices)mdTest()}
+function mdClose(){mdStop();clearTimeout(MD.to);if(MD.rec){const r=MD.rec;MD.rec=null;try{r.abort()}catch(e){}}mdEl.hidden=true;
+ if(JV.on&&!JV.mute&&!JV.proc&&JV.st!='speak')jvListen();
+ if(typeof VL!='undefined'&&VL.on&&!VL.mute&&VL.st!='speak'&&VL.st!='think')vlListen()}
+$('#mdx').onclick=mdClose;$('#mdt').onclick=mdTest;$('#mdr').onclick=mdRec;$('#mdd').onclick=()=>{mdScan()};
+$('#mdc').onclick=()=>{const t=mdSettings();navigator.clipboard&&navigator.clipboard.writeText(t).then(()=>toast('Copiado: pégalo en la barra de direcciones ('+t+')'),()=>toast('Escribe en la barra de direcciones: '+t))||toast('Escribe en la barra de direcciones: '+t)};
+mdEl.addEventListener('click',e=>{if(e.target==mdEl)mdClose()});
+addEventListener('keydown',e=>{if(e.key=='Escape'&&!mdEl.hidden){e.stopImmediatePropagation();mdClose()}},true);
+$('#mdopen').onclick=()=>{closeMenu();mdOpen()};$('#jvmic').onclick=()=>mdOpen();$('#vlmic').onclick=()=>mdOpen();
+
 paintPro();
+/* ============ Accesos: quién puede usar el modo Noryx / enseñar, y por cuánto tiempo ============
+   El creador decide desde /accesos. La verificación real la hacen las políticas RLS de Supabase
+   (ver el SQL del panel); aquí el navegador solo lee tus accesos para mostrar u ocultar funciones. */
+var GR=null,GRX=[],GRMISS=false;
+const GXLAB={noryx:'Modo Noryx',ensenar:'Enseñar a Noryx (tester)'},GXMS={m:6e4,h:36e5,d:864e5,w:6048e5};
+const grOk=(g,f)=>g.feature==f&&!g.revocado&&(!g.expira||Date.parse(g.expira)>Date.now());
+const grAll=()=>(GR||[]).concat(GRX);
+function grantActive(f){if(creator)return true;if(grAll().some(g=>grOk(g,f)))return true;return !!(GRMISS&&f=='ensenar'&&sess&&isTesterMail(sess.email))}
+const jvAllowed=()=>grantActive('noryx');
+function fmtLeft(ms){const m=Math.max(1,Math.ceil(ms/6e4));if(m<60)return m+' min';const h=Math.floor(m/60);if(h<48)return h+' h'+(m%60?' '+m%60+' min':'');const d=Math.floor(h/24);return d+' d'+(h%24?' '+h%24+' h':'')}
+function grantLeft(f){const gs=grAll().filter(g=>grOk(g,f));if(!gs.length)return'';if(gs.some(g=>!g.expira))return'permanente';return fmtLeft(Math.max(...gs.map(g=>Date.parse(g.expira)))-Date.now())}
+function gxStatus(g){if(g.revocado)return['rev','Revocado'];if(!g.expira)return['act','Permanente'];const l=Date.parse(g.expira)-Date.now();return l>0?['act','Activo · quedan '+fmtLeft(l)+' (hasta '+fdate(Date.parse(g.expira))+')']:['exp','Expiró el '+fdate(Date.parse(g.expira))]}
+async function fetchGrants(tok,email){const r=await fetch(cloudBase()+'/rest/v1/accesos?select=id,feature,expira,revocado&email=eq.'+encodeURIComponent(String(email).toLowerCase()),{headers:{apikey:SUPA_KEY,Authorization:'Bearer '+tok}});if(r.status==404)return undefined;if(!r.ok)throw new Error('HTTP '+r.status);return r.json()}
+async function loadGrants(){if(!sess){GR=null;return}try{const rows=await fetchGrants(sess.access,sess.email);GRMISS=rows===undefined;GR=rows||[]}catch(e){}}
+async function applyGrants(){if(!sess)return;await loadGrants();if(creator||!sess)return;if(grantActive('ensenar')){if(!tester){cloudToken=sess.access;tester=true;privMail=sess.email.toLowerCase();creatorAct=Date.now()}else if(!GRX.length)cloudToken=sess.access}}
+async function noryxEntry(k,a){
+ if(!creator&&!sess){sysMsg('El modo Noryx es solo para cuentas con acceso. Entra primero con tu cuenta (botón «Entrar»).','Noryx');openDlg();return}
+ if(!creator){await refreshSess();await loadGrants()}
+ if(!jvAllowed()){const g=(GR||[]).find(x=>x.feature=='noryx'),why=g?(g.revocado?'Tu acceso fue revocado. ':'Tu acceso expiró el '+fdate(Date.parse(g.expira))+'. '):'';sysMsg('🔒 '+why+'El modo Noryx es de acceso restringido. Escribe `/solicitar` y el creador decide si te lo da y por cuánto tiempo.','Noryx');return}
+ creatorAct=Date.now();k=='noryx'?jvStart():jvAdmin(k,a)}
+async function requestAccess(a){
+ if(!sess){sysMsg('Primero entra con tu cuenta (botón «Entrar») y luego escribe `/solicitar`.','Noryx');openDlg();return}
+ if(creator){sysMsg('Eres el creador: ya tienes acceso total.','Noryx');return}
+ const f=/ense/.test(norm(a||''))?'ensenar':'noryx';await refreshSess();
+ try{const r=await fetch(cloudBase()+'/rest/v1/solicitudes?on_conflict=email,feature',{method:'POST',headers:{apikey:SUPA_KEY,Authorization:'Bearer '+sess.access,'Content-Type':'application/json',Prefer:'resolution=ignore-duplicates,return=minimal'},body:JSON.stringify({email:sess.email.toLowerCase(),nombre:String(mem.name||sess.name||'').slice(0,60)||null,feature:f})});
+  sysMsg(r.ok?'📨 Solicitud enviada: **'+GXLAB[f]+'**. El creador decidirá si te la da y por cuánto tiempo. Usa `/acceso` para ver si ya la tienes.':r.status==404?'Todavía no está activado el sistema de accesos en el servidor. Avísale al creador.':'No pude enviar la solicitud (HTTP '+r.status+').','Noryx')}
+ catch(e){sysMsg('No pude conectar con la nube para enviar la solicitud.','Noryx')}}
+async function showAccess(){
+ if(creator){sysMsg('Eres el creador: tienes acceso total y permanente.','Noryx');return}
+ if(!sess){sysMsg('Entra con tu cuenta (botón «Entrar») para ver tu acceso.','Noryx');return}
+ await refreshSess();await loadGrants();const L=(GR||[]).map(g=>'- '+(GXLAB[g.feature]||g.feature)+': '+gxStatus(g)[1]);
+ sysMsg(L.length?'Tus accesos:\n'+L.join('\n'):'No tienes accesos concedidos. Pídelo con `/solicitar` (modo Noryx) o `/solicitar enseñar` (enseñar a Noryx).','Noryx')}
+/* ---- panel del creador ---- */
+const GXSQL=`-- Accesos temporales de Noryx. Pégalo una sola vez en Supabase → SQL Editor → Run.
+create table if not exists public.accesos (
+  id bigint generated always as identity primary key,
+  email text not null,
+  nombre text,
+  feature text not null default 'noryx' check (feature in ('noryx','ensenar')),
+  expira timestamptz,                       -- null = permanente
+  revocado boolean not null default false,
+  otorgado_por text,
+  ts timestamptz not null default now(),
+  unique (email, feature)
+);
+create table if not exists public.solicitudes (
+  id bigint generated always as identity primary key,
+  email text not null,
+  nombre text,
+  feature text not null default 'noryx' check (feature in ('noryx','ensenar')),
+  ts timestamptz not null default now(),
+  unique (email, feature)
+);
+alter table public.accesos enable row level security;
+alter table public.solicitudes enable row level security;
+
+create or replace function public.es_creador() returns boolean
+language sql stable as $$ select lower(coalesce(auth.jwt()->>'email',''))='${CREATOR_EMAIL.toLowerCase()}' $$;
+
+create or replace function public.tiene_acceso(f text) returns boolean
+language sql stable security definer set search_path=public as $$
+  select exists(select 1 from public.accesos a
+    where lower(a.email)=lower(coalesce(auth.jwt()->>'email','')) and a.feature=f
+      and not a.revocado and (a.expira is null or a.expira>now())) $$;
+
+drop policy if exists "creador gestiona accesos" on public.accesos;
+create policy "creador gestiona accesos" on public.accesos for all to authenticated
+  using (public.es_creador()) with check (public.es_creador());
+drop policy if exists "ver mis accesos" on public.accesos;
+create policy "ver mis accesos" on public.accesos for select to authenticated
+  using (lower(email)=lower(coalesce(auth.jwt()->>'email','')));
+
+drop policy if exists "creador gestiona solicitudes" on public.solicitudes;
+create policy "creador gestiona solicitudes" on public.solicitudes for all to authenticated
+  using (public.es_creador()) with check (public.es_creador());
+drop policy if exists "pedir acceso" on public.solicitudes;
+create policy "pedir acceso" on public.solicitudes for insert to authenticated
+  with check (lower(email)=lower(coalesce(auth.jwt()->>'email','')));
+
+-- Enseñar a Noryx solo con un acceso 'ensenar' vigente (revisa y quita políticas antiguas por correo si las hay)
+drop policy if exists "ensenar con acceso vigente" on public.ensenanzas;
+create policy "ensenar con acceso vigente" on public.ensenanzas for insert to authenticated
+  with check (public.tiene_acceso('ensenar') and lower(autor)=lower(coalesce(auth.jwt()->>'email','')));
+drop policy if exists "ver mis ensenanzas con acceso" on public.ensenanzas;
+create policy "ver mis ensenanzas con acceso" on public.ensenanzas for select to authenticated
+  using (public.tiene_acceso('ensenar') and lower(autor)=lower(coalesce(auth.jwt()->>'email','')));
+drop policy if exists "borrar mis ensenanzas con acceso" on public.ensenanzas;
+create policy "borrar mis ensenanzas con acceso" on public.ensenanzas for delete to authenticated
+  using (public.tiene_acceso('ensenar') and lower(autor)=lower(coalesce(auth.jwt()->>'email','')));`;
+const gxEl=$('#gx'),gxW=$('#gxw'),gxQ=$('#gxq'),gxL=$('#gxl'),gxE=$('#gxe'),gxN=$('#gxn'),gxS=$('#gxs'),gxV=$('#gxv'),gxU=$('#gxu');
+const gxMk=(t,c,x)=>{const e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e};
+const gxExp=(n,u,base)=>u=='p'?null:new Date((base||Date.now())+Math.max(1,Math.min(+n||1,u=='m'?525600:u=='h'?8760:u=='d'?3650:520))*GXMS[u]).toISOString();
+function gxErr(e){const m=cErr(e);if(e&&e.expired){gxEl.hidden=true;sysMsg(m)}else toast(m)}
+function gxBtn(l,fn,cls){const b=gxMk('button',cls||'',l);b.onclick=async()=>{b.disabled=true;try{await fn()}catch(e){gxErr(e)}b.disabled=false};return b}
+async function gxPatch(id,body){await cloudWrite('PATCH','accesos?id=eq.'+id,body);toast('Actualizado');await gxLoad()}
+function gxOpen(){if(!creator)return;closeMenu();gxEl.hidden=false;gxLoad()}
+function gxMissing(){gxL.replaceChildren();gxQ.replaceChildren();gxW.className='on';gxW.textContent='Faltan las tablas de accesos en Supabase. Abre Supabase → SQL Editor, pega el SQL de abajo (botón «Copiar SQL»), ejecútalo y vuelve a pulsar ↻.';$('#gxsq').open=true}
+async function gxLoad(){
+ gxW.className='';gxW.textContent='';gxQ.replaceChildren();gxL.replaceChildren(gxMk('small','','Cargando…'));
+ let rows,req=[];
+ try{rows=await cloudWrite('GET','accesos?select=*&order=ts.desc&limit=500')}
+ catch(e){if(/404/.test(e.message)){gxMissing();return}if(e&&e.expired){gxErr(e);return}gxL.replaceChildren();gxW.className='on';gxW.textContent=cErr(e);return}
+ try{req=await cloudWrite('GET','solicitudes?select=*&order=ts.desc&limit=100')}catch(e){req=[]}
+ gxQ.replaceChildren();
+ if(req.length){gxQ.append(gxMk('div','qh','Solicitudes pendientes ('+req.length+')'));
+  req.forEach(q=>{const r=gxMk('div','gr req'),i=gxMk('div','i'),b=gxMk('div','bs');
+   i.append(gxMk('b','',(q.nombre?q.nombre+' · ':'')+q.email),gxMk('br'),gxMk('span','st','Pide: '+(GXLAB[q.feature]||q.feature)+' · '+fdate(Date.parse(q.ts)||0)));
+   b.append(gxBtn('Elegir tiempo',()=>{gxE.value=q.email;gxN.value=q.nombre||'';gxS.value=q.feature;gxE.scrollIntoView({block:'center',behavior:'smooth'});gxV.focus()},'pri'),gxBtn('Rechazar',async()=>{await cloudWrite('DELETE','solicitudes?id=eq.'+q.id);await gxLoad()}));
+   r.append(i,b);gxQ.append(r)})}
+ gxL.replaceChildren();
+ if(!rows.length)gxL.append(gxMk('small','','Todavía no has concedido ningún acceso.'));
+ rows.forEach(g=>{const[cls,txt]=gxStatus(g),r=gxMk('div','gr '+cls),i=gxMk('div','i'),bs=gxMk('div','bs');
+  i.append(gxMk('b','',g.nombre?g.nombre+' · '+g.email:g.email),gxMk('br'),gxMk('span','st',(GXLAB[g.feature]||g.feature)+' — '+txt));
+  if(g.expira&&!g.revocado)[['+1 h',36e5],['+1 d',864e5],['+7 d',6048e5]].forEach(([l,ms])=>bs.append(gxBtn(l,()=>gxPatch(g.id,{expira:new Date(Math.max(Date.now(),Date.parse(g.expira)||0)+ms).toISOString()}))));
+  if(g.expira||g.revocado)bs.append(gxBtn('Permanente',()=>gxPatch(g.id,{expira:null,revocado:false})));
+  bs.append(gxBtn(g.revocado?'Reactivar':'Revocar',()=>gxPatch(g.id,{revocado:!g.revocado})),gxBtn('Borrar',async()=>{if(!confirm('¿Borrar el acceso de '+g.email+'?'))return;await cloudWrite('DELETE','accesos?id=eq.'+g.id);await gxLoad()}));
+  r.append(i,bs);gxL.append(r)});
+ const dl2=$('#gxdl');dl2.replaceChildren();[...new Set([...TESTER_EMAILS.map(x=>x.toLowerCase()),...rows.map(g=>g.email),...req.map(q=>q.email)])].forEach(m=>{const o=document.createElement('option');o.value=m;dl2.append(o)})}
+$('#gxg').onclick=async function(){const email=gxE.value.trim().toLowerCase();if(!/^\S+@\S+\.\S+$/.test(email)){toast('Escribe un correo válido');return}
+ const f=gxS.value,u=gxU.value,row={email,feature:f,expira:gxExp(gxV.value,u),revocado:false,otorgado_por:CREATOR_EMAIL},nm=gxN.value.trim().slice(0,60);if(nm)row.nombre=nm;
+ this.disabled=true;
+ try{await cloudWrite('POST','accesos?on_conflict=email,feature',row,'resolution=merge-duplicates,return=representation');cloudWrite('DELETE','solicitudes?email=eq.'+encodeURIComponent(email)+'&feature=eq.'+f).catch(()=>{});
+  toast('Acceso concedido a '+email+' · '+(u=='p'?'permanente':gxV.value+' '+({m:'min',h:'h',d:'d',w:'sem'})[u]));gxE.value='';gxN.value='';await gxLoad()}
+ catch(e){gxErr(e)}this.disabled=false};
+[['1 hora',1,'h'],['8 horas',8,'h'],['1 día',1,'d'],['7 días',7,'d'],['30 días',30,'d'],['Permanente',1,'p']].forEach(([l,n,u])=>{const b=gxMk('button','',l);b.onclick=()=>{gxV.value=n;gxU.value=u;gxV.disabled=u=='p'};$('#gxc').append(b)});
+gxU.onchange=()=>{gxV.disabled=gxU.value=='p'};
+$('#gxpre').textContent=GXSQL;
+$('#gxcp').onclick=()=>navigator.clipboard&&navigator.clipboard.writeText(GXSQL).then(()=>toast('SQL copiado'),()=>toast('No pude copiar: selecciónalo a mano'));
+$('#gxr').onclick=gxLoad;$('#gxx').onclick=()=>{gxEl.hidden=true};$('#gxb').onclick=gxOpen;
+gxEl.addEventListener('click',e=>{if(e.target==gxEl)gxEl.hidden=true});
+gxE.addEventListener('keydown',e=>{if(e.key=='Enter'){e.preventDefault();$('#gxg').click()}});
+addEventListener('keydown',e=>{if(e.key=='Escape'&&!gxEl.hidden){e.stopImmediatePropagation();gxEl.hidden=true}},true);
+setInterval(()=>{refreshSess()},30000);
+setInterval(()=>{if(sess&&!creator)loadGrants()},60000);
+
+/* ---- temporizadores que sobreviven a recargar, avisos del sistema y alarmas «a las 7:30» ---- */
+function jvSave(){S.set('nx-jtimers',JV.timers.map(t=>({end:t.end,label:t.label})))}
+function jvRestore(){const L=S.get('nx-jtimers',[]);S.set('nx-jtimers',[]);const now=Date.now(),late=[];
+ (Array.isArray(L)?L:[]).forEach(t=>{if(t&&t.end>now){const id=++JV.seq;JV.timers.push({id,end:t.end,label:String(t.label||'').slice(0,120),to:setTimeout(()=>jvFire(id),t.end-now)})}else if(t)late.push(t)});
+ jvSave();if(late.length)toast('⏰ Mientras no estabas terminó: '+late.map(t=>t.label||'un temporizador').join(', '))}
+function jvNotify(m){try{if('Notification' in window&&Notification.permission=='granted')new Notification('Noryx',{body:m})}catch(e){}}
+function jvAskNotif(){try{if('Notification' in window&&Notification.permission=='default')Notification.requestPermission()}catch(e){}}
+function jvAt(s){const m=s.match(/\ba las?\s+(\d{1,2})(?:[: ](\d{2}))?\s*(am|pm|a m|p m|de la manana|de la tarde|de la noche|de la madrugada)?/);if(!m)return 0;let h=+m[1],mi=+(m[2]||0);const p=m[3]||'';if(h>24||mi>59)return 0;
+ if(/^(pm|p m|de la tarde|de la noche)/.test(p)&&h<12)h+=12;if(/^(am|a m|de la manana|de la madrugada)/.test(p)&&h==12)h=0;
+ const d=new Date();d.setHours(h%24,mi,0,0);if(d<=new Date())d.setDate(d.getDate()+1);return Math.round((d-Date.now())/1000)}
+[['⏱ Pomodoro','pomodoro'],['♪ Lofi','pon musica de lofi'],['📋 Pendientes','que tengo pendiente'],['🔋 Estado','diagnostico'],['☀ Resumen','buenos dias'],['❔ Comandos','que puedes hacer']].forEach(([l,c])=>{const b=document.createElement('button');b.textContent=l;b.onclick=()=>jvInput(c);$('#jvq').append(b)});
+jvRestore();
+
+/* ---- sugerencias al escribir «/» ---- */
+const SLC=[['/ayuda','qué sé hacer'],['/nuevo','nueva conversación'],['/limpiar','vaciar esta conversación'],['/exportar','descargar esta conversación'],['/nombre ','cómo te llamo'],['/memoria','lo que he aprendido'],['/olvidar','borrar mi memoria'],['/decir ','leer un texto en voz alta'],['/mic','detector de micrófono'],['/noryx','asistente de voz'],['/acceso','ver mi acceso'],['/solicitar','pedir acceso al creador'],['/respaldo','descargar copia de seguridad'],['/restaurar','cargar una copia'],['/creador','acceso del creador'],['/tester','acceso de tester']],SLX=[['/accesos','dar o quitar accesos'],['/personas','con quién he hablado'],['/testers','qué han enseñado']];
+const slash=$('#slash');
+function slashUpdate(){const v=inp.value;if(!/^\/[a-záéíóúñ]*$/i.test(v)){slash.hidden=true;return}const q=v.toLowerCase(),L=SLC.concat(creator?SLX:[]).filter(c=>c[0].startsWith(q)&&c[0].trim()!=q);slash.replaceChildren();if(!L.length){slash.hidden=true;return}
+ L.slice(0,8).forEach(c=>{const b=document.createElement('button'),n=document.createElement('b');n.textContent=c[0].trim();b.append(n,' · '+c[1]);b.onclick=()=>{inp.value=c[0];fit();inp.focus();slash.hidden=true};slash.append(b)});slash.hidden=false}
+inp.addEventListener('input',slashUpdate);{const _fit=fit;fit=()=>{_fit();slashUpdate()}}
+addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()=='k'){e.preventDefault();openMenu();$('#q').focus()}});
+
+/* ---- respaldo y restauración (sin contraseñas, sesión ni webhooks) ---- */
+const CFGOK={'nx-theme':v=>v=='dark'||v=='light','nx-spk':v=>typeof v=='boolean','nx-teacher':v=>typeof v=='boolean','nx-vp':v=>typeof v=='number','nx-vr':v=>typeof v=='number','nx-jmusic':v=>typeof v=='string'&&v in JMUS,
+ 'nx-jtasks':v=>Array.isArray(v)&&v.every(s=>typeof s=='string'),'nx-jnotes':v=>Array.isArray(v)&&v.every(x=>x&&typeof x.t=='string'),
+ 'nx-jsites':v=>v&&typeof v=='object'&&Object.values(v).every(u=>typeof u=='string'&&/^https?:\/\//i.test(u)),'nx-jrut':v=>v&&typeof v=='object'&&Object.values(v).every(a=>Array.isArray(a)&&a.every(s=>typeof s=='string'))};
+function backup(){const o={v:1,fecha:new Date().toISOString(),convs,mem,cfg:{}};Object.keys(CFGOK).forEach(k=>{const v=S.get(k,undefined);if(v!==undefined)o.cfg[k]=v});
+ dl(new Blob([JSON.stringify(o)],{type:'application/json'}),'noryx-respaldo.json');toast('Respaldo descargado (sin contraseñas ni webhooks)')}
+$('#bk').onclick=()=>{closeMenu();backup()};
+$('#bkf').onchange=async e=>{const f=e.target.files[0];e.target.value='';if(!f)return;
+ try{const o=JSON.parse(await f.text());if(!o||o.v!==1||!Array.isArray(o.convs)||!o.convs.every(c=>c&&typeof c.title=='string'&&Array.isArray(c.msgs)&&c.msgs.every(m=>m&&(m.r=='u'||m.r=='a')&&typeof m.t=='string')))throw 0;
+  if(!confirm('¿Reemplazar tus conversaciones y tu memoria actuales por las del respaldo?'))return;
+  convs=o.convs.slice(-60);const mm=o.mem&&typeof o.mem=='object'?o.mem:{};mem={name:typeof mm.name=='string'?mm.name.slice(0,40):'',taught:(Array.isArray(mm.taught)?mm.taught:[]).filter(x=>x&&typeof x.q=='string'&&typeof x.a=='string').slice(-250)};
+  ['gusta','vive','edad'].forEach(k=>{if(typeof mm[k]=='string')mem[k]=mm[k].slice(0,60)});
+  Object.entries(o.cfg||{}).forEach(([k,v])=>{if(CFGOK[k]&&CFGOK[k](v))S.set(k,v)});cur=null;save();renderAll();toast('Respaldo restaurado')}
+ catch(er){toast('Ese archivo no es un respaldo válido de Noryx')}};
+
 loadCT();
 renderAll();
 </script>
