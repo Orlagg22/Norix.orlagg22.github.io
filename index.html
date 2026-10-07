@@ -4,6 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#07090d">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="icons/favicon.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Noryx">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>Noryx Chat</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;800&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -170,7 +177,7 @@ textarea{flex:1;resize:none;border:0;outline:0;background:none;color:var(--ink);
   <div id="pro" hidden><button id="vlb"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>Voz en vivo</button><button id="imb"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="9" cy="10" r="1.8"/><path d="M21 16l-5-5-8 8"/></svg>Imágenes</button></div>
   <button id="jvb" hidden><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/></svg>Modo Noryx</button>
   <input id="q" placeholder="Buscar en conversaciones" aria-label="Buscar"><nav id="list"></nav>
-  <div class="foot"><button id="thm">Tema</button><button id="spk">Voz: no</button><button id="mdopen">Micrófono</button><button id="mae">Maestro: sí</button><button id="acc">Entrar</button><button id="exp">Exportar</button><button id="forget">Olvidar todo</button><button id="bk" title="Descargar una copia de tus conversaciones y memoria">Respaldo</button><button id="gxb" hidden>Accesos</button></div>
+  <div class="foot"><button id="thm">Tema</button><button id="pwa" hidden>Instalar app</button><button id="spk">Voz: no</button><button id="mdopen">Micrófono</button><button id="mae">Maestro: sí</button><button id="acc">Entrar</button><button id="exp">Exportar</button><button id="forget">Olvidar todo</button><button id="bk" title="Descargar una copia de tus conversaciones y memoria">Respaldo</button><button id="gxb" hidden>Accesos</button></div>
  </aside>
  <div id="scrim"></div>
  <main>
@@ -1188,7 +1195,23 @@ const YTMOODS=[
  {k:/viaj|turismo|mundo|lugares/,n:'algo de viajes',q:['viaje por mexico tour completo','los lugares mas bonitos del mundo 4k','vlog de viaje increible','pueblos magicos que visitar']}];
 const YTANY=['experimentos sociales en la calle','retos locos que salieron bien','los mejores momentos de youtube en español','historias increibles que parecen mentira','videos que te harán el día','documentales cortos que enganchan','cosas curiosas que no sabías del mundo','momentos virales mas graciosos','mejores cortometrajes animados','vlogs de aventuras extremas','comedia en español para reír sin parar','datos curiosos mexico','talentos increibles sorprenden al jurado'];
 const ytPick=a=>a[Math.floor(Math.random()*a.length)];
-async function ytRecommend(txt){const who=jvWho();let mood=YTMOODS.find(x=>x.k.test(txt));const q=ytPick(mood?mood.q:YTANY),what=mood?mood.n:'algo entretenido';
+const ytJson=t=>{try{const m=String(t||'').match(/\{[\s\S]*\}/);return m?JSON.parse(m[0]):null}catch(e){return null}};
+const ytRace=(p,ms)=>Promise.race([p,sleep(ms).then(()=>null)]);
+async function ytAIQuery(txt,mood){if(!MAESTRO)return null;JV.yq=JV.yq||[];
+ const r=await ytRace(ask([{role:'system',content:'Devuelves SOLO una consulta de búsqueda de YouTube en español, de 3 a 7 palabras, sin comillas ni explicación, para encontrar videos populares y buenos que encajen con lo que pide el usuario. Si pide algo vago, elige un tema variado y atractivo. Nunca inventes títulos, canales ni enlaces: solo describe el tipo de video. Evita repetir estas consultas previas: '+(JV.yq.join(' | ')||'ninguna')+'.'},{role:'user',content:'Pedido: '+txt+(mood?' (tema: '+mood+')':'')}]),9000);
+ let q=r&&r.t?r.t.split('\n')[0].replace(/^["'«¿\s-]+|["'»?.\s]+$/g,'').trim():'';
+ if(q.length<4||q.length>70||/https?:|www\./i.test(q))return null;JV.yq.push(q);JV.yq=JV.yq.slice(-6);return q}
+async function ytAI(raw){if(!MAESTRO)return null;const who=jvWho();
+ const r=await ytRace(ask([{role:'system',content:'Clasificas pedidos de YouTube. Responde SOLO un JSON: {"accion":"buscar|reciente|recomendar|canal|vivo|no","consulta":"..."}. buscar = quiere un video o tema concreto; reciente = el video más nuevo de un youtuber o canal (consulta = solo su nombre, corrige errores de ortografía de nombres famosos); recomendar = quiere una sugerencia (consulta = lo que describió); canal = abrir un canal (consulta = nombre); vivo = transmisión en vivo; no = no tiene que ver con YouTube. Nunca inventes enlaces ni IDs.'},{role:'user',content:raw}]),9000);
+ const j=r&&r.t?ytJson(r.t):null;if(!j||!j.accion||j.accion=='no')return null;
+ const c=String(j.consulta||'').replace(/\s+/g,' ').trim().slice(0,80);
+ if(j.accion=='recomendar')return ytRecommend(norm(c||raw));
+ if(!c)return null;
+ if(j.accion=='reciente')return ytLatest(c);
+ if(j.accion=='canal')return ytOpenR(ytUrl(c,YTSP.canal),'Abriendo el canal de '+ytTitle(c)+', '+who+'.',null,null,'canal '+c);
+ if(j.accion=='vivo')return ytOpenR(ytUrl(c,YTSP.vivo),'Buscando transmisiones en vivo de '+c+', '+who+'.',null,null,'vivo '+c);
+ return ytOpenR(ytUrl(c),'Buscando «'+c+'» en YouTube, '+who+'.',null,null,c)}
+async function ytRecommend(txt){const who=jvWho();let mood=YTMOODS.find(x=>x.k.test(txt));let q=ytPick(mood?mood.q:YTANY);const what=mood?mood.n:'algo entretenido';const gq=await ytAIQuery(txt,mood?mood.n:'');if(gq)q=gq;
  const d=await ytApi('search',{part:'snippet',q,type:'video',maxResults:'15',order:'relevance',regionCode:'MX',relevanceLanguage:'es',videoEmbeddable:'true',safeSearch:'moderate'});
  const it=d&&d.items&&d.items.length?ytPick(d.items):null;
  if(it){const u=ytWatch(it.id.videoId),t=ytDec(it.snippet.title),c=ytDec(it.snippet.channelTitle);
@@ -1216,6 +1239,7 @@ async function ytCmd(n,raw){const who=jvWho();let q,m;
  const wantsYT=/\b(?:en|de|por|desde|con|on)\s+(?:youtube|yt)\b|^(?:youtube|yt)\s+\S/.test(n);
  if(wantsYT||/\b(?:video|videos|trailers?|tutoriales?|clips?|entrevistas?|capitulos?|episodios?|documentales?|stand up|reaccion\w*)\b/.test(n)&&/^(?:busca|buscame|pon|ponme|reproduce|reproduceme|muestrame|ensename|quiero ver|quiero mirar|play|ver)\b/.test(n)){
   m=n.match(/^(?:busca|buscame|pon|ponme|pones|reproduce|reproduceme|muestrame|ensename|quiero ver|quiero mirar|quiero escuchar|play|ver|abre|youtube|yt)\s+(?:en\s+youtube\s+)?(.+)$/);
+  if(!m&&MAESTRO){const ai=await ytAI(raw);if(ai)return ai}
   let s=ytClean(m?m[1]:n);
   if(/\b(?:musica|cancion|canciones|playlist|disco|album|rolas?|lofi)\b/.test(s)&&!/\bvideo\b/.test(n))return null;
   s=s.replace(/^(?:el|la|los|las|un|una)\s+(?=\S)/,'').trim();
@@ -1232,6 +1256,7 @@ async function ytCmd(n,raw){const who=jvWho();let q,m;
    if(it){const t=ytDec(it.snippet.title);return ytOpenR(ytWatch(it.id.videoId),'Poniendo «'+t+'», '+who+'.','Reproduciendo: '+t+'\nCanal: '+ytDec(it.snippet.channelTitle),[{label:'🔎 Ver más resultados',href:ytUrl(s)}],t.slice(0,60))}}
   const u=ytUrl(s,sp),lucky='https://www.google.com/search?btnI=1&q='+encodeURIComponent('site:youtube.com/watch '+s);
   return ytOpenR(u,(dir?'Buscando ':'Buscando ')+'«'+s+'»'+tag+' en YouTube, '+who+'.','Resultados de YouTube para «'+s+'»'+tag+'.\nSi quieres que abra directo el primer video, guarda una clave con /ytkey.',[{label:'🍀 Primer resultado',href:lucky}],s)}
+ if(/\b(?:youtube|yt|youtuber|youtubers|video|videos|canal|vlog)\b/.test(n))return ytAI(raw);
  return null}
 
 /* ---- resúmenes ---- */
@@ -1249,7 +1274,7 @@ async function jvBrief(n){const d=new Date(),h=d.getHours(),b=await jvBatt(),tk=
 async function jvRoutine(name,steps){const ch=[],out=[];for(const s of steps.slice(0,10)){const r=await jvCmd(s,jvPlain(s).replace(/[^a-z0-9 ]/g,' ').trim(),true);if(r){(r.chips||[]).forEach(c=>ch.push(c));out.push('• '+(r.show||r.say))}else out.push('• ?'+s);await sleep(400)}
  return jvR('Rutina '+name+' ejecutada, '+jvWho()+'.',{chips:ch,show:'Rutina «'+name+'»:\n'+out.join('\n'),m:'Noryx · rutina'})}
 
-const JHELP='Esto puedo hacer en modo Noryx:\n• Sitios: «abre YouTube», «abre github.com»\n• YouTube: «busca luisito comunica en youtube», «ponme el video más reciente de Fernanfloo», «recomiéndame un video entretenido» (o «divertido», «relajante», «documental», «de terror»…), «abre el canal de Mark Rober», «en vivo de noticias»; con /ytkey abro el video directo\n• Música: «pon música de Soda Stereo», «reproduce jazz en YouTube», «abre Spotify y pon lofi»\n• Buscar: «busca recetas de pozole», «cómo llego a la Torre Eiffel»\n• Tiempo: «temporizador de 10 minutos», «recuérdame en 20 minutos que saque la ropa», «pomodoro»\n• Notas y tareas: «anota que compré leche», «agrega pan a mi lista», «qué tengo pendiente», «completa la tarea 2»\n• Sistema: «diagnóstico», «batería», «mantén la pantalla encendida», «pantalla completa», «modo claro»\n• Aparatos: «enciende el monitor» (con /puente)\n• Rutinas: «buenos días», «modo trabajo» (con /rutina)\n• Extras: tira un dado, lanza una moneda, copia un texto, habla más rápido\n• Y charlamos de lo que quieras.';
+const JHELP='Esto puedo hacer en modo Noryx:\n• Sitios: «abre YouTube», «abre github.com»\n• YouTube: «busca luisito comunica en youtube», «ponme el video más reciente de Fernanfloo», «recomiéndame un video entretenido» (o «divertido», «relajante», «documental», «de terror»…), «abre el canal de Mark Rober», «en vivo de noticias»; si no entiendo una frase, le pregunto al Maestro (Gemini, sin clave); con /ytkey abro el video directo\n• Música: «pon música de Soda Stereo», «reproduce jazz en YouTube», «abre Spotify y pon lofi»\n• Buscar: «busca recetas de pozole», «cómo llego a la Torre Eiffel»\n• Tiempo: «temporizador de 10 minutos», «recuérdame en 20 minutos que saque la ropa», «pomodoro»\n• Notas y tareas: «anota que compré leche», «agrega pan a mi lista», «qué tengo pendiente», «completa la tarea 2»\n• Sistema: «diagnóstico», «batería», «mantén la pantalla encendida», «pantalla completa», «modo claro»\n• Aparatos: «enciende el monitor» (con /puente)\n• Rutinas: «buenos días», «modo trabajo» (con /rutina)\n• Extras: tira un dado, lanza una moneda, copia un texto, habla más rápido\n• Y charlamos de lo que quieras.';
 
 /* ---- intérprete de órdenes: devuelve null si no es una orden (entonces se charla) ---- */
 const JSPLIT=/\s+(?:y\s+)?(?:luego|despues|ademas|y despues)\s+|\s+y\s+(?=(?:abre|abrir|pon|ponme|reproduce|toca|busca|enciende|prende|apaga|activa|desactiva|anota|apunta|recuerdame|avisame|temporizador|cambia|dime|cuentame|agrega|manten|tira|lanza)\b)/;
@@ -1707,6 +1732,46 @@ $('#bkf').onchange=async e=>{const f=e.target.files[0];e.target.value='';if(!f)r
 
 loadCT();
 renderAll();
+
+/* ============ App instalable (PWA) + actualización automática ============
+   - Instalar: botón «Instalar app» (Chrome/Edge/Android) o instrucciones en iPhone/iPad.
+   - Actualizar: al abrir, al volver a la app y cada 20 min compara el código publicado con el
+     que está corriendo; si cambió, recarga sola (cuando no estás hablando ni escribiendo). */
+(function(){
+ const isHttp=/^https?:$/.test(location.protocol),btn=$('#pwa');
+ const standalone=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
+ const ios=/iphone|ipad|ipod/i.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+ let dp=null;
+ if(btn){
+  if(standalone())btn.hidden=true;
+  else if(ios){btn.hidden=false}
+  addEventListener('beforeinstallprompt',e=>{e.preventDefault();dp=e;if(!standalone())btn.hidden=false});
+  addEventListener('appinstalled',()=>{dp=null;btn.hidden=true;toast('Noryx instalada ✔')});
+  btn.onclick=async()=>{
+   if(dp){dp.prompt();try{await dp.userChoice}catch(e){}dp=null;btn.hidden=true;return}
+   if(ios){sysMsg('Para instalar Noryx en iPhone o iPad:\n1. Abre esta página en **Safari**.\n2. Toca el botón **Compartir** (el cuadrado con la flecha).\n3. Elige **Agregar a pantalla de inicio**.\nQueda como una app y se actualiza sola.','Noryx');return}
+   sysMsg('Tu navegador no ofrece instalar desde aquí. En Chrome o Edge usa el ícono de instalar en la barra de direcciones, o el menú ⋮ → «Instalar Noryx».','Noryx')}}
+ if(!isHttp||!('serviceWorker' in navigator))return;
+ /* service worker */
+ navigator.serviceWorker.register('sw.js').then(reg=>{
+  const upd=()=>{try{reg.update()}catch(e){}};
+  setInterval(upd,20*60*1000);
+  addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')upd()})}).catch(()=>{});
+ /* ¿hay una versión nueva del código publicado? */
+ const fnv=t=>{let h=2166136261;for(let i=0;i<t.length;i++){h^=t.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(36)+t.length};
+ let mine=null,waiting=false;
+ const grab=async()=>{try{const r=await fetch(location.pathname,{cache:'no-store'});if(!r.ok)return null;return fnv(await r.text())}catch(e){return null}};
+ const idle=()=>!(typeof JV!=='undefined'&&JV.on)&&!(typeof busy!=='undefined'&&busy)&&!(($('#in')||{}).value||'').trim();
+ const apply=()=>{
+  const last=+sessionStorage.getItem('nx-reloaded')||0;if(Date.now()-last<60000)return;
+  if(!idle()){if(!waiting){waiting=true;toast('Hay una versión nueva de Noryx; se aplicará en cuanto termines');const t=setInterval(()=>{if(idle()){clearInterval(t);waiting=false;apply()}},15000)}return}
+  sessionStorage.setItem('nx-reloaded',Date.now());toast('Actualizando Noryx…');setTimeout(()=>location.reload(),900)};
+ const check=async()=>{const h=await grab();if(!h)return;if(mine===null){mine=h;return}if(h!==mine)apply()};
+ grab().then(h=>{mine=h});
+ setInterval(check,20*60*1000);
+ addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')check()});
+ addEventListener('online',check);
+})();
 </script>
 </body>
 </html>
