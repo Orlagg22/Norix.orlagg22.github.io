@@ -509,10 +509,22 @@ function convUnits(t){const s=t.toLowerCase().normalize('NFD').replace(/[\u0300-
 /* ============ Memoria y aprendizaje ============ */
 const bag=t=>new Set(toks(t));
 const cos=(a,b)=>{let n=0;a.forEach(x=>b.has(x)&&n++);return a.size&&b.size?n/Math.sqrt(a.size*b.size):0};
-const lastT={};
-function taught(t){const v=bag(t),pool=[];let best=0;
- mem.taught.concat(CT).forEach(x=>{const d=cos(v,bag(x.q));if(d>=(x.auto?.8:.6)){pool.push([x,d]);if(d>best)best=d}});
- let c=pool.filter(p=>p[1]>=best-.001).map(p=>p[0]);if(!c.length)return null;
+const lastT={},TKW=new WeakMap();
+const SW=new Set('de la el los las un una unos unas del al lo en y o e u con para me te se mi tu su sus es son ser fue era eran hay esta estan este esto eso ese esa a ante bajo sin sobre entre hasta desde que cual cuales quiero saber podrias puedes puede decir favor oye hola dime dame cuentame hablame explicame necesito ayudame the an of is are was to in on and or for do does please tell give about'.split(' ')),IQ=new Set('quien quienes como cuando donde cuanto cuantos cuanta cuantas por what who how when where why which'.split(' '));
+const stem=w=>w.length>4?w.replace(/(es|s)$/,''):w;
+function ctoks(s){const a=toks(s),b=a.filter(w=>!SW.has(w));return(b.length?b:a).map(stem)}
+const tk=x=>{let r=TKW.get(x);if(!r){r=ctoks(x.q);TKW.set(x,r)}return r};
+let IDFC={k:'',m:{}};
+function tIdf(all){const k=all.length+':'+mem.taught.length+':'+(CT[0]&&CT[0].id);if(IDFC.k==k)return IDFC.m;const df={};all.forEach(x=>new Set(tk(x)).forEach(t=>df[t]=(df[t]||0)+1));const N=all.length||1,m={};for(const t in df)m[t]=Math.log(1+N/df[t]);IDFC={k,m};return m}
+const same=(a,b)=>a==b||(a.length>=5&&b.length>=5&&lev(a,b,a.length>=8?2:1)<=(a.length>=8?2:1))||(a.length>=4&&b.length>=4&&Math.abs(a.length-b.length)<=2&&(a.startsWith(b)||b.startsWith(a)));
+/* similitud sin importar el orden: cobertura ponderada por rareza de cada palabra (F1 entre ambos lados) */
+function wsim(A,B,idf){const w=t=>(idf[t]||2)*(IQ.has(t)?.5:1);let sa=0,sb=0,oa=0,ob=0;
+ A.forEach(t=>sa+=w(t));B.forEach(t=>sb+=w(t));
+ A.forEach(a=>{if(B.some(b=>same(a,b)))oa+=w(a)});B.forEach(b=>{if(A.some(a=>same(a,b)))ob+=w(b)});
+ if(!sa||!sb)return 0;const ca=oa/sa,cb=ob/sb;return ca+cb?2*ca*cb/(ca+cb):0}
+function taught(t){const qt=ctoks(t);if(!qt.length)return null;const all=mem.taught.concat(CT),idf=tIdf(all),pool=[];let best=0;
+ all.forEach(x=>{const d=wsim(qt,tk(x),idf);if(d>=(x.auto?.8:.7)){pool.push([x,d]);if(d>best)best=d}});
+ let c=pool.filter(p=>p[1]>=best-.03).map(p=>p[0]);if(!c.length)return null;
  const loc=c.filter(x=>!x.cloud&&!x.auto);if(loc.length)c=loc;
  const key=norm(c[0].q);let o=c.length>1?c.filter(x=>x.a!==lastT[key]):c;if(!o.length)o=c;
  const r=o[Math.floor(Math.random()*o.length)];lastT[key]=r.a;return Object.assign({},r,{n:c.length})}
