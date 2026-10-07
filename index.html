@@ -917,9 +917,9 @@ $('#mic').onclick=async function(){const b=this;if(!SR)return toast('Tu navegado
  if(!await micPrime())return;
  let tries=0;const go=()=>{const r=new SR();let got=false,err=false,heard=false;r.lang=navigator.language||'es-MX';
   r.onaudiostart=()=>{heard=true};r.onresult=e=>{got=true;micOk();send(e.results[0][0].transcript)};
-  r.onerror=e=>{micRel(r._st);err=true;b.classList.remove('on');micFail(e&&e.error)};
-  r.onend=()=>{micRel(r._st);if(got||err){b.classList.remove('on');return}if(!heard&&tries++<1){setTimeout(go,150);return}b.classList.remove('on');micFail('no-speech')};
-  b.classList.add('on');srStart(r).catch(()=>b.classList.remove('on'))};go()};
+  r.onerror=e=>{err=true;b.classList.remove('on');micFail(e&&e.error)};
+  r.onend=()=>{if(got||err){b.classList.remove('on');return}if(!heard&&tries++<1){setTimeout(go,150);return}b.classList.remove('on');micFail('no-speech')};
+  b.classList.add('on');try{r.start()}catch(e){b.classList.remove('on')}};go()};
 
 /* ============ Red neuronal viva (hero) ============ */
 function neural(cv){const x=cv.getContext('2d'),L=[4,6,6,3],N=[];let w=0,h=0;const rm=matchMedia('(prefers-reduced-motion:reduce)').matches;
@@ -941,13 +941,12 @@ function vlStart(){if(window.JV&&JV.on)jvStop();if(!sess)return openDlg();if(!SR
  closeMenu();VL.on=true;VL.mute=false;vl.hidden=false;speechSynthesis.cancel();vlText('');$('#vlm').textContent='Silenciar micrófono';micPrime().then(ok=>{if(VL.on){if(ok)vlListen();else vlStop()}})}
 function vlStop(){VL.on=false;const r=VL.rec;VL.rec=null;try{r&&r.abort()}catch(e){}window.speechSynthesis&&speechSynthesis.cancel();vl.hidden=true}
 function vlListen(){if(!VL.on||!mdEl.hidden)return;if(VL.mute){vlSet('mute');return}
- let fin='',lt='',r;try{r=new SR()}catch(e){return}
- const rel=()=>{micRel(r._st);r._st=null};
+ let fin='',r;try{r=new SR()}catch(e){return}
  VL.rec=r;r.lang=navigator.language||'es-MX';r.interimResults=true;r.continuous=false;
- r.onresult=e=>{let it='';fin='';for(let i=0;i<e.results.length;i++){const x=e.results[i];if(x.isFinal)fin+=x[0].transcript;else it+=x[0].transcript}lt=fin+it;vlText(lt);micOk()};
- r.onerror=e=>{rel();const hard=e.error=='not-allowed'||e.error=='service-not-allowed'||e.error=='audio-capture';if(hard)vlStop();micFail(e.error,!hard)};
- r.onend=()=>{rel();if(VL.rec!==r)return;VL.rec=null;if(!VL.on||VL.mute)return;const t=(fin||lt).trim();t?vlTurn(t):setTimeout(vlListen,200)};
- vlSet('listen');srStart(r,()=>VL.rec===r).catch(()=>{rel();if(VL.rec===r)VL.rec=null;setTimeout(vlListen,500)})}
+ r.onresult=e=>{let it='';fin='';for(let i=0;i<e.results.length;i++){const x=e.results[i];if(x.isFinal)fin+=x[0].transcript;else it+=x[0].transcript}vlText(fin+it);micOk()};
+ r.onerror=e=>{const hard=e.error=='not-allowed'||e.error=='service-not-allowed'||e.error=='audio-capture';if(hard)vlStop();micFail(e.error,!hard)};
+ r.onend=()=>{if(VL.rec!==r)return;VL.rec=null;if(!VL.on||VL.mute)return;const t=fin.trim();t?vlTurn(t):setTimeout(vlListen,200)};
+ try{r.start();vlSet('listen')}catch(e){setTimeout(vlListen,500)}}
 async function vlWait(){const q=window.speechSynthesis;await sleep(250);let k=0;while(VL.on&&(q.speaking||q.pending)&&k<2400){await sleep(150);k++}}
 async function vlTurn(t){vlSet('think');vlText('Tú: '+t);
  if(/^(adios|chao|terminar|colgar|fin|hasta luego|bye|goodbye|end call)$/.test(norm(t))){say(isEn(t)?'Goodbye':'Hasta luego');await vlWait();vlStop();return}
@@ -1388,22 +1387,39 @@ function jvStart(){
  closeMenu();creatorAct=Date.now();JV.on=true;JV.mute=!SR;JV.proc=false;JV.h=[];JV.last='';jvEl.hidden=false;jvl.replaceChildren();jvChips([]);jvTick();jvWake(true);
  $('#jvm').textContent=JV.mute?'Activar micrófono':'Silenciar micrófono';$('#jvm').hidden=!SR;
  const h=new Date().getHours(),g=(h<12?'Buenos días':h<20?'Buenas tardes':'Buenas noches')+', '+jvWho()+'. Noryx a sus órdenes.'+(SR?'':' Su navegador no admite micrófono: escríbame las órdenes.');
- jvText(g);jvLog('Noryx: '+g);jvSet('speak');speechSynthesis.cancel();say(g);Promise.all([jvWait(),SR?micPrime():true]).then(([_,ok])=>{if(!JV.on)return;if(ok===false){JV.mute=true;$('#jvm').textContent='Activar micrófono';jvSet('mute');return}jvListen()})}
-function jvStop(){JV.on=false;const r=JV.rec;JV.rec=null;try{r&&r.abort()}catch(e){}window.speechSynthesis&&speechSynthesis.cancel();jvEl.hidden=true;JV.proc=false;if(!JV.pin)jvWake(false)}
+ jvText(g);jvLog('Noryx: '+g);jvSet('speak');speechSynthesis.cancel();say(g);Promise.all([jvWait(),SR?jvMicOn():true]).then(([_,ok])=>{if(!JV.on)return;if(ok===false){JV.mute=true;$('#jvm').textContent='Activar micrófono';jvSet('mute');return}jvListen()})}
+function jvStop(){JV.on=false;const r=JV.rec;JV.rec=null;try{r&&r.abort()}catch(e){}jvMicOff();window.speechSynthesis&&speechSynthesis.cancel();jvEl.hidden=true;JV.proc=false;if(!JV.pin)jvWake(false)}
+/* Micrófono abierto durante toda la sesión (como la «voz en vivo» que sí funcionó): mantiene activa la captura de audio del navegador */
+async function jvMicOn(){
+ if(JV.ms&&JV.ms.getAudioTracks().some(t=>t.readyState=='live'))return true;
+ if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia)return true;
+ try{JV.ms=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true}});await sleep(150);return true}
+ catch(e){const n=e&&e.name;micFail(n=='NotFoundError'||n=='NotReadableError'?'audio-capture':'not-allowed',false,n);return false}}
+function jvMicOff(){try{JV.ms&&JV.ms.getTracks().forEach(t=>t.stop())}catch(e){}JV.ms=null}
+function jvDeaf(){const n=Date.now();if(n-(JV.deafT||0)<180000)return;JV.deafT=n;const m='No estoy recibiendo sonido de tu micrófono. Si estás hablando, el navegador usa otro micrófono: ponlo como predeterminado (Windows: Configuración → Sistema → Sonido → Entrada) o elígelo en chrome://settings/content/microphone.';jvLog('⚠ '+m);toast('No recibo sonido del micrófono · revisa el micrófono predeterminado')}
 function jvListen(){if(!JV.on||!mdEl.hidden)return;if(JV.mute||!SR){jvSet('mute');return}
  if(Date.now()-creatorAct>6e5){jvStop();if(creator)lock(false);sysMsg('🔒 Modo Noryx cerrado por inactividad (10 min). '+(creator?'Escribe /creador para entrar otra vez.':'Escribe /noryx para volver a entrar.'),'Noryx');return}
  if(!jvAllowed()){jvStop();sysMsg('⏳ Tu acceso al modo Noryx terminó.','Noryx');return}
- let fin='',lt='',aud=0,snd=0,r;try{r=new SR()}catch(e){return}
- const rel=()=>{micRel(r._st);r._st=null};
- JV.rec=r;r.lang=navigator.language||'es-MX';r.interimResults=true;r.continuous=false;
- r.onresult=e=>{let it='';fin='';for(let i=0;i<e.results.length;i++){const x=e.results[i];if(x.isFinal)fin+=x[0].transcript;else it+=x[0].transcript}lt=fin+it;jvText(lt);micOk()};
- r.onaudiostart=()=>{aud=1;if(JV.st=='listen')jvs.textContent='Te escucho… (micrófono activo)'};
+ if(JV.rec){if(!JV.proc&&JV.st!='speak')jvSet('listen');return}  /* ya hay una escucha continua activa */
+ let lt='',snd=0,r;try{r=new SR()}catch(e){return}
+ JV.rec=r;r.lang=/^es/i.test(navigator.language||'es')?'es-MX':(navigator.language||'en-US');r.continuous=true;r.interimResults=true;r.maxAlternatives=1;
+ r.onresult=e=>{
+  if(JV.mute||JV.proc||JV.st=='speak'||Date.now()<(JV.quiet||0))return;  /* no se oye a sí misma ni mientras piensa */
+  let it='',fin='';for(let i=e.resultIndex;i<e.results.length;i++){const x=e.results[i];if(x.isFinal)fin+=x[0].transcript;else it+=x[0].transcript}
+  micOk();JV.deaf=0;
+  if(fin.trim()){lt='';jvTurn(fin.trim());return}
+  lt=it;if(it)jvText(it)};
+ r.onaudiostart=()=>{if(JV.st=='listen')jvs.textContent='Te escucho… (micrófono activo)'};
  r.onsoundstart=()=>{snd=1;JV.deaf=0;if(JV.st=='listen')jvs.textContent='Te escucho… 🔊 detecto sonido'};
  r.onspeechstart=()=>{if(JV.st=='listen')jvs.textContent='Te escucho… 🗣 detecto tu voz'};
- r.onerror=e=>{rel();const hard=e.error=='not-allowed'||e.error=='service-not-allowed'||e.error=='audio-capture';if(hard){JV.mute=true;JV.rec=null;$('#jvm').textContent='Activar micrófono';jvSet('mute')}micFail(e.error,!hard)};
- r.onend=()=>{rel();if(JV.rec!==r)return;JV.rec=null;if(!JV.on||JV.mute)return;const t=(fin||lt).trim();if(t){JV.deaf=0;jvTurn(t)}else{if(!snd){JV.deaf=(JV.deaf||0)+1;if(JV.deaf>=3)jvDeaf()}else JV.deaf=0;setTimeout(jvListen,250)}};
- jvSet('listen');srStart(r,()=>JV.rec===r).catch(()=>{rel();if(JV.rec===r)JV.rec=null;setTimeout(jvListen,600)})}
-function jvDeaf(){const n=Date.now();if(n-(JV.deafT||0)<180000)return;JV.deafT=n;const m='No estoy recibiendo sonido de tu micrófono. Si estás hablando, el navegador usa otro micrófono: abre «Detector de micrófono», elige el tuyo y pulsa «Probar micrófono»; Noryx usará ese.';jvLog('⚠ '+m);toast('No recibo sonido del micrófono · abre el Detector (🎙)')}
+ r.onerror=e=>{if(e.error=='no-speech'||e.error=='aborted')return;  /* silencio: simplemente se reinicia la escucha */
+  const hard=e.error=='not-allowed'||e.error=='service-not-allowed'||e.error=='audio-capture';if(hard){JV.mute=true;JV.rec=null;$('#jvm').textContent='Activar micrófono';jvSet('mute')}micFail(e.error,!hard)};
+ r.onend=()=>{if(JV.rec!==r)return;JV.rec=null;if(!JV.on||JV.mute)return;
+  const t=lt.trim();lt='';
+  if(t&&!JV.proc&&JV.st!='speak'){jvTurn(t);return}  /* frase que Chrome cerró sin confirmar: no se pierde */
+  if(!snd){JV.deaf=(JV.deaf||0)+1;if(JV.deaf>=4)jvDeaf()}
+  setTimeout(jvListen,150)};
+ try{r.start();if(!JV.proc&&JV.st!='speak')jvSet('listen')}catch(e){JV.rec=null;setTimeout(jvListen,600)}}
 async function jvWait(){const q=window.speechSynthesis;await sleep(250);let k=0;while(JV.on&&(q.speaking||q.pending)&&k<2400){await sleep(150);k++}}
 const JBYE=/^(?:adios|chao|hasta luego|terminar|terminar sesion|colgar|desconectate|apagate|goodbye|bye|end session|salir|cierra el modo jarvis|cierra el modo noryx)$/;
 async function jvTurn(raw0,typed){
@@ -1427,7 +1443,7 @@ async function jvTurn(raw0,typed){
   jvLogChat(raw0,show,out.m);
   if(out.say){JV.last=out.say;jvSet('speak');say(jvShort(out.say));await jvWait()}
  }catch(er){jvLog('⚠ '+(er&&er.message||er))}
- finally{JV.proc=false;if(JV.on)jvListen()}}
+ finally{JV.proc=false;JV.quiet=Date.now()+700;if(JV.on)jvListen()}}
 function jvInput(t){if(!t||!JV.on)return;if(JV.proc){toast('Un momento, estoy procesando');return}const r=JV.rec;JV.rec=null;try{r&&r.abort()}catch(e){}window.speechSynthesis&&speechSynthesis.cancel();jvTurn(t,true)}
 
 /* ---- comandos escritos: /noryx /puente /atajo /rutina ---- */
@@ -1482,11 +1498,6 @@ function micFail(code,loop,why){
  if(code=='network'&&Date.now()-MDs.last<60000)return;
  MDs.last=Date.now();mdOpen((MIC_WHY[code]||'Error de micrófono: '+code)+(why?' ('+why+')':''))}
 /* Pide el permiso ANTES de iniciar el reconocimiento: así la sesión de voz no caduca mientras el navegador muestra el aviso. */
-async function micStream(id){id=id||S.get('nx-micdev','default');if(!id||id=='default'||!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia)return null;
- try{return await navigator.mediaDevices.getUserMedia({audio:{deviceId:{exact:id},echoCancellation:true,noiseSuppression:true,autoGainControl:true}})}catch(e){return null}}
-function micRel(st){try{st&&st.getTracks().forEach(t=>t.stop())}catch(e){}}
-async function srStart(r,alive,id){const st=await micStream(id);if(alive&&!alive()){micRel(st);return}r._st=st;
- try{st?r.start(st.getAudioTracks()[0]):r.start()}catch(e){if(st){micRel(st);r._st=null;r.start()}else throw e}}
 async function micPrime(){
  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia)return true;
  try{let st='';try{st=(await navigator.permissions.query({name:'microphone'})).state}catch(e){}
@@ -1544,14 +1555,14 @@ function mdRec(){
  r.onspeechstart=()=>{ev.speech=1;mdAdd('🗣 Detecta voz')};
  r.onresult=e=>{const last=e.results[e.results.length-1];let t='';for(let i=0;i<e.results.length;i++)t+=e.results[i][0].transcript;if(last.isFinal){ev.fin=1;mdAdd('✅ Entendí: «'+t+'»')}else mdn.textContent='… '+t};
  r.onerror=e=>{ev.err=e.error;mdAdd('⚠ Error: '+e.error)};
- r.onend=()=>{micRel(r._st);if(MD.rec!==r)return;MD.rec=null;clearTimeout(MD.to);mdn.textContent='';
+ r.onend=()=>{if(MD.rec!==r)return;MD.rec=null;clearTimeout(MD.to);mdn.textContent='';
   if(ev.fin)mdVerdict('ok','✅ El reconocimiento de voz funciona de punta a punta. Si Noryx no responde en el chat, recarga la página y vuelve a intentarlo.');
   else if(ev.err)mdVerdict('bad','❌ '+(MIC_WHY[ev.err]||'Error del reconocimiento: '+ev.err)+(ev.err=='not-allowed'||ev.err=='service-not-allowed'?'\nAbre el candado junto a la dirección → Micrófono → Permitir, y recarga.':''));
   else if(!ev.audio)mdVerdict('bad','❌ El reconocimiento no llegó a capturar audio. Prueba con «Probar micrófono» para ver si el permiso y el dispositivo están bien, y recarga la página.');
-  else if(!ev.sound)mdVerdict('bad','❌ El reconocimiento captura audio pero solo recibe silencio. Chrome usa SU micrófono predeterminado, que puede ser distinto al que probaste arriba. Noryx ya intenta usar el que elijas en la lista (Chrome 139 o superior); si tu navegador es más viejo, cámbialo en Ajustes de Chrome → Privacidad y seguridad → Configuración de sitios → Micrófono (menú superior), y revisa también el dispositivo de entrada predeterminado del sistema. Botón «Copiar ruta de ajustes» abajo.');
+  else if(!ev.sound)mdVerdict('bad','❌ El reconocimiento captura audio pero solo recibe silencio. Chrome usa SU micrófono predeterminado, que puede ser distinto al que probaste arriba (el selector solo afecta a la prueba de nivel). Cámbialo en Ajustes de Chrome → Privacidad y seguridad → Configuración de sitios → Micrófono (menú superior), y revisa también el dispositivo de entrada predeterminado del sistema. Botón «Copiar ruta de ajustes» abajo.');
   else mdVerdict('warn','⚠️ Detecta ruido pero no entiende palabras. Habla más cerca y claro, o revisa que el idioma ('+lang+') sea el tuyo.')};
  MD.to=setTimeout(()=>{try{r.stop()}catch(e){}},9000);
- {const id=mds.value;if(id&&id!='default')S.set('nx-micdev',id);srStart(r,()=>MD.rec===r,id).catch(e=>{MD.rec=null;mdVerdict('bad','❌ No pude iniciar el reconocimiento: '+(e&&e.message||e))})}}
+ try{r.start()}catch(e){MD.rec=null;mdVerdict('bad','❌ No pude iniciar el reconocimiento: '+(e&&e.message||e))}}
 async function mdOpen(reason){
  if(typeof JV!='undefined'&&JV.rec){const r=JV.rec;JV.rec=null;try{r.abort()}catch(e){}}
  if(typeof VL!='undefined'&&VL.rec){const r=VL.rec;VL.rec=null;try{r.abort()}catch(e){}}
