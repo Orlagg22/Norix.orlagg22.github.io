@@ -508,7 +508,7 @@ function convUnits(t){const s=t.toLowerCase().normalize('NFD').replace(/[\u0300-
 /* ============ Memoria y aprendizaje ============ */
 const bag=t=>new Set(toks(t));
 const cos=(a,b)=>{let n=0;a.forEach(x=>b.has(x)&&n++);return a.size&&b.size?n/Math.sqrt(a.size*b.size):0};
-function taught(t){const v=bag(t);let b=null,bs=0;mem.taught.forEach(x=>{const d=cos(v,bag(x.q));if(d>=(x.auto?.8:.6)&&d>bs){bs=d;b=x}});return b}
+function taught(t){const v=bag(t);let b=null,bs=0;mem.taught.concat(CT).forEach(x=>{const d=cos(v,bag(x.q));if(d>=(x.auto?.8:.6)&&d>bs){bs=d;b=x}});return b}
 const isEn=t=>/\b(the|what|who|how|tell|weather|joke|hello|thanks|thank|you|your|please|time|date|explain)\b/i.test(t)&&!/[¿áéíóúñ]|\b(el|la|qué|que|quien|cómo|como|hola|gracias|dime|clima|hora)\b/i.test(t);
 const pick=a=>a[Math.floor(Math.random()*a.length)];
 const A={
@@ -553,12 +553,12 @@ async function brain(t){
   if(fm){const sub=fm[1].trim(),sw=sub.split(' ').filter(Boolean);
    if(sw.length&&sw.length<=3){const rx=new RegExp('(^|\\s)'+sub.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'($|\\s)');
     for(const k in TOP){if(k==ctx.topic)continue;if(TOP[k][0].split('|').some(p=>rx.test(norm(p)))){ctx.topic=k;ctx.q=TOP[k][0].split('|')[0];ctx.more=[];ctx.last=null;return{t:TOP[k][1].replace(/\{n\}/g,nm).replace(/\{H\}/g,H).replace(/\{ACC\}/g,ACC),m:'Conversación · seguimiento'}}}}}}
- if((m=t.match(/^\s*(?:aprende|learn|ensena|teach)\s*:\s*([\s\S]+?)\s*=\s*([\s\S]+)$/i))){const q=m[1].replace(/[?!¿¡.]+$/g,'').trim(),a=m[2].trim(),x=mem.taught.find(z=>z.q.toLowerCase()==q.toLowerCase());if(x)x.a=a;else mem.taught.push({q,a});mem.taught=mem.taught.slice(-200);save();return{t:en?'Learned. Ask me **"'+q+'"** anytime.':'Aprendido. Pregúntame **«'+q+'»** cuando quieras.',m:'Memoria · enseñado'}}
+ if((m=t.match(/^\s*(?:aprende|learn|ensena|teach)\s*:\s*([\s\S]+?)\s*=\s*([\s\S]+)$/i))){const q=m[1].replace(/[?!¿¡.]+$/g,'').trim(),a=m[2].trim(),x=mem.taught.find(z=>z.q.toLowerCase()==q.toLowerCase());if(x)x.a=a;else mem.taught.push({q,a});mem.taught=mem.taught.slice(-200);save();if((tester||creator)&&cloudToken&&q.length>=3&&q.length<=200&&a.length<=700)tcmd('ensenar',q+' = '+a).catch(()=>{});return{t:en?'Learned. Ask me **"'+q+'"** anytime.':'Aprendido. Pregúntame **«'+q+'»** cuando quieras.',m:'Memoria · enseñado'}}
  if((m=t.match(/(?:me llamo|mi nombre es|ll[aá]mame|my name is|call me)\s+([a-záéíóúñ]+)/i))){mem.name=m[1][0].toUpperCase()+m[1].slice(1);save();return{t:en?'Nice to meet you, **'+mem.name+'**. I\'ll remember it.':'Mucho gusto, **'+mem.name+'**. Lo recordaré.',m:'Memoria'}}
  if(/^(?:como me llamo|cual es mi nombre|what is my name|what's my name)/i.test(norm(t).replace(/^/,'')))return{t:mem.name?(en?'You\'re **'+mem.name+'**.':'Te llamas **'+mem.name+'**.'):(en?'You haven\'t told me yet.':'Aún no me lo has dicho. Dime «me llamo…».'),m:'Memoria'};
  for(const[re,k,msg]of[[/me gusta(?:n)?\s+(.{2,40}?)[.!]*$/i,'gusta','Anotado: te gusta **$**. ¿Desde cuándo?'],[/vivo en\s+(.{2,40}?)[.!]*$/i,'vive','**$**, qué buen lugar. Lo recordaré.'],[/tengo\s+(\d{1,3})\s+a[nñ]os/i,'edad','Tienes **$** años; lo guardo.']]){if((m=t.match(re))){mem[k]=m[1];save();return{t:msg.replace('$',m[1]),m:'Memoria'}}}
  {const n=norm(t);if(/que me gusta|what do i like/.test(n))return{t:mem.gusta?'Me dijiste que te gusta **'+mem.gusta+'**.':'Aún no me has dicho qué te gusta.',m:'Memoria'};if(/donde vivo|where do i live/.test(n))return{t:mem.vive?'Vives en **'+mem.vive+'**.':'Aún no me has dicho dónde vives.',m:'Memoria'};if(/cuantos anos tengo|how old am i/.test(n))return{t:mem.edad?'Tienes **'+mem.edad+'** años.':'Aún no me has dicho tu edad.',m:'Memoria'}}
- const tg=taught(t);if(tg)return{t:tg.a,m:tg.auto?'Memoria · aprendido del maestro':'Memoria · enseñado'};
+ const tg=taught(t);if(tg)return{t:tg.a,m:tg.cloud?'Memoria · enseñada por testers':tg.auto?'Memoria · aprendido del maestro':'Memoria · enseñado'};
  let r=calc(t);if(r)return{t:r,m:'Cálculo'};r=algebra(t);if(r)return{t:r,m:'Álgebra'};r=stats(t);if(r)return{t:r,m:'Estadística'};
  r=convUnits(t);if(r)return{t:r,m:'Conversión'};r=geo(t);if(r)return r;
  const c=classify(t);
@@ -675,12 +675,33 @@ function exportMd(){const c=conv();if(!c||!c.msgs.length){toast('No hay nada que
 const SUPA_URL="https://frdvspuqrbjukbvgfdqw.supabase.co",SUPA_KEY="sb_publishable_m-rQ91fGPqdm_5sZieaGbA_F8CZM_tr",CREATOR_EMAIL="orlandoggr22@gmail.com";
 const cloudOn=()=>!!(SUPA_URL&&SUPA_KEY&&CREATOR_EMAIL),cloudBase=()=>SUPA_URL.replace(/\/+$/,''),SID=Date.now().toString(36)+Math.random().toString(36).slice(2,6),pw=$('#pw');
 let cloudToken=null,creator=false,creatorAct=0,auth=false,authFails=0,authLock=0;
+/* ---- Testers: solo ellos (y el creador) enseñan a Noryx para todos los usuarios ---- */
+const TESTER_EMAILS=["proacsonicoyoutu@gmail.com"];
+const isTesterMail=e=>TESTER_EMAILS.some(x=>x.toLowerCase()==String(e||'').toLowerCase());
+let tester=false,tstep=0,tmail='',authFor='creator',privMail='',CT=S.get('nx-ct',[]);
+async function loadCT(){try{const r=await fetch(cloudBase()+'/rest/v1/ensenanzas?select=id,pregunta,respuesta,autor&order=id.desc&limit=1500',{headers:hdr()});if(!r.ok)return;const rows=await r.json(),seen=new Set();CT=[];rows.forEach(x=>{const k=String(x.pregunta).toLowerCase();if(seen.has(k))return;seen.add(k);CT.push({id:x.id,q:x.pregunta,a:x.respuesta,by:x.autor,cloud:1})});S.set('nx-ct',CT)}catch(e){}}
+async function cloudWrite(method,path,body){if(!cloudToken){const e=new Error('expired');e.expired=1;throw e}const r=await fetch(cloudBase()+'/rest/v1/'+path,{method,headers:{apikey:SUPA_KEY,Authorization:'Bearer '+cloudToken,'Content-Type':'application/json',Prefer:'return=representation'},body:body?JSON.stringify(body):undefined});if(r.status==401){cloudToken=null;const e=new Error('expired');e.expired=1;throw e}if(r.status==403)throw new Error('sin permiso (¿ejecutaste el SQL de testers en Supabase?)');if(!r.ok)throw new Error('HTTP '+r.status);return r.json()}
+const cut=(x,n)=>x.length>n?x.slice(0,n)+'…':x;
+async function tcmd(c,a){
+ if(/^ense[nñ]ar$/.test(c)){const m=a.match(/^([\s\S]+?)\s*=\s*([\s\S]+)$/);if(!m)return sysMsg('Uso: `/ensenar pregunta = respuesta`','Tester · nube');
+  const q=m[1].replace(/[?!¿¡.]+$/g,'').trim(),r=m[2].trim();
+  if(q.length<3||q.length>200||r.length<2||r.length>700)return sysMsg('La pregunta debe tener de 3 a 200 caracteres y la respuesta de 2 a 700.','Tester · nube');
+  const row=await cloudWrite('POST','ensenanzas',{pregunta:q,respuesta:r,autor:privMail}),id=row[0]&&row[0].id;
+  CT=CT.filter(x=>x.q.toLowerCase()!=q.toLowerCase());CT.unshift({id,q,a:r,by:privMail,cloud:1});S.set('nx-ct',CT);
+  return sysMsg('✅ Aprendido para todos los usuarios: «'+q+'» (#'+id+'). Pruébalo preguntándomelo.','Tester · nube')}
+ if(/^ense[nñ]ados$/.test(c)){const rows=await cloudWrite('GET','ensenanzas?select=id,pregunta,respuesta,autor,ts&order=id.desc&limit=100'),mine=creator?rows:rows.filter(x=>x.autor==privMail);
+  return sysMsg(mine.length?box((creator?'📚 Enseñanzas de todos los testers':'📚 Tus enseñanzas')+' (más recientes primero):\n'+mine.map(x=>'#'+x.id+' ['+fdate(Date.parse(x.ts)||0)+'] '+(creator?x.autor.split('@')[0]+': ':'')+cut(x.pregunta,60)+' → '+cut(x.respuesta,80)).join('\n')+'\n\n/quitar N para borrar una.'):'Aún no hay enseñanzas.','Tester · nube')}
+ if(c=='quitar'){const id=parseInt(a,10);if(!id)return sysMsg('Uso: `/quitar N` (el número de /ensenados)','Tester · nube');
+  const del=await cloudWrite('DELETE','ensenanzas?id=eq.'+id);if(!del.length)return sysMsg('No encontré esa enseñanza'+(creator?'.':' entre las tuyas.'),'Tester · nube');
+  CT=CT.filter(x=>x.id!=id);S.set('nx-ct',CT);return sysMsg('🗑 Enseñanza #'+id+' eliminada.','Tester · nube')}
+ if(c=='testers'){const rows=await cloudWrite('GET','ensenanzas?select=autor,ts&order=ts.desc&limit=5000'),by={};rows.forEach(x=>{(by[x.autor]=by[x.autor]||{n:0,t:Date.parse(x.ts)||0}).n++});
+  return sysMsg(box('🧪 Testers autorizados:\n'+TESTER_EMAILS.map(e=>'- '+e+': '+((by[e]||{n:0}).n)+' enseñanzas'+(by[e]?', última '+fdate(by[e].t):'')).join('\n')))}}
 const hdr=x=>Object.assign({apikey:SUPA_KEY,'Content-Type':'application/json'},/^sb_/.test(SUPA_KEY)?{}:{Authorization:'Bearer '+SUPA_KEY},x||{});
 function cloudPost(tbl,row){if(!cloudOn())return;try{fetch(cloudBase()+'/rest/v1/'+tbl,{method:'POST',keepalive:true,headers:hdr({Prefer:'return=minimal'}),body:JSON.stringify(row)}).catch(()=>{})}catch(e){}}
 const logTurn=(rol,t)=>{if(creator||!t)return;cloudPost('mensajes',{session_id:SID,nombre:mem.name?String(mem.name).slice(0,60):null,rol,texto:String(t).slice(0,600)})};
 const sentQ=new Set(S.get('nx-sentq',[]));
 function cloudPending(q,en){q=(q||'').trim().replace(/\s+/g,' ').slice(0,200);const k=q.toLowerCase();if(q.length<3||sentQ.has(k)||/\d{6,}|@|https?:/i.test(q))return;sentQ.add(k);S.set('nx-sentq',[...sentQ].slice(-200));cloudPost('pendientes',{pregunta:q,idioma:en?'en':'es'})}
-async function cloudLogin(p){const r=await fetch(cloudBase()+'/auth/v1/token?grant_type=password',{method:'POST',headers:{apikey:SUPA_KEY,'Content-Type':'application/json'},body:JSON.stringify({email:CREATOR_EMAIL,password:p})});if(r.status==400||r.status==401){const e=new Error('bad');e.bad=1;throw e}if(!r.ok)throw new Error('HTTP '+r.status);const j=await r.json();if(!j.access_token)throw new Error('sin token');return j.access_token}
+async function cloudLogin(p,em){const r=await fetch(cloudBase()+'/auth/v1/token?grant_type=password',{method:'POST',headers:{apikey:SUPA_KEY,'Content-Type':'application/json'},body:JSON.stringify({email:em||CREATOR_EMAIL,password:p})});if(r.status==400||r.status==401){const e=new Error('bad');e.bad=1;throw e}if(!r.ok)throw new Error('HTTP '+r.status);const j=await r.json();if(!j.access_token)throw new Error('sin token');return j.access_token}
 async function cloudReq(method,path){if(!cloudToken){const e=new Error('expired');e.expired=1;throw e}const r=await fetch(cloudBase()+'/rest/v1/'+path,{method,headers:{apikey:SUPA_KEY,Authorization:'Bearer '+cloudToken}});if(r.status==401||r.status==403){cloudToken=null;const e=new Error('expired');e.expired=1;throw e}if(!r.ok)throw new Error('HTTP '+r.status);return method=='GET'?r.json():null}
 async function creatorData(){const rows=(await cloudReq('GET','mensajes?select=session_id,nombre,rol,texto,ts&order=ts.desc&limit=5000')).reverse(),by=new Map();rows.forEach(r=>{let x=by.get(r.session_id);const ts=Date.parse(r.ts)||0;if(!x){x={id:r.session_id,t0:ts,t1:ts,name:null,m:[]};by.set(r.session_id,x)}if(r.nombre)x.name=r.nombre;x.t1=ts;x.m.push({r:r.rol,t:r.texto,ts})});return[...by.values()]}
 const STOPW=new Set('de la que el en y a los se del las un por con no una su para es al lo como mas pero sus le ya o este si porque esta entre cuando muy sin sobre tambien me hasta hay donde quien desde todo nos todos uno les ni contra otros ese eso ante ellos esto antes algunos unos yo otro otra tanto esa estos mucho nada cual poco ella estar estas algo mi mis tu tus te ti hola quiero puedes puede dime cuentame hablado dijo soy estoy tengo vivo gusta llamo the and or of to in is are was were it you my your this that for on with as at be have what who how not but so if there here hello hi tell can could would like name'.split(' '));
@@ -696,28 +717,33 @@ function echoU(t){blank();const d=document.createElement('div');d.className='msg
 const box=t=>'```\n'+t+'\n```';
 function authBegin(ph){auth=true;inp.hidden=true;pw.hidden=false;pw.value='';pw.placeholder=ph;pw.focus()}
 function authEnd(){auth=false;pw.hidden=true;pw.value='';inp.hidden=false;inp.focus()}
-function lock(say){const was=creator;creator=false;creatorAct=0;cloudToken=null;if(auth)authEnd();if(say&&was)sysMsg('🔒 Sesión de creador cerrada.')}
-const cErr=e=>{if(e&&e.expired){lock(false);return'La sesión de la nube expiró. Escribe /creador para entrar otra vez.'}return'No pude hablar con la nube: '+(e&&e.message?e.message:e)};
+function lock(say){const was=creator||tester;creator=false;tester=false;tstep=0;creatorAct=0;cloudToken=null;if(auth)authEnd();if(say&&was)sysMsg('🔒 Sesión cerrada.')}
+const cErr=e=>{if(e&&e.expired){lock(false);return'La sesión de la nube expiró. Escribe /creador o /tester para entrar otra vez.'}return'No pude hablar con la nube: '+(e&&e.message?e.message:e)};
 pw.addEventListener('keydown',e=>{if(e.key=='Enter'){e.preventDefault();gate(pw.value)}if(e.key=='Escape'){authEnd();sysMsg('Verificación cancelada.')}});
-const CCMD=['personas','ver','borrar','salir'];
+const CCMD=['personas','ver','borrar','testers'],TCMD=['ensenar','enseñar','ensenados','enseñados','quitar'];
 const ASK_PEOPLE=/(con qui[eé]n(?:es)?\s+(?:has|ha|habias|habías)\s+(?:hablado|platicado|interactuado|conversado|chateado)|qui[eé]nes?\s+(?:han|ha)\s+(?:hablado|platicado|interactuado|conversado|chateado)|con qu[eé] personas|qu[eé] personas (?:han|te han)|who (?:have|has) you (?:talked|spoken|chatted|interacted)|who (?:has|have) (?:talked|spoken|chatted) (?:to|with) you|(?:list|show) (?:of )?(?:your )?(?:users|people|conversations))/i;
 const ASK_SAID=/qu[eé] te (?:dijo|cont[oó]|platic[oó]|coment[oó]|escribi[oó])\s+([A-Za-zÁÉÍÓÚÑáéíóúñ]{2,20})|what did\s+([A-Za-z]{2,20})\s+(?:say|tell|write|talk)/i;
 async function ccmd(c,a){
- if(c=='ayuda')return sysMsg('Comandos de creador:\n- `/personas` — con quién he hablado y de qué\n- `/ver N` (o `/ver Nombre`) — leer esa conversación\n- `/exportar` — descargar todo el registro en JSON\n- `/borrar` — borrar el registro (pide confirmación)\n- `/salir` — cerrar la sesión de creador\n\nTambién puedes preguntarme: «¿con quién has hablado?» o «¿qué te dijo Ana?».\nComandos normales: `/nuevo` `/limpiar` `/nombre` `/memoria` `/olvidar` `/decir texto`.');
+ if(c=='ayuda')return sysMsg('Comandos de creador:\n- `/personas` — con quién he hablado y de qué\n- `/ver N` (o `/ver Nombre`) — leer esa conversación\n- `/exportar` — descargar todo el registro en JSON\n- `/borrar` — borrar el registro (pide confirmación)\n- `/testers` — qué han enseñado los testers\n- `/ensenar p = r`, `/ensenados`, `/quitar N` — enseñar a Noryx para todos y supervisar lo enseñado (puedes borrar la de cualquiera)\n- `/salir` — cerrar la sesión\n\nTambién puedes preguntarme: «¿con quién has hablado?» o «¿qué te dijo Ana?».\nComandos normales: `/nuevo` `/limpiar` `/nombre` `/memoria` `/olvidar` `/decir texto`.');
  if(c=='personas')return sysMsg(box(peopleTxt(await creatorData())));
  if(c=='ver')return sysMsg(box(transcriptTxt(a,await creatorData())));
  if(c=='exportar'){const bl=new Blob([JSON.stringify({exportado:new Date().toISOString(),conversaciones:await creatorData()},null,2)],{type:'application/json'}),u=URL.createObjectURL(bl),l=document.createElement('a');l.href=u;l.download='noryx-conversaciones.json';document.body.appendChild(l);l.click();l.remove();setTimeout(()=>URL.revokeObjectURL(u),2000);return sysMsg('📥 Listo, descargué el registro completo.')}
  if(c=='borrar'){if(/^(si|sí|yes)$/i.test(a)){await cloudReq('DELETE','mensajes?id=gt.0');return sysMsg('🗑 Registro borrado.')}return sysMsg('Esto borra TODAS las conversaciones registradas en la nube. Si estás seguro, escribe `/borrar si`')}
- if(c=='salir')return lock(true)}
+ }
 /* true = el mensaje era comando/contraseña/pregunta privada y ya se atendió */
 function gate(t){
- if(creator&&Date.now()-creatorAct>6e5)lock(false);
+ if((creator||tester)&&Date.now()-creatorAct>6e5)lock(false);
+ if(tstep==1){tstep=0;
+  if(/^\/cancelar$/i.test(t)){sysMsg('Verificación cancelada.');return true}
+  const em=t.trim().toLowerCase();
+  if(!isTesterMail(em)){sysMsg('Ese correo no está autorizado como tester.','Tester');return true}
+  tmail=em;authFor='tester';authBegin('Contraseña de tester');sysMsg('Escribe tu contraseña de tester (no se muestra ni se guarda). /cancelar para salir.','Tester');return true}
  if(auth){
   if(/^\/cancelar$/i.test(t)){authEnd();sysMsg('Verificación cancelada.');return true}
   if(authLock-Date.now()>0){authEnd();sysMsg('Demasiados intentos fallidos. Espera un momento.');return true}
-  const done=ok=>{if(ok){authFails=0;creator=true;creatorAct=Date.now();sysMsg('✅ Acceso de creador concedido, Orlando. Escribe /ayuda para ver tus comandos. Mientras estés verificado no registro tus mensajes.')}else{authFails++;if(authFails>=5){authLock=Date.now()+6e4*Math.pow(2,Math.min(authFails-5,6));sysMsg('Contraseña incorrecta. Demasiados intentos: bloqueado temporalmente.')}else sysMsg('Contraseña incorrecta. Vuelve a escribir /creador para reintentar.')}};
+  const done=ok=>{if(ok){authFails=0;creatorAct=Date.now();if(authFor=='tester'){tester=true;privMail=tmail;sysMsg('✅ Acceso de tester concedido. Con `/ensenar pregunta = respuesta` enseñas a Noryx para todos los usuarios. Escribe /ayuda para ver tus comandos. Tu sesión de pruebas queda registrada para que el creador la supervise.','Tester')}else{creator=true;privMail=CREATOR_EMAIL;sysMsg('✅ Acceso de creador concedido, Orlando. Escribe /ayuda para ver tus comandos. Mientras estés verificado no registro tus mensajes.')}}else{authFails++;if(authFails>=5){authLock=Date.now()+6e4*Math.pow(2,Math.min(authFails-5,6));sysMsg('Contraseña incorrecta. Demasiados intentos: bloqueado temporalmente.')}else sysMsg('Contraseña incorrecta. Vuelve a escribir '+(authFor=='tester'?'/tester':'/creador')+' para reintentar.')}};
   authEnd();
-  cloudLogin(t).then(tok=>{cloudToken=tok;done(true)}).catch(e=>{if(e&&e.bad)done(false);else sysMsg('No pude conectar con la nube ('+(e&&e.message)+'). Reintenta con /creador.')});
+  cloudLogin(t,authFor=='tester'?tmail:CREATOR_EMAIL).then(tok=>{cloudToken=tok;done(true)}).catch(e=>{if(e&&e.bad)done(false);else sysMsg('No pude conectar con la nube ('+(e&&e.message)+'). Reintenta con /creador.')});
   return true}
  const m=t.match(/^\/([a-záéíóúñ]+)\s*(.*)$/i);
  if(m){const c=m[1].toLowerCase(),a=m[2].trim();
@@ -725,9 +751,20 @@ function gate(t){
    if(creator){creatorAct=Date.now();sysMsg('Ya estás verificado. Escribe /ayuda para ver los comandos.');return true}
    const w=authLock-Date.now();if(w>0){sysMsg('Bloqueado por intentos fallidos. Prueba en '+Math.ceil(w/1e3)+' s.');return true}
    authBegin('Contraseña de creador');sysMsg('Escribe tu contraseña de creador (no se muestra ni se guarda). /cancelar para salir.');return true}
-  if(CCMD.includes(c)||(creator&&(c=='exportar'||c=='ayuda'))){echoU(t);
+  if(c=='tester'){echoU('/tester');
+   if(tester||creator){creatorAct=Date.now();sysMsg('Ya estás verificado. Escribe /ayuda para ver los comandos.','Tester');return true}
+   const w2=authLock-Date.now();if(w2>0){sysMsg('Bloqueado por intentos fallidos. Prueba en '+Math.ceil(w2/1e3)+' s.');return true}
+   if(sess&&isTesterMail(sess.email)){cloudToken=sess.access;tester=true;privMail=sess.email.toLowerCase();creatorAct=Date.now();sysMsg('✅ Acceso de tester concedido con tu cuenta. Escribe /ayuda.','Tester');return true}
+   tstep=1;sysMsg('Escribe tu correo de tester. /cancelar para salir.','Tester');return true}
+  if(TCMD.includes(c)||(tester&&(c=='ayuda'||c=='salir'))){echoU(t);
+   if(!tester&&!creator){sysMsg('Ese comando es solo para testers y para mi creador.');return true}
+   creatorAct=Date.now();
+   if(c=='ayuda'&&!creator){sysMsg('Comandos de tester:\n- `/ensenar pregunta = respuesta` — Noryx lo guarda y lo usará con todos los usuarios\n- `/ensenados` — lo que has enseñado\n- `/quitar N` — borrar una de tus enseñanzas\n- `/salir` — cerrar la sesión de tester\n\nEl creador puede revisar y corregir lo que enseñes.','Tester');return true}
+   if(c=='salir'){lock(true);return true}
+   tcmd(c,a).catch(e=>sysMsg(cErr(e)));return true}
+  if(CCMD.includes(c)||(creator&&(c=='exportar'||c=='ayuda'||c=='salir'))){echoU(t);
    if(!creator){sysMsg('Ese comando es solo para mi creador.');return true}
-   creatorAct=Date.now();ccmd(c,a).catch(e=>sysMsg(cErr(e)));return true}}
+   creatorAct=Date.now();if(c=='testers'){tcmd(c,a).catch(e=>sysMsg(cErr(e)));return true}if(c=='salir'){lock(true);return true}ccmd(c,a).catch(e=>sysMsg(cErr(e)));return true}}
  const sw=t.match(ASK_SAID);
  if(ASK_PEOPLE.test(t)||sw){echoU(t);
   if(!creator){const r='Eso es información privada: solo mi creador, verificado con su contraseña, puede consultarla. No comparto lo que otras personas me han dicho.';sysMsg(r,'Privacidad');logTurn('u',t);logTurn('a',r);return true}
@@ -743,10 +780,10 @@ const aErr=e=>{const x=e.message+' '+e.code;return/signup.disabled|signups? not 
 function setSess(j,email){const u=j.user||{},nm=(u.user_metadata&&u.user_metadata.name)||'',em=u.email||email;
  sess={access:j.access_token,refresh:j.refresh_token,exp:Date.now()+(j.expires_in||3600)*1000,email:em,name:nm};S.set('nx-sess',sess);
  mem.name=nm||mem.name||em.split('@')[0];save();
- if(em.toLowerCase()==CREATOR_EMAIL.toLowerCase()){cloudToken=sess.access;creator=true;creatorAct=Date.now()}
+ if(em.toLowerCase()==CREATOR_EMAIL.toLowerCase()){cloudToken=sess.access;creator=true;privMail=CREATOR_EMAIL;creatorAct=Date.now()}else if(isTesterMail(em)){cloudToken=sess.access;tester=true;privMail=em.toLowerCase();creatorAct=Date.now()}
  paintAcc()}
 async function refreshSess(){if(!sess||!sess.refresh)return;if(sess.exp-Date.now()>6e4)return;try{setSess(await aPost('token?grant_type=refresh_token',{refresh_token:sess.refresh}),sess.email)}catch(e){if(e.message!=='Failed to fetch'){sess=null;S.set('nx-sess',null);paintAcc()}}}
-async function logout(){const t=sess&&sess.access;sess=null;S.set('nx-sess',null);if(creator)lock(false);paintAcc();toast('Sesión cerrada');if(t)aPost('logout',{},t).catch(()=>{})}
+async function logout(){const t=sess&&sess.access;sess=null;S.set('nx-sess',null);if(creator||tester)lock(false);paintAcc();toast('Sesión cerrada');if(t)aPost('logout',{},t).catch(()=>{})}
 const openDlg=()=>{dlg.hidden=false;AM.textContent='';AE.focus()},closeDlg=()=>{dlg.hidden=true;AP.value=''};
 async function doAuth(kind){const email=AE.value.trim(),pwd=AP.value;AM.textContent='';
  if(kind=='reset'){if(!/^\S+@\S+\.\S+$/.test(email)){AM.textContent='Escribe tu correo arriba.';return}try{await aPost('recover',{email});AM.textContent='Si el correo existe, te envié un enlace para restablecer la contraseña.'}catch(e){AM.textContent=aErr(e)}return}
@@ -759,7 +796,7 @@ acc.onclick=()=>{closeMenu();sess?confirm('Sesión de '+sess.email+'. ¿Cerrar s
 $('#ain').onclick=()=>doAuth('in');$('#aup').onclick=()=>doAuth('up');$('#are').onclick=()=>doAuth('reset');$('#acl').onclick=closeDlg;
 dlg.addEventListener('click',e=>{if(e.target==dlg)closeDlg()});
 dlg.addEventListener('keydown',e=>{if(e.key=='Escape')closeDlg();if(e.key=='Enter'&&(e.target==AP||e.target==AE)){e.preventDefault();doAuth('in')}});
-paintAcc();refreshSess().then(()=>{if(sess&&sess.email.toLowerCase()==CREATOR_EMAIL.toLowerCase()&&!creator){cloudToken=sess.access;creator=true;creatorAct=Date.now()}});
+paintAcc();refreshSess().then(()=>{if(sess&&sess.email.toLowerCase()==CREATOR_EMAIL.toLowerCase()&&!creator){cloudToken=sess.access;creator=true;privMail=CREATOR_EMAIL;creatorAct=Date.now()}else if(sess&&isTesterMail(sess.email)&&!tester&&!creator){cloudToken=sess.access;tester=true;privMail=sess.email.toLowerCase();creatorAct=Date.now()}});
 
 /* ============ Controles ============ */
 const inp=$('#in');function fit(){inp.style.height='auto';inp.style.height=Math.min(180,inp.scrollHeight)+'px'}
@@ -969,6 +1006,7 @@ $('#mkb').onclick=mkGo;$('#mkv').onclick=mkGo;
 $('#mkd').onclick=async()=>{if(!mkLast)return;if(mkLast.local){mkLast.canvas.toBlob(b=>b&&dl(b,'noryx-arte.png'));return}
  try{const r=await fetch(mkLast.url);if(!r.ok)throw 0;dl(await r.blob(),'noryx-creacion.jpg')}catch(e){window.open(mkLast.url,'_blank','noopener');toast('Se abrió la imagen: mantén pulsado o clic derecho para guardarla')}};
 paintPro();
+loadCT();
 renderAll();
 </script>
 </body>
