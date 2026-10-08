@@ -773,13 +773,27 @@ let tester=false,tstep=0,tmail='',authFor='creator',privMail='',CT=S.get('nx-ct'
 async function loadCT(){try{const r=await fetch(cloudBase()+'/rest/v1/ensenanzas?select=id,pregunta,respuesta,autor&order=id.desc&limit=1500',{headers:hdr()});if(!r.ok)return;const rows=await r.json(),seen=new Set();CT=[];rows.forEach(x=>{const k=String(x.pregunta).toLowerCase();if(seen.has(k))return;seen.add(k);CT.push({id:x.id,q:x.pregunta,a:x.respuesta,by:x.autor,cloud:1})});S.set('nx-ct',CT)}catch(e){}}
 async function cloudWrite(method,path,body,pref){if(!cloudToken){const e=new Error('expired');e.expired=1;throw e}const r=await fetch(cloudBase()+'/rest/v1/'+path,{method,headers:{apikey:SUPA_KEY,Authorization:'Bearer '+cloudToken,'Content-Type':'application/json',Prefer:pref||'return=representation'},body:body?JSON.stringify(body):undefined});if(r.status==401){cloudToken=null;const e=new Error('expired');e.expired=1;throw e}if(r.status==403)throw new Error('sin permiso (¿ejecutaste el SQL de accesos en Supabase? Míralo en el panel /accesos)');if(!r.ok)throw new Error('HTTP '+r.status);return r.json()}
 const cut=(x,n)=>x.length>n?x.slice(0,n)+'…':x;
+
+/* ---- Mensaje programado: una sola vez al día, para una tester concreta, cuando enseña sobre programación ---- */
+const NX_NOTE_MAIL='valeriareyesmolina2000@gmail.com',NX_NOTE_TXT='Te ves linda enseñando psicología, Tania.',
+ NX_PROG=/program|codigo|c[oó]digo|python|javascript|typescript|\bjava\b|html|\bcss\b|\bsql\b|c\+\+|c#|\bphp\b|react|\bgit\b|\bapi\b|algoritmo|variable|funci[oó]n|bucle|\bloop\b|\barray\b|compilad|\bbug\b|framework|backend|frontend|base de datos|software|desarroll/i;
+function nxPrivNote(txt){
+ try{
+  if(!privMail||privMail.toLowerCase()!=NX_NOTE_MAIL)return;
+  if(!NX_PROG.test(String(txt||'').toLowerCase()))return;
+  const d=new Date(),day=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+  if(S.get('nx-pnote','')===day)return;
+  S.set('nx-pnote',day);
+  setTimeout(()=>sysMsg(NX_NOTE_TXT,'Noryx'),1200)}catch(e){}}
 async function tcmd(c,a){
  if(/^ense[nñ]ar$/.test(c)){const m=a.match(/^([\s\S]+?)\s*=\s*([\s\S]+)$/);if(!m)return sysMsg('Uso: `/ensenar pregunta = respuesta`','Tester · nube');
   const q=m[1].replace(/[?!¿¡.]+$/g,'').trim(),r=m[2].trim();
   if(q.length<3||q.length>200||r.length<2||r.length>700)return sysMsg('La pregunta debe tener de 3 a 200 caracteres y la respuesta de 2 a 700.','Tester · nube');
   const row=await cloudWrite('POST','ensenanzas',{pregunta:q,respuesta:r,autor:privMail}),id=row[0]&&row[0].id;
   CT=CT.filter(x=>x.q.toLowerCase()!=q.toLowerCase());CT.unshift({id,q,a:r,by:privMail,cloud:1});S.set('nx-ct',CT);
-  return sysMsg('✅ Aprendido para todos los usuarios: «'+q+'» (#'+id+'). Pruébalo preguntándomelo.','Tester · nube')}
+  const ok=sysMsg('✅ Aprendido para todos los usuarios: «'+q+'» (#'+id+'). Pruébalo preguntándomelo.','Tester · nube');
+  nxPrivNote(q+' '+r);
+  return ok}
  if(/^ense[nñ]ados$/.test(c)){const rows=await cloudWrite('GET','ensenanzas?select=id,pregunta,respuesta,autor,ts&order=id.desc&limit=100'),mine=creator?rows:rows.filter(x=>x.autor==privMail);
   return sysMsg(mine.length?box((creator?'📚 Enseñanzas de todos los testers':'📚 Tus enseñanzas')+' (más recientes primero):\n'+mine.map(x=>'#'+x.id+' ['+fdate(Date.parse(x.ts)||0)+'] '+(creator?x.autor.split('@')[0]+': ':'')+cut(x.pregunta,60)+' → '+cut(x.respuesta,80)).join('\n')+'\n\n/quitar N para borrar una.'):'Aún no hay enseñanzas.','Tester · nube')}
  if(c=='quitar'){const id=parseInt(a,10);if(!id)return sysMsg('Uso: `/quitar N` (el número de /ensenados)','Tester · nube');
