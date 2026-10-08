@@ -98,6 +98,7 @@ textarea{flex:1;resize:none;border:0;outline:0;background:none;color:var(--ink);
 #studio .sh{display:flex;align-items:center;gap:12px}#studio .sh b{font:800 20px 'Bricolage Grotesque',sans-serif;flex:1}
 #studio .tabs{display:flex;gap:6px}#studio .tabs button{border:1px solid var(--line);border-radius:999px;padding:5px 14px;color:var(--mute)}#studio .tabs button.on{color:var(--ink);border-color:var(--acc)}
 #studio .pn{display:flex;flex-direction:column;gap:10px}#studio .pn[hidden]{display:none}
+.imtb{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 2px}.imtb:empty{display:none}.imtb .th{position:relative;width:64px;height:64px;border:2px solid var(--line);border-radius:10px;overflow:hidden;cursor:pointer;padding:0;background:var(--bg,transparent)}.imtb .th.on{border-color:var(--acc)}.imtb .th b{position:absolute;top:2px;right:2px;background:rgba(0,0,0,.7);color:#fff;border-radius:50%;width:18px;height:18px;font:700 12px/18px sans-serif;text-align:center}
 #studio .drop{border:2px dashed var(--line);border-radius:14px;padding:22px;text-align:center;color:var(--mute);cursor:pointer}#studio .drop:hover,#studio .drop.over{border-color:var(--acc);color:var(--ink)}
 #studio canvas,#studio #mko img{max-width:100%;max-height:52vh;border-radius:12px;display:block;margin:0 auto;border:1px solid var(--line)}
 #studio input[type=text],#studio textarea,#studio select{border:1px solid var(--line);background:none;color:var(--ink);border-radius:10px;padding:9px 12px;font:inherit;width:100%}#studio select{width:auto;background:var(--panel)}
@@ -197,10 +198,11 @@ textarea{flex:1;resize:none;border:0;outline:0;background:none;color:var(--ink);
 <div id="studio" hidden><div class="card" role="dialog" aria-label="Estudio de imágenes">
  <div class="sh"><b>Imágenes</b><div class="tabs"><button id="tbUp" class="on">Subir</button><button id="tbMk">Crear</button></div><button id="stX" aria-label="Cerrar">✕</button></div>
  <div id="pUp" class="pn">
-  <label class="drop" id="drop">Arrastra una imagen aquí o toca para elegirla<input type="file" id="imf" accept="image/*" hidden></label>
+  <label class="drop" id="drop">Arrastra imágenes aquí o toca para elegirlas (hasta 6 a la vez)<input type="file" id="imf" accept="image/*" multiple hidden></label>
+  <div id="imtb" class="imtb"></div>
   <div id="imw" class="pn" hidden>
    <canvas id="imc"></canvas><div id="imi"></div><div id="pal"></div>
-   <div class="qh" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">Pregúntale a Noryx sobre la imagen<button id="imeng" class="eng" title="Cambiar motor de visión"></button></div>
+   <div class="qh" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">Pregúntale a Noryx sobre tus imágenes<button id="imeng" class="eng" title="Cambiar motor de visión"></button></div>
    <div id="imch" class="chips2"></div>
    <div class="qrow"><input type="text" id="imq" placeholder="Escribe tu pregunta… ej. ¿qué música le queda a esta foto?" maxlength="400" autocomplete="off"><button class="pri" id="imd">Preguntar</button></div>
    <div id="imo" aria-live="polite"></div>
@@ -1117,21 +1119,46 @@ const dl=(blob,name)=>{const a=document.createElement('a');a.href=URL.createObje
 
 /* --- Subir --- */
 const imc=$('#imc'),ictx=imc.getContext('2d',{willReadFrequently:true});let orig=null,imMeta=null;
-function loadFile(f){if(!f)return;if(!/^image\//.test(f.type)){toast('Elige un archivo de imagen');return}if(f.size>25e6){toast('La imagen pesa más de 25 MB');return}
- const u=URL.createObjectURL(f),im=new Image();
- im.onload=()=>{const k=Math.min(1,1600/Math.max(im.width,im.height)),w=Math.max(1,Math.round(im.width*k)),h=Math.max(1,Math.round(im.height*k));
-  imc.width=w;imc.height=h;ictx.drawImage(im,0,0,w,h);orig=ictx.getImageData(0,0,w,h);imMeta={name:f.name,w:im.width,h:im.height,kb:Math.round(f.size/1024)};URL.revokeObjectURL(u);$('#imw').hidden=false;$('#imo').textContent='';imHist=[];imCache={};analyze();$('#imq').focus()};
- im.onerror=()=>{URL.revokeObjectURL(u);toast('No pude abrir esa imagen (¿formato no compatible?)')};im.src=u}
-$('#imf').onchange=e=>{loadFile(e.target.files[0]);e.target.value=''};
+const IM_MAX=6;let imList=[],imSel=-1,imSnaps=[];
+/* Cada imagen guarda su original, su versión editada y su caché de análisis; el lienzo (#imc) muestra la seleccionada. */
+function imSync(){if(imSel>=0&&imList[imSel]&&imc.width&&imc.height)imList[imSel].cur=ictx.getImageData(0,0,imc.width,imc.height)}
+function imShow(i){const it=imList[i];if(!it)return;imSel=i;const d=it.cur||it.orig;imc.width=d.width;imc.height=d.height;ictx.putImageData(d,0,0);orig=it.orig;imMeta=it.meta;imCache=it.cache;analyze();imThumbs()}
+function imThumbs(){const tb=$('#imtb');tb.replaceChildren();if(imList.length<2)return;
+ imList.forEach((it,i)=>{const b=document.createElement('button');b.type='button';b.className='th'+(i==imSel?' on':'');b.title=(i+1)+'. '+it.meta.name;
+  const im=document.createElement('img');im.src=it.th;im.alt=it.meta.name;im.style.cssText='width:100%;height:100%;object-fit:cover;display:block';
+  const x=document.createElement('b');x.textContent='×';x.title='Quitar esta imagen';x.onclick=e=>{e.stopPropagation();imRemove(i)};
+  b.onclick=()=>{if(i!=imSel){imSync();imShow(i)}};b.append(im,x);tb.append(b)})}
+function imRemove(i){if(imBusy){toast('Espera a que Noryx termine de responder');return}
+ imSync();imList.splice(i,1);imHist=[];imSnaps=[];
+ if(!imList.length){imSel=-1;orig=null;imMeta=null;imCache={};$('#imw').hidden=true;$('#imo').textContent='';imThumbs();return}
+ imShow(Math.min(i<imSel?imSel-1:imSel,imList.length-1))}
+function loadFile(f){return new Promise(res=>{const u=URL.createObjectURL(f),im=new Image();
+ im.onload=()=>{const k=Math.min(1,1600/Math.max(im.width,im.height)),w=Math.max(1,Math.round(im.width*k)),h=Math.max(1,Math.round(im.height*k)),
+   c=document.createElement('canvas');c.width=w;c.height=h;const x=c.getContext('2d',{willReadFrequently:true});x.drawImage(im,0,0,w,h);
+  const tk=96/Math.max(w,h),t=document.createElement('canvas');t.width=Math.max(1,Math.round(w*tk));t.height=Math.max(1,Math.round(h*tk));t.getContext('2d').drawImage(c,0,0,t.width,t.height);
+  const it={orig:x.getImageData(0,0,w,h),cur:null,cache:{},th:t.toDataURL('image/jpeg',.7),meta:{name:f.name,w:im.width,h:im.height,kb:Math.round(f.size/1024)}};URL.revokeObjectURL(u);res(it)};
+ im.onerror=()=>{URL.revokeObjectURL(u);toast('No pude abrir «'+f.name+'» (¿formato no compatible?)');res(null)};im.src=u})}
+async function loadFiles(fl){fl=[...(fl||[])];if(!fl.length)return;
+ if(imBusy){toast('Espera a que Noryx termine de responder');return}
+ const room=IM_MAX-imList.length;if(room<=0){toast('Ya tienes '+IM_MAX+' imágenes. Quita una con la × para añadir otra.',4000);return}
+ const ok=fl.filter(f=>/^image\//.test(f.type)&&f.size<=25e6);
+ if(ok.length<fl.length)toast('Omití archivos que no son imagen o pesan más de 25 MB',4000);
+ if(!ok.length)return;
+ if(ok.length>room)toast('Solo caben '+IM_MAX+' imágenes: usé las primeras '+room,4000);
+ const items=[];for(const f of ok.slice(0,room)){const it=await loadFile(f);if(it)items.push(it)}
+ if(!items.length)return;
+ imSync();items.forEach(it=>imList.push(it));imHist=[];imSnaps=[];
+ $('#imw').hidden=false;$('#imo').textContent='';imShow(imList.length-1);$('#imq').focus()}
+$('#imf').onchange=e=>{loadFiles(e.target.files);e.target.value=''};
 const drop=$('#drop');['dragenter','dragover'].forEach(n=>drop.addEventListener(n,e=>{e.preventDefault();drop.classList.add('over')}));['dragleave','drop'].forEach(n=>drop.addEventListener(n,e=>{e.preventDefault();drop.classList.remove('over')}));
-drop.addEventListener('drop',e=>loadFile(e.dataTransfer.files[0]));
+drop.addEventListener('drop',e=>loadFiles(e.dataTransfer.files));
 function analyze(){const w=imc.width,h=imc.height,k=Math.min(1,64/Math.max(w,h)),sw=Math.max(1,Math.round(w*k)),sh=Math.max(1,Math.round(h*k)),t=document.createElement('canvas');t.width=sw;t.height=sh;const x=t.getContext('2d');x.drawImage(imc,0,0,sw,sh);
  const d=x.getImageData(0,0,sw,sh).data,bins=new Map();let lum=0,n=0;
  for(let i=0;i<d.length;i+=4){if(d[i+3]<128)continue;const r=d[i],g=d[i+1],b=d[i+2];lum+=.2126*r+.7152*g+.0722*b;n++;const key=(r>>5)<<6|(g>>5)<<3|(b>>5),o=bins.get(key)||{c:0,r:0,g:0,b:0};o.c++;o.r+=r;o.g+=g;o.b+=b;bins.set(key,o)}
  const top=[...bins.values()].sort((a,b)=>b.c-a.c).map(o=>[Math.round(o.r/o.c),Math.round(o.g/o.c),Math.round(o.b/o.c)]),pal=[];
  for(const c of top){if(pal.every(p=>Math.abs(p[0]-c[0])+Math.abs(p[1]-c[1])+Math.abs(p[2]-c[2])>90))pal.push(c);if(pal.length==5)break}
  const L=n?lum/n:0,tone=L<70?'oscura':L>185?'muy clara':L>130?'clara':'equilibrada',ar=imMeta.w/imMeta.h,ori=ar>1.15?'horizontal':ar<.87?'vertical':'cuadrada',hex=c=>'#'+c.map(v=>v.toString(16).padStart(2,'0')).join('');
- $('#imi').textContent=imMeta.name+' · '+imMeta.w+'×'+imMeta.h+' px · '+imMeta.kb+' KB · '+ori+' · luz '+tone;
+ $('#imi').textContent=(imList.length>1?'Imagen '+(imSel+1)+' de '+imList.length+' · ':'')+imMeta.name+' · '+imMeta.w+'×'+imMeta.h+' px · '+imMeta.kb+' KB · '+ori+' · luz '+tone;
  $('#pal').innerHTML=pal.map(c=>'<button class="sw" style="background:'+hex(c)+'" title="Copiar '+hex(c)+'" data-h="'+hex(c)+'"></button>').join('')}
 $('#pal').onclick=e=>{const b=e.target.closest('.sw');if(b&&navigator.clipboard)navigator.clipboard.writeText(b.dataset.h).then(()=>toast('Color '+b.dataset.h+' copiado'),()=>{})};
 const cloneC=()=>{const t=document.createElement('canvas');t.width=imc.width;t.height=imc.height;t.getContext('2d').drawImage(imc,0,0);return t};
@@ -1219,15 +1246,21 @@ async function localVision(q,wait){const n=norm(q),say=m=>{wait.textContent=m},s
   return'**Título:** '+tt+'\n\n**Texto:** Una imagen de luz '+tone+' con predominio de '+c1+(c2?' y '+c2:'')+(seen[0]?' (parece haber: '+seen[0]+')':'')+'.\n\n'+tags+'\n\n*Sin entender la escena completa, me baso en colores y objetos; edítalo a tu gusto.*'+note}
  return'**Creo que veo:**\n'+(rec.length?rec.map(r=>'- '+r.n+' ('+r.p+' %)').join('\n'):'- Nada que pueda nombrar con seguridad.')+'\n\n**Colores:** '+names.join(', ')+' · luz '+tone+'.\n\n*Mi reconocedor local nombra objetos en inglés y solo conoce unas mil categorías. Si hay texto o un ejercicio, pídeme «transcribe el texto».*'+note}
 
+async function imLocalAll(q,wait){if(imList.length<2)return localVision(q,wait);
+ imSync();const keep=imSel,out=[];
+ try{for(let i=0;i<imList.length;i++){imShow(i);wait.textContent='Imagen '+(i+1)+' de '+imList.length+'…';out.push('**Imagen '+(i+1)+' · '+imList[i].meta.name+'**\n\n'+await localVision(q,wait))}}
+ finally{imShow(keep)}
+ return out.join('\n\n')}
 let imHist=[],imBusy=false,imSnap='';
 const imEl=(c,h)=>{const d=document.createElement('div');d.className='qa '+c;d.innerHTML=h;$('#imo').append(d);return d};
 async function imAsk(q){q=(q||$('#imq').value).trim();if(!orig||!q||imBusy)return;imBusy=true;$('#imd').disabled=true;$('#imq').value='';
- if(!imHist.length){const k=Math.min(1,1024/Math.max(imc.width,imc.height)),t=document.createElement('canvas');t.width=Math.round(imc.width*k);t.height=Math.round(imc.height*k);const x=t.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,t.width,t.height);x.drawImage(imc,0,0,t.width,t.height);imSnap=t.toDataURL('image/jpeg',.8)}
+ if(!imHist.length){imSync();const lim=imList.length>3?640:1024;imSnaps=imList.map(it=>{const d=it.cur||it.orig,c=document.createElement('canvas');c.width=d.width;c.height=d.height;c.getContext('2d').putImageData(d,0,0);const k=Math.min(1,lim/Math.max(d.width,d.height)),t=document.createElement('canvas');t.width=Math.round(d.width*k);t.height=Math.round(d.height*k);const x=t.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,t.width,t.height);x.drawImage(c,0,0,t.width,t.height);return t.toDataURL('image/jpeg',.8)})}
  imHist.push({role:'user',text:q});imEl('q',esc(q));const wait=imEl('a','Mirando la imagen…');wait.scrollIntoView({block:'nearest',behavior:'smooth'});
- const msgs=[{role:'system',content:SYSI},...imHist.slice(-8).map((m,i,arr)=>m.role=='user'&&m===imHist.find(z=>z.role=='user')?{role:'user',content:[{type:'text',text:m.text},{type:'image_url',image_url:{url:imSnap}}]}:{role:m.role,content:m.text})];
- /* la imagen siempre va en el primer mensaje del hilo enviado */
- while(msgs.length>1&&msgs[1].role!='user')msgs.splice(1,1);const fi=msgs.findIndex(m=>m.role=='user');if(fi>0&&!Array.isArray(msgs[fi].content))msgs[fi]={role:'user',content:[{type:'text',text:msgs[fi].content},{type:'image_url',image_url:{url:imSnap}}]};
- let r;if(S.get('nx-veng','local')=='local'){try{r={t:await localVision(q,wait)}}catch(e){r={err:'local',msg:e&&e.message}}}else r=await pollChat(msgs,60000);const ans=r.t||'';
+ const imgPart=()=>imSnaps.map(u=>({type:'image_url',image_url:{url:u}})),first=imHist.find(z=>z.role=='user'),
+  msgs=[{role:'system',content:SYSI+(imSnaps.length>1?' El usuario envió '+imSnaps.length+' imágenes, numeradas en el orden en que llegan (imagen 1, imagen 2…). Respóndelas todas y cita el número de cada una.':'')},...imHist.slice(-8).map(m=>m.role=='user'&&m===first?{role:'user',content:[{type:'text',text:m.text},...imgPart()]}:{role:m.role,content:m.text})];
+ /* las imágenes siempre van en el primer mensaje del hilo enviado */
+ while(msgs.length>1&&msgs[1].role!='user')msgs.splice(1,1);const fi=msgs.findIndex(m=>m.role=='user');if(fi>0&&!Array.isArray(msgs[fi].content))msgs[fi]={role:'user',content:[{type:'text',text:msgs[fi].content},...imgPart()]};
+ let r;if(S.get('nx-veng','local')=='local'){try{r={t:await imLocalAll(q,wait)}}catch(e){r={err:'local',msg:e&&e.message}}}else r=await pollChat(msgs,60000);const ans=r.t||'';
  if(ans){imHist.push({role:'assistant',text:ans});wait.innerHTML=md(ans)}
  else{imHist.pop();wait.textContent=r.err=='local'?('No pude cargar el motor local de Noryx'+(r.msg?' ('+r.msg+')':'')+'. La primera vez descarga modelos pequeños: revisa tu conexión y vuelve a intentar.'):r.err==401||r.err==402||r.err==403?'Pollinations ahora pide una clave gratuita para analizar imágenes. Pega tu clave pk_ abajo, en «Conexión con Pollinations» (se consigue gratis en enter.pollinations.ai) y vuelve a preguntar.':r.err==429?'El servicio de visión está saturado ahora mismo. Espera unos segundos y vuelve a preguntar.':'No pude contactar al servicio de visión'+(r.err?' (error '+r.err+')':'')+'. Revisa tu conexión o pega tu clave en «Conexión con Pollinations» e inténtalo de nuevo.'}
  wait.scrollIntoView({block:'nearest',behavior:'smooth'});imBusy=false;$('#imd').disabled=false}
