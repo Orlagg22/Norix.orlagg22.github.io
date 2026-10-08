@@ -68,7 +68,7 @@ textarea{flex:1;resize:none;border:0;outline:0;background:none;color:var(--ink);
 #go{background:var(--acc);color:var(--bg)}
 #go:disabled{opacity:.35}
 .note{text-align:center;font-size:12px;color:var(--mute);margin-top:7px}
-#toast{z-index:99;position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:8px 16px;border-radius:999px;font-size:13px;opacity:0;pointer-events:none;transition:opacity .25s}
+#toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:8px 16px;border-radius:999px;font-size:13px;opacity:0;pointer-events:none;transition:opacity .25s}
 #toast.on{opacity:1}
 #scrim{display:none}
 @media (max-width:760px){
@@ -233,12 +233,13 @@ textarea{flex:1;resize:none;border:0;outline:0;background:none;color:var(--ink);
  <div class="jvrow"><button id="jvm">Silenciar micrófono</button><button id="jvw">Palabra clave: no</button><button id="jvh">Comandos</button><button id="jvmic">Micrófono</button><button id="jvx" class="end">Terminar</button></div>
  <div id="jvn">Habla con naturalidad. Noryx te oye con su propio motor de voz (Whisper) dentro de tu equipo; la primera vez descarga el modelo (~80 MB). Los avisos de temporizador solo funcionan mientras esta pestaña siga abierta.</div>
 </div>
-<div id="md" hidden role="dialog" aria-label="Micrófono"><div class="card">
- <div class="sh"><b>Micrófono</b><button id="mdx" aria-label="Cerrar">✕</button></div>
+<div id="md" hidden role="dialog" aria-label="Detector de micrófono"><div class="card">
+ <div class="sh"><b>Detector de micrófono</b><button id="mdx" aria-label="Cerrar">✕</button></div>
  <div id="mdw"></div>
  <div id="mdl"></div>
- <select id="mds" aria-label="Micrófono a usar"></select>
- <div class="mdm"><b id="mdb"></b></div><div id="mdn"></div>
+ <select id="mds" aria-label="Micrófono a probar"></select>
+ <div class="mdm"><b id="mdb"></b></div><div id="mdn">Pulsa «Probar micrófono» y habla o aplaude.</div>
+ <div class="row"><button class="pri" id="mdt">Probar micrófono</button><button id="mdr">Probar reconocimiento de voz</button><button id="mdd">Volver a detectar</button><button id="mdc">Copiar ruta de ajustes</button></div>
  <div id="mdo" aria-live="polite"></div>
  <div id="mdlog"></div>
 </div></div>
@@ -914,7 +915,7 @@ $('#mic').onclick=function(){const b=this;if(b.classList.contains('on')){MICCTL.
    3) Transcribe con Whisper (transformers.js) dentro de tu equipo. Solo la primera vez baja el modelo (~80 MB). */
 var ASRL=true,_asr=null,_asrP=null,MICCTL={finish:false};
 const HAS_EAR=!!(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia);
-const ASR_CDN=['https://cdn.jsdelivr.net/npm/@huggingface/transformers@3','https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.5.1/dist/transformers.min.js','https://esm.sh/@huggingface/transformers@3','https://unpkg.com/@huggingface/transformers@3.5.1/dist/transformers.min.js'];
+const ASR_CDN=['https://cdn.jsdelivr.net/npm/@huggingface/transformers@3','https://esm.sh/@huggingface/transformers@3'];
 const EAR={ac:null,st:null,node:null,sink:null,ring:[],ringLen:0,sr:48000,noise:.004,lastMax:0};
 const EAR_WK='class P extends AudioWorkletProcessor{constructor(){super();this.b=new Float32Array(2048);this.n=0}process(i){const c=i[0]&&i[0][0];if(!c)return true;for(let k=0;k<c.length;k++){this.b[this.n++]=c[k];if(this.n===2048){this.port.postMessage(this.b.slice(0));this.n=0}}return true}}registerProcessor("noryx-tap",P)';
 function earFrame(f){
@@ -946,45 +947,39 @@ function earResample(buf,sr){if(sr===16000)return buf;const r=sr/16000,n=Math.fl
    o: {maxMs, waitMs, idleMs, stop():true=cancelar, ctl:{finish}, onLevel(rms), onSpeech()} → {pcm,dur,peak} o null */
 function earRecord(o){o=o||{};
  return new Promise(async(res,rej)=>{
-  if(EAR.cancel){try{EAR.cancel()}catch(e){}}
   try{await earOpen()}catch(e){rej(e);return}
   const sr=EAR.sr,maxS=(o.maxMs||15000)/1000,waitS=(o.waitMs||9000)/1000,idleS=(o.idleMs||1100)/1000;
-  let t=0,noise=EAR.noise||.003,speech=false,voiced=0,lastVoice=0,chunks=[],pre=EAR.ring.slice(),preLen=EAR.ringLen,done=false,mx=0;EAR.ring=[];EAR.ringLen=0;
+  let t=0,noise=EAR.noise||.004,speech=false,voiced=0,lastVoice=0,chunks=[],pre=EAR.ring.slice(),preLen=EAR.ringLen,done=false,mx=0;EAR.ring=[];EAR.ringLen=0;
   const pack=()=>{let n=0;chunks.forEach(c=>n+=c.length);const all=new Float32Array(n);let k=0;chunks.forEach(c=>{all.set(c,k);k+=c.length});
    let pk=0;for(let i=0;i<all.length;i++){const v=Math.abs(all[i]);if(v>pk)pk=v}
-   const pcm=earResample(all,sr);if(pk>.001&&pk<.5){const g=Math.min(10,.7/pk);for(let i=0;i<pcm.length;i++)pcm[i]*=g}
+   const pcm=earResample(all,sr);if(pk>.001&&pk<.5){const g=Math.min(8,.7/pk);for(let i=0;i<pcm.length;i++)pcm[i]*=g}
    return{pcm,dur:n/sr,peak:pk}};
-  const sink=f=>{if(done)return;
+  const fin=r=>{if(done)return;done=true;EAR.sink=null;EAR.noise=Math.min(.03,noise);EAR.lastMax=mx;res(r)};
+  EAR.sink=f=>{if(done)return;
    const dt=f.length/sr;t+=dt;let q=0;for(let i=0;i<f.length;i++)q+=f[i]*f[i];const rms=Math.sqrt(q/f.length);if(rms>mx)mx=rms;
    if(o.onLevel)try{o.onLevel(rms,speech)}catch(e){}
    if(o.stop&&o.stop()===true){fin(null);return}
    if(o.ctl&&o.ctl.finish){fin(speech&&voiced>=.2?pack():null);return}
-   const thr=Math.max(.005,noise*3+.002);
+   const thr=Math.max(.008,noise*2.5);
    if(!speech){pre.push(f);preLen+=f.length;while(pre.length>1&&preLen-pre[0].length>sr*.5)preLen-=pre.shift().length;
     if(rms>thr){speech=true;chunks=pre;pre=[];preLen=0;voiced=dt;lastVoice=t;if(o.onSpeech)try{o.onSpeech()}catch(e){}}
     else noise=noise*.95+rms*.05;
     if(t>waitS)fin(null);return}
    chunks.push(f);if(rms>thr){voiced+=dt;lastVoice=t}
    if(t-lastVoice>idleS){if(voiced<.25){speech=false;chunks=[];voiced=0;pre=[];preLen=0}else fin(pack())}
-   else if(t>maxS)fin(pack())};
-  const fin=r=>{if(done)return;done=true;if(EAR.sink===sink){EAR.sink=null;EAR.cancel=null}EAR.noise=Math.min(.03,noise);EAR.lastMax=mx;res(r)};
-  EAR.cancel=()=>fin(null);EAR.sink=sink})}
-let _lv=0;const lvlTxt=(el,l,sp)=>{const n=Date.now();if(n-_lv<120)return;_lv=n;el.textContent='Te escucho… '+'▁▂▃▄▅▆▇█'[Math.min(7,Math.floor(l*90))]+(sp?' 🗣':'')};
+   else if(t>maxS)fin(pack())}})}
 const earNoVoiceMsg=()=>EAR.lastMax<.0008?'No llega sonido del micrófono. Revísalo en «Micrófono» (menú lateral): puede estar silenciado o ser otro dispositivo.':'No te escuché. Habla más cerca o más fuerte e inténtalo de nuevo.';
 async function asrLoad(say){
  if(_asr)return _asr;if(_asrP)return _asrP;
  _asrP=(async()=>{
-  let T=null;const errs=[],to=(ms)=>new Promise((_,r)=>setTimeout(()=>r(new Error('tiempo agotado')),ms));
-  for(const u of ASR_CDN){try{say&&say('Cargando el motor de voz…');T=await Promise.race([import(u),to(40000)]);if(T&&T.pipeline)break;T=null}catch(e){errs.push(u.split('/')[2]+': '+String(e&&e.message||e))}}
-  if(!T)throw new Error('No pude descargar el motor de voz (internet, firewall o antivirus bloquean la descarga). '+errs.join(' | '));
-  try{T.env.allowLocalModels=false;T.env.backends.onnx.wasm.numThreads=Math.max(1,Math.min(4,navigator.hardwareConcurrency||2))}catch(e){}
-  let files={};const mk=()=>T.pipeline('automatic-speech-recognition',S.get('nx-whisper','Xenova/whisper-base'),{progress_callback:p=>{
+  let T=null;const errs=[];
+  for(const u of ASR_CDN){try{say&&say('Cargando el motor de voz…');T=await import(u);if(T&&T.pipeline)break;T=null}catch(e){errs.push(String(e&&e.message||e))}}
+  if(!T)throw new Error('No pude descargar el motor de voz (revisa tu internet o el firewall). '+errs.join(' | '));
+  try{T.env.allowLocalModels=false;T.env.useBrowserCache=typeof caches!=='undefined'}catch(e){}
+  const files={},mk=()=>T.pipeline('automatic-speech-recognition',S.get('nx-whisper','Xenova/whisper-base'),{progress_callback:p=>{
    if(p&&p.status==='progress'&&p.total){files[p.file]={l:p.loaded,t:p.total};let l=0,tt=0;for(const k in files){l+=files[k].l;tt+=files[k].t}say&&say('Descargando el modelo de voz… '+Math.round(100*l/Math.max(1,tt))+' % (solo la primera vez)')}
    else if(p&&p.status==='ready'&&say)say('Preparando el oído de Noryx…')}});
-  const tries=[()=>{T.env.useBrowserCache=typeof caches!=='undefined'},()=>{T.env.useBrowserCache=false},()=>{T.env.useBrowserCache=false;T.env.remoteHost='https://hf-mirror.com/'}];
-  let last=null;
-  for(const pre of tries){try{pre();files={};_asr=await mk();last=null;break}catch(e){last=e}}
-  if(last)throw new Error('No pude descargar el modelo de voz: '+String(last&&last.message||last));
+  try{_asr=await mk()}catch(e){if(T.env.useBrowserCache){T.env.useBrowserCache=false;_asr=await mk()}else throw e}
   return _asr})().catch(e=>{_asrP=null;throw e});
  return _asrP}
 const ASR_JUNK=/subt[ií]tulos|amara\.org|suscr[ií]b|thanks for watching|gracias por ver/i;
@@ -1013,33 +1008,35 @@ async function vlListenLocal(){
   if(!_asr){vlSet('think');vlText('Preparando el oído de Noryx…');await asrLoad(m=>vlText(m))}
   if(!VL.on||VL.mute){VL.loc=false;if(VL.on)vlSet('mute');return}
   vlSet('listen');vlText('');
-  rec=await earRecord({maxMs:20000,stop:()=>!VL.on||VL.mute,onLevel:(l,sp)=>lvlTxt(vls,l,sp)})}
+  rec=await earRecord({maxMs:20000,stop:()=>!VL.on||VL.mute,onSpeech:()=>{vls.textContent='Te escucho… 🗣'}})}
  catch(e){err=e}
  VL.loc=false;if(!VL.on)return;
- if(err){if(earFailMsg(err)){vlStop();return}vlText('❌ '+(err&&err.message||err));VL.mute=true;$('#vlm').textContent='Activar micrófono';vlSet('mute');return}
+ if(err){if(!earFailMsg(err))toast('Dictado: '+(err&&err.message||err),7000);vlStop();return}
  if(VL.mute){vlSet('mute');return}
- if(!rec){vls.textContent='Te escucho…';setTimeout(vlListen,100);return}
+ if(!rec){setTimeout(vlListen,100);return}
  vlSet('think');vlText('Transcribiendo…');let t='';
- try{t=await asrText(rec,m=>vlText(m))}catch(e){vlText('❌ '+(e&&e.message||e));setTimeout(vlListen,2500);return}
+ try{t=await asrText(rec,m=>vlText(m))}catch(e){toast('Dictado: '+(e&&e.message||e),7000);vlStop();return}
  if(!VL.on)return;
  if(t)vlTurn(t);else{vlText('');vlListen()}}
+const jvTalking=()=>!!(window.speechSynthesis&&(speechSynthesis.speaking||speechSynthesis.pending));
 async function jvListenLocal(){
- if(JV.rec||JV.proc||JV.st=='speak')return;
+ if(JV.rec||JV.proc)return;
+ if(jvTalking()){setTimeout(jvListen,300);return}
  let abort=false;const me={abort(){abort=true}};JV.rec=me;
  let rec=null,err=null;
  try{
   if(!_asr){jvSet('think');jvText('Preparando el oído de Noryx…');await asrLoad(m=>jvText(m))}
   if(abort||!JV.on||JV.mute||JV.proc){if(JV.rec===me)JV.rec=null;if(JV.on&&!JV.mute&&!JV.proc)setTimeout(jvListen,150);return}
   jvSet('listen');jvText('');
-  rec=await earRecord({maxMs:20000,stop:()=>abort||!JV.on||JV.mute||JV.proc||JV.st=='speak',onLevel:(l,sp)=>lvlTxt(jvs,l,sp)})}
+  rec=await earRecord({maxMs:20000,stop:()=>abort||!JV.on||JV.mute||JV.proc,onSpeech:()=>{jvs.textContent='Te escucho… 🗣'}})}
  catch(e){err=e}
  if(JV.rec===me)JV.rec=null;
  if(!JV.on||JV.mute)return;
- if(err){JV.mute=true;$('#jvm').textContent='Activar micrófono';jvSet('mute');jvText('❌ '+(err&&err.message||err));jvLog('⚠ '+(err&&err.message||err));earFailMsg(err);return}
+ if(err){JV.mute=true;$('#jvm').textContent='Activar micrófono';jvSet('mute');jvLog('⚠ '+(err&&err.message||err));if(!earFailMsg(err))toast('Dictado: '+(err&&err.message||err),7000);return}
  if(!rec){setTimeout(jvListen,150);return}
  jvSet('think');jvText('Transcribiendo…');let t='';
- try{t=await asrText(rec,m=>jvText(m))}catch(e){jvText('❌ '+(e&&e.message||e));jvLog('⚠ Dictado: '+(e&&e.message||e));setTimeout(jvListen,2500);return}
- if(t&&!JV.proc&&JV.st!='speak'){jvTurn(t);return}
+ try{t=await asrText(rec,m=>jvText(m))}catch(e){jvLog('⚠ Dictado: '+(e&&e.message||e));toast('Dictado: '+(e&&e.message||e),7000);setTimeout(jvListen,1500);return}
+ if(t&&!JV.proc){jvTurn(t);return}
  jvText('');setTimeout(jvListen,150)}
 
 /* ============ Red neuronal viva (hero) ============ */
@@ -1528,35 +1525,54 @@ async function mdScan(){
  add(navigator.onLine?true:false,navigator.onLine?'Conexión a internet activa (solo hace falta la primera vez, para bajar el modelo de voz ~80 MB).':'Sin internet: solo puedo oírte si el modelo de voz ya se descargó antes.');
  mdl.replaceChildren();L.forEach(([ok,t])=>{const d=document.createElement('div'),i=document.createElement('i'),s=document.createElement('span');i.textContent=ok===true?'✅':ok===false?'❌':'⚠️';s.textContent=t;d.append(i,s);mdl.append(d)})}
 function mdStop(){cancelAnimationFrame(MD.raf);if(MD.stream){MD.stream.getTracks().forEach(t=>{t.onmute=t.onended=null;t.stop()});MD.stream=null}if(MD.ctx){try{MD.ctx.close()}catch(e){}MD.ctx=null}mdb.style.width='0'}
-var mdRun=0;
-async function mdAuto(){
- const id=++mdRun,alive=()=>id===mdRun&&!mdEl.hidden,L=m=>{if(alive())mdn.textContent=m};
- mdlog.textContent='';mdo.className='';
+function mdFail(e){const n=e&&e.name;mdVerdict('bad',n=='NotAllowedError'||n=='SecurityError'?'❌ Permiso denegado. Toca el candado (o el icono de ajustes) junto a la dirección → Micrófono → Permitir, y recarga. Si tienes la página abierta como archivo local (file://) o dentro de otra app, ábrela en Chrome por https o localhost.':n=='NotFoundError'?'❌ No hay ningún micrófono conectado o habilitado en el sistema.':n=='NotReadableError'?'❌ El micrófono existe pero no se puede abrir: otro programa lo está usando (Zoom, Teams, Meet, Discord…) o el sistema lo bloquea.\nWindows: Configuración → Privacidad → Micrófono (permitir apps de escritorio).\nmacOS: Ajustes → Privacidad → Micrófono (activa tu navegador).':'❌ No pude abrir el micrófono: '+(n||e))}
+async function mdTest(){
+ mdStop();mdlog.textContent='';mdo.className='';mdn.textContent='Abriendo micrófono…';
+ const id=mds.value;let st;
+ try{st=await navigator.mediaDevices.getUserMedia({audio:{deviceId:id&&id!='default'?{exact:id}:undefined,echoCancellation:false,noiseSuppression:false,autoGainControl:false}})}
+ catch(e){if(e&&e.name=='OverconstrainedError'&&id!='default'){mds.value='default';return mdTest()}mdn.textContent='';return mdFail(e)}
+ MD.stream=st;S.set('nx-micdev',id);
+ const tr=st.getAudioTracks()[0];
+ tr.onmute=()=>mdVerdict('bad','❌ El sistema acaba de SILENCIAR este micrófono (interruptor de privacidad, tecla de silencio o ajuste del sistema operativo).');
+ tr.onended=()=>mdVerdict('bad','❌ El micrófono se desconectó o el navegador lo cerró.');
+ mdScan().then(()=>{if(MD.stream)mds.value=[...mds.options].some(o=>o.value==id)?id:'default'});
+ mdn.textContent='Escuchando «'+(tr.label||'micrófono')+'» ('+(tr.muted?'silenciado por el sistema':'activo')+'). Habla o aplaude…';
+ const C=window.AudioContext||window.webkitAudioContext;MD.ctx=new C();try{await MD.ctx.resume()}catch(e){}
+ const src=MD.ctx.createMediaStreamSource(st),an=MD.ctx.createAnalyser();an.fftSize=1024;src.connect(an);
+ const buf=new Float32Array(an.fftSize);MD.peak=0;MD.t0=Date.now();MD.ok=0;MD.silent=0;
+ const loop=()=>{if(!MD.stream)return;an.getFloatTimeDomainData(buf);let s=0;for(let i=0;i<buf.length;i++)s+=buf[i]*buf[i];const rms=Math.sqrt(s/buf.length);MD.peak=Math.max(MD.peak,rms);mdb.style.width=Math.min(100,rms*800)+'%';
+  if(MD.peak>.02&&!MD.ok){MD.ok=1;mdVerdict('ok','✅ El navegador SÍ te oye por este micrófono. Si el dictado igual no responde, pulsa «Probar reconocimiento de voz»: así sabremos si el fallo está en el reconocimiento y no en el micrófono.')}
+  else if(!MD.ok&&!MD.silent&&Date.now()-MD.t0>4000){MD.silent=1;mdVerdict('bad','❌ El permiso está concedido, pero no llega sonido. Causas típicas:\n1) Este no es el micrófono que usas: elígelo en la lista de arriba y vuelve a probar.\n2) Está silenciado o con volumen en 0 (Windows: Configuración → Sistema → Sonido → Entrada; macOS: Ajustes → Sonido → Entrada).\n3) Interruptor físico o tecla de silencio del portátil o de los auriculares.\n4) Windows: Configuración → Privacidad → Micrófono → permitir apps de escritorio. macOS: Ajustes → Privacidad → Micrófono → activar tu navegador.\n5) Auriculares Bluetooth: al activar el micrófono cambian de perfil y a veces dejan de captar; prueba con el micrófono del equipo.')}
+  MD.raf=requestAnimationFrame(loop)};
+ loop()}
+async function mdRec(){
+ mdStop();mdlog.textContent='';mdo.className='';
+ const L=m=>{mdAdd(m);mdn.textContent=m};
  try{
-  if(!_asr){mdVerdict('warn','⏳ Preparando el oído de Noryx (la primera vez descarga ~80 MB). Espera…');await asrLoad(L);if(!alive())return}
-  mdVerdict('ok','✅ Motor de voz listo. Habla con normalidad: aquí verás lo que Noryx entiende.');
-  while(alive()){
-   L('🎙 Te escucho… habla ahora');
-   const rec=await earRecord({maxMs:15000,waitMs:12000,stop:()=>!alive(),onLevel:l=>{mdb.style.width=Math.min(100,l*800)+'%'},onSpeech:()=>L('🗣 Te oigo…')});
-   mdb.style.width='0';if(!alive())return;
-   if(!rec){mdVerdict('warn','⚠️ '+earNoVoiceMsg());continue}
-   L('Transcribiendo…');
-   const t=await asrText(rec,L);if(!alive())return;
-   if(t){mdAdd('✅ «'+t+'»');mdVerdict('ok','✅ Noryx te oye y te entiende.')}else mdAdd('… te oí, pero no entendí palabras')}}
- catch(e){if(id===mdRun){const n=(e&&e.name)||'',c=/NotFound|NotReadable/.test(n)?'audio-capture':/NotAllowed|Security/.test(n)?'not-allowed':'';mdVerdict('bad','❌ '+(c?MIC_WHY[c]:(e&&e.message||e)))}}
- finally{if(id===mdRun){mdb.style.width='0';earRelease()}}}
+  if(!_asr){mdVerdict('warn','⏳ Preparando el motor de voz de Noryx (la primera vez baja ~80 MB). Espera…');await asrLoad(m=>{mdn.textContent=m})}
+  mdVerdict('warn','🎙 Di una frase corta, por ejemplo «hola Noryx».');L('▶ Escuchando… habla ahora');
+  const rec=await earRecord({maxMs:12000,waitMs:9000,onLevel:l=>{mdb.style.width=Math.min(100,l*800)+'%'},onSpeech:()=>mdAdd('🗣 Detecto tu voz')});
+  mdb.style.width='0';
+  if(!rec){mdVerdict('bad','❌ '+earNoVoiceMsg());mdn.textContent='';return}
+  L('🎧 Grabé '+rec.dur.toFixed(1)+' s (volumen máximo '+Math.round(rec.peak*100)+' %). Transcribiendo…');
+  const t=await asrText(rec,m=>{mdn.textContent=m});mdn.textContent='';
+  if(t){mdAdd('✅ Entendí: «'+t+'»');mdVerdict('ok','✅ Noryx te oye y te entiende. Cierra este panel y habla con normalidad.')}
+  else mdVerdict('warn','⚠️ Te oí pero no logré entender palabras. Habla más cerca y claro e inténtalo otra vez.')}
+ catch(e){mdn.textContent='';mdVerdict('bad','❌ '+(e&&e.message||e))}
+ finally{mdb.style.width='0';earRelease()}}
 async function mdOpen(reason){
  if(typeof JV!='undefined'&&JV.rec){const r=JV.rec;JV.rec=null;try{r.abort()}catch(e){}}
  if(typeof VL!='undefined'&&VL.rec){const r=VL.rec;VL.rec=null;try{r.abort()}catch(e){}}
  window.speechSynthesis&&speechSynthesis.cancel();
- mdEl.hidden=false;mdo.className='';mdlog.textContent='';mdb.style.width='0';mdn.textContent='';
+ mdEl.hidden=false;mdo.className='';mdlog.textContent='';mdb.style.width='0';mdn.textContent='Pulsa «Probar micrófono» y habla o aplaude.';
  mdw.className=reason?'on':'';mdw.textContent=reason?'Motivo: '+reason:'';
  await mdScan();
- mdAuto()}
-function mdClose(){mdRun++;mdStop();clearTimeout(MD.to);if(MD.rec){const r=MD.rec;MD.rec=null;try{r.abort()}catch(e){}}mdEl.hidden=true;
+ if(MD.perm=='granted'&&navigator.mediaDevices)mdTest()}
+function mdClose(){mdStop();clearTimeout(MD.to);if(MD.rec){const r=MD.rec;MD.rec=null;try{r.abort()}catch(e){}}mdEl.hidden=true;
  if(JV.on&&!JV.mute&&!JV.proc&&JV.st!='speak')jvListen();
  if(typeof VL!='undefined'&&VL.on&&!VL.mute&&VL.st!='speak'&&VL.st!='think')vlListen()}
-$('#mdx').onclick=mdClose;mds.onchange=()=>{S.set('nx-micdev',mds.value);earClose();mdAuto()};
+$('#mdx').onclick=mdClose;$('#mdt').onclick=mdTest;$('#mdr').onclick=mdRec;$('#mdd').onclick=()=>{mdScan()};
+$('#mdc').onclick=()=>{const t=mdSettings();navigator.clipboard&&navigator.clipboard.writeText(t).then(()=>toast('Copiado: pégalo en la barra de direcciones ('+t+')'),()=>toast('Escribe en la barra de direcciones: '+t))||toast('Escribe en la barra de direcciones: '+t)};
 mdEl.addEventListener('click',e=>{if(e.target==mdEl)mdClose()});
 addEventListener('keydown',e=>{if(e.key=='Escape'&&!mdEl.hidden){e.stopImmediatePropagation();mdClose()}},true);
 $('#mdopen').onclick=()=>{closeMenu();mdOpen()};$('#jvmic').onclick=()=>mdOpen();$('#vlmic').onclick=()=>mdOpen();
