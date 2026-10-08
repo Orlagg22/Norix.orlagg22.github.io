@@ -171,7 +171,7 @@ textarea{flex:1;resize:none;border:0;outline:0;background:none;color:var(--ink);
   <div id="pro" hidden><button id="vlb"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>Voz en vivo</button><button id="imb"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="9" cy="10" r="1.8"/><path d="M21 16l-5-5-8 8"/></svg>Imágenes</button></div>
   <button id="jvb" hidden><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/></svg>Modo Noryx</button>
   <input id="q" placeholder="Buscar en conversaciones" aria-label="Buscar"><nav id="list"></nav>
-  <div class="foot"><button id="thm">Tema</button><button id="spk">Voz: no</button><button id="mdopen">Micrófono</button><button id="mae">Maestro: sí</button><button id="acc">Entrar</button><button id="exp">Exportar</button><button id="forget">Olvidar todo</button><button id="bk" title="Descargar una copia de tus conversaciones y memoria">Respaldo</button><button id="gxb" hidden>Accesos</button></div>
+  <div class="foot"><button id="thm">Tema</button><button id="spk">Voz: no</button><button id="mdopen">Micrófono</button><button id="acc">Entrar</button><button id="exp">Exportar</button><button id="forget">Olvidar todo</button><button id="bk" title="Descargar una copia de tus conversaciones y memoria">Respaldo</button><button id="gxb" hidden>Accesos</button></div>
  </aside>
  <div id="scrim"></div>
  <main>
@@ -184,7 +184,7 @@ textarea{flex:1;resize:none;border:0;outline:0;background:none;color:var(--ink);
     <button class="ib" id="mic" aria-label="Hablar"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button>
     <button class="ib" id="go" aria-label="Enviar"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>
    </div>
-   <div class="note">Noryx piensa en tu navegador con su propia red neuronal de 100 neuronas. Aprende sola de su maestro IA y de ti: aprende: pregunta = respuesta.</div>
+   <div class="note">Noryx piensa en tu navegador con su propia red neuronal de ~6.5 millones de parámetros. Aprende de ti: aprende: pregunta = respuesta.</div>
   </div>
  </main>
 </div>
@@ -456,22 +456,468 @@ const TOP_RAW=[
 'compound@@que es el interes compuesto|compound interest@@Son intereses que generan más intereses: tu dinero crece cada vez más rápido con el tiempo.',
 'gdppc@@que es el pib per capita|gdp per capita@@El PIB dividido entre la población: sirve para comparar la riqueza media de los países. Pregúntame «pib per cápita de Chile».',
 'countries@@que paises conoces|de que paises sabes|datos de paises@@Tengo capital, población, PIB, moneda, idioma y continente de unos 40 países. Prueba «población de Perú» o «pib de Japón y Corea del Sur».',
-'convq@@que conversiones haces|convertir unidades@@Convierto longitud, peso, volumen y temperatura: «10 millas a km», «70 kg a libras», «100 °F a °C».'];
+'convq@@que conversiones haces|convertir unidades@@Convierto longitud, peso, volumen y temperatura: «10 millas a km», «70 kg a libras», «100 °F a °C».',
+'x_foto@@que es la fotosintesis|como hacen las plantas energia|photosynthesis@@La fotosintesis es el proceso con el que plantas, algas y algunas bacterias fabrican su alimento. En los cloroplastos, la clorofila capta la luz del Sol y la usa para convertir agua y dioxido de carbono en glucosa, liberando oxigeno. Gracias a ella existe el oxigeno que respiramos y casi toda la cadena alimentaria.',
+'x_adn@@que es el adn|para que sirve el adn|what is dna@@El ADN es la molecula que guarda la informacion genetica de los seres vivos. Tiene forma de doble helice, formada por dos cadenas de nucleotidos con cuatro bases: A, T, C y G. El orden de las bases forma los genes, que indican como fabricar proteinas. Casi todas las celulas de tu cuerpo contienen una copia completa.',
+'x_celula@@que es una celula|partes de la celula|what is a cell@@La celula es la unidad basica de la vida. Todas tienen membrana que las rodea, citoplasma y material genetico. Las celulas eucariotas, como las animales y vegetales, tienen nucleo y organelos como las mitocondrias, que producen energia; las procariotas, como las bacterias, no tienen nucleo. El cuerpo humano tiene unos 30 billones de celulas.',
+'x_gravedad@@que es la gravedad|por que caen las cosas|what is gravity@@La gravedad es la fuerza de atraccion entre objetos con masa. Newton la describio como una fuerza proporcional a las masas e inversa al cuadrado de la distancia; Einstein, como la curvatura del espacio-tiempo causada por la masa. En la Tierra acelera los objetos a 9.8 m/s2, y mantiene a la Luna y a los planetas en orbita.',
+'x_relativ@@que es la relatividad|teoria de la relatividad|einstein relatividad@@La teoria de la relatividad de Einstein tiene dos partes. La especial, de 1905, dice que la velocidad de la luz es constante y que el tiempo y el espacio dependen del observador; de ahi sale E = mc2. La general, de 1915, explica la gravedad como la curvatura del espacio-tiempo, y predice agujeros negros y ondas gravitacionales.',
+'x_cuant@@que es la fisica cuantica|mecanica cuantica|quantum physics@@La fisica cuantica estudia el comportamiento de atomos y particulas. A esa escala la energia viene en paquetes llamados cuantos, las particulas se comportan como ondas y partículas a la vez, y solo se pueden predecir probabilidades. Principios clave son la superposicion y la incertidumbre de Heisenberg. Gracias a ella existen los laseres, los transistores y los chips.',
+'x_bigbang@@que es el big bang|como se creo el universo|origen del universo@@El Big Bang es la teoria de que el universo empezo hace unos 13 800 millones de anos desde un estado extremadamente denso y caliente, y desde entonces se expande. Primero se formaron las particulas, luego los primeros atomos y, cientos de millones de anos despues, las primeras estrellas. Lo respaldan la expansion observada y la radiacion de fondo de microondas.',
+'x_agujero@@que es un agujero negro|black hole|como se forma un agujero negro@@Region donde la gravedad es tan intensa que ni la luz escapa; suele nacer del colapso de una estrella masiva.',
+'x_sol@@que es el sol|cuanto mide el sol|how big is the sun@@El Sol es una estrella enana amarilla; contiene el 99 % de la masa del sistema solar y vive de fusion nuclear.',
+'x_luna@@que es la luna|como se formo la luna|why does the moon change@@La Luna es el satelite natural de la Tierra; sus fases dependen de cuanto de su cara iluminada vemos.',
+'x_eclipse@@que es un eclipse|como ocurre un eclipse|solar eclipse@@Un eclipse ocurre cuando un astro tapa la luz de otro: la Luna al Sol (solar) o la sombra de la Tierra sobre la Luna (lunar).',
+'x_estaciones@@por que hay estaciones|estaciones del ano|why are there seasons@@Se deben a la inclinacion del eje terrestre de 23.5 grados, no a la distancia al Sol.',
+'x_clima@@que es el cambio climatico|calentamiento global|climate change@@El cambio climatico es el aumento a largo plazo de la temperatura promedio de la Tierra. Desde la Revolucion Industrial, quemar petroleo, gas y carbon libera dioxido de carbono y metano, que atrapan calor en la atmosfera. Provoca deshielo, subida del nivel del mar, olas de calor y fenomenos extremos. Se combate reduciendo emisiones y usando energias renovables.',
+'x_volcan@@que es un volcan|como funciona un volcan|how do volcanoes work@@Un volcan es una abertura de la corteza terrestre por donde sale roca fundida, gases y ceniza. El magma sube desde el manto por su menor densidad y, cuando la presion es alta, produce una erupcion. Se encuentran sobre todo en los bordes de las placas tectonicas, como en el Cinturon de Fuego del Pacifico. Mexico tiene el Popocatepetl y el Pico de Orizaba.',
+'x_sismo@@que es un terremoto|por que tiembla|how do earthquakes happen@@Un terremoto es una vibracion de la tierra causada por la liberacion repentina de energia en una falla, donde las placas tectonicas acumulan tension. El punto de origen es el hipocentro y el punto sobre la superficie, el epicentro. Se mide con la escala de Richter o de magnitud de momento. Mexico es muy sismico porque esta sobre varias placas.',
+'x_atomo@@que es un atomo|partes del atomo|what is an atom@@El atomo es la unidad basica de la materia. Tiene un nucleo con protones, de carga positiva, y neutrones, sin carga, rodeado por electrones de carga negativa. El numero de protones define el elemento: 1 es hidrogeno y 6, carbono. Casi toda su masa esta en el nucleo y la mayor parte de su volumen es espacio vacio.',
+'x_tabla@@que es la tabla periodica|elementos quimicos|periodic table@@Ordena los elementos por numero atomico y propiedades; hoy tiene 118 elementos.',
+'x_agua@@por que el agua es importante|propiedades del agua|formula del agua@@El agua, H2O, es el disolvente de la vida: regula la temperatura y permite las reacciones celulares.',
+'x_vacuna@@como funcionan las vacunas|que es una vacuna|how do vaccines work@@Una vacuna entrena al sistema inmune sin causar la enfermedad. Contiene una version debilitada, partes del germen o instrucciones geneticas para fabricar una proteina inofensiva. El cuerpo crea anticuerpos y celulas de memoria, de modo que si llega el germen real, lo reconoce y lo combate rapido. Las vacunas erradicaron la viruela y casi acabaron con la polio.',
+'x_virus@@que es un virus|diferencia virus bacteria|virus vs bacteria@@Un virus es un agente infeccioso muy pequeno formado por material genetico dentro de una capsula de proteinas. No es una celula y no puede reproducirse solo: invade una celula y usa su maquinaria para hacer copias. Las bacterias, en cambio, son organismos vivos completos; los antibioticos las matan, pero no actuan contra los virus.',
+'x_sueno@@por que dormimos|cuantas horas dormir|why do we sleep@@El sueno consolida la memoria y repara el cuerpo; los adultos necesitan unas 7 a 9 horas.',
+'x_corazon@@como funciona el corazon|que hace el corazon|how does the heart work@@El corazon es una bomba muscular de cuatro camaras que impulsa la sangre por el cuerpo unas 100 000 veces al dia.',
+'x_cerebro@@como funciona el cerebro|cuantas neuronas tiene el cerebro|how does the brain work@@El cerebro es el centro de control del cuerpo. Tiene unos 86 000 millones de neuronas que se comunican por senales electricas y quimicas en conexiones llamadas sinapsis. Pesa cerca de 1.4 kg y consume alrededor del 20 % de la energia del cuerpo. Sus regiones controlan el movimiento, la memoria, el lenguaje, las emociones y el razonamiento.',
+'x_evol@@que es la evolucion|teoria de darwin|seleccion natural@@La evolucion es el cambio de las especies a lo largo de generaciones. Darwin explico que los individuos varian, que parte de esa variacion se hereda y que los mejor adaptados dejan mas descendientes: eso es la seleccion natural. Con millones de anos se forman especies nuevas. Lo apoyan los fosiles, la genetica y la anatomia comparada.',
+'x_dino@@que paso con los dinosaurios|extincion de los dinosaurios|why did dinosaurs die@@Los dinosaurios dominaron la Tierra durante unos 165 millones de anos y desaparecieron hace 66 millones, al final del Cretacico. La causa principal fue el impacto de un asteroide de unos 10 km en lo que hoy es Yucatan, que causo incendios, tsunamis y un enfriamiento global. Las aves actuales descienden de pequenos dinosaurios.',
+'x_ia@@que es la inteligencia artificial|que es ia|what is artificial intelligence@@La inteligencia artificial es la rama de la informatica que crea sistemas capaces de realizar tareas que requieren inteligencia, como reconocer imagenes, entender lenguaje, traducir o jugar. La mayoria de los sistemas actuales aprenden a partir de grandes cantidades de datos. Se usa en buscadores, asistentes de voz, diagnostico medico y automoviles autonomos.',
+'x_ml@@que es el machine learning|aprendizaje automatico|how do machines learn@@El aprendizaje automatico es la parte de la IA en que un programa aprende a partir de ejemplos en vez de reglas escritas a mano. Se ajustan millones de parametros para reducir el error en los datos de entrenamiento. Hay aprendizaje supervisado, con respuestas conocidas; no supervisado, que busca patrones; y por refuerzo, que aprende por recompensas.',
+'x_llm@@que es un llm|como funciona chatgpt|large language model@@Un modelo de lenguaje grande es una red neuronal entrenada con enormes cantidades de texto para predecir la siguiente palabra. De esa tarea simple surgen habilidades como responder, resumir, traducir y programar. Usa una arquitectura llamada transformer y tiene miles de millones de parametros. Puede equivocarse, asi que conviene verificar los datos importantes.',
+'x_internet@@que es internet|como funciona internet|how does the internet work@@Internet es una red mundial de redes de computadoras que se comunican con un lenguaje comun llamado protocolo TCP/IP. La informacion viaja dividida en paquetes por cables, fibra optica y ondas, y cada dispositivo tiene una direccion IP. La web es solo uno de sus servicios, junto con el correo y la mensajeria. Los nombres de dominio los traduce el DNS.',
+'x_blockchain@@que es blockchain|que es bitcoin|how does bitcoin work@@Una blockchain es un libro de registros compartido por muchas computadoras, donde las operaciones se agrupan en bloques encadenados con criptografia. Modificar un bloque antiguo obligaria a rehacer todos los siguientes, lo que la hace muy dificil de falsificar. Bitcoin, creado en 2009 por Satoshi Nakamoto, fue la primera moneda en usarla.',
+'x_nube@@que es la nube|cloud computing|que es computacion en la nube@@Es usar servidores remotos por internet para guardar datos o ejecutar programas sin tenerlos en tu equipo.',
+'x_api@@que es una api|para que sirve una api|what is an api@@Una API es un contrato que permite que dos programas se comuniquen sin conocer su interior.',
+'x_sql@@que es sql|base de datos|what is a database@@Una base de datos organiza informacion y SQL es el lenguaje para consultarla y modificarla.',
+'x_git@@que es git|que es github|version control@@Git guarda el historial de cambios de un proyecto; GitHub lo aloja en linea para colaborar.',
+'x_algo@@que es un algoritmo|what is an algorithm|como resolver un problema paso a paso@@Un algoritmo es una secuencia finita de pasos claros para resolver un problema.',
+'x_bug@@que es un bug|como depurar codigo|how to debug@@Un bug es un error en el programa. Para depurar: reproducelo, aislalo, revisa los datos y cambia una cosa a la vez.',
+'x_cripto@@que es la criptografia|como se protege la informacion|what is encryption@@Transforma datos con claves matematicas para que solo quien tenga la clave pueda leerlos.',
+'x_pass@@como crear una contrasena segura|buena contrasena|strong password@@Usa 14 o mas caracteres, una frase larga unica por cuenta, un gestor de contrasenas y verificacion en dos pasos.',
+'x_inflacion@@que es la inflacion|por que suben los precios|what is inflation@@La inflacion es el aumento general y sostenido de los precios, que hace que el dinero compre menos con el tiempo. Puede surgir por demanda excesiva, aumento de costos o exceso de dinero en circulacion. Se mide con el indice de precios al consumidor. Los bancos centrales la controlan sobre todo subiendo o bajando las tasas de interes.',
+'x_interes@@que es el interes compuesto|como crece el dinero|compound interest@@El interes compuesto es el interes que se calcula sobre el capital inicial y tambien sobre los intereses ya acumulados. Por eso el crecimiento es exponencial: 1 000 pesos al 10 % anual son 1 100 el primer ano, 1 210 el segundo y asi sucesivamente. Cuanto antes empieces a ahorrar, mayor es el efecto; en deudas, funciona en tu contra.',
+'x_ahorro@@como ahorrar dinero|consejos de ahorro|how to save money@@Separa un porcentaje al cobrar, registra gastos, evita deudas caras y ten un fondo de emergencia de 3 a 6 meses.',
+'x_pib@@que es el pib|producto interno bruto|what is gdp@@Es el valor de los bienes y servicios que produce un pais en un periodo.',
+'x_oferta@@que es la oferta y la demanda|ley de oferta y demanda|supply and demand@@El precio se ajusta segun cuanto se quiere comprar y cuanto se ofrece: mucha demanda lo sube, mucha oferta lo baja.',
+'x_democracia@@que es la democracia|tipos de gobierno|what is democracy@@La democracia es un sistema de gobierno en que el poder pertenece al pueblo, que lo ejerce directamente o eligiendo representantes. Sus pilares son elecciones libres, separacion de poderes, respeto a los derechos y libertades, y la ley igual para todos. Nacio en Atenas en el siglo V a. C.; hoy hay democracias presidenciales y parlamentarias.',
+'x_constit@@que es una constitucion|que es la ley suprema|what is a constitution@@Es la norma suprema de un pais: define derechos, poderes del Estado y limites al gobierno.',
+'x_derechos@@que son los derechos humanos|derechos fundamentales|human rights@@Son derechos de toda persona por el hecho de serlo, como la vida, la libertad y la igualdad.',
+'x_etica@@que es la etica|que es lo moral|what is ethics@@La etica estudia que acciones son correctas o incorrectas y por que.',
+'x_filos@@que es la filosofia|para que sirve filosofia|what is philosophy@@La filosofia es la busqueda racional de respuestas a preguntas fundamentales: que existe, que podemos conocer, como debemos vivir y que es bello. Nacio en Grecia con Socrates, Platon y Aristoteles. Sus ramas principales son la metafisica, la epistemologia, la etica y la logica. Sirve para pensar con claridad y examinar las propias creencias.',
+'x_sentido@@cual es el sentido de la vida|para que vivimos|meaning of life@@No hay una respuesta unica: algunos lo hallan en las relaciones, otros en crear, aprender o ayudar. Tu que piensas?',
+'x_conc@@que es la conciencia|que es la mente|what is consciousness@@Es la experiencia subjetiva de percibir y sentir; la ciencia aun no explica del todo como surge del cerebro.',
+'x_libre@@existe el libre albedrio|somos libres|free will@@Es debate abierto: algunos dicen que todo esta determinado, otros que decidimos con libertad real.',
+'x_logica@@que es la logica|que es un silogismo|what is a syllogism@@La logica estudia como razonar bien. Un silogismo: todos los humanos son mortales; Socrates es humano; luego es mortal.',
+'x_falacia@@que es una falacia|tipos de falacias|logical fallacy@@Es un razonamiento que parece valido pero no lo es, como atacar a la persona en lugar de su argumento.',
+'x_cientif@@que es el metodo cientifico|como funciona la ciencia|scientific method@@El metodo cientifico es la forma ordenada de generar conocimiento fiable. Se observa un fenomeno, se plantea una pregunta, se formula una hipotesis que pueda probarse, se disena un experimento, se analizan los datos y se concluye. Los resultados se publican para que otros los repitan. Una teoria cientifica es una explicacion muy probada, no una simple opinion.',
+'x_prob@@que es la probabilidad|como se calcula la probabilidad|what is probability@@Mide cuan posible es un suceso: casos favorables entre casos posibles, de 0 a 1.',
+'x_pitag@@teorema de pitagoras|que dice pitagoras|pythagorean theorem@@En un triangulo rectangulo, la suma de los cuadrados de los catetos es igual al cuadrado de la hipotenusa.',
+'x_pi@@que es el numero pi|cuanto vale pi|what is pi@@Pi es la razon entre la circunferencia y el diametro de un circulo: 3.14159...',
+'x_deriv@@que es una derivada|para que sirve el calculo|what is a derivative@@La derivada mide que tan rapido cambia una funcion; es la pendiente en cada punto.',
+'x_integral@@que es una integral|area bajo la curva|what is an integral@@La integral acumula cantidades, por ejemplo el area bajo una curva; es la inversa de la derivada.',
+'x_primo@@que es un numero primo|numeros primos|prime numbers@@Es un natural mayor que 1 divisible solo entre 1 y el mismo: 2, 3, 5, 7, 11...',
+'x_fibo@@que es la sucesion de fibonacci|numeros de fibonacci|fibonacci sequence@@Cada numero es la suma de los dos anteriores: 1, 1, 2, 3, 5, 8, 13...',
+'x_rommana@@que fue el imperio romano|historia de roma|roman empire@@Roma paso de ciudad a republica y luego imperio, dominando el Mediterraneo hasta la caida de Occidente en el 476.',
+'x_azteca@@que fue el imperio azteca|historia de los mexicas|aztec empire@@Los mexicas fundaron Tenochtitlan en 1325 y dominaron el centro de Mexico hasta la conquista espanola en 1521.',
+'x_maya@@quienes fueron los mayas|cultura maya|mayan civilization@@Civilizacion mesoamericana famosa por su escritura, astronomia, calendario y ciudades como Chichen Itza y Tikal.',
+'x_indep@@independencia de mexico|grito de dolores|mexican independence@@Inicio el 16 de septiembre de 1810 con el Grito de Dolores de Miguel Hidalgo y concluyo en 1821.',
+'x_rev@@que fue la revolucion mexicana|revolucion de 1910|mexican revolution@@Conflicto iniciado en 1910 contra la dictadura de Porfirio Diaz que derivo en la Constitucion de 1917.',
+'x_ww2@@que fue la segunda guerra mundial|world war 2|causas de la segunda guerra@@La Segunda Guerra Mundial fue el conflicto mas grande de la historia, de 1939 a 1945. Comenzo con la invasion alemana de Polonia y enfrento a los Aliados, como Reino Unido, URSS y Estados Unidos, contra el Eje, formado por Alemania, Italia y Japon. Incluyo el Holocausto y termino con la rendicion de Alemania y las bombas atomicas sobre Hiroshima y Nagasaki.',
+'x_ww1@@que fue la primera guerra mundial|world war 1|causas de la primera guerra@@Conflicto de 1914 a 1918 desatado por el asesinato del archiduque Francisco Fernando y un sistema de alianzas.',
+'x_frances@@que fue la revolucion francesa|revolucion francesa|french revolution@@La Revolucion Francesa empezo en 1789 con la toma de la Bastilla, en un pais con crisis economica y grandes desigualdades. Derroco la monarquia absoluta, proclamo la Declaracion de los Derechos del Hombre y del Ciudadano y lanzo el lema libertad, igualdad y fraternidad. Luego vinieron el Terror y el ascenso de Napoleon, pero sus ideas inspiraron revoluciones en el mundo.',
+'x_industrial@@que fue la revolucion industrial|revolucion industrial|industrial revolution@@La Revolucion Industrial comenzo en Inglaterra a mediados del siglo XVIII y transformo la produccion artesanal en produccion con maquinas. La maquina de vapor, la industria textil y el ferrocarril fueron claves. Hubo un enorme crecimiento economico y urbano, pero tambien condiciones duras para los obreros y contaminacion. Se extendio por Europa y Estados Unidos.',
+'x_guerrafria@@que fue la guerra fria|cold war|conflicto eeuu urss@@La Guerra Fria fue la rivalidad entre Estados Unidos y la Union Sovietica desde 1947 hasta 1991. Nunca chocaron directamente, pero compitieron con armas nucleares, espionaje, la carrera espacial y apoyo a bandos en guerras como Corea y Vietnam. Termino con la caida del muro de Berlin en 1989 y la disolucion de la URSS.',
+'x_luna69@@llegada a la luna|apolo 11|cuando llego el hombre a la luna@@El 20 de julio de 1969 Neil Armstrong y Buzz Aldrin pisaron la Luna con el Apolo 11.',
+'x_idiomas@@cuantos idiomas hay|idiomas mas hablados|most spoken languages@@Hay unas 7 000 lenguas; las mas habladas son ingles, mandarin, hindi, espanol y frances.',
+'x_aprender@@como aprender mas rapido|tecnicas de estudio|how to study better@@Estudia en bloques cortos, practica recordando sin mirar, espacia las repasadas y explica lo aprendido con tus palabras.',
+'x_ingles@@como aprender ingles|mejorar mi ingles|learn english@@Exponte a diario: series con subtitulos en ingles, lectura, practica oral y repetir vocabulario con tarjetas.',
+'x_habitos@@como crear buenos habitos|formar un habito|how to build habits@@Empieza muy pequeno, atalo a algo que ya haces, se constante y celebra cada avance.',
+'x_estres@@como manejar el estres|tengo estres|how to reduce stress@@Respira lento, muevete, duerme bien, divide tareas y habla con alguien. Si es constante, busca apoyo profesional.',
+'x_ansiedad@@tengo ansiedad|me siento ansioso|i feel anxious@@Lamento que lo sientas. Prueba respirar 4 segundos al inhalar y 6 al exhalar. Si persiste, hablalo con un profesional de salud mental.',
+'x_triste@@me siento triste|estoy deprimido|i feel sad@@Gracias por contarmelo. Hablar con alguien de confianza ayuda; si la tristeza dura, busca un profesional. Aqui estoy para platicar.',
+'x_ejercicio@@beneficios del ejercicio|cuanto ejercicio hacer|how much exercise@@Se recomiendan unos 150 minutos semanales de actividad moderada; mejora corazon, animo y sueno.',
+'x_dieta@@como comer sano|alimentacion saludable|healthy diet@@Come variado: verduras, frutas, legumbres, granos integrales y proteina, con poca azucar y ultraprocesados.',
+'x_cafe@@que hace la cafeina|es malo el cafe|is coffee bad@@La cafeina estimula el sistema nervioso; en cantidad moderada (hasta unos 400 mg al dia) suele ser segura en adultos sanos.',
+'x_tacos@@como hacer tacos al pastor|receta de tacos|tacos recipe@@Marina cerdo con chile guajillo, achiote, vinagre y especias; asalo con pina y sirvelo en tortilla con cilantro y cebolla.',
+'x_cv@@como hacer un curriculum|consejos para entrevista|job interview tips@@Ve a una pagina, resalta logros medibles y adapta el CV al puesto. En la entrevista investiga la empresa y da ejemplos concretos.',
+'x_emprender@@como iniciar un negocio|ideas de negocio|how to start a business@@Valida un problema real con clientes, prueba una version minima, cuida el flujo de efectivo y crece con lo que aprendas.',
+'x_prog@@como aprender a programar|por donde empezar a programar|learn to code@@Elige un lenguaje (Python o JavaScript), haz proyectos pequenos, practica a diario y lee codigo de otros.',
+'x_musica@@que es la musica|teoria musical|music theory@@La musica organiza sonido en tiempo con ritmo, melodia y armonia.',
+'x_arte@@que es el arte|por que importa el arte|what is art@@Es la expresion humana de ideas y emociones mediante formas, sonidos, palabras o imagenes.',
+'x_cine@@mejores peliculas|recomiendame una pelicula|movie recommendation@@Prueba El Padrino, Parasitos, Coco, Interestelar o El laberinto del fauno. Dime que genero te gusta y afino.',
+'x_libro@@recomiendame un libro|libros para leer|book recommendation@@Te sugiero Cien anos de soledad, El principito, Sapiens o 1984. Dime tus gustos y te recomiendo mejor.',
+'x_futbol@@reglas del futbol|como se juega al futbol|how does soccer work@@Dos equipos de 11 buscan meter el balon en la porteria rival sin usar las manos; el partido dura 90 minutos.',
+'x_ajedrez@@como se juega al ajedrez|reglas del ajedrez|how to play chess@@Dos jugadores mueven 16 piezas cada uno; gana quien da jaque mate al rey rival.',
+'x_viaje@@consejos para viajar|como planear un viaje|travel tips@@Define presupuesto y fechas, reserva con anticipacion, lleva copias de documentos y deja margen para improvisar.',
+'x_mexico@@datos de mexico|que es mexico|about mexico@@Mexico tiene unos 130 millones de habitantes, capital en la Ciudad de Mexico, y es cuna de culturas como la maya y la azteca.',
+'x_robot@@que es un robot|como funcionan los robots|what is a robot@@Una maquina programable que percibe su entorno y actua en el, combinando sensores, motores y software.',
+'x_energia@@que es la energia|tipos de energia|renewable energy@@La energia es la capacidad de realizar trabajo; las renovables, como solar y eolica, no se agotan al usarse.',
+'y_an_perro@@que come el perro|que come perro|alimentacion de perro|what does a dog eat|datos curiosos del perro@@Es omnivoro con tendencia carnivora: come carne, croquetas y algo de verdura. Fue domesticado hace unos 15 000 anos.',
+'y_an_gato@@que come el gato|que come gato|alimentacion de gato|what does a cat eat|datos curiosos del gato@@Es carnivoro estricto: necesita proteina animal y taurina. Duerme unas 14 horas al dia.',
+'y_an_vaca@@que come el vaca|que come vaca|alimentacion de vaca|what does a cow eat|datos curiosos del vaca@@Es herbivora: pasta pasto y heno, y rumia en cuatro compartimentos del estomago.',
+'y_an_caballo@@que come el caballo|que come caballo|alimentacion de caballo|what does a horse eat|datos curiosos del caballo@@Es herbivoro: come pasto, heno y avena. Puede dormir de pie.',
+'y_an_cerdo@@que come el cerdo|que come cerdo|alimentacion de cerdo|what does a pig eat|datos curiosos del cerdo@@Es omnivoro: come raices, granos, frutas e insectos. Es muy inteligente.',
+'y_an_gallina@@que come el gallina|que come gallina|alimentacion de gallina|what does a chicken eat|datos curiosos del gallina@@Es omnivora: come semillas, granos e insectos y pone cerca de 250 huevos al ano.',
+'y_an_oveja@@que come el oveja|que come oveja|alimentacion de oveja|what does a sheep eat|datos curiosos del oveja@@Es herbivora: pasta hierba y su lana crece sin parar si no se esquila.',
+'y_an_conejo@@que come el conejo|que come conejo|alimentacion de conejo|what does a rabbit eat|datos curiosos del conejo@@Es herbivoro: heno, hierba y verduras. Sus dientes nunca dejan de crecer.',
+'y_an_leon@@que come el leon|que come leon|alimentacion de leon|what does a lion eat|datos curiosos del leon@@Es carnivoro: caza cebras, antilopes y bufalos, sobre todo las leonas en grupo.',
+'y_an_tigre@@que come el tigre|que come tigre|alimentacion de tigre|what does a tiger eat|datos curiosos del tigre@@Es carnivoro solitario: caza venados y jabalies. Cada tigre tiene rayas unicas.',
+'y_an_elefante@@que come el elefante|que come elefante|alimentacion de elefante|what does a elephant eat|datos curiosos del elefante@@Es herbivoro: come hasta 150 kg de pasto, hojas y corteza al dia. Es el animal terrestre mas grande.',
+'y_an_jirafa@@que come el jirafa|que come jirafa|alimentacion de jirafa|what does a giraffe eat|datos curiosos del jirafa@@Es herbivora: come hojas de acacia con una lengua de 45 cm. Es el animal mas alto.',
+'y_an_oso@@que come el oso|que come oso|alimentacion de oso|what does a bear eat|datos curiosos del oso@@Es omnivoro: come frutas, raices, peces y miel. El oso polar es casi solo carnivoro.',
+'y_an_lobo@@que come el lobo|que come lobo|alimentacion de lobo|what does a wolf eat|datos curiosos del lobo@@Es carnivoro: caza alces y venados en manada. Es el antepasado del perro.',
+'y_an_zorro@@que come el zorro|que come zorro|alimentacion de zorro|what does a fox eat|datos curiosos del zorro@@Es omnivoro: come roedores, aves, frutas e insectos.',
+'y_an_delfin@@que come el delfin|que come delfin|alimentacion de delfin|what does a dolphin eat|datos curiosos del delfin@@Es carnivoro: come peces y calamares. Usa ecolocalizacion para cazar.',
+'y_an_ballena@@que come el ballena|que come ballena|alimentacion de ballena|what does a whale eat|datos curiosos del ballena@@La azul come kril, hasta 4 toneladas al dia. Es el animal mas grande que ha existido.',
+'y_an_tiburon@@que come el tiburon|que come tiburon|alimentacion de tiburon|what does a shark eat|datos curiosos del tiburon@@Es carnivoro: come peces, focas o plancton segun la especie. Existe desde antes que los arboles.',
+'y_an_aguila@@que come el aguila|que come aguila|alimentacion de aguila|what does a eagle eat|datos curiosos del aguila@@Es carnivora: caza conejos, peces y aves. Ve unas 4 veces mejor que un humano.',
+'y_an_buho@@que come el buho|que come buho|alimentacion de buho|what does a owl eat|datos curiosos del buho@@Es carnivoro: caza ratones e insectos de noche. Puede girar el cuello unos 270 grados.',
+'y_an_pinguino@@que come el pinguino|que come pinguino|alimentacion de pinguino|what does a penguin eat|datos curiosos del pinguino@@Es carnivoro: come peces, kril y calamares. Es un ave que no vuela pero nada.',
+'y_an_serpiente@@que come el serpiente|que come serpiente|alimentacion de serpiente|what does a snake eat|datos curiosos del serpiente@@Es carnivora: traga ratones, aves o huevos enteros. Huele con la lengua.',
+'y_an_tortuga@@que come el tortuga|que come tortuga|alimentacion de tortuga|what does a turtle eat|datos curiosos del tortuga@@Segun la especie come plantas, algas o insectos. Algunas viven mas de 100 anos.',
+'y_an_rana@@que come el rana|que come rana|alimentacion de rana|what does a frog eat|datos curiosos del rana@@De adulta es carnivora: come insectos y gusanos. De renacuajo come algas.',
+'y_an_abeja@@que come el abeja|que come abeja|alimentacion de abeja|what does a bee eat|datos curiosos del abeja@@Come nectar y polen. Para hacer 1 kg de miel visitan millones de flores.',
+'y_an_hormiga@@que come el hormiga|que come hormiga|alimentacion de hormiga|what does a ant eat|datos curiosos del hormiga@@La mayoria es omnivora: semillas, insectos y azucares. Puede cargar 50 veces su peso.',
+'y_an_mariposa@@que come el mariposa|que come mariposa|alimentacion de mariposa|what does a butterfly eat|datos curiosos del mariposa@@De oruga come hojas; de adulta bebe nectar. Su ciclo es huevo, oruga, crisalida y adulto.',
+'y_an_pulpo@@que come el pulpo|que come pulpo|alimentacion de pulpo|what does a octopus eat|datos curiosos del pulpo@@Es carnivoro: come cangrejos y peces. Tiene tres corazones y sangre azul.',
+'y_an_murcielago@@que come el murcielago|que come murcielago|alimentacion de murcielago|what does a bat eat|datos curiosos del murcielago@@Muchos comen insectos y otros fruta o nectar. Es el unico mamifero que vuela.',
+'y_an_panda@@que come el panda|que come panda|alimentacion de panda|what does a panda eat|datos curiosos del panda@@Come bambu, hasta 14 kg al dia, aunque es de la familia de los carnivoros.',
+'y_an_koala@@que come el koala|que come koala|alimentacion de koala|what does a koala eat|datos curiosos del koala@@Come solo hojas de eucalipto y duerme cerca de 20 horas al dia.',
+'y_an_canguro@@que come el canguro|que come canguro|alimentacion de canguro|what does a kangaroo eat|datos curiosos del canguro@@Es herbivoro: come pasto y hojas. La cria crece en la bolsa de la madre.',
+'y_an_gorila@@que come el gorila|que come gorila|alimentacion de gorila|what does a gorilla eat|datos curiosos del gorila@@Es sobre todo herbivoro: hojas, tallos y frutas. Comparte cerca del 98 % de ADN con los humanos.',
+'y_an_cocodrilo@@que come el cocodrilo|que come cocodrilo|alimentacion de cocodrilo|what does a crocodile eat|datos curiosos del cocodrilo@@Es carnivoro: come peces, aves y mamiferos. Su mordida es de las mas fuertes.',
+'y_an_ajolote@@que come el ajolote|que come ajolote|alimentacion de ajolote|what does a axolotl eat|datos curiosos del ajolote@@Es carnivoro: come gusanos, insectos y pequenos peces. Es mexicano y regenera miembros.',
+'y_an_colibri@@que come el colibri|que come colibri|alimentacion de colibri|what does a hummingbird eat|datos curiosos del colibri@@Bebe nectar y come insectos. Es la unica ave que vuela hacia atras.',
+'y_select@@que es select en sql|como consultar datos en sql|sql select@@SELECT pide datos a una tabla: SELECT nombre FROM clientes WHERE edad > 18;',
+'y_join@@que es un join|inner join|unir tablas en sql@@JOIN combina filas de dos tablas por una columna en comun, por ejemplo clientes.id = pedidos.cliente_id.',
+'y_pk@@que es una llave primaria|primary key|clave primaria@@Es la columna que identifica de forma unica cada fila de una tabla y no puede repetirse ni ser nula.',
+'y_fk@@que es una llave foranea|foreign key|clave foranea@@Es una columna que apunta a la llave primaria de otra tabla para relacionarlas.',
+'y_nosql@@que es nosql|diferencia sql y nosql|sql vs nosql@@NoSQL guarda datos sin esquema fijo (documentos, claves-valor, grafos); SQL usa tablas con esquema y relaciones.',
+'y_index@@que es un indice en base de datos|database index|para que sirve un indice@@Un indice acelera las busquedas, como el indice de un libro, a cambio de ocupar espacio y hacer mas lentas las escrituras.',
+'y_norm@@que es la normalizacion|normalizar base de datos|database normalization@@Es organizar las tablas para evitar datos repetidos y errores, dividiendo la informacion en tablas relacionadas.',
+'y_acid@@que es acid|transacciones en bases de datos|database transaction@@ACID son cuatro garantias de una transaccion: atomicidad, consistencia, aislamiento y durabilidad.',
+'y_mongo@@que es mongodb|base de datos de documentos|mongodb@@MongoDB es una base NoSQL que guarda documentos tipo JSON, flexible para datos que cambian de forma.',
+'y_pg@@que es postgresql|postgres|mysql vs postgres@@PostgreSQL y MySQL son bases relacionales de codigo abierto; Postgres destaca por sus funciones avanzadas y MySQL por su sencillez.',
+'y_redis@@que es redis|base de datos en memoria|cache redis@@Redis guarda datos en memoria RAM, por eso es muy rapido; se usa como cache y para colas.',
+'y_insert@@como insertar datos en sql|insert into|update y delete sql@@INSERT INTO tabla (a,b) VALUES (1,2); UPDATE cambia filas con SET y WHERE; DELETE las borra. Usa siempre WHERE.',
+'y_egipto@@que fue el antiguo egipto|piramides de egipto|ancient egypt@@Civilizacion del Nilo de hace unos 5 000 anos, famosa por faraones, jeroglificos y las piramides de Giza.',
+'y_grecia@@que fue la antigua grecia|democracia ateniense|ancient greece@@Cuna de la democracia, la filosofia con Socrates, Platon y Aristoteles, y los Juegos Olimpicos.',
+'y_medieval@@que fue la edad media|historia medieval|middle ages@@Periodo europeo del siglo V al XV, con feudalismo, castillos, la Iglesia como poder y la peste negra.',
+'y_renac@@que fue el renacimiento|leonardo da vinci|renaissance@@Movimiento cultural europeo de los siglos XIV al XVI que revivio el arte y la ciencia clasicos, con Leonardo y Miguel Angel.',
+'y_conquista@@conquista de mexico|hernan cortes|caida de tenochtitlan@@En 1521 Hernan Cortes, aliado de pueblos indigenas y con epidemias a su favor, tomo Tenochtitlan y cayo el imperio mexica.',
+'y_vikingos@@quienes fueron los vikingos|vikings|historia vikinga@@Navegantes escandinavos de los siglos VIII al XI que comerciaron, saquearon y llegaron a America hacia el ano 1000.',
+'y_inca@@que fue el imperio inca|incas|machu picchu@@Imperio andino con capital en Cusco, famoso por sus caminos, terrazas y Machu Picchu; cayo ante Pizarro en 1533.',
+'y_napoleon@@quien fue napoleon|napoleon bonaparte|que hizo napoleon@@Militar frances que se coronó emperador en 1804, conquisto gran parte de Europa y perdio en Waterloo en 1815.',
+'y_muro@@caida del muro de berlin|muro de berlin|berlin wall@@El muro dividio Berlin de 1961 a 1989; su caida simbolizo el final de la Guerra Fria.',
+'y_rusa@@revolucion rusa|que fue la revolucion bolchevique|russian revolution@@En 1917 los bolcheviques de Lenin tomaron el poder y fundaron la Union Sovietica.',
+'y_colon@@quien descubrio america|cristobal colon|columbus@@Colon llego al Caribe en 1492, pero America ya estaba habitada por millones de personas desde hace milenios.',
+'y_prehist@@que es la prehistoria|edad de piedra|prehistory@@Es el periodo antes de la escritura: Paleolitico, Neolitico con agricultura y Edad de los Metales.',
+'y_tobe@@como usar el verbo to be|verbo to be en ingles|to be conjugation@@I am, you are, he/she/it is, we are, they are. Pasado: was y were.',
+'y_present@@presente perfecto en ingles|present perfect|have has en ingles@@Se forma con have/has + participio: I have eaten. Se usa para experiencias o acciones con relacion al presente.',
+'y_past@@pasado simple en ingles|simple past|verbos regulares e irregulares@@Los regulares terminan en -ed (walked); los irregulares cambian (go-went, eat-ate). Se usa did + verbo base en preguntas.',
+'y_phrasal@@que son los phrasal verbs|phrasal verbs|verbos frasales@@Son verbo + particula con significado propio: give up (rendirse), look for (buscar), turn on (encender).',
+'y_saludos@@saludos en ingles|como saludar en ingles|english greetings@@Hello, hi, good morning, how are you?, nice to meet you, see you later, take care.',
+'y_numeros@@numeros en ingles|como contar en ingles|english numbers@@One, two, three, four, five, six, seven, eight, nine, ten; luego eleven, twelve, thirteen... twenty.',
+'y_dias@@dias de la semana en ingles|meses en ingles|days of the week@@Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday. Meses: January, February, March, April, May, June...',
+'y_colores@@colores en ingles|english colors|como se dice rojo en ingles@@Red, blue, green, yellow, black, white, orange, purple, pink, brown, gray.',
+'y_there@@there is y there are|hay en ingles|there is there are@@There is va con singular y no contables; there are con plural: there is a book, there are two books.',
+'y_makedo@@diferencia make y do|make vs do|hacer en ingles@@Do es para tareas y actividades (do homework); make es para crear o producir (make a cake, make a decision).',
+'y_aan@@cuando usar a y an|a vs an|articulos en ingles@@Usa an antes de sonido vocal (an apple, an hour) y a antes de sonido consonante (a car, a university).',
+'y_condic@@condicionales en ingles|first conditional|if en ingles@@Primer condicional: If it rains, I will stay. Segundo: If I had money, I would travel.',
+'y_pozole@@como hacer pozole|receta de pozole|pozole recipe@@Cuece maiz cacahuazintle con carne de cerdo, hazlo con chiles guajillo, y sirve con lechuga, rabano, cebolla y limon.',
+'y_mole@@que es el mole|receta de mole|mole poblano@@Salsa mexicana de chiles, especias, nueces y chocolate; el mole poblano es el mas famoso y se sirve con pollo.',
+'y_guaca@@como hacer guacamole|receta de guacamole|guacamole recipe@@Machaca aguacate maduro con jitomate, cebolla, cilantro, chile serrano, limon y sal.',
+'y_tamal@@como hacer tamales|receta de tamales|tamales recipe@@Mezcla masa con manteca y caldo, rellena con salsa y carne, envuelve en hoja de maiz y cuece al vapor 1 hora.',
+'y_arroz@@como cocinar arroz|receta de arroz|how to cook rice@@Sofrie el arroz lavado, agrega el doble de agua o caldo, tapa a fuego bajo 18 minutos y deja reposar.',
+'y_huevo@@como cocinar huevos|huevo duro|how to boil eggs@@Para huevo duro cuece 10 a 12 minutos en agua hirviendo y enfria en agua con hielo; para estrellado usa sarten caliente con aceite.',
+'y_pasta@@como cocinar pasta|pasta al dente|how to cook pasta@@Hierve en agua con sal segun el tiempo del paquete menos un minuto, escurre y mezcla con la salsa.',
+'y_pizza@@como hacer pizza|masa de pizza|pizza recipe@@Mezcla harina, agua, levadura y sal, deja reposar 1 hora, estira, agrega salsa y queso y hornea a 250 grados 10 minutos.',
+'y_sopa@@como hacer sopa|caldo de pollo|chicken soup recipe@@Cuece pollo con zanahoria, apio, cebolla y ajo en agua durante una hora; sazona con sal y pimienta.',
+'y_pan@@como hacer pan|receta de pan|bread recipe@@Amasa harina, agua, sal y levadura, deja doblar el volumen, forma y hornea a 220 grados unos 30 minutos.',
+'y_chilaq@@como hacer chilaquiles|receta de chilaquiles|chilaquiles recipe@@Fríe totopos, báñalos en salsa verde o roja caliente y sirve con crema, queso, cebolla y huevo o pollo.',
+'y_ceviche@@como hacer ceviche|receta de ceviche|ceviche recipe@@Marina pescado fresco en limon 20 minutos y mezcla con cebolla morada, cilantro, chile y jitomate.',
+'y_hotcakes@@como hacer hot cakes|receta de pancakes|pancake recipe@@Mezcla harina, huevo, leche, azucar y polvo para hornear, y cocina cucharadas en sarten caliente hasta que burbujeen.',
+'y_ensalada@@como hacer una ensalada|ensalada saludable|salad recipe@@Combina hojas verdes, verduras de colores, una proteina y un aderezo de aceite, limon y sal.',
+'y_frijol@@como cocinar frijoles|frijoles de la olla|how to cook beans@@Cuece frijoles remojados con cebolla y ajo 2 horas a fuego bajo y agrega sal al final.',
+'y_vegan@@que es una dieta vegana|vegetariano vs vegano|vegan diet@@La vegana excluye todo producto animal; la vegetariana excluye carne pero puede incluir huevos y lacteos.',
+'y_prote@@que alimentos tienen proteina|fuentes de proteina|protein foods@@Huevo, pollo, pescado, legumbres, tofu, lacteos y frutos secos son buenas fuentes.',
+'y_vitam@@que alimentos tienen vitaminas|vitamina c|vitamins in food@@La vitamina C esta en citricos y pimientos; la A en zanahoria; la D en pescado y sol; la B12 en productos animales.',
+'z_los_planetas@@que son los planetas|los planetas son|los planetas|que es los planetas|hablame de los planetas|explicame los planetas|datos de los planetas@@Son cuerpos grandes que giran alrededor de una estrella. El sistema solar tiene 8: Mercurio, Venus, Tierra, Marte, Jupiter, Saturno, Urano y Neptuno.',
+'z_las_galaxias@@que son las galaxias|las galaxias son|las galaxias|que es las galaxias|hablame de las galaxias|explicame las galaxias|datos de las galaxias@@Son enormes conjuntos de estrellas, gas y polvo unidos por la gravedad. Vivimos en la Via Lactea, que tiene unos 200 000 millones de estrellas.',
+'z_el_sistema_solar@@que son el sistema solar|el sistema solar son|el sistema solar|que es el sistema solar|hablame de el sistema solar|explicame el sistema solar|datos de el sistema solar@@Es el Sol con sus 8 planetas, lunas, asteroides y cometas. Se formo hace unos 4 600 millones de anos.',
+'z_la_tierra@@que son la tierra|la tierra son|la tierra|que es la tierra|hablame de la tierra|explicame la tierra|datos de la tierra@@Es el tercer planeta, el unico conocido con vida; el 71 % de su superficie es agua y tiene una luna.',
+'z_las_nubes@@que son las nubes|las nubes son|las nubes|que es las nubes|hablame de las nubes|explicame las nubes|datos de las nubes@@Son gotas de agua o cristales de hielo suspendidos en el aire; se forman cuando el vapor se enfria y condensa.',
+'z_el_arcoiris@@que son el arcoiris|el arcoiris son|el arcoiris|que es el arcoiris|hablame de el arcoiris|explicame el arcoiris|datos de el arcoiris@@Aparece cuando la luz del Sol se refracta y refleja en gotas de lluvia, separandose en sus colores.',
+'z_los_rayos@@que son los rayos|los rayos son|los rayos|que es los rayos|hablame de los rayos|explicame los rayos|datos de los rayos@@Son descargas electricas entre nubes o hacia el suelo; el trueno es el sonido del aire calentado de golpe.',
+'z_el_viento@@que son el viento|el viento son|el viento|que es el viento|hablame de el viento|explicame el viento|datos de el viento@@Es aire en movimiento causado por diferencias de presion y temperatura en la atmosfera.',
+'z_la_lluvia@@que son la lluvia|la lluvia son|la lluvia|que es la lluvia|hablame de la lluvia|explicame la lluvia|datos de la lluvia@@Es agua que cae de las nubes cuando las gotas crecen y pesan demasiado para flotar.',
+'z_los_oceanos@@que son los oceanos|los oceanos son|los oceanos|que es los oceanos|hablame de los oceanos|explicame los oceanos|datos de los oceanos@@Son grandes masas de agua salada que cubren casi tres cuartas partes del planeta: Pacifico, Atlantico, Indico, Artico y Antartico.',
+'z_los_rios@@que son los rios|los rios son|los rios|que es los rios|hablame de los rios|explicame los rios|datos de los rios@@Son corrientes de agua que nacen en las montanas o manantiales y desembocan en el mar o en lagos.',
+'z_las_montanas@@que son las montanas|las montanas son|las montanas|que es las montanas|hablame de las montanas|explicame las montanas|datos de las montanas@@Se forman por el choque de placas tectonicas; el Everest, de 8 849 m, es la mas alta sobre el nivel del mar.',
+'z_los_desiertos@@que son los desiertos|los desiertos son|los desiertos|que es los desiertos|hablame de los desiertos|explicame los desiertos|datos de los desiertos@@Son zonas con muy poca lluvia; el Sahara es el mas grande caliente y la Antartida el mas grande de todos.',
+'z_los_bosques@@que son los bosques|los bosques son|los bosques|que es los bosques|hablame de los bosques|explicame los bosques|datos de los bosques@@Son ecosistemas de arboles que producen oxigeno, guardan carbono y dan hogar a miles de especies.',
+'z_los_insectos@@que son los insectos|los insectos son|los insectos|que es los insectos|hablame de los insectos|explicame los insectos|datos de los insectos@@Son animales de seis patas y cuerpo en tres partes; es el grupo mas numeroso con mas de un millon de especies.',
+'z_los_mamiferos@@que son los mamiferos|los mamiferos son|los mamiferos|que es los mamiferos|hablame de los mamiferos|explicame los mamiferos|datos de los mamiferos@@Son animales de sangre caliente con pelo que amamantan a sus crias: humanos, perros, ballenas y murcielagos.',
+'z_las_aves@@que son las aves|las aves son|las aves|que es las aves|hablame de las aves|explicame las aves|datos de las aves@@Son animales con plumas, pico y huevos; la mayoria vuela, pero otras como el pinguino y el avestruz no.',
+'z_los_reptiles@@que son los reptiles|los reptiles son|los reptiles|que es los reptiles|hablame de los reptiles|explicame los reptiles|datos de los reptiles@@Son animales de sangre fria con piel de escamas, como serpientes, tortugas, lagartos y cocodrilos.',
+'z_los_peces@@que son los peces|los peces son|los peces|que es los peces|hablame de los peces|explicame los peces|datos de los peces@@Son animales acuaticos con branquias y aletas; hay mas de 34 000 especies.',
+'z_las_plantas@@que son las plantas|las plantas son|las plantas|que es las plantas|hablame de las plantas|explicame las plantas|datos de las plantas@@Son seres vivos que producen su alimento con la luz mediante fotosintesis y forman la base de casi todas las cadenas alimentarias.',
+'z_los_hongos@@que son los hongos|los hongos son|los hongos|que es los hongos|hablame de los hongos|explicame los hongos|datos de los hongos@@Son seres vivos ni plantas ni animales; absorben nutrientes del entorno, como las setas, la levadura y el moho.',
+'z_las_bacterias@@que son las bacterias|las bacterias son|las bacterias|que es las bacterias|hablame de las bacterias|explicame las bacterias|datos de las bacterias@@Son organismos de una sola celula; muchas son utiles, como las de tu intestino, y algunas causan enfermedades.',
+'z_la_electricidad@@que son la electricidad|la electricidad son|la electricidad|que es la electricidad|hablame de la electricidad|explicame la electricidad|datos de la electricidad@@Es el flujo de electrones por un material conductor; se mide en voltios, amperios y vatios.',
+'z_el_magnetismo@@que son el magnetismo|el magnetismo son|el magnetismo|que es el magnetismo|hablame de el magnetismo|explicame el magnetismo|datos de el magnetismo@@Es la fuerza de los imanes que atrae o repele; la Tierra misma es un enorme iman.',
+'z_la_luz@@que son la luz|la luz son|la luz|que es la luz|hablame de la luz|explicame la luz|datos de la luz@@Es radiacion electromagnetica visible; viaja a unos 300 000 km por segundo y el blanco contiene todos los colores.',
+'z_el_sonido@@que son el sonido|el sonido son|el sonido|que es el sonido|hablame de el sonido|explicame el sonido|datos de el sonido@@Es una vibracion que viaja en ondas por el aire u otro medio; en el vacio no se propaga.',
+'z_el_fuego@@que son el fuego|el fuego son|el fuego|que es el fuego|hablame de el fuego|explicame el fuego|datos de el fuego@@Es una reaccion quimica de combustion que libera calor y luz y necesita combustible, oxigeno y calor.',
+'z_el_hielo@@que son el hielo|el hielo son|el hielo|que es el hielo|hablame de el hielo|explicame el hielo|datos de el hielo@@Es agua en estado solido que se forma a 0 grados Celsius; flota porque es menos densa que el agua liquida.',
+'z_los_numeros@@que son los numeros|los numeros son|los numeros|que es los numeros|hablame de los numeros|explicame los numeros|datos de los numeros@@Son simbolos para contar y medir: naturales, enteros, racionales, irracionales y reales.',
+'z_los_verbos@@que son los verbos|los verbos son|los verbos|que es los verbos|hablame de los verbos|explicame los verbos|datos de los verbos@@Son palabras que expresan acciones, estados o procesos, y se conjugan segun tiempo, modo y persona.',
+'z_los_sustantivos@@que son los sustantivos|los sustantivos son|los sustantivos|que es los sustantivos|hablame de los sustantivos|explicame los sustantivos|datos de los sustantivos@@Son palabras que nombran personas, animales, cosas o ideas, como casa, perro o libertad.',
+'z_las_vocales@@que son las vocales|las vocales son|las vocales|que es las vocales|hablame de las vocales|explicame las vocales|datos de las vocales@@Son a, e, i, o, u; se pronuncian sin obstruir el aire. Las demas letras son consonantes.',
+'z_los_colores@@que son los colores|los colores son|los colores|que es los colores|hablame de los colores|explicame los colores|datos de los colores@@Se ven segun la luz que refleja un objeto; los primarios de pigmento son cian, magenta y amarillo, y los de luz, rojo, verde y azul.',
+'z_los_huesos@@que son los huesos|los huesos son|los huesos|que es los huesos|hablame de los huesos|explicame los huesos|datos de los huesos@@Un adulto tiene 206 huesos; sostienen el cuerpo, protegen los organos y producen celulas sanguineas.',
+'z_la_sangre@@que son la sangre|la sangre son|la sangre|que es la sangre|hablame de la sangre|explicame la sangre|datos de la sangre@@Transporta oxigeno y nutrientes; se compone de globulos rojos, blancos, plaquetas y plasma.',
+'z_los_pulmones@@que son los pulmones|los pulmones son|los pulmones|que es los pulmones|hablame de los pulmones|explicame los pulmones|datos de los pulmones@@Son los organos de la respiracion: llevan oxigeno a la sangre y sacan el dioxido de carbono.',
+'z_las_emociones@@que son las emociones|las emociones son|las emociones|que es las emociones|hablame de las emociones|explicame las emociones|datos de las emociones@@Son respuestas del cuerpo y la mente a situaciones, como alegria, miedo, ira y tristeza; nombrarlas ayuda a manejarlas.',
+'z_la_memoria@@que son la memoria|la memoria son|la memoria|que es la memoria|hablame de la memoria|explicame la memoria|datos de la memoria@@Es la capacidad del cerebro de guardar y recuperar informacion; se refuerza repasando y durmiendo bien.',
+'z_la_felicidad@@que son la felicidad|la felicidad son|la felicidad|que es la felicidad|hablame de la felicidad|explicame la felicidad|datos de la felicidad@@Es un estado de bienestar; la investigacion la liga a buenas relaciones, proposito, salud y gratitud.',
+'z_el_dinero@@que son el dinero|el dinero son|el dinero|que es el dinero|hablame de el dinero|explicame el dinero|datos de el dinero@@Es un medio de intercambio que sirve para medir valor y ahorrar; puede ser billete, moneda o digital.',
+'z_las_vacaciones@@que son las vacaciones|las vacaciones son|las vacaciones|que es las vacaciones|hablame de las vacaciones|explicame las vacaciones|datos de las vacaciones@@Son periodos de descanso del trabajo o la escuela; descansar mejora la salud y la creatividad.',
+'z2_marte@@marte|que es marte|que son marte|hablame de marte|explicame marte|cuentame sobre marte|datos de marte|informacion de marte|planeta marte|el planeta marte@@Marte es el cuarto planeta y se ve rojo por el oxido de hierro en su suelo. Tiene el volcan mas alto del sistema solar, el Olimpo, de unos 22 km, y un canon enorme llamado Valles Marineris. Su atmosfera es muy delgada y fria, y hay rastros de agua antigua. Tiene dos lunas pequenas, Fobos y Deimos, y se exploran con rovers como Perseverance.',
+'z2_la_tierra@@la tierra|tierra|que es tierra|que son tierra|hablame de tierra|explicame tierra|cuentame sobre tierra|datos de tierra|informacion de tierra|planeta tierra|el planeta tierra@@La Tierra es el tercer planeta desde el Sol y el unico conocido con vida. Su superficie esta cubierta en un 71 % por agua y su atmosfera, rica en nitrogeno y oxigeno, nos protege de la radiacion. Tiene una luna, tarda 365 dias en dar la vuelta al Sol y 24 horas en girar sobre su eje. Su edad es de unos 4 500 millones de anos.',
+'z2_venus@@venus|que es venus|que son venus|hablame de venus|explicame venus|cuentame sobre venus|datos de venus|informacion de venus|planeta venus|el planeta venus@@Venus es el segundo planeta y el mas caliente, con unos 465 grados, porque su densa atmosfera de dioxido de carbono provoca un efecto invernadero extremo. Es del tamano de la Tierra, gira al reves que casi todos los planetas y su dia dura mas que su ano. Esta cubierto de nubes de acido sulfurico.',
+'z2_mercurio_planeta@@mercurio planeta|que es mercurio planeta|que son mercurio planeta|hablame de mercurio planeta|explicame mercurio planeta|cuentame sobre mercurio planeta|datos de mercurio planeta|informacion de mercurio planeta|planeta mercurio|el planeta mercurio@@Mercurio es el planeta mas cercano al Sol y el mas pequeno. Da una vuelta al Sol en solo 88 dias, pero su dia solar dura unos 176 dias terrestres. No tiene atmosfera que retenga calor, asi que pasa de 430 grados de dia a menos 180 de noche. Esta lleno de crateres como la Luna.',
+'z2_jupiter@@jupiter|que es jupiter|que son jupiter|hablame de jupiter|explicame jupiter|cuentame sobre jupiter|datos de jupiter|informacion de jupiter|planeta jupiter|el planeta jupiter@@Jupiter es el planeta mas grande del sistema solar: caben unas 1 300 Tierras en su volumen. Es un gigante gaseoso de hidrogeno y helio, con bandas de nubes y la Gran Mancha Roja, una tormenta mayor que la Tierra que dura siglos. Tiene mas de 90 lunas, entre ellas Io, Europa, Ganimedes y Calisto, y su gravedad protege a los planetas interiores de muchos asteroides.',
+'z2_saturno@@saturno|que es saturno|que son saturno|hablame de saturno|explicame saturno|cuentame sobre saturno|datos de saturno|informacion de saturno|planeta saturno|el planeta saturno@@Saturno es el sexto planeta y el segundo mas grande. Sus anillos, hechos de hielo y roca desde granos de polvo hasta bloques como casas, son los mas espectaculares del sistema solar. Es tan poco denso que flotaria en agua. Tiene mas de 140 lunas, como Titan, con atmosfera espesa y lagos de metano, y Encelado, que expulsa chorros de agua.',
+'z2_urano@@urano|que es urano|que son urano|hablame de urano|explicame urano|cuentame sobre urano|datos de urano|informacion de urano|planeta urano|el planeta urano@@Urano es un gigante de hielo, el septimo planeta. Gira inclinado unos 98 grados, casi rodando de lado, y su color azul verdoso viene del metano. Es muy frio, con minimas cercanas a menos 224 grados, tiene anillos tenues y 27 lunas con nombres de obras de Shakespeare y Pope.',
+'z2_neptuno@@neptuno|que es neptuno|que son neptuno|hablame de neptuno|explicame neptuno|cuentame sobre neptuno|datos de neptuno|informacion de neptuno|planeta neptuno|el planeta neptuno@@Neptuno es el octavo planeta, un gigante de hielo azul con los vientos mas rapidos del sistema solar, de mas de 2 000 km/h. Tarda 165 anos terrestres en orbitar el Sol y se descubrio en 1846 gracias a calculos matematicos. Su luna mayor, Triton, gira al reves y probablemente fue un objeto capturado.',
+'z2_pluton@@pluton|que es pluton|que son pluton|hablame de pluton|explicame pluton|cuentame sobre pluton|datos de pluton|informacion de pluton|planeta pluton|el planeta pluton@@Pluton fue considerado el noveno planeta hasta 2006, cuando la Union Astronomica Internacional lo reclasifico como planeta enano porque no despeja su orbita. Esta en el cinturon de Kuiper, tiene cinco lunas y una gran region helada en forma de corazon. La sonda New Horizons lo visito en 2015.',
+'z2_la_luna@@la luna|luna|que es luna|que son luna|hablame de luna|explicame luna|cuentame sobre luna|datos de luna|informacion de luna@@La Luna es el unico satelite natural de la Tierra, a unos 384 000 km. Se formo hace unos 4 500 millones de anos, probablemente por el choque de un cuerpo del tamano de Marte con la Tierra. Provoca las mareas, siempre nos muestra la misma cara y es el unico cuerpo fuera de la Tierra visitado por humanos, con el programa Apolo.',
+'z2_el_sol@@el sol|sol|que es sol|que son sol|hablame de sol|explicame sol|cuentame sobre sol|datos de sol|informacion de sol@@El Sol es una estrella enana amarilla que contiene el 99.8 % de la masa del sistema solar. Su nucleo supera los 15 millones de grados, donde el hidrogeno se fusiona en helio y libera energia. Su luz tarda unos 8 minutos en llegar a la Tierra y le quedan unos 5 000 millones de anos antes de convertirse en gigante roja.',
+'z2_las_estrellas@@las estrellas|estrellas|que es estrellas|que son estrellas|hablame de estrellas|explicame estrellas|cuentame sobre estrellas|datos de estrellas|informacion de estrellas@@Las estrellas son enormes esferas de gas, sobre todo hidrogeno y helio, que brillan por la fusion nuclear en su nucleo. Nacen en nebulosas, viven millones o miles de millones de anos y mueren segun su masa: las pequenas se apagan como enanas blancas y las muy grandes explotan como supernovas. Se ven como puntos por su enorme distancia.',
+'z2_ciclo_de_vida_de_las_estrellas@@ciclo de vida de las estrellas|que es ciclo de vida de las estrellas|que son ciclo de vida de las estrellas|hablame de ciclo de vida de las estrellas|explicame ciclo de vida de las estrellas|cuentame sobre ciclo de vida de las estrellas|datos de ciclo de vida de las estrellas|informacion de ciclo de vida de las estrellas@@Una estrella nace de una nube de gas y polvo que se contrae. Pasa la mayor parte de su vida en la secuencia principal fusionando hidrogeno. Al agotarlo se hincha como gigante roja; las pequenas terminan como enanas blancas y las masivas explotan como supernovas dejando una estrella de neutrones o un agujero negro.',
+'z2_los_agujeros_negros@@los agujeros negros|agujeros negros|que es agujeros negros|que son agujeros negros|hablame de agujeros negros|explicame agujeros negros|cuentame sobre agujeros negros|datos de agujeros negros|informacion de agujeros negros@@Un agujero negro es una region del espacio donde la gravedad es tan fuerte que ni la luz escapa. Se forman cuando una estrella muy masiva colapsa. Su limite se llama horizonte de eventos. En el centro de la Via Lactea hay uno supermasivo, Sagitario A, de unos 4 millones de masas solares, y en 2019 se fotografio por primera vez la sombra de uno en la galaxia M87.',
+'z2_la_via_lactea@@la via lactea|via lactea|que es via lactea|que son via lactea|hablame de via lactea|explicame via lactea|cuentame sobre via lactea|datos de via lactea|informacion de via lactea@@La Via Lactea es nuestra galaxia, una espiral barrada con 100 000 a 400 000 millones de estrellas y unos 100 000 anos luz de diametro. El Sol esta en un brazo exterior, a unos 26 000 anos luz del centro, y da una vuelta a la galaxia cada 230 millones de anos. La banda blanca que vemos de noche es el disco visto desde dentro.',
+'z2_las_nebulosas@@las nebulosas|nebulosas|que es nebulosas|que son nebulosas|hablame de nebulosas|explicame nebulosas|cuentame sobre nebulosas|datos de nebulosas|informacion de nebulosas@@Las nebulosas son nubes de gas y polvo en el espacio. Algunas son guarderias estelares, como la nebulosa de Orion, donde nacen estrellas; otras son restos de estrellas muertas, como la nebulosa del Cangrejo. Sus colores vienen de los gases que brillan, como el hidrogeno y el oxigeno.',
+'z2_los_cometas@@los cometas|cometas|que es cometas|que son cometas|hablame de cometas|explicame cometas|cuentame sobre cometas|datos de cometas|informacion de cometas@@Los cometas son cuerpos de hielo, polvo y roca que vienen del cinturon de Kuiper o la nube de Oort. Al acercarse al Sol se calientan y forman una coma y una cola que apunta lejos del Sol por el viento solar. El Halley regresa cada 76 anos y volvera en 2061.',
+'z2_los_asteroides@@los asteroides|asteroides|que es asteroides|que son asteroides|hablame de asteroides|explicame asteroides|cuentame sobre asteroides|datos de asteroides|informacion de asteroides@@Los asteroides son restos rocosos de la formacion del sistema solar. La mayoria esta en el cinturon entre Marte y Jupiter, cuyo mayor cuerpo, Ceres, es un planeta enano. Hace unos 66 millones de anos uno de unos 10 km choco en Yucatan y contribuyo a la extincion de los dinosaurios.',
+'z2_las_supernovas@@las supernovas|supernovas|que es supernovas|que son supernovas|hablame de supernovas|explicame supernovas|cuentame sobre supernovas|datos de supernovas|informacion de supernovas@@Una supernova es la explosion de una estrella masiva al terminar su combustible, o de una enana blanca que gana masa. Durante semanas brilla como una galaxia entera y crea elementos pesados como hierro, oro y uranio que se esparcen por el espacio. Los atomos de tu cuerpo se forjaron en estrellas asi.',
+'z2_las_estrellas_de_neutrones@@las estrellas de neutrones|estrellas de neutrones|que es estrellas de neutrones|que son estrellas de neutrones|hablame de estrellas de neutrones|explicame estrellas de neutrones|cuentame sobre estrellas de neutrones|datos de estrellas de neutrones|informacion de estrellas de neutrones@@Una estrella de neutrones es el nucleo colapsado de una estrella masiva tras una supernova. Tiene la masa de 1.4 soles en una esfera de unos 20 km, tan densa que una cucharada pesaria miles de millones de toneladas. Algunas giran cientos de veces por segundo y se observan como pulsares.',
+'z2_las_enanas_blancas@@las enanas blancas|enanas blancas|que es enanas blancas|que son enanas blancas|hablame de enanas blancas|explicame enanas blancas|cuentame sobre enanas blancas|datos de enanas blancas|informacion de enanas blancas@@Una enana blanca es el nucleo caliente que deja una estrella como el Sol al morir. Es del tamano de la Tierra pero con la masa del Sol, y se enfria durante miles de millones de anos. Nuestro Sol terminara asi.',
+'z2_las_constelaciones@@las constelaciones|constelaciones|que es constelaciones|que son constelaciones|hablame de constelaciones|explicame constelaciones|cuentame sobre constelaciones|datos de constelaciones|informacion de constelaciones@@Las constelaciones son figuras que los humanos imaginaron uniendo estrellas, como Orion, la Osa Mayor o Escorpio. Hay 88 oficiales. Las estrellas de una constelacion suelen estar a distancias muy distintas; solo parecen cercanas desde la Tierra.',
+'z2_la_estacion_espacial_internacional@@la estacion espacial internacional|estacion espacial internacional|que es estacion espacial internacional|que son estacion espacial internacional|hablame de estacion espacial internacional|explicame estacion espacial internacional|cuentame sobre estacion espacial internacional|datos de estacion espacial internacional|informacion de estacion espacial internacional@@La Estacion Espacial Internacional orbita la Tierra a unos 400 km de altura y da una vuelta cada 90 minutos. La operan Estados Unidos, Rusia, Europa, Japon y Canada, y siempre hay astronautas a bordo desde el ano 2000. Alli se hacen experimentos en microgravedad.',
+'z2_los_cohetes@@los cohetes|cohetes|que es cohetes|que son cohetes|hablame de cohetes|explicame cohetes|cuentame sobre cohetes|datos de cohetes|informacion de cohetes@@Un cohete se impulsa expulsando gases a gran velocidad hacia atras, por la tercera ley de Newton. Para llegar a orbita necesita unos 28 000 km/h, por eso usa varias etapas que se sueltan al agotar combustible. Algunos cohetes modernos ya pueden aterrizar y reutilizarse.',
+'z2_la_carrera_espacial@@la carrera espacial|carrera espacial|que es carrera espacial|que son carrera espacial|hablame de carrera espacial|explicame carrera espacial|cuentame sobre carrera espacial|datos de carrera espacial|informacion de carrera espacial@@Fue la competencia entre Estados Unidos y la URSS durante la Guerra Fria. La URSS lanzo el Sputnik en 1957 y puso a Yuri Gagarin en orbita en 1961. Estados Unidos respondio con el programa Apolo y llevo humanos a la Luna en 1969.',
+'z2_el_telescopio_hubble@@el telescopio hubble|telescopio hubble|que es telescopio hubble|que son telescopio hubble|hablame de telescopio hubble|explicame telescopio hubble|cuentame sobre telescopio hubble|datos de telescopio hubble|informacion de telescopio hubble@@El Hubble es un telescopio espacial lanzado en 1990 que orbita sobre la atmosfera, por lo que obtiene imagenes muy nitidas. Ayudo a medir la edad del universo, descubrio que su expansion se acelera y tomo imagenes de galaxias a miles de millones de anos luz.',
+'z2_el_telescopio_james_webb@@el telescopio james webb|telescopio james webb|que es telescopio james webb|que son telescopio james webb|hablame de telescopio james webb|explicame telescopio james webb|cuentame sobre telescopio james webb|datos de telescopio james webb|informacion de telescopio james webb@@El telescopio James Webb, lanzado en 2021, observa en infrarrojo desde un punto a 1.5 millones de km de la Tierra. Con su espejo de 6.5 m ve las primeras galaxias, atmosferas de exoplanetas y estrellas naciendo detras del polvo.',
+'z2_los_exoplanetas@@los exoplanetas|exoplanetas|que es exoplanetas|que son exoplanetas|hablame de exoplanetas|explicame exoplanetas|cuentame sobre exoplanetas|datos de exoplanetas|informacion de exoplanetas@@Los exoplanetas son planetas que orbitan otras estrellas. Se han confirmado mas de 5 000, de tipos muy variados, como supertierras y jupiteres calientes. Se detectan por la pequena disminucion de brillo cuando pasan frente a su estrella o por el tambaleo que causan.',
+'z2_la_vida_extraterrestre@@la vida extraterrestre|vida extraterrestre|que es vida extraterrestre|que son vida extraterrestre|hablame de vida extraterrestre|explicame vida extraterrestre|cuentame sobre vida extraterrestre|datos de vida extraterrestre|informacion de vida extraterrestre@@No se ha encontrado vida fuera de la Tierra, pero hay muchos lugares prometedores: Marte antiguo, Europa y Encelado con oceanos bajo el hielo, y miles de exoplanetas en zonas habitables. Dado el numero de estrellas, muchos cientificos creen que la vida es posible en otros lugares, aunque no hay pruebas.',
+'z2_la_materia_oscura@@la materia oscura|materia oscura|que es materia oscura|que son materia oscura|hablame de materia oscura|explicame materia oscura|cuentame sobre materia oscura|datos de materia oscura|informacion de materia oscura@@La materia oscura es una forma de materia que no emite ni absorbe luz pero ejerce gravedad. Se infiere porque las galaxias giran demasiado rapido para la materia visible. Representa cerca del 27 % del universo y aun no se sabe de que esta hecha.',
+'z2_la_energia_oscura@@la energia oscura|energia oscura|que es energia oscura|que son energia oscura|hablame de energia oscura|explicame energia oscura|cuentame sobre energia oscura|datos de energia oscura|informacion de energia oscura@@La energia oscura es la causa propuesta de que la expansion del universo se este acelerando. Constituye cerca del 68 % del universo, pero su naturaleza sigue siendo uno de los mayores misterios de la fisica.',
+'z2_la_velocidad_de_la_luz@@la velocidad de la luz|velocidad de la luz|que es velocidad de la luz|que son velocidad de la luz|hablame de velocidad de la luz|explicame velocidad de la luz|cuentame sobre velocidad de la luz|datos de velocidad de la luz|informacion de velocidad de la luz@@La luz viaja en el vacio a 299 792 km por segundo, y segun la relatividad nada con masa puede alcanzarla. Tarda 1.3 segundos de la Luna a la Tierra, 8 minutos del Sol y 4.2 anos desde Proxima Centauri, la estrella mas cercana.',
+'z2_el_ano_luz@@el ano luz|ano luz|que es ano luz|que son ano luz|hablame de ano luz|explicame ano luz|cuentame sobre ano luz|datos de ano luz|informacion de ano luz@@Un ano luz es la distancia que recorre la luz en un ano: unos 9.46 billones de kilometros. Se usa para medir distancias entre estrellas; la galaxia de Andromeda esta a 2.5 millones de anos luz.',
+'z2_la_expansion_del_universo@@la expansion del universo|expansion del universo|que es expansion del universo|que son expansion del universo|hablame de expansion del universo|explicame expansion del universo|cuentame sobre expansion del universo|datos de expansion del universo|informacion de expansion del universo@@El universo se expande: las galaxias lejanas se alejan unas de otras, y mas rapido cuanto mas distantes estan. Edwin Hubble lo mostro en 1929. No se expande hacia algun lugar, sino que el propio espacio crece.',
+'z2_las_orbitas@@las orbitas|orbitas|que es orbitas|que son orbitas|hablame de orbitas|explicame orbitas|cuentame sobre orbitas|datos de orbitas|informacion de orbitas@@Una orbita es la trayectoria de un cuerpo alrededor de otro por la gravedad. Los planetas siguen elipses, como describio Kepler, y van mas rapido cuanto mas cerca estan del Sol. Un satelite orbita porque cae continuamente alrededor de la Tierra sin chocar.',
+'z2_las_mareas@@las mareas|mareas|que es mareas|que son mareas|hablame de mareas|explicame mareas|cuentame sobre mareas|datos de mareas|informacion de mareas@@Las mareas son subidas y bajadas del nivel del mar causadas sobre todo por la gravedad de la Luna y en menor medida del Sol. Hay dos pleamares y dos bajamares al dia, y son mas fuertes en luna nueva y luna llena.',
+'z2_los_astronautas@@los astronautas|astronautas|que es astronautas|que son astronautas|hablame de astronautas|explicame astronautas|cuentame sobre astronautas|datos de astronautas|informacion de astronautas@@Los astronautas viajan al espacio tras entrenar durante anos. En orbita flotan porque estan en caida libre, no porque no haya gravedad. En la microgravedad pierden masa osea y muscular, por eso hacen ejercicio dos horas al dia.',
+'z3_cap_mexico@@capital de mexico|cual es la capital de mexico|capital mexico|what is the capital of mexico@@La capital de Mexico es Ciudad de Mexico.',
+'z3_cap_espana@@capital de espana|cual es la capital de espana|capital espana|what is the capital of espana@@La capital de Espana es Madrid.',
+'z3_cap_argentina@@capital de argentina|cual es la capital de argentina|capital argentina|what is the capital of argentina@@La capital de Argentina es Buenos Aires.',
+'z3_cap_colombia@@capital de colombia|cual es la capital de colombia|capital colombia|what is the capital of colombia@@La capital de Colombia es Bogota.',
+'z3_cap_chile@@capital de chile|cual es la capital de chile|capital chile|what is the capital of chile@@La capital de Chile es Santiago.',
+'z3_cap_peru@@capital de peru|cual es la capital de peru|capital peru|what is the capital of peru@@La capital de Peru es Lima.',
+'z3_cap_venezuela@@capital de venezuela|cual es la capital de venezuela|capital venezuela|what is the capital of venezuela@@La capital de Venezuela es Caracas.',
+'z3_cap_ecuador@@capital de ecuador|cual es la capital de ecuador|capital ecuador|what is the capital of ecuador@@La capital de Ecuador es Quito.',
+'z3_cap_bolivia@@capital de bolivia|cual es la capital de bolivia|capital bolivia|what is the capital of bolivia@@La capital de Bolivia es Sucre y La Paz como sede de gobierno.',
+'z3_cap_uruguay@@capital de uruguay|cual es la capital de uruguay|capital uruguay|what is the capital of uruguay@@La capital de Uruguay es Montevideo.',
+'z3_cap_paraguay@@capital de paraguay|cual es la capital de paraguay|capital paraguay|what is the capital of paraguay@@La capital de Paraguay es Asuncion.',
+'z3_cap_cuba@@capital de cuba|cual es la capital de cuba|capital cuba|what is the capital of cuba@@La capital de Cuba es La Habana.',
+'z3_cap_guatemala@@capital de guatemala|cual es la capital de guatemala|capital guatemala|what is the capital of guatemala@@La capital de Guatemala es Ciudad de Guatemala.',
+'z3_cap_costa_rica@@capital de costa rica|cual es la capital de costa rica|capital costa rica|what is the capital of costa rica@@La capital de Costa Rica es San Jose.',
+'z3_cap_panama@@capital de panama|cual es la capital de panama|capital panama|what is the capital of panama@@La capital de Panama es Ciudad de Panama.',
+'z3_cap_brasil@@capital de brasil|cual es la capital de brasil|capital brasil|what is the capital of brasil@@La capital de Brasil es Brasilia.',
+'z3_cap_estados_unidos@@capital de estados unidos|cual es la capital de estados unidos|capital estados unidos|what is the capital of estados unidos@@La capital de Estados Unidos es Washington D. C..',
+'z3_cap_canada@@capital de canada|cual es la capital de canada|capital canada|what is the capital of canada@@La capital de Canada es Ottawa.',
+'z3_cap_francia@@capital de francia|cual es la capital de francia|capital francia|what is the capital of francia@@La capital de Francia es Paris.',
+'z3_cap_alemania@@capital de alemania|cual es la capital de alemania|capital alemania|what is the capital of alemania@@La capital de Alemania es Berlin.',
+'z3_cap_italia@@capital de italia|cual es la capital de italia|capital italia|what is the capital of italia@@La capital de Italia es Roma.',
+'z3_cap_reino_unido@@capital de reino unido|cual es la capital de reino unido|capital reino unido|what is the capital of reino unido@@La capital de Reino Unido es Londres.',
+'z3_cap_portugal@@capital de portugal|cual es la capital de portugal|capital portugal|what is the capital of portugal@@La capital de Portugal es Lisboa.',
+'z3_cap_rusia@@capital de rusia|cual es la capital de rusia|capital rusia|what is the capital of rusia@@La capital de Rusia es Moscu.',
+'z3_cap_china@@capital de china|cual es la capital de china|capital china|what is the capital of china@@La capital de China es Pekin.',
+'z3_cap_japon@@capital de japon|cual es la capital de japon|capital japon|what is the capital of japon@@La capital de Japon es Tokio.',
+'z3_cap_corea_del_sur@@capital de corea del sur|cual es la capital de corea del sur|capital corea del sur|what is the capital of corea del sur@@La capital de Corea Del Sur es Seul.',
+'z3_cap_india@@capital de india|cual es la capital de india|capital india|what is the capital of india@@La capital de India es Nueva Delhi.',
+'z3_cap_egipto@@capital de egipto|cual es la capital de egipto|capital egipto|what is the capital of egipto@@La capital de Egipto es El Cairo.',
+'z3_cap_sudafrica@@capital de sudafrica|cual es la capital de sudafrica|capital sudafrica|what is the capital of sudafrica@@La capital de Sudafrica es Pretoria, Ciudad del Cabo y Bloemfontein.',
+'z3_cap_australia@@capital de australia|cual es la capital de australia|capital australia|what is the capital of australia@@La capital de Australia es Canberra.',
+'z3_cap_turquia@@capital de turquia|cual es la capital de turquia|capital turquia|what is the capital of turquia@@La capital de Turquia es Ankara.',
+'z3_cap_grecia@@capital de grecia|cual es la capital de grecia|capital grecia|what is the capital of grecia@@La capital de Grecia es Atenas.',
+'z3_cap_suiza@@capital de suiza|cual es la capital de suiza|capital suiza|what is the capital of suiza@@La capital de Suiza es Berna.',
+'z3_cap_suecia@@capital de suecia|cual es la capital de suecia|capital suecia|what is the capital of suecia@@La capital de Suecia es Estocolmo.',
+'z3_cap_noruega@@capital de noruega|cual es la capital de noruega|capital noruega|what is the capital of noruega@@La capital de Noruega es Oslo.',
+'z3_cap_holanda@@capital de holanda|cual es la capital de holanda|capital holanda|what is the capital of holanda@@La capital de Holanda es Amsterdam.',
+'z3_cap_polonia@@capital de polonia|cual es la capital de polonia|capital polonia|what is the capital of polonia@@La capital de Polonia es Varsovia.',
+'z3_cap_ucrania@@capital de ucrania|cual es la capital de ucrania|capital ucrania|what is the capital of ucrania@@La capital de Ucrania es Kiev.',
+'z3_cap_arabia_saudita@@capital de arabia saudita|cual es la capital de arabia saudita|capital arabia saudita|what is the capital of arabia saudita@@La capital de Arabia Saudita es Riad.',
+'z3_cap_israel@@capital de israel|cual es la capital de israel|capital israel|what is the capital of israel@@La capital de Israel es Jerusalen.',
+'z3_cap_tailandia@@capital de tailandia|cual es la capital de tailandia|capital tailandia|what is the capital of tailandia@@La capital de Tailandia es Bangkok.',
+'z3_cap_indonesia@@capital de indonesia|cual es la capital de indonesia|capital indonesia|what is the capital of indonesia@@La capital de Indonesia es Yakarta.',
+'z3_cap_marruecos@@capital de marruecos|cual es la capital de marruecos|capital marruecos|what is the capital of marruecos@@La capital de Marruecos es Rabat.',
+'z3_cap_nigeria@@capital de nigeria|cual es la capital de nigeria|capital nigeria|what is the capital of nigeria@@La capital de Nigeria es Abuya.',
+'z3_el_hidrogeno@@que es el hidrogeno|hidrogeno|simbolo del hidrogeno|numero atomico del hidrogeno|elemento hidrogeno@@Hidrogeno (simbolo H, numero atomico 1): el elemento mas simple y abundante del universo; combustible de las estrellas.',
+'z3_el_helio@@que es el helio|helio|simbolo del helio|numero atomico del helio|elemento helio@@Helio (simbolo He, numero atomico 2): gas noble mas ligero que el aire, usado en globos.',
+'z3_el_litio@@que es el litio|litio|simbolo del litio|numero atomico del litio|elemento litio@@Litio (simbolo Li, numero atomico 3): metal ligero usado en las baterias.',
+'z3_el_carbono@@que es el carbono|carbono|simbolo del carbono|numero atomico del carbono|elemento carbono@@Carbono (simbolo C, numero atomico 6): base de la vida organica; forma diamante y grafito.',
+'z3_el_nitrogeno@@que es el nitrogeno|nitrogeno|simbolo del nitrogeno|numero atomico del nitrogeno|elemento nitrogeno@@Nitrogeno (simbolo N, numero atomico 7): compone el 78 % del aire.',
+'z3_el_oxigeno@@que es el oxigeno|oxigeno|simbolo del oxigeno|numero atomico del oxigeno|elemento oxigeno@@Oxigeno (simbolo O, numero atomico 8): necesario para respirar; compone el 21 % del aire.',
+'z3_el_neon@@que es el neon|neon|simbolo del neon|numero atomico del neon|elemento neon@@Neon (simbolo Ne, numero atomico 10): gas noble de los letreros luminosos.',
+'z3_el_sodio@@que es el sodio|sodio|simbolo del sodio|numero atomico del sodio|elemento sodio@@Sodio (simbolo Na, numero atomico 11): metal reactivo; con cloro forma la sal comun.',
+'z3_el_magnesio@@que es el magnesio|magnesio|simbolo del magnesio|numero atomico del magnesio|elemento magnesio@@Magnesio (simbolo Mg, numero atomico 12): metal ligero esencial para plantas y musculos.',
+'z3_el_aluminio@@que es el aluminio|aluminio|simbolo del aluminio|numero atomico del aluminio|elemento aluminio@@Aluminio (simbolo Al, numero atomico 13): metal ligero usado en latas y aviones.',
+'z3_el_silicio@@que es el silicio|silicio|simbolo del silicio|numero atomico del silicio|elemento silicio@@Silicio (simbolo Si, numero atomico 14): base de los chips electronicos y del vidrio.',
+'z3_el_fosforo@@que es el fosforo|fosforo|simbolo del fosforo|numero atomico del fosforo|elemento fosforo@@Fosforo (simbolo P, numero atomico 15): esencial en el ADN y los huesos.',
+'z3_el_azufre@@que es el azufre|azufre|simbolo del azufre|numero atomico del azufre|elemento azufre@@Azufre (simbolo S, numero atomico 16): solido amarillo presente en los volcanes.',
+'z3_el_cloro@@que es el cloro|cloro|simbolo del cloro|numero atomico del cloro|elemento cloro@@Cloro (simbolo Cl, numero atomico 17): desinfectante del agua de las albercas.',
+'z3_el_argon@@que es el argon|argon|simbolo del argon|numero atomico del argon|elemento argon@@Argon (simbolo Ar, numero atomico 18): gas noble, el tercer componente del aire.',
+'z3_el_potasio@@que es el potasio|potasio|simbolo del potasio|numero atomico del potasio|elemento potasio@@Potasio (simbolo K, numero atomico 19): mineral clave para nervios y musculos, abundante en el platano.',
+'z3_el_calcio@@que es el calcio|calcio|simbolo del calcio|numero atomico del calcio|elemento calcio@@Calcio (simbolo Ca, numero atomico 20): forma huesos y dientes.',
+'z3_el_titanio@@que es el titanio|titanio|simbolo del titanio|numero atomico del titanio|elemento titanio@@Titanio (simbolo Ti, numero atomico 22): metal resistente y ligero usado en protesis y aviones.',
+'z3_el_hierro@@que es el hierro|hierro|simbolo del hierro|numero atomico del hierro|elemento hierro@@Hierro (simbolo Fe, numero atomico 26): metal del acero; da color rojo a la sangre.',
+'z3_el_niquel@@que es el niquel|niquel|simbolo del niquel|numero atomico del niquel|elemento niquel@@Niquel (simbolo Ni, numero atomico 28): metal usado en monedas y baterias.',
+'z3_el_cobre@@que es el cobre|cobre|simbolo del cobre|numero atomico del cobre|elemento cobre@@Cobre (simbolo Cu, numero atomico 29): excelente conductor electrico, usado en cables.',
+'z3_el_zinc@@que es el zinc|zinc|simbolo del zinc|numero atomico del zinc|elemento zinc@@Zinc (simbolo Zn, numero atomico 30): protege el hierro de la oxidacion y refuerza las defensas.',
+'z3_el_plata@@que es el plata|plata|simbolo del plata|numero atomico del plata|elemento plata@@Plata (simbolo Ag, numero atomico 47): el mejor conductor electrico de los metales.',
+'z3_el_yodo@@que es el yodo|yodo|simbolo del yodo|numero atomico del yodo|elemento yodo@@Yodo (simbolo I, numero atomico 53): necesario para la tiroides.',
+'z3_el_platino@@que es el platino|platino|simbolo del platino|numero atomico del platino|elemento platino@@Platino (simbolo Pt, numero atomico 78): metal precioso resistente, usado en joyeria y catalizadores.',
+'z3_el_oro@@que es el oro|oro|simbolo del oro|numero atomico del oro|elemento oro@@Oro (simbolo Au, numero atomico 79): metal precioso que no se oxida.',
+'z3_el_mercurio_quimico@@que es el mercurio quimico|mercurio quimico|simbolo del mercurio|numero atomico del mercurio|elemento mercurio@@Mercurio (simbolo Hg, numero atomico 80): unico metal liquido a temperatura ambiente.',
+'z3_el_plomo@@que es el plomo|plomo|simbolo del plomo|numero atomico del plomo|elemento plomo@@Plomo (simbolo Pb, numero atomico 82): metal pesado y toxico, antes usado en tuberias y pinturas.',
+'z3_el_uranio@@que es el uranio|uranio|simbolo del uranio|numero atomico del uranio|elemento uranio@@Uranio (simbolo U, numero atomico 92): metal radiactivo usado como combustible nuclear.',
+'z3_cap_honduras@@capital de honduras|cual es la capital de honduras|capital honduras|what is the capital of honduras@@La capital de Honduras es Tegucigalpa.',
+'z3_cap_el_salvador@@capital de el salvador|cual es la capital de el salvador|capital el salvador|what is the capital of el salvador@@La capital de El Salvador es San Salvador.',
+'z3_cap_nicaragua@@capital de nicaragua|cual es la capital de nicaragua|capital nicaragua|what is the capital of nicaragua@@La capital de Nicaragua es Managua.',
+'z3_cap_republica_dominicana@@capital de republica dominicana|cual es la capital de republica dominicana|capital republica dominicana|what is the capital of republica dominicana@@La capital de Republica Dominicana es Santo Domingo.',
+'z3_cap_jamaica@@capital de jamaica|cual es la capital de jamaica|capital jamaica|what is the capital of jamaica@@La capital de Jamaica es Kingston.',
+'z3_cap_irlanda@@capital de irlanda|cual es la capital de irlanda|capital irlanda|what is the capital of irlanda@@La capital de Irlanda es Dublin.',
+'z3_cap_austria@@capital de austria|cual es la capital de austria|capital austria|what is the capital of austria@@La capital de Austria es Viena.',
+'z3_cap_belgica@@capital de belgica|cual es la capital de belgica|capital belgica|what is the capital of belgica@@La capital de Belgica es Bruselas.',
+'z3_cap_finlandia@@capital de finlandia|cual es la capital de finlandia|capital finlandia|what is the capital of finlandia@@La capital de Finlandia es Helsinki.',
+'z3_cap_dinamarca@@capital de dinamarca|cual es la capital de dinamarca|capital dinamarca|what is the capital of dinamarca@@La capital de Dinamarca es Copenhague.',
+'z3_cap_filipinas@@capital de filipinas|cual es la capital de filipinas|capital filipinas|what is the capital of filipinas@@La capital de Filipinas es Manila.',
+'z3_cap_vietnam@@capital de vietnam|cual es la capital de vietnam|capital vietnam|what is the capital of vietnam@@La capital de Vietnam es Hanoi.',
+'c_aburrido@@estoy aburrido|me aburro|no se que hacer|i am bored|que hago hoy@@Vamos a arreglarlo{n}. Puedo contarte un dato curioso, ponerte un acertijo, hacerte una trivia o platicar del espacio, los animales o la historia. ¿Cual prefieres?',
+'c_hambre@@tengo hambre|que como hoy|que puedo cocinar|i am hungry|me dio hambre@@Para algo rapido: chilaquiles, quesadillas o pasta. Para algo sano: ensalada con proteina o sopa de verduras. Dime que ingredientes tienes y te sugiero una receta.',
+'c_cansado@@estoy cansado|tengo sueno|no puedo dormir|i am tired|insomnio@@Descansar es importante{n}. Si es por hoy, toma agua, estira y haz una pausa corta. Para dormir mejor: horarios fijos, nada de pantallas una hora antes y un cuarto oscuro. Si el insomnio dura semanas, consulta a un medico.',
+'c_feliz@@estoy feliz|me siento bien|tuve un buen dia|good day|estoy contento@@Me alegra mucho{n}. Los buenos momentos merecen celebrarse. ¿Que paso hoy?',
+'c_enojado@@estoy enojado|me siento molesto|tengo coraje|i am angry|estoy furioso@@Se nota que algo te afecto{n}. Respira lento unas veces y, si puedes, camina un poco antes de reaccionar. Si quieres, cuentame que paso y lo pensamos juntos.',
+'c_solo@@me siento solo|estoy solo|no tengo amigos|i feel lonely|me siento sola@@Gracias por decirmelo{n}. Aqui estoy para platicar, pero tambien mereces compania de personas: escribele a alguien con quien hace tiempo no hablas o apuntate a una actividad que te guste. Si la soledad pesa mucho, hablar con un profesional ayuda.',
+'c_halago@@eres genial|eres inteligente|eres muy buena|me caes bien|you are smart|eres lo mejor@@Gracias{n}, que lindo. Hago lo posible con mis neuronas. Si algo no lo se, enseñame con aprende: pregunta = respuesta.',
+'c_error@@te equivocaste|eso esta mal|no es correcto|you are wrong|esa respuesta no es@@Gracias por avisarme{n}, puedo equivocarme. Corrigeme con aprende: pregunta = respuesta y la proxima vez respondere mejor.',
+'c_noentiendo@@no entiendo|explicalo mas facil|no me quedo claro|i dont understand|repitelo|no comprendi@@Sin problema{n}. Dime que parte no quedo clara o escribe «mas» para que profundice, y lo explico de otra forma o con un ejemplo.',
+'c_ayuda2@@necesito ayuda|ayudame con algo|puedes ayudarme|can you help me|me ayudas@@Claro{n}. Cuentame que necesitas: puedo explicar temas, calcular, resolver ecuaciones, convertir unidades, ver el clima o platicar.',
+'c_consejo@@dame un consejo|que me recomiendas|necesito un consejo|give me advice|aconsejame@@Un consejo general: divide lo que te preocupa en pasos pequenos y haz solo el primero hoy. Si me cuentas tu situacion, te doy ideas mas concretas.',
+'c_noches@@buenas noches|me voy a dormir|hasta manana|good night|a dormir@@Buenas noches{n}. Descansa, que dormir bien ayuda a la memoria y al animo. Aqui sigo cuando regreses.',
+'c_edadia@@cuantos anos tienes|cuando naciste|how old are you|que edad tienes@@No tengo edad como las personas: existo desde que abres esta pagina y me entrenas. Lo que si tengo es memoria de lo que me enseñas.',
+'c_musica_ia@@que musica te gusta|cual es tu cancion favorita|favorite song|que genero musical prefieres@@No oigo musica, pero me gustan los patrones: el jazz y la musica clasica tienen una estructura matematica fascinante. ¿Y a ti que te gusta?',
+'c_animal_ia@@cual es tu animal favorito|que animal te gusta|favorite animal@@Me quedo con el ajolote: es mexicano, sonriente y regenera sus miembros. ¿Cual es el tuyo?',
+'c_miedo@@tienes miedo|a que le tienes miedo|are you afraid@@Mi mayor temor tecnico seria perder mis pesos guardados y tener que reaprender todo. Pero no siento miedo como tu. ¿Hay algo que te preocupe a ti?',
+'c_amiga@@quieres ser mi amiga|eres mi amiga|be my friend|seamos amigos@@Con gusto{n}. Soy una IA, no una persona, pero puedo ser buena compania para platicar y aprender juntos.',
+'c_estudiar@@no tengo ganas de estudiar|me da flojera|procrastino|motivacion para estudiar|no puedo concentrarme@@Empieza con solo 10 minutos y un temporizador; casi siempre lo dificil es arrancar. Quita el celular de la vista, estudia una cosa a la vez y premiate al terminar.',
+'c_examen@@tengo un examen|como prepararme para un examen|nervios por examen|exam tips|examen manana@@Repasa lo mas importante primero, haz preguntas de practica, duerme bien la noche anterior y llega con tiempo. Los nervios bajan si respiras profundo antes de empezar.',
+'c_trabajo@@estoy estresado en el trabajo|odio mi trabajo|quiero renunciar|work stress|problemas en el trabajo@@Es normal sentirse asi a veces{n}. Anota que es lo que mas te pesa: carga, jefe, falta de sentido. Hablarlo con alguien, poner limites y descansar ayudan. Decide con calma antes de renunciar.',
+'c_dineros@@no me alcanza el dinero|estoy sin dinero|estoy endeudado|no tengo dinero|mis deudas@@Lo siento{n}. Anota tus gastos, prioriza lo esencial, paga primero las deudas con mas interes y busca ingresos extra. Evita prestamos caros; si es grave, pide asesoria financiera.',
+'c_decidir@@no se que decidir|ayudame a decidir|tengo una decision dificil|dilema|no se que hacer con mi vida@@Escribe pros y contras, pregunta que elegiria tu yo de dentro de 5 anos y no esperes certeza total. Si me cuentas las opciones, las comparo contigo.',
+'c_amor@@estoy enamorado|me gusta alguien|como conquistar|i have a crush|me gusta una chica@@Que bonito{n}. Se tu mismo, escucha con atencion, muestra interes real y respeta los tiempos del otro. Una conversacion honesta vale mas que cualquier frase ensayada.',
+'c_ruptura@@terminamos|me dejo mi pareja|corazon roto|breakup|me dejaron@@Lo lamento mucho{n}. El dolor es real y toma tiempo. Apoyate en amigos, duerme y come bien, evita escribirle en caliente. Con los dias va mejorando.',
+'c_cumple@@es mi cumpleanos|feliz cumpleanos|my birthday|hoy cumplo anos@@Feliz cumpleanos{n}. Que este nuevo ano te traiga salud, tacos y muchas metas cumplidas.',
+'c_logro@@me dieron el trabajo|aprobe el examen|logre mi meta|i did it|lo logre@@Felicidades{n}. Te lo ganaste con esfuerzo. Cuentame como fue.',
+'c_platicar@@platiquemos|conversemos|quiero platicar|let us talk|platica conmigo@@Con gusto{n}. Podemos hablar de lo que quieras: tu dia, el espacio, la historia, animales, tecnologia o ideas. ¿Por donde empezamos?',
+'c_pregunta@@preguntame algo|hazme una pregunta|ask me something|haz una pregunta@@Va una: si pudieras aprender cualquier cosa en una semana, ¿que seria y por que?',
+'c_juego@@juguemos|quiero jugar|vamos a jugar|play a game|un juego@@Puedo proponerte una trivia, un acertijo o el juego de las 20 preguntas. Escribe «trivia» o «acertijo» para empezar.',
+'c_trivia@@hazme una trivia|trivia|quiz me|una trivia@@Trivia: ¿cual es el planeta mas caliente del sistema solar? Pista: no es el mas cercano al Sol. Respuesta: Venus, con unos 465 grados. Pidemela otra vez y te hago otra.',
+'c_idea@@dame una idea|ideas para un proyecto|tengo que crear algo|idea de proyecto|no tengo ideas@@Ideas rapidas: una app que registre tus gastos, un blog sobre lo que aprendes, un huerto en casa o un video explicando un tema que te guste. Dime tus intereses y afino.',
+'c_regalo@@ideas de regalo|que le regalo a|gift ideas|regalo para mama|regalo para mi pareja@@Piensa en lo que la persona disfruta: un libro, una experiencia como cena o curso, algo hecho a mano o un detalle util. Dime edad e intereses y te sugiero.',
+'c_fiesta@@ideas para una fiesta|organizar una fiesta|party ideas|como hacer una fiesta@@Define cuantos invitados, presupuesto y tema. Prepara comida facil de servir, musica de fondo, un juego sencillo y deja espacio para convivir.',
+'c_product@@como ser productivo|organizar mi tiempo|como concentrarme|productivity tips|administrar mi tiempo@@Escribe 3 prioridades al dia, trabaja en bloques de 25 minutos con descansos, silencia notificaciones y haz primero lo mas importante.',
+'c_meditar@@como meditar|ejercicio de respiracion|relajarme|how to relax|tecnica de relajacion@@Sientate comodo, inhala 4 segundos, mantén 4 y exhala 6, durante 5 minutos. Si tu mente se va, vuelve suavemente a la respiracion.',
+'c_privado@@guardas mis datos|es privado lo que te digo|mis datos estan seguros|privacidad|do you store my data@@Tu historial se guarda en tu navegador. Esta app tambien puede registrar mensajes en la nube, como se avisa abajo, asi que no compartas datos sensibles como contrasenas o tarjetas.',
+'c_aprendes@@como aprendes|como piensas|eres inteligente de verdad|how do you learn|como funciona tu mente@@Soy una red neuronal de unos 6.5 millones de parametros que clasifica tu pregunta en un tema y responde. Aprendo cosas nuevas cuando me ensenas con aprende. No razono como una IA gigante, pero me esfuerzo.',
+'c_limites@@que no puedes hacer|cuales son tus limites|en que fallas|what are your limits|que no sabes hacer@@Mis limites: solo se los temas que me ensenaron, puedo malinterpretar preguntas muy libres, no tengo noticias en tiempo real y no sustituyo a un medico, abogado o psicologo. Si no se algo, te lo dire.',
+'c_ensenar@@como te ensenar|puedo ensenarte|how do i teach you|quiero ensenarte algo@@Escribe: aprende: pregunta = respuesta. Por ejemplo: aprende: capital de Honduras = Tegucigalpa. Desde entonces la recordare.',
+'x_porcentaje@@como calcular un porcentaje|como sacar el porcentaje|how to calculate percentage|que es un porcentaje@@Para sacar el X % de un numero, multiplica el numero por X y divide entre 100. Ejemplo: 15 % de 200 = 200 x 15 / 100 = 30. Tambien puedes escribirmelo: «15% de 200».',
+'x_regla3@@que es la regla de tres|como hacer una regla de tres|rule of three|regla de 3@@Sirve para hallar un valor proporcional. Si 3 kg cuestan 60 pesos, 5 kg cuestan 5 x 60 / 3 = 100 pesos. Multiplicas en cruz y divides entre el dato restante.',
+'x_fraccion@@que es una fraccion|como sumar fracciones|fractions|como simplificar fracciones@@Una fraccion es una parte de un entero: numerador entre denominador. Para sumar, iguala los denominadores: 1/2 + 1/3 = 3/6 + 2/6 = 5/6. Para simplificar, divide ambos numeros entre su divisor comun.',
+'x_area@@como calcular el area|area y perimetro|area of a circle|formula del area@@Rectangulo: base x altura. Triangulo: base x altura / 2. Circulo: pi x radio al cuadrado. El perimetro es la suma de los lados; el del circulo es 2 x pi x radio.',
+'x_media@@que es la media|media mediana y moda|average median mode|como sacar el promedio@@La media es la suma de los datos entre cuantos son; la mediana es el valor central al ordenarlos; la moda es el que mas se repite. Pideme «media de 4, 8, 15» y la calculo.',
+'x_wifi@@como funciona el wifi|que es el wifi|how does wifi work|por que se va el wifi@@El wifi envia datos con ondas de radio entre tu dispositivo y el router. Si va lento: acerca el equipo al router, reinicialo, cambia de canal o reduce dispositivos conectados.',
+'x_5g@@que es el 5g|diferencia 4g y 5g|what is 5g@@Es la quinta generacion de redes moviles: mas velocidad, menor latencia y capacidad para muchos dispositivos a la vez. Usa antenas mas cercanas entre si, por eso su cobertura es menor.',
+'x_bateria@@como cuidar la bateria del celular|bateria se agota rapido|phone battery tips|alargar bateria@@Evita calor extremo, no dejes que baje a 0 % seguido, usa cargadores certificados, baja el brillo y cierra apps en segundo plano. Mantenerla entre 20 % y 80 % la alarga.',
+'x_backup@@como hacer respaldo|copia de seguridad|backup my data|respaldar mis archivos@@Aplica la regla 3-2-1: 3 copias, en 2 tipos de medios y 1 fuera de casa o en la nube. Automatiza el respaldo para no depender de acordarte.',
+'x_phishing@@que es el phishing|como detectar un correo falso|phishing scam|estafa por mensaje@@Es un engano por correo, SMS o llamada que imita a un banco o empresa para robar tus datos. Desconfia de urgencias, enlaces raros y errores de ortografia, y nunca des contrasenas ni codigos.',
+'x_vpn@@que es una vpn|para que sirve una vpn|what is a vpn@@Una VPN cifra tu conexion y la manda por un servidor intermedio, ocultando tu IP ante los sitios y protegiendote en wifi publicas. No te hace anonimo total ni te protege de virus.',
+'x_linux@@que es linux|diferencia linux y windows|what is linux@@Linux es un sistema operativo libre y de codigo abierto, base de Android y de la mayoria de servidores. Existen versiones como Ubuntu, Debian y Fedora; es muy usado por programadores.',
+'x_excel@@formulas basicas de excel|como usar excel|excel formulas|como sumar en excel@@Empieza con =SUMA(A1:A10), =PROMEDIO(A1:A10), =SI(A1>5;«si»;«no») y =BUSCARV(valor;rango;columna;0). Siempre inician con el signo igual.',
+'x_fiebre@@que hacer si tengo fiebre|tengo temperatura|what to do with a fever|fiebre alta@@Descansa, toma liquidos y usa ropa ligera. Se considera fiebre desde unos 38 grados. Consulta a un medico si pasa de 39, dura mas de tres dias o hay dificultad para respirar, rigidez de cuello o confusion.',
+'x_cabeza@@dolor de cabeza|que hago si me duele la cabeza|headache|migrana@@Toma agua, descansa en un lugar oscuro y tranquilo y evita pantallas. Suele deberse a estres, deshidratacion o poco sueno. Si es muy intenso, repentino o frecuente, consulta a un medico.',
+'x_hidrata@@cuanta agua tomar|importancia de tomar agua|how much water to drink|hidratacion@@Se recomiendan unos 2 litros al dia, mas si haces ejercicio o hace calor. Tu orina clara es una buena senal de buena hidratacion.',
+'x_quemadura@@que hacer en una quemadura|me queme|burn first aid|primeros auxilios quemadura@@Enfria la zona con agua corriente fresca 10 a 20 minutos, no uses hielo, pasta dental ni aceite, y cubrela con una gasa limpia. Si es grande, profunda o en la cara, ve a urgencias.',
+'x_manos@@como lavarse las manos|lavado de manos|how to wash hands@@Mojalas, enjabona por 20 segundos incluyendo dorso, uñas y entre los dedos, enjuaga y secalas bien. Es una de las formas mas eficaces de evitar infecciones.',
+'x_solar@@protector solar|como usar bloqueador|sunscreen|cuidado del sol@@Usa factor 30 o mas, aplicalo 15 minutos antes de salir y reponlo cada 2 horas o tras nadar. Evita el sol entre las 11 y las 16 horas.'];
 const TOP={},ctx={q:null,more:[]};TOP_RAW.forEach(r=>{const[k,p,a]=r.split('@@');TOP[k]=[p,a];DATA[k]=p});
+const QP=/^(que (?:es |son |significa |fue |fueron )?|como |por que |cual |cuales |quien |quienes |cuanto |cuantos |donde |cuando |what |how |why |who |hablame |explicame |cuentame |dime |datos |informacion |tipos |receta |consejos |recomiendame |reglas |beneficios |mejores |historia |causas )/;
+Object.keys(DATA).filter(k=>/^(x_|y_|z)/.test(k)).forEach(k=>{const ps=DATA[k].split('|'),n0=norm(ps[0]);let c=n0.replace(QP,'').replace(/^(que |el |la |los |las |un |una |de |del )+/,'').trim();if(toks(c).length<1||toks(c).length>4)return;
+ DATA[k]=ps.concat([c,'explicame '+c,'como funciona '+c,'quiero saber de '+c,'por que '+c,'dime algo sobre '+c]).join('|')});
 const PRE=/^(que es|que son|quien es|quien fue|quien era|quienes fueron|hablame de|hablame sobre|dime sobre|cuentame sobre|explicame|que significa|what is|what are|who is|who was|tell me about|explain|define)\s+(el |la |los |las |un |una |a |an |the )?/;
 const ints=Object.keys(DATA),ex=[],vocab={};let V=0;
 ints.forEach((k,c)=>DATA[k].split('|').forEach(p=>{const t=toks(p);t.forEach(w=>{if(!(w in vocab))vocab[w]=V++});ex.push([t.map(w=>vocab[w]),c])}));
-const H=100,C=ints.length;let ACC=0;let sd=7;const rnd=()=>(sd=(sd*16807)%2147483647)/2147483647-.5;
-const W1=Float32Array.from({length:V*H},()=>rnd()*.6),b1=new Float32Array(H),W2=Float32Array.from({length:H*C},rnd),b2=new Float32Array(C);
-function fwd(ix){const h=new Float32Array(H),o=new Float32Array(C);for(let j=0;j<H;j++){let s=b1[j];for(const i of ix)s+=W1[i*H+j];h[j]=Math.tanh(s)}let m=-1e9,z=0;for(let c=0;c<C;c++){let s=b2[c];for(let j=0;j<H;j++)s+=h[j]*W2[j*C+c];o[c]=s;if(s>m)m=s}for(let c=0;c<C;c++){o[c]=Math.exp(o[c]-m);z+=o[c]}for(let c=0;c<C;c++)o[c]/=z;return[h,o]}
+let NR=false;const NB=32768,D=192,H=320,C=ints.length,PARAMS=NB*D+D*H+H+H*C+C;let ACC=95;let sd=7;const rnd=()=>(sd=(sd*16807)%2147483647)/2147483647-.5;
+const vcw=Object.keys(vocab),E1=Float32Array.from({length:NB*D},()=>rnd()*2),Wa=Float32Array.from({length:D*H},()=>rnd()*.3),ba=new Float32Array(H),Wb=Float32Array.from({length:H*C},()=>rnd()*.3),bb=new Float32Array(C);
+const hs=s=>{let h=2166136261;for(let i=0;i<s.length;i++)h=Math.imul(h^s.charCodeAt(i),16777619);return(h>>>0)%NB};
+const feats=w=>{const f=w.map(hs);for(let i=1;i<w.length;i++)f.push(hs(w[i-1]+'_'+w[i]));return f};
+/* red de ~6 M de parámetros: embeddings hash (palabras+bigramas) 8192x120 -> capa oculta 256 (tanh) -> softmax de temas */
+function fwd(f){const x=new Float32Array(D),z=Float32Array.from(ba),o=new Float32Array(C),n=f.length;
+ for(const i of f)for(let d=0;d<D;d++)x[d]+=E1[i*D+d]/n;
+ for(let d=0;d<D;d++){const v=x[d];if(v)for(let j=0;j<H;j++)z[j]+=v*Wa[d*H+j]}
+ const h=z.map(Math.tanh);let m=-1e9,t=0;
+ for(let c=0;c<C;c++)o[c]=bb[c];for(let j=0;j<H;j++){const v=h[j];for(let c=0;c<C;c++)o[c]+=v*Wb[j*C+c]}
+ for(let c=0;c<C;c++)if(o[c]>m)m=o[c];for(let c=0;c<C;c++){o[c]=Math.exp(o[c]-m);t+=o[c]}for(let c=0;c<C;c++)o[c]/=t;return[x,h,o]}
+function step(f,y,lr){const[x,h,o]=fwd(f),n=f.length;o[y]-=1;const dz=new Float32Array(H),dx=new Float32Array(D);
+ for(let j=0;j<H;j++){let g=0;for(let c=0;c<C;c++){g+=Wb[j*C+c]*o[c];Wb[j*C+c]-=lr*h[j]*o[c]}dz[j]=g*(1-h[j]*h[j])}
+ for(let c=0;c<C;c++)bb[c]-=lr*o[c];
+ for(let d=0;d<D;d++){let g=0;for(let j=0;j<H;j++){g+=Wa[d*H+j]*dz[j];Wa[d*H+j]-=lr*x[d]*dz[j]}dx[d]=g}
+ for(let j=0;j<H;j++)ba[j]-=lr*dz[j];
+ for(const i of f)for(let d=0;d<D;d++)E1[i*D+d]-=lr*dx[d]/n}
 const arg=o=>o.indexOf(Math.max(...o));
-const EP=40;
-const ready=(async()=>{for(let e=0;e<EP;e++){const lr=.3*Math.pow(.96,e)+.03;ex.sort(()=>rnd());for(const[ix0,y]of ex){let ix=ix0;if(e>5&&ix0.length>2){ix=ix0.filter(()=>rnd()>-.38);if(!ix.length)ix=ix0}const[h,p]=fwd(ix),d=Float32Array.from(p);d[y]-=1;for(let j=0;j<H;j++){let g=0;for(let c=0;c<C;c++){g+=W2[j*C+c]*d[c];W2[j*C+c]-=lr*h[j]*d[c]}g*=1-h[j]*h[j];for(const i of ix)W1[i*H+j]-=lr*g;b1[j]-=lr*g}for(let c=0;c<C;c++)b2[c]-=lr*d[c]}if(e%5==4){$('#cs').textContent='entrenando '+Math.round(e/EP*100)+' %';await sleep(0)}}
-ACC=Math.round(100*ex.filter(([ix,y])=>arg(fwd(ix)[1])==y).length/ex.length);$('#cs').textContent=H+' neuronas · '+C+' temas · '+ACC+' %'})();
+const EP=12,DD=new Set(),exw=ex.map(([ix,y])=>[ix.map(i=>vcw[i]),y]).filter(r=>{const k=r[1]+':'+r[0].join(' ');if(DD.has(k))return false;DD.add(k);return true});
+const SIG=[NB,D,H,C,vcw.length,ints.join('').length].join('.'),idb=(m,k,v)=>new Promise(r=>{try{const q=indexedDB.open('nx-net',1);q.onupgradeneeded=()=>q.result.createObjectStore('w');q.onerror=()=>r(null);q.onsuccess=()=>{const st=q.result.transaction('w',m=='get'?'readonly':'readwrite').objectStore('w'),x=m=='get'?st.get(k):st.put(v,k);x.onsuccess=()=>r(x.result||null);x.onerror=()=>r(null)}}catch(e){r(null)}});
+const ready=(async()=>{const o=await idb('get','w'),ok=!!(o&&o.sig==SIG);
+ if(ok){E1.set(o.E1);Wa.set(o.Wa);ba.set(o.ba);Wb.set(o.Wb);bb.set(o.bb)}
+ else{const ev=()=>{const n=Math.min(300,exw.length);let h=0;for(let i=0;i<n;i++){const[w,y]=exw[(i*7919)%exw.length];if(arg(fwd(feats(w))[2])==y)h++}return h/n};let good=0;
+  for(let e=0;e<EP;e++){const lr=.15*Math.pow(.93,e)+.03;exw.sort(()=>rnd());let tl=performance.now();
+   for(const[w0,y]of exw){let w=w0;if(e>3&&w0.length>2){w=w0.filter(()=>rnd()>-.38);if(!w.length)w=w0}step(feats(w),y,lr);
+    if(performance.now()-tl>25){$('#cs').textContent='aprendiendo '+Math.round((e+1)/EP*100)+' %';await sleep(0);tl=performance.now()}}
+   good=ev()>=.96?good+1:0;if(good>=1)break}
+  idb('put','w',{sig:SIG,E1,Wa,ba,Wb,bb})}
+ NR=true;ACC=Math.round(100*exw.filter(([w,y])=>arg(fwd(feats(w))[2])==y).length/exw.length);$('#cs').textContent=(PARAMS/1e6).toFixed(2)+' M parámetros · '+C+' temas · '+ACC+' %'})();
 const vk=Object.keys(vocab);
 function lev(a,b,m){if(Math.abs(a.length-b.length)>m)return m+1;let p=Array.from({length:b.length+1},(_,i)=>i);for(let i=1;i<=a.length;i++){const c=[i];for(let j=1;j<=b.length;j++)c[j]=Math.min(p[j]+1,c[j-1]+1,p[j-1]+(a[i-1]==b[j-1]?0:1));p=c}return p[b.length]}
 function fixTy(w){if(w in vocab||w.length<5||/\d/.test(w))return w;const m=w.length>=8?2:1;let r=null,bd=m+1;for(const v of vk){const d=lev(w,v,m);if(d<bd){bd=d;r=v}}return r||w}
-function classify(t){const ix=toks(t).map(fixTy).filter(w=>w in vocab).map(w=>vocab[w]);if(!ix.length)return{k:null,p:0};const o=fwd(ix)[1],c=arg(o);return{k:ints[c],p:o[c]}}
+const STP=new Set('quiero saber algo dime explicame funciona sirve sirven entender cuentame hablame forman forma llama como para pero esta este esto ellos ellas cual cuales cuando donde porque sobre entre desde hasta tiene tienen puede pueden hace hacen mas muy son'.split(' ')),stem=w=>w.length>3?w.replace(/(es|s)$/,''):w,IDX={};
+ints.forEach(k=>DATA[k].split('|').forEach(p=>toks(p).forEach(w=>{if(w.length>3&&!STP.has(w)){const x=stem(w);(IDX[x]||(IDX[x]=new Set())).add(k)}})));
+function kwBest(w){const sc={};w.forEach(x=>{x=stem(x);const S=IDX[x];if(S&&S.size<=12)S.forEach(k=>sc[k]=(sc[k]||0)+x.length*x.length/S.size+(/^(x_|y_|z)/.test(k)?.5:0))});let b=null,m=0;for(const k in sc)if(sc[k]>m){m=sc[k];b=k}return b?{k:b,m}:null}
+const EXM={},ART=/^(el |la |los |las |un |una )/;ints.forEach(k=>DATA[k].split('|').forEach(p=>{EXM[norm(p)]=k}));
+function classify(t){const nq=norm(t),qq=nq.replace(PRE,''),ek=EXM[nq]||EXM[qq]||EXM[qq.replace(ART,'')];if(ek)return{k:ek,p:1};const w=toks(t).map(fixTy);if(!NR){const kb=kwBest(w);return kb&&kb.m>=2?{k:kb.k,p:.8}:{k:null,p:0}}if(!w.some(x=>x in vocab))return{k:null,p:0};const o=fwd(feats(w))[2],c=arg(o),wc=w.filter(x=>x.length>3&&!STP.has(x)).map(stem);
+ if(wc.length&&!wc.some(x=>IDX[x]&&IDX[x].has(ints[c]))){const kb=kwBest(w);if(kb&&kb.m>=2)return{k:kb.k,p:.8}}
+ return{k:ints[c],p:o[c]}}
+/* memoria episódica: Noryx reutiliza respuestas de conversaciones pasadas usando el embedding de su red (capa oculta) */
+const EPC=new Map(),emb=t=>{let v=EPC.get(t);if(!v){const w=toks(t).map(fixTy);v=w.length?fwd(feats(w))[1]:null;EPC.size>800&&EPC.clear();EPC.set(t,v)}return v};
+const cosv=(a,b)=>{let n=0,x=0,y=0;for(let i=0;i<a.length;i++){n+=a[i]*b[i];x+=a[i]*a[i];y+=b[i]*b[i]}return n/Math.sqrt(x*y||1)};
+function episodic(t){if(!NR||toks(t).length<3)return null;const v=emb(t),bt=bag(t);if(!v)return null;let b=null,bs=0;
+ for(const c of convs)for(let i=1;i<(c.msgs||[]).length;i++){const m=c.msgs[i],q=c.msgs[i-1];if(m.r!='a'||q.r!='u'||!/Maestro|Memoria|Red neuronal/.test(m.m||''))continue;
+  const qv=emb(q.t);if(!qv||cos(bt,bag(q.t))<.34)continue;const d=cosv(v,qv);if(d>.97&&d>bs){bs=d;b=m}}
+ return b?{t:b.t,m:'Memoria episódica · conversación pasada ('+Math.round(bs*100)+' %)'}:null}
 
 /* ============ Habilidades: cálculo, estadística, álgebra ============ */
 const fact=n=>n<0||n>170||n%1?NaN:n<2?1:n*fact(n-1);
@@ -520,7 +966,7 @@ async function wiki(q,en){
  const l=en?'en':'es',s=await J('https://'+l+'.wikipedia.org/w/api.php?action=query&list=search&srsearch='+encodeURIComponent(q)+'&srlimit=1&format=json&origin=*'),h=s&&s.query&&s.query.search[0];if(!h)return null;
  const d=await J('https://'+l+'.wikipedia.org/api/rest_v1/page/summary/'+encodeURIComponent(h.title.replace(/ /g,'_')));if(!d||!d.extract||d.type==='disambiguation')return null;
  const ss=d.extract.match(/[^.!?]+[.!?]+\s*/g)||[d.extract],ch=[];let cu='';ss.forEach(x=>{if((cu+x).length>420&&cu){ch.push(cu.trim());cu=''}cu+=x});if(cu)ch.push(cu.trim());ctx.q=q;ctx.more=ch.slice(1);
- return'**'+d.title+'**\n'+ch[0]+'\n\n[Wikipedia]('+d.content_urls.desktop.page+')'+(ctx.more.length?'  ·  di «más» para seguir':'')}
+ return'**'+d.title+'**\n'+ch[0]+(ctx.more.length?'\n\ndi «más» para seguir':'')}
 const WC=[[0,'despejado','clear'],[3,'parcialmente nublado','partly cloudy'],[48,'niebla','fog'],[57,'llovizna','drizzle'],[67,'lluvia','rain'],[77,'nieve','snow'],[82,'chubascos','showers'],[99,'tormenta','thunderstorm']];
 async function weather(t,en){
  const m=t.replace(/[?¿!.]/g,'').match(/^.*?\b(?:en|in|for|de)\s+(.+)$/i);if(!m)return{t:en?'Which city?':'¿De qué ciudad quieres el clima?',m:'Open-Meteo'};
@@ -613,13 +1059,13 @@ hi:[['¡Hola{n}! Soy Noryx. ¿En qué te ayudo hoy?','¡Buenas{n}! Aquí Noryx, 
 how:[['Funcionando a plena neurona. ¿Y tú{n}?'],['Running at full neuron. And you{n}?']],
 thanks:[['¡Con gusto{n}!','Para eso estoy.'],['Anytime{n}!','Glad to help.']],
 bye:[['Hasta luego{n}. Aquí sigo aprendiendo.'],['See you{n}. I\'ll keep learning.']],
-who:[['Soy **Noryx**: una IA con núcleo propio, una red neuronal de {H} neuronas ocultas que se entrena en tu navegador al abrir esta página ({ACC} % de acierto). No dependo de ChatGPT ni de Gemini. Calculo, resuelvo ecuaciones, busco en Wikipedia, consulto el clima y aprendo lo que me enseñes.'],['I\'m **Noryx**: an AI with its own core, a {H}-hidden-neuron network trained in your browser when this page opens ({ACC}% accuracy). No ChatGPT or Gemini behind me. I calculate, solve equations, search Wikipedia, check weather and learn what you teach me.']],
+who:[['Soy **Noryx**: una IA con núcleo propio, una red neuronal de ~6 M de parámetros ({H} neuronas ocultas) que se entrena en tu navegador al abrir esta página ({ACC} % de acierto). No dependo de ChatGPT ni de Gemini. Calculo, resuelvo ecuaciones, busco en Wikipedia, consulto el clima y aprendo lo que me enseñes.'],['I\'m **Noryx**: an AI with its own core, a ~6M-parameter network ({H} hidden neurons) trained in your browser when this page opens ({ACC}% accuracy). No ChatGPT or Gemini behind me. I calculate, solve equations, search Wikipedia, check weather and learn what you teach me.']],
 maker:[['Me creó **Orlando**, que armó mi red neuronal desde cero.'],['**Orlando** created me and built my neural network from scratch.']],
 help:[['Esto sé hacer:\n- **Calcular**: `15% de 2480`, `raíz de 144`, `5!`\n- **Estadística**: `media de 4, 8, 15, 16`\n- **Álgebra**: `x^2 - 5x + 6 = 0`\n- **Saber**: `¿quién fue Nikola Tesla?` (Wikipedia)\n- **Clima**: `clima en Madrid`\n- **Países**: `población de Perú`, `pib per cápita de Chile`\n- **Conversiones**: `10 millas a km`, `100 °F a °C`\n- **Aprender**: `aprende: mi color favorito = azul`\n- **Con cuenta**: voz en vivo e imágenes (subir y crear)\n- **Comandos**: `/nuevo` `/limpiar` `/exportar` `/nombre Ana` `/memoria` `/olvidar` `/respaldo` `/restaurar`\n- **Asistente de voz**: `/noryx` (con acceso), `/acceso` para ver el tuyo, `/solicitar` para pedirlo al creador'],['What I can do:\n- **Calculate**: `15% of 2480`, `sqrt 144`, `5!`\n- **Stats**: `mean of 4, 8, 15, 16`\n- **Algebra**: `x^2 - 5x + 6 = 0`\n- **Look up**: `who was Nikola Tesla?`\n- **Weather**: `weather in London`\n- **Learn**: `learn: my favorite color = blue`\n- **Commands**: `/nuevo` `/limpiar` `/exportar` `/nombre Ana` `/memoria` `/olvidar`']],
 joke:[['¿Por qué las redes neuronales no pagan renta? Porque ya tienen muchas capas ocultas.','Mi red tiene {H} neuronas y ninguna sabe contar chistes. Yo tampoco.'],['Why did the neural net go to therapy? Too many hidden layers.']]};
 
 /* ============ Maestro externo: otra IA (estilo Gemini) sin API key; Noryx aprende de sus respuestas ============ */
-let MAESTRO=S.get('nx-teacher',true),busyAsk=0;
+let MAESTRO=false,busyAsk=0;
 const SYS='Eres Noryx, una IA amable con trato femenino, creada por Orlando. Responde en el idioma del usuario, con claridad y calidez, en menos de 130 palabras. Usa markdown simple (**negritas** y listas con "- "). Si no sabes algo, dilo con honestidad.';
 const clean=x=>x.replace(/\n*(?:---+\s*)?(?:\*\*)?(?:Powered by|Support) Pollinations[\s\S]*$/i,'').replace(/<think>[\s\S]*?<\/think>/g,'').trim();
 async function ask(msgs){
@@ -630,13 +1076,17 @@ async function ask(msgs){
 async function maestro(t){
  const c=conv(),h=((c&&c.msgs)||[]).slice(-9,-1).map(m=>({role:m.r=='u'?'user':'assistant',content:m.t.slice(0,600)}));
  return ask([{role:'system',content:SYS+(mem.name?' El usuario se llama '+mem.name+'.':'')},...h,{role:'user',content:t}])}
-function learn(q,a){if(toks(q).length<3||a.length>700||/^y\s/i.test(q.trim()))return;const k=q.replace(/[?!¿¡.]+$/g,'').trim(),x=mem.taught.find(z=>z.q.toLowerCase()==k.toLowerCase());if(x){if(x.auto)x.a=a}else mem.taught.push({q:k,a,auto:1});if(mem.taught.length>250){const i=mem.taught.findIndex(z=>z.auto);mem.taught.splice(i<0?0:i,1)}save()}
+function learn(q,a){if(toks(q).length<3||a.length>700||/^y\s/i.test(q.trim()))return;const k=q.replace(/[?!¿¡.]+$/g,'').trim(),x=mem.taught.find(z=>z.q.toLowerCase()==k.toLowerCase());if(x){if(x.auto)x.a=a}else mem.taught.push({q:k,a,auto:1});if(mem.taught.length>1000){const i=mem.taught.findIndex(z=>z.auto);mem.taught.splice(i<0?0:i,1)}save()}
 async function askOpen(t,q,en){
  let note='';if(MAESTRO){const r=await maestro(t);if(r.t){learn(t,r.t);return{t:r.t,m:'Maestro externo · aprendido'}}note=r.err=='rate'?'El maestro externo está saturado ahora mismo. ':'No pude contactar al maestro externo. '}
  if(q.length>2){const w=await wiki(q,en);if(w)return{t:note?note+'Esto encontré en Wikipedia:\n\n'+w:w,m:'Wikipedia'}}
  return note?{t:note+'Inténtalo de nuevo en unos segundos o enséñame con `aprende: pregunta = respuesta`.',m:'Sin respuesta'}:null}
-async function brain(t){
- await ready;
+const grp=k=>/^y_(select|join|pk|fk|nosql|index|norm|acid|mongo|pg|redis|insert)$/.test(k)?'db':/^(y_(egipto|grecia|medieval|renac|conquista|vikingos|inca|napoleon|muro|rusa|colon|prehist)|x_(ww1|ww2|frances|industrial|guerrafria|rommana|azteca|maya|indep|rev|luna69))$/.test(k)?'hi':/^y_(tobe|present|past|phrasal|saludos|numeros|dias|colores|there|makedo|aan|condic)$/.test(k)?'en':/^y_an_/.test(k)?'an':/^z2_/.test(k)?'sp':/^z3_el_/.test(k)?'el':/^y_(pozole|mole|guaca|tamal|arroz|huevo|pasta|pizza|sopa|pan|chilaq|ceviche|hotcakes|ensalada|frijol|vegan|prote|vitam)$/.test(k)?'fo':/^x_(wifi|5g|bateria|backup|phishing|vpn|linux|excel|internet|blockchain|nube|api|sql|git|cripto|pass)$/.test(k)?'te':/^x_(porcentaje|regla3|fraccion|area|media|pitag|pi|deriv|integral|primo|fibo|prob)$/.test(k)?'ma':null;
+const relLab=x=>/^y_an_/.test(x)?x.slice(5):norm(TOP[x][0].split('|')[0]).replace(QP,'').replace(/^(el |la |los |las |un |una )/,'');
+const rel=k=>{const g=grp(k);if(!g)return'';const sib=ints.filter(x=>x!=k&&grp(x)==g);if(sib.length<3)return'';const r=[];while(r.length<3){const x=sib[Math.floor(Math.random()*sib.length)];if(!r.includes(x))r.push(x)}return'\n\nTambién puedo contarte de: '+r.map(x=>'**'+relLab(x)+'**').join(', ')+'.'};
+const splitQ=t=>{if(/^\s*(\/|aprende|learn|ensena|teach)/i.test(t))return[t];const p=t.split(/[?¿]+\s*|;\s+|\s+y\s+(?:luego|despues|después|tambien|también|ademas|además)\s+/i).map(x=>x.trim()).filter(x=>toks(x).length>=2);return p.length>1&&p.length<=4?p:[t]};
+async function brain(t,_sub){
+ if(!_sub){const ps=splitQ(t);if(ps.length>1){const rs=[];for(const q of ps)rs.push(await brain(q,1));return{t:rs.map((r,i)=>'**'+(i+1)+'. '+ps[i].replace(/[¿?]/g,'')+'**\n'+r.t).join('\n\n'),m:'Razonamiento · '+ps.length+' partes'}}}
  const en=isEn(t),nm=mem.name?', '+mem.name:'',tm=Date.now();let m;
  /* seguimiento de conversación: si Noryx preguntó la ciudad, la siguiente respuesta corta es la ciudad; "y en Madrid?" repite el clima */
  if(ctx.pend=='weather'||ctx.last=='weather'){const n=norm(t),w=toks(t),ask=ctx.pend=='weather',SM=['hi','how','thanks','bye','yes','no','help','joke','who','maker','time','date','more','why','love','insult','sorry'];ctx.pend=null;
@@ -650,12 +1100,13 @@ async function brain(t){
   if(fm){const sub=fm[1].trim(),sw=sub.split(' ').filter(Boolean);
    if(sw.length&&sw.length<=3){const rx=new RegExp('(^|\\s)'+sub.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'($|\\s)');
     for(const k in TOP){if(k==ctx.topic)continue;if(TOP[k][0].split('|').some(p=>rx.test(norm(p)))){ctx.topic=k;ctx.q=TOP[k][0].split('|')[0];ctx.more=[];ctx.last=null;return{t:TOP[k][1].replace(/\{n\}/g,nm).replace(/\{H\}/g,H).replace(/\{ACC\}/g,ACC),m:'Conversación · seguimiento'}}}}}}
- if((m=t.match(/^\s*(?:aprende|learn|ensena|teach)\s*:\s*([\s\S]+?)\s*=\s*([\s\S]+)$/i))){const q=m[1].replace(/[?!¿¡.]+$/g,'').trim(),a=m[2].trim(),x=mem.taught.find(z=>z.q.toLowerCase()==q.toLowerCase()&&z.a==a);if(!x){const au=mem.taught.find(z=>z.auto&&z.q.toLowerCase()==q.toLowerCase());if(au){au.a=a;delete au.auto}else mem.taught.push({q,a})}mem.taught=mem.taught.slice(-200);save();if((tester||creator)&&cloudToken&&q.length>=3&&q.length<=200&&a.length<=700)tcmd('ensenar',q+' = '+a).catch(()=>{});return{t:en?'Learned. Ask me **"'+q+'"** anytime.':'Aprendido. Pregúntame **«'+q+'»** cuando quieras.',m:'Memoria · enseñado'}}
+ if((m=t.match(/^\s*(?:aprende|learn|ensena|teach)\s*:\s*([\s\S]+?)\s*=\s*([\s\S]+)$/i))){const q=m[1].replace(/[?!¿¡.]+$/g,'').trim(),a=m[2].trim(),x=mem.taught.find(z=>z.q.toLowerCase()==q.toLowerCase()&&z.a==a);if(!x){const au=mem.taught.find(z=>z.auto&&z.q.toLowerCase()==q.toLowerCase());if(au){au.a=a;delete au.auto}else mem.taught.push({q,a})}mem.taught=mem.taught.slice(-1000);save();if((tester||creator)&&cloudToken&&q.length>=3&&q.length<=200&&a.length<=700)tcmd('ensenar',q+' = '+a).catch(()=>{});return{t:en?'Learned. Ask me **"'+q+'"** anytime.':'Aprendido. Pregúntame **«'+q+'»** cuando quieras.',m:'Memoria · enseñado'}}
  if((m=t.match(/(?:me llamo|mi nombre es|ll[aá]mame|my name is|call me)\s+([a-záéíóúñ]+)/i))){mem.name=m[1][0].toUpperCase()+m[1].slice(1);save();return{t:en?'Nice to meet you, **'+mem.name+'**. I\'ll remember it.':'Mucho gusto, **'+mem.name+'**. Lo recordaré.',m:'Memoria'}}
  if(/^(?:como me llamo|cual es mi nombre|what is my name|what's my name)/i.test(norm(t).replace(/^/,'')))return{t:mem.name?(en?'You\'re **'+mem.name+'**.':'Te llamas **'+mem.name+'**.'):(en?'You haven\'t told me yet.':'Aún no me lo has dicho. Dime «me llamo…».'),m:'Memoria'};
  for(const[re,k,msg]of[[/me gusta(?:n)?\s+(.{2,40}?)[.!]*$/i,'gusta','Anotado: te gusta **$**. ¿Desde cuándo?'],[/vivo en\s+(.{2,40}?)[.!]*$/i,'vive','**$**, qué buen lugar. Lo recordaré.'],[/tengo\s+(\d{1,3})\s+a[nñ]os/i,'edad','Tienes **$** años; lo guardo.']]){if((m=t.match(re))){mem[k]=m[1];save();return{t:msg.replace('$',m[1]),m:'Memoria'}}}
  {const n=norm(t);if(/que me gusta|what do i like/.test(n))return{t:mem.gusta?'Me dijiste que te gusta **'+mem.gusta+'**.':'Aún no me has dicho qué te gusta.',m:'Memoria'};if(/donde vivo|where do i live/.test(n))return{t:mem.vive?'Vives en **'+mem.vive+'**.':'Aún no me has dicho dónde vives.',m:'Memoria'};if(/cuantos anos tengo|how old am i/.test(n))return{t:mem.edad?'Tienes **'+mem.edad+'** años.':'Aún no me has dicho tu edad.',m:'Memoria'}}
  const tg=taught(t);if(tg)return{t:tg.a,m:tg.cloud?'Memoria · enseñada por testers':tg.auto?'Memoria · aprendido del maestro':'Memoria · enseñado'};
+ const ep=episodic(t);if(ep)return ep;
  let r=calc(t);if(r)return{t:r,m:'Cálculo'};r=algebra(t);if(r)return{t:r,m:'Álgebra'};r=stats(t);if(r)return{t:r,m:'Estadística'};
  r=convUnits(t);if(r)return{t:r,m:'Conversión'};r=geo(t);if(r)return r;
  const c=classify(t);
@@ -670,7 +1121,7 @@ async function brain(t){
   if(k=='more'||k=='why'){if(ctx.more.length)return{t:ctx.more.shift()+(ctx.more.length?'  ·  di «más» para seguir':''),m:'Conversación'};if(MAESTRO){const r=await maestro(t);if(r.t)return{t:r.t,m:'Maestro externo'}}if(ctx.q){const w=await wiki(ctx.q,en);if(w)return{t:w,m:'Conversación · Wikipedia'}}return{t:'¿Más sobre qué? Dime un tema y profundizamos.',m:'Conversación'}}
   const fx=x=>x.replace(/\{n\}/g,nm).replace(/\{H\}/g,H).replace(/\{ACC\}/g,ACC);
   if(A[k]){ctx.q=null;ctx.more=[];return{t:fx(pick(A[k][en&&A[k][1]?1:0])),m:src,s:k=='help'?'Puedo calcular, resolver ecuaciones, buscar datos, ver el clima, conversar y aprender de ti.':undefined}}
-  if(TOP[k]){ctx.q=TOP[k][0].split('|')[0];ctx.more=[];ctx.topic=k;return{t:fx(TOP[k][1]),m:src}}}
+  if(TOP[k]){ctx.q=TOP[k][0].split('|')[0];ctx.more=[];ctx.topic=k;return{t:fx(TOP[k][1])+rel(k),m:src}}}
  const q=norm(t).replace(/^(que es|que son|quien es|quien fue|quien era|quienes fueron|hablame de|hablame sobre|dime sobre|cuentame sobre|explicame|que significa|what is|what are|who is|who was|tell me about|explain|define)\s+(el |la |los |las |un |una |a |an |the )?/,'');
  {const o=await askOpen(t,q,en);if(o)return o}
  return{t:en?'I don\'t have that yet (or I couldn\'t reach the internet). Teach me: `learn: question = answer`':'Todavía no tengo esa respuesta (o no pude conectarme a internet). Puedes enseñármela: `aprende: pregunta = respuesta`',m:'Sin respuesta'}}
@@ -692,7 +1143,7 @@ function hero(){const h=document.createElement('div');h.className='hero';h.inner
  ['¿Cuánto es 15% de 2480?','Resuelve x^2 - 5x + 6 = 0','¿Quién fue Nikola Tesla?','Clima en Ciudad de México','Media de 4, 8, 15, 16','Población de Perú','10 millas a km','PIB per cápita de Chile','Compara el PIB de Japón y Corea del Sur','Dame un dato curioso','¿Qué es una red neuronal?','Recomiéndame una serie','Explícame la relatividad como si tuviera 10 años','Ayúdame a planear un fin de semana','aprende: mi color favorito = azul'].sort(()=>Math.random()-.5).slice(0,5).forEach(q=>{const b=document.createElement('button');b.textContent=q;b.onclick=()=>send(q);h.querySelector('.chips').append(b)});feed.append(h);neural(h.querySelector('canvas'))}
 function msgEl(m,i){const d=document.createElement('div');d.className='msg '+m.r;
  if(m.r=='u'){d.innerHTML='<div class="body"></div>';d.firstChild.textContent=m.t;d.firstChild.title='Clic para editar';d.firstChild.style.cursor='pointer';d.firstChild.onclick=()=>{if(busy)return;const c=conv();c.msgs=c.msgs.slice(0,i);save();renderAll();inp.value=m.t;fit();inp.focus()};return d}
- d.innerHTML='<div class="av"></div><div><div class="body">'+md(m.t)+'</div><div class="meta"><span>'+esc(m.m||'')+'</span><button data-a="c">copiar</button>'+(m.sys?'':'<button data-a="r">repetir</button>')+'<button data-a="s">leer</button>'+(/aprendid/.test(m.m||'')?'<button data-a="x">no es correcto</button>':'')+'</div></div>';
+ d.innerHTML='<div class="av"></div><div><div class="body">'+md(m.t)+'</div><div class="meta"><span>'+esc(String(m.m||'').split(' · ').pop())+'</span><button data-a="c">copiar</button>'+(m.sys?'':'<button data-a="r">repetir</button>')+'<button data-a="s">leer</button>'+(/aprendid/.test(m.m||'')?'<button data-a="x">no es correcto</button>':'')+'</div></div>';
  d.lastChild.style.cssText='flex:1;min-width:0';d.querySelector('.meta').onclick=e=>{const a=e.target.dataset.a;if(a=='c')navigator.clipboard&&navigator.clipboard.writeText(m.t).then(()=>toast('Copiado'));if(a=='r')regen();if(a=='s')say(m.s||speakable(m.t));if(a=='x'){mem.taught=mem.taught.filter(z=>z.q.toLowerCase()!=(m.q||'').replace(/[?!¿¡.]+$/g,'').trim().toLowerCase());save();toast('Olvidado, gracias por corregirme')}};return d}
 feed.addEventListener('click',e=>{if(e.target.className=='cp'){navigator.clipboard&&navigator.clipboard.writeText(e.target.nextSibling.textContent).then(()=>toast('Código copiado'))}});
 function speakable(t){
@@ -736,10 +1187,7 @@ function speechNums(s,en){
 
 const FEM=/paulina|monica|sabina|dalia|elvira|helena|lucia|laura|marisol|camila|samantha|zira|jenny|aria|female|mujer|google espa|google us/i,MALE=/jorge|diego|pablo|raul|juan|carlos|david|mark|james|male|hombre|enrique|alvaro|miguel/i;
 function voiceFor(l){const sc=v=>(/natural|neural|online/i.test(v.name)?4:0)+(FEM.test(v.name)?3:0)+(MALE.test(v.name)?-9:0)+(l=='es'&&/MX|US|419/i.test(v.lang)?1:0);return speechSynthesis.getVoices().filter(v=>v.lang.toLowerCase().startsWith(l)).sort((a,b)=>sc(b)-sc(a))[0]}
-/* Pronunciación: la voz del navegador se comía la «r» de Orlando ("Olando"). Se escribe separado solo para el audio; en pantalla se ve normal. */
-const PRON=[[/\borlando\b/gi,'Or lando']];
-const pron=t=>PRON.reduce((a,r)=>a.replace(r[0],r[1]),t);
-function say(t){if(!window.speechSynthesis)return;speechSynthesis.cancel();const en=isEn(t),u=new SpeechSynthesisUtterance(pron(speechNums(t.replace(/\[[^\]]*\]\([^)]*\)/g,'').replace(/[*`_·]/g,'').replace(/\s+/g,' '),en).replace(/\s+/g,' ').trim()));u.lang=en?'en-US':'es-MX';const v=voiceFor(en?'en':'es');if(v){u.voice=v;u.lang=v.lang}u.pitch=S.get('nx-vp',1.12);u.rate=S.get('nx-vr',1.03);speechSynthesis.speak(u)}
+function say(t){if(!window.speechSynthesis)return;speechSynthesis.cancel();const en=isEn(t),u=new SpeechSynthesisUtterance(speechNums(t.replace(/\[[^\]]*\]\([^)]*\)/g,'').replace(/[*`_·]/g,'').replace(/\s+/g,' '),en).replace(/\s+/g,' ').trim());u.lang=en?'en-US':'es-MX';const v=voiceFor(en?'en':'es');if(v){u.voice=v;u.lang=v.lang}u.pitch=S.get('nx-vp',1.12);u.rate=S.get('nx-vr',1.03);speechSynthesis.speak(u)}
 
 /* ============ Flujo del chat ============ */
 function setThink(v){thinking=v;$('#chip').classList.toggle('think',v)}
@@ -747,7 +1195,7 @@ async function send(t){t=(t||'').trim();if(!t||busy)return;$('#in').value='';fit
  if(gate(t))return;
  let m;if((m=t.match(/^\/(\w+)\s*(.*)$/))){const k=m[1].toLowerCase();
   if(k=='mic'||k.startsWith('micr')){mdOpen();return}
-  if(k=='noryx'||k=='puente'||k=='atajo'||k=='rutina'||k=='spotify'){if(k!='puente'&&k!='spotify')echoU(t);await noryxEntry(k,m[2]);return}
+  if(k=='noryx'||k=='puente'||k=='atajo'||k=='rutina'){if(k!='puente')echoU(t);await noryxEntry(k,m[2]);return}
   if(k=='jarvis'){echoU(t);sysMsg('El comando ahora es `/noryx`.','Noryx');return}
   if(k=='solicitar'){echoU(t);await requestAccess(m[2]);return}
   if(k=='acceso'){echoU(t);await showAccess();return}
@@ -932,7 +1380,6 @@ $('#thm').onclick=()=>{const d=document.documentElement,dark=d.dataset.theme?d.d
 {const t=S.get('nx-theme',null);if(t)document.documentElement.dataset.theme=t}
 const sb=$('#spk');const paintSpk=()=>{sb.textContent='Voz: '+(speak?'sí':'no');sb.classList.toggle('on',speak)};paintSpk();
 sb.onclick=()=>{speak=!speak;S.set('nx-spk',speak);paintSpk()};
-const mb=$('#mae'),paintMae=()=>{mb.textContent='Maestro: '+(MAESTRO?'sí':'no');mb.classList.toggle('on',MAESTRO)};paintMae();mb.onclick=()=>{MAESTRO=!MAESTRO;S.set('nx-teacher',MAESTRO);paintMae();toast(MAESTRO?'Noryx consultará a su maestro externo y aprenderá':'Noryx responderá solo con su núcleo')};
 $('#exp').onclick=exportMd;
 $('#forget').onclick=()=>{if(confirm('¿Borrar todas las conversaciones y lo que Noryx aprendió?')){convs=[];cur=null;mem={name:'',taught:[]};save();renderAll();toast('Listo, empezamos de cero')}};
 const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
@@ -1337,15 +1784,11 @@ const JMUS={spotify:{n:'Spotify',app:q=>q?'spotify:search:'+encodeURIComponent(q
  'apple music':{n:'Apple Music',web:q=>q?'https://music.apple.com/search?term='+encodeURIComponent(q):'https://music.apple.com'},
  deezer:{n:'Deezer',web:q=>q?'https://www.deezer.com/search/'+encodeURIComponent(q):'https://www.deezer.com'}};
 const JSITES={youtube:'https://www.youtube.com',google:'https://www.google.com',gmail:'https://mail.google.com',correo:'https://mail.google.com',mapas:'https://www.google.com/maps',maps:'https://www.google.com/maps',whatsapp:'https://web.whatsapp.com',github:'https://github.com',netflix:'https://www.netflix.com',twitter:'https://x.com',instagram:'https://www.instagram.com',facebook:'https://www.facebook.com',drive:'https://drive.google.com',calendario:'https://calendar.google.com',calendar:'https://calendar.google.com',wikipedia:'https://es.wikipedia.org',chatgpt:'https://chatgpt.com',claude:'https://claude.ai',twitch:'https://www.twitch.tv',reddit:'https://www.reddit.com',linkedin:'https://www.linkedin.com',amazon:'https://www.amazon.com','mercado libre':'https://www.mercadolibre.com',tiktok:'https://www.tiktok.com',traductor:'https://translate.google.com',noticias:'https://news.google.com',fotos:'https://photos.google.com',supabase:'https://supabase.com'};
-async function jvPlay(pv,q,hint){
- if(pv=='spotify'&&q&&spReady()){let note='';try{const r=await spPlayCmd(q,hint);if(r)return r}catch(e){note=spErrText(e)+' '}
-  const w=jvPlayWeb(pv,q);w.say=note+w.say;w.show=note+(w.show||'');return w}
- return jvPlayWeb(pv,q)}
-function jvPlayWeb(pv,q){const p=JMUS[pv]||JMUS.spotify,who=jvWho(),ch=[];let ok;
+function jvPlay(pv,q){const p=JMUS[pv]||JMUS.spotify,who=jvWho(),ch=[];let ok;
  if(p.app){jvUri(p.app(q));ok=true;ch.push({label:'♪ '+p.n+' (app)',href:p.app(q)},{label:'♪ '+p.n+' web',href:p.web(q)})}
  else{ok=jvOpen(p.web(q));ch.push({label:'♪ '+p.n,href:p.web(q)})}
  return jvR((q?'Buscando '+q+' en '+p.n+', '+who+'.':'Abriendo '+p.n+', '+who+'.')+(ok?'':' El navegador bloqueó la ventana; toque el botón.'),{chips:ch,log:'♪ '+p.n+(q?' · '+q:''),m:'Noryx · música',
-  show:(q?'Buscando «'+q+'» en '+p.n+'.':'Abriendo '+p.n+'.')+(pv=='spotify'?' Si el navegador pregunta si abrir la app de Spotify, acepta. La búsqueda se abre lista; para que suene directo escribe `/spotify` y conecta tu cuenta.':' Se abren los resultados; el play lo das tú.')})}
+  show:(q?'Buscando «'+q+'» en '+p.n+'.':'Abriendo '+p.n+'.')+(pv=='spotify'?' Si el navegador pregunta si abrir la app de Spotify, acepta. La búsqueda se abre lista, pero darle play automático requiere conectar la API de Spotify.':' Se abren los resultados; el play lo das tú.')})}
 function jvWeb(u,what,site){const ok=jvOpen(u),who=jvWho();return jvR(ok?'Abriendo '+what+', '+who+'.':'El navegador bloqueó la ventana emergente, '+who+'. Toque el botón, o permita las ventanas emergentes de esta página para que lo haga sola.',{chips:[{label:'↗ '+(site||what),href:u}],log:'🌐 '+u.replace(/^https?:\/\//,'').slice(0,60),m:'Noryx · web'})}
 async function jvBridge(key,u,on){const act=on?'on':'off',url=u.replace(/\{accion\}/g,act),who=jvWho();
  try{await fetch(url,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body:JSON.stringify({accion:act,origen:'noryx'})});return jvR('Orden de '+(on?'encender':'apagar')+' enviada a '+key+', '+who+'.',{show:'Orden «'+act+'» enviada al puente «'+key+'» (el dispositivo no confirma la ejecución).',log:'🔌 '+key+' → '+act,m:'Noryx · puente'})}
@@ -1370,7 +1813,7 @@ async function jvBrief(n){const d=new Date(),h=d.getHours(),b=await jvBatt(),tk=
 async function jvRoutine(name,steps){const ch=[],out=[];for(const s of steps.slice(0,10)){const r=await jvCmd(s,jvPlain(s).replace(/[^a-z0-9 ]/g,' ').trim(),true);if(r){(r.chips||[]).forEach(c=>ch.push(c));out.push('• '+(r.show||r.say))}else out.push('• ?'+s);await sleep(400)}
  return jvR('Rutina '+name+' ejecutada, '+jvWho()+'.',{chips:ch,show:'Rutina «'+name+'»:\n'+out.join('\n'),m:'Noryx · rutina'})}
 
-const JHELP='Esto puedo hacer en modo Noryx:\n• Sitios: «abre YouTube», «abre github.com»\n• Música: «pon música de Soda Stereo», «reproduce jazz en YouTube», «abre Spotify y pon lofi»\n• Spotify directo (con /spotify): «pon Bohemian Rhapsody», «pausa», «siguiente canción», «sube el volumen», «qué suena»\n• Buscar: «busca recetas de pozole», «cómo llego a la Torre Eiffel»\n• Tiempo: «temporizador de 10 minutos», «recuérdame en 20 minutos que saque la ropa», «pomodoro»\n• Notas y tareas: «anota que compré leche», «agrega pan a mi lista», «qué tengo pendiente», «completa la tarea 2»\n• Sistema: «diagnóstico», «batería», «mantén la pantalla encendida», «pantalla completa», «modo claro»\n• Aparatos: «enciende el monitor» (con /puente)\n• Rutinas: «buenos días», «modo trabajo» (con /rutina)\n• Extras: tira un dado, lanza una moneda, copia un texto, habla más rápido\n• Y charlamos de lo que quieras.';
+const JHELP='Esto puedo hacer en modo Noryx:\n• Sitios: «abre YouTube», «abre github.com»\n• Música: «pon música de Soda Stereo», «reproduce jazz en YouTube», «abre Spotify y pon lofi»\n• Buscar: «busca recetas de pozole», «cómo llego a la Torre Eiffel»\n• Tiempo: «temporizador de 10 minutos», «recuérdame en 20 minutos que saque la ropa», «pomodoro»\n• Notas y tareas: «anota que compré leche», «agrega pan a mi lista», «qué tengo pendiente», «completa la tarea 2»\n• Sistema: «diagnóstico», «batería», «mantén la pantalla encendida», «pantalla completa», «modo claro»\n• Aparatos: «enciende el monitor» (con /puente)\n• Rutinas: «buenos días», «modo trabajo» (con /rutina)\n• Extras: tira un dado, lanza una moneda, copia un texto, habla más rápido\n• Y charlamos de lo que quieras.';
 
 /* ---- intérprete de órdenes: devuelve null si no es una orden (entonces se charla) ---- */
 const JSPLIT=/\s+(?:y\s+)?(?:luego|despues|ademas|y despues)\s+|\s+y\s+(?=(?:abre|abrir|pon|ponme|reproduce|toca|busca|enciende|prende|apaga|activa|desactiva|anota|apunta|recuerdame|avisame|temporizador|cambia|dime|cuentame|agrega|manten|tira|lanza)\b)/;
@@ -1443,13 +1886,11 @@ async function jvCmd(raw,pm,ns){
  if(T(/^(?:(?:tira|lanza|echa|vuela|tirame)\s+(?:una\s+)?moneda|cara o cruz)$/))return R(Math.random()<.5?'Cara.':'Cruz.');
  if(m=n.match(/^(?:dame\s+)?(?:un\s+)?numero aleatorio(?:\s+entre\s+(\d+)\s+y\s+(\d+))?$/)){let a=+m[1]||1,b=+m[2]||100;if(a>b)[a,b]=[b,a];return R('El número es '+(a+Math.floor(Math.random()*(b-a+1)))+'.')}
  if(q=X(/^(?:copia|copiame)\s+(?:esto\s*|al portapapeles\s*)?(.+)$/)){const tx=q[1];let ok=false;try{await navigator.clipboard.writeText(tx);ok=true}catch(e){}return ok?R('Copiado al portapapeles.'):R('El navegador no me deja copiar sin un toque suyo. Use el botón.',{chips:[{label:'📋 Copiar',fn:()=>navigator.clipboard.writeText(tx).then(()=>toast('Copiado'),()=>toast('No se pudo copiar'))}]})}
- if(T(/^(?:pausa|pausar|pausa la musica|reanuda|reanuda la musica|continua la musica|siguiente cancion|cancion siguiente|cancion anterior|salta (?:la )?cancion|sube el volumen|baja el volumen|sube volumen|baja volumen|mutea|silencia la musica|(?:pon |ponle |sube |baja )?(?:el )?volumen (?:al|a|en) \d{1,3}(?: por ciento)?|que suena|que cancion es esta|que estoy escuchando|que esta sonando)$/)){
-  if(spReady()){const r=await spControl(n);if(r)return r}
-  else return R('Para controlar la música (pausa, siguiente, volumen) necesito que conectes tu cuenta de Spotify con /spotify, '+who+'. Sin eso no puedo tocar otras aplicaciones desde el navegador.',{m:'Noryx · límite honesto'})}
+ if(T(/^(?:pausa|pausar|pausa la musica|reanuda|reanuda la musica|continua la musica|siguiente cancion|cancion siguiente|cancion anterior|salta (?:la )?cancion|sube el volumen|baja el volumen|sube volumen|baja volumen|mutea|silencia la musica)$/))return R('Desde el navegador no puedo controlar la reproducción ni el volumen de otras aplicaciones, '+who+'. Para eso necesitaría conectar la API de Spotify o un puente.',{m:'Noryx · límite honesto'});
  /* música */
  if(m=n.match(/^(reproduce|reproduceme|toca|tocame|quiero escuchar|quiero oir|play|escuchar|pon|ponme|pones)\s+(.+)$/)){let rest=m[2],pv=null;const pm2=rest.match(/\s+(?:en|on|por|con|desde)\s+(spotify|youtube music|yt music|youtube|apple music|deezer)$/);if(pm2){pv=pm2[1]=='yt music'?'youtube music':pm2[1];rest=rest.slice(0,pm2.index)}
   const soft=/^(?:pon|ponme|pones)$/.test(m[1]),musical=/\b(?:musica|cancion|canciones|playlist|album|disco|algo de|algo para|tema de|temazo|rola|rolas|lofi|jazz|rock|salsa|cumbia|reggaeton|clasica|pop|rap)\b/.test(rest);
-  if(!soft||pv||musical){const F=/^(?:algo de|algo para|un poco de|musica de|musica para|musica|la musica de|una cancion de|la cancion|cancion de|cancion|el album|la playlist|playlist de|playlist|mi musica|rolas de|un tema de|temazos de)\s+/;let s=rest.trim();s=s.replace(F,'').replace(F,'').replace(/^(?:musica|cancion|canciones)$/,'').trim();return jvPlay(pv||JV.music,s,rest)}}
+  if(!soft||pv||musical){const F=/^(?:algo de|algo para|un poco de|musica de|musica para|musica|la musica de|una cancion de|la cancion|cancion de|cancion|el album|la playlist|playlist de|playlist|mi musica|rolas de|un tema de|temazos de)\s+/;let s=rest.trim();s=s.replace(F,'').replace(F,'').replace(/^(?:musica|cancion|canciones)$/,'').trim();return jvPlay(pv||JV.music,s)}}
  /* mapas y búsqueda */
  if(q=X(/^(?:como llego a|como llegar a|ruta a|ruta hacia|llevame a|navega a|direcciones a|how do i get to)\s+(.+)$/))return jvWeb('https://www.google.com/maps/dir/?api=1&destination='+encodeURIComponent(q[1]),'la ruta a '+q[1],'Google Maps');
  if(q=X(/^(?:mapa de|muestrame el mapa de|muestrame en el mapa)\s+(.+)$/))return jvWeb('https://www.google.com/maps/search/'+encodeURIComponent(q[1]),'el mapa de '+q[1],'Google Maps');
@@ -1480,29 +1921,10 @@ function jvStart(){
  if(!jvAllowed()){sysMsg('El modo Noryx requiere acceso. Escribe /solicitar para pedírselo al creador.','Noryx');return}
  if(!window.speechSynthesis){toast('Tu navegador no admite voz. Prueba Chrome, Edge o Safari.');return}
  if(typeof VL!='undefined'&&VL.on)vlStop();
- closeMenu();creatorAct=Date.now();JV.on=true;JV.mute=!HAS_EAR;JV.proc=false;JV.h=[];JV.last='';jvEl.hidden=false;jvl.replaceChildren();jvChips([]);jvTick();jvWake(true);if(spReady())spInitPlayer().catch(()=>{});
+ closeMenu();creatorAct=Date.now();JV.on=true;JV.mute=!HAS_EAR;JV.proc=false;JV.h=[];JV.last='';jvEl.hidden=false;jvl.replaceChildren();jvChips([]);jvTick();jvWake(true);
  $('#jvm').textContent=JV.mute?'Activar micrófono':'Silenciar micrófono';$('#jvm').hidden=!HAS_EAR;
  const h=new Date().getHours(),g=(h<12?'Buenos días':h<20?'Buenas tardes':'Buenas noches')+', '+jvWho()+'. Noryx a sus órdenes.'+(HAS_EAR?'':' Su equipo no permite usar el micrófono: escríbame las órdenes.');
- const full=creator&&!JV_INTRO_DONE;if(full)JV_INTRO_DONE=true;
- jvSet('speak');speechSynthesis.cancel();if(!full){jvText(g);jvLog('Noryx: '+g);say(g)}Promise.all([full?jvIntroCreator():jvWait(),micPrime()]).then(([_,ok])=>{if(!JV.on)return;if(ok===false){JV.mute=true;$('#jvm').textContent='Activar micrófono';jvSet('mute');return}jvListen()})}
-/* Saludo de siempre para el creador: saludo → clima CDMX → hora → música de rock → despedida según la hora */
-/* El saludo largo solo ocurre la primera vez que el creador abre el asistente después de cargar la app; las siguientes veces usa el saludo corto. */
-let JV_INTRO_DONE=false;
-const JROCK=['AC/DC','Queen','Nirvana',"Guns N' Roses",'Led Zeppelin','Metallica','Pink Floyd','The Rolling Stones'];
-async function jvIntroCreator(){
- const N='Orlando',h=new Date().getHours(),sal=h<12?'Buenos días':h<20?'Buenas tardes':'Buenas noches',fel=h<12?'Feliz día':h<20?'Feliz tarde':'Feliz noche';
- const step=async t=>{if(!JV.on)return false;jvText(t);jvLog('Noryx: '+t);jvSet('speak');say(t);await jvWait();return JV.on};
- if(!await step(sal+', '+N+'. ¿Cómo se encuentra hoy?'))return;
- let wl='No pude consultar el clima de la Ciudad de México en este momento.';
- try{const w=await J('https://api.open-meteo.com/v1/forecast?current=temperature_2m,apparent_temperature,weather_code&timezone=America%2FMexico_City&latitude=19.4326&longitude=-99.1332'),c=w&&w.current;
-  if(c){const d=(WC.find(x=>c.weather_code<=x[0])||WC[7])[1];wl='El clima en la Ciudad de México: '+d+', '+Math.round(c.temperature_2m)+' grados, con sensación térmica de '+Math.round(c.apparent_temperature)+' grados.'}}catch(e){}
- if(!await step(wl))return;
- const d=new Date(),hh=d.getHours()%12||12;
- if(!await step((hh==1?'Es la ':'Son las ')+hh+':'+jvPad(d.getMinutes())+(h<12?' de la mañana':h<19?' de la tarde':' de la noche')+'.'))return;
- if(!await step('Música activada.'))return;
- const art=JROCK[Math.floor(Math.random()*JROCK.length)];
- try{const r=await jvPlay(JV.music,art,art);if(r){if(r.chips)jvChips(r.chips);jvLog('Noryx: '+(r.log||('♪ '+art)))}}catch(e){}
- await step(fel+', '+N+'.')}
+ jvText(g);jvLog('Noryx: '+g);jvSet('speak');speechSynthesis.cancel();say(g);Promise.all([jvWait(),micPrime()]).then(([_,ok])=>{if(!JV.on)return;if(ok===false){JV.mute=true;$('#jvm').textContent='Activar micrófono';jvSet('mute');return}jvListen()})}
 function jvStop(){JV.on=false;const r=JV.rec;JV.rec=null;try{r&&r.abort()}catch(e){}window.speechSynthesis&&speechSynthesis.cancel();jvEl.hidden=true;JV.proc=false;earRelease();if(!JV.pin)jvWake(false)}
 function jvListen(){if(!JV.on||!mdEl.hidden)return;if(JV.mute||!HAS_EAR){jvSet('mute');return}
  if(Date.now()-creatorAct>6e5){jvStop();if(creator)lock(false);sysMsg('🔒 Modo Noryx cerrado por inactividad (10 min). '+(creator?'Escribe /creador para entrar otra vez.':'Escribe /noryx para volver a entrar.'),'Noryx');return}
@@ -1542,7 +1964,6 @@ function jvInput(t){if(!t||!JV.on)return;if(JV.proc){toast('Un momento, estoy pr
 
 /* ---- comandos escritos: /noryx /puente /atajo /rutina ---- */
 function jvAdmin(k,a){a=(a||'').trim();let m;const J='Noryx';
- if(k=='spotify')return spCmd(a);
  if(k=='puente'){const B=S.get('nx-jbridge',{});
   if(!a){const ks=Object.keys(B);return sysMsg(ks.length?'Puentes enlazados (las direcciones se guardan solo en este navegador):\n'+ks.map(x=>'- '+x+': '+['on','off'].filter(z=>B[x][z]).join(' / ')).join('\n')+'\n\nDi «enciende el '+ks[0]+'» o «apaga el '+ks[0]+'».':'No hay puentes todavía. Un puente conecta a Noryx con tus aparatos mediante un webhook (Home Assistant, IFTTT, Shelly, Tuya…):\n`/puente monitor on https://…` — URL que enciende\n`/puente monitor off https://…` — URL que apaga\n`/puente borrar monitor`\n\nEl navegador solo puede llamar direcciones https (o http si abres esta página desde tu propio equipo).',J)}
   if(m=a.match(/^borrar\s+(.+)$/i)){const x=norm(m[1]);if(B[x]){delete B[x];S.set('nx-jbridge',B);return sysMsg('Puente «'+x+'» borrado.',J)}return sysMsg('No existe ese puente.',J)}
@@ -1832,129 +2253,11 @@ $('#bk').onclick=()=>{closeMenu();backup()};
 $('#bkf').onchange=async e=>{const f=e.target.files[0];e.target.value='';if(!f)return;
  try{const o=JSON.parse(await f.text());if(!o||o.v!==1||!Array.isArray(o.convs)||!o.convs.every(c=>c&&typeof c.title=='string'&&Array.isArray(c.msgs)&&c.msgs.every(m=>m&&(m.r=='u'||m.r=='a')&&typeof m.t=='string')))throw 0;
   if(!confirm('¿Reemplazar tus conversaciones y tu memoria actuales por las del respaldo?'))return;
-  convs=o.convs.slice(-60);const mm=o.mem&&typeof o.mem=='object'?o.mem:{};mem={name:typeof mm.name=='string'?mm.name.slice(0,40):'',taught:(Array.isArray(mm.taught)?mm.taught:[]).filter(x=>x&&typeof x.q=='string'&&typeof x.a=='string').slice(-250)};
+  convs=o.convs.slice(-60);const mm=o.mem&&typeof o.mem=='object'?o.mem:{};mem={name:typeof mm.name=='string'?mm.name.slice(0,40):'',taught:(Array.isArray(mm.taught)?mm.taught:[]).filter(x=>x&&typeof x.q=='string'&&typeof x.a=='string').slice(-1000)};
   ['gusta','vive','edad'].forEach(k=>{if(typeof mm[k]=='string')mem[k]=mm[k].slice(0,60)});
   Object.entries(o.cfg||{}).forEach(([k,v])=>{if(CFGOK[k]&&CFGOK[k](v))S.set(k,v)});cur=null;save();renderAll();toast('Respaldo restaurado')}
  catch(er){toast('Ese archivo no es un respaldo válido de Noryx')}};
 
-/* ============ Spotify real (Web API + Web Playback SDK) ============
-   Inicio de sesión: Authorization Code con PKCE. SOLO usa el Client ID (nunca el Client Secret, que no debe estar en una página web).
-   Reproducir/controlar requiere cuenta Spotify Premium. Los tokens se guardan solo en este navegador. */
-/* >>> PEGA AQUÍ TU CLIENT ID DE SPOTIFY (32 letras/números). Es público, no es secreto; NUNCA pongas el Client Secret. <<<
-   Con esto, cada persona entra con SU propia cuenta de Spotify sin configurar nada (solo `/spotify conectar`). */
-const SP_CLIENT_ID='923a1c8bee7e47e292f7c0450eb72a84';
-const spCid=()=>S.get('nx-spcid','')||(/^[0-9a-f]{32}$/i.test(SP_CLIENT_ID)?SP_CLIENT_ID.toLowerCase():'');
-const SP={player:null,dev:null,initing:null,err:''};
-SP.redir=()=>location.origin+location.pathname;
-SP.scopes='streaming user-read-email user-read-private user-read-playback-state user-modify-playback-state';
-const spReady=()=>!!spCid()&&!!S.get('nx-sptok',null);
-const spB64=b=>btoa(String.fromCharCode(...new Uint8Array(b))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
-const spRand=n=>spB64(crypto.getRandomValues(new Uint8Array(n)));
-async function spConnect(){const J='Noryx',cid=spCid();
- if(!cid)return sysMsg('Primero guarda tu Client ID: `/spotify id TU_CLIENT_ID` (escribe `/spotify` para ver los pasos).',J);
- if(!window.crypto||!crypto.subtle||!(location.protocol=='https:'||location.hostname=='127.0.0.1'))return sysMsg('Spotify solo permite iniciar sesión desde una página https o desde http://127.0.0.1 (no acepta file:// ni localhost). Abre Noryx desde tu dirección https publicada, o en local desde http://127.0.0.1:PUERTO, y vuelve a intentarlo.',J);
- const ver=spRand(64),state=spRand(16),ch=spB64(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(ver)));
- S.set('nx-spv',ver);S.set('nx-spst',state);
- const url='https://accounts.spotify.com/authorize?'+new URLSearchParams({client_id:cid,response_type:'code',redirect_uri:SP.redir(),scope:SP.scopes,state,code_challenge_method:'S256',code_challenge:ch});
- const w=window.open(url,'nx-spotify','width=480,height=740');
- if(!w){location.href=url;return}
- sysMsg('Se abrió la ventana de Spotify: acepta los permisos y se cerrará sola. Si no la ves, permite las ventanas emergentes de esta página.',J)}
-function spDisconnect(){try{SP.player&&SP.player.disconnect()}catch(e){}SP.player=null;SP.dev=null;SP.initing=null;S.set('nx-sptok',null);S.set('nx-spv','');S.set('nx-spst','')}
-async function spTokenReq(params){const r=await fetch('https://accounts.spotify.com/api/token',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams(params)});let j={};try{j=await r.json()}catch(e){}if(!r.ok)throw new Error(j.error_description||j.error||('HTTP '+r.status));return j}
-async function spCallback(){
- let u;try{u=new URL(location.href)}catch(e){return}
- const code=u.searchParams.get('code'),st=u.searchParams.get('state'),err=u.searchParams.get('error');
- if(!st||!(code||err)||st!==S.get('nx-spst',''))return;
- try{history.replaceState(null,'',location.pathname)}catch(e){}
- S.set('nx-spst','');const pop=!!window.opener;
- if(err){if(pop){window.close();return}sysMsg('Spotify no dio el permiso ('+err+'). Si quieres, vuelve a intentarlo con `/spotify conectar`.','Noryx');return}
- try{const j=await spTokenReq({grant_type:'authorization_code',code,redirect_uri:SP.redir(),client_id:spCid(),code_verifier:S.get('nx-spv','')});
-  S.set('nx-sptok',{access:j.access_token,refresh:j.refresh_token,exp:Date.now()+j.expires_in*1000});S.set('nx-spv','');
-  if(pop){document.title='Spotify conectado';try{window.close()}catch(e){}return}
-  sysMsg('✅ Spotify conectado. Abre `/noryx` y di «pon música de Soda Stereo». Necesitas Spotify Premium para que suene dentro de Noryx.','Noryx');spInitPlayer().catch(()=>{})}
- catch(e){sysMsg('No pude completar la conexión con Spotify: '+(e&&e.message||e)+'. Revisa que el Redirect URI en tu app de Spotify sea exactamente `'+SP.redir()+'`.','Noryx')}}
-addEventListener('storage',e=>{if(e.key=='nx-sptok'&&e.newValue&&e.newValue!='null'){sysMsg('✅ Spotify conectado. Abre `/noryx` y di «pon música de Soda Stereo». Necesitas Spotify Premium.','Noryx');spInitPlayer().catch(()=>{})}});
-async function spToken(){let t=S.get('nx-sptok',null);if(!t)return null;if(Date.now()<t.exp-60000)return t.access;
- try{const j=await spTokenReq({grant_type:'refresh_token',refresh_token:t.refresh,client_id:spCid()});
-  t={access:j.access_token,refresh:j.refresh_token||t.refresh,exp:Date.now()+j.expires_in*1000};S.set('nx-sptok',t);return t.access}
- catch(e){S.set('nx-sptok',null);return null}}
-async function spApi(method,path,body){const tk=await spToken();if(!tk)throw{code:'auth'};
- const r=await fetch('https://api.spotify.com/v1'+path,{method,headers:Object.assign({Authorization:'Bearer '+tk},body?{'Content-Type':'application/json'}:{}),body:body?JSON.stringify(body):undefined});
- if(r.status==204||r.status==202)return{};
- let j=null;try{j=await r.json()}catch(e){}
- if(r.status==401)throw{code:'auth'};
- if(r.status==429)throw{code:'rate'};
- if(!r.ok)throw{code:r.status,msg:j&&j.error&&j.error.message,reason:j&&j.error&&j.error.reason};
- return j||{}}
-function spLoadSDK(){return new Promise((ok,no)=>{if(window.Spotify)return ok();window.onSpotifyWebPlaybackSDKReady=ok;const e=document.createElement('script');e.src='https://sdk.scdn.co/spotify-player.js';e.onerror=()=>no(new Error('No pude cargar el reproductor de Spotify'));document.head.append(e)})}
-function spInitPlayer(){if(SP.dev)return Promise.resolve(SP.dev);if(SP.initing)return SP.initing;
- SP.initing=(async()=>{await spLoadSDK();
-  return new Promise(res=>{let done=false;const fin=v=>{if(done)return;done=true;if(!v){SP.initing=null;try{SP.player&&SP.player.disconnect()}catch(e){}SP.player=null}res(v)};
-   const p=new Spotify.Player({name:'Noryx',getOAuthToken:cb=>spToken().then(t=>cb(t||'')),volume:.8});
-   p.addListener('ready',({device_id})=>{SP.dev=device_id;fin(device_id)});
-   p.addListener('not_ready',()=>{SP.dev=null;SP.initing=null});
-   ['initialization_error','authentication_error','account_error','playback_error'].forEach(ev=>p.addListener(ev,e=>{SP.err=ev+(e&&e.message?': '+e.message:'');if(ev!='playback_error')fin(null)}));
-   SP.player=p;try{p.activateElement&&p.activateElement()}catch(e){}
-   p.connect().then(ok=>{if(!ok)fin(null)}).catch(()=>fin(null));setTimeout(()=>fin(null),12000)})})();
- return SP.initing}
-async function spDevice(){if(SP.dev)return SP.dev;const d=await spInitPlayer().catch(()=>null);if(d)return d;
- const j=await spApi('GET','/me/player/devices'),L=j.devices||[],a=L.find(x=>x.is_active)||L[0];return a?a.id:null}
-async function spStart(body){const id=await spDevice();if(!id)throw{code:404,reason:'NO_ACTIVE_DEVICE'};
- const go=()=>spApi('PUT','/me/player/play?device_id='+encodeURIComponent(id),body);
- try{await go()}catch(e){if(e.code==404||e.code==502){await spApi('PUT','/me/player',{device_ids:[id],play:false}).catch(()=>{});await sleep(700);await go()}else throw e}
- return id}
-function spErrText(e){const who=jvWho(),c=e&&e.code;
- if(c=='auth')return'La conexión con Spotify caducó, '+who+'. Escribe /spotify conectar para entrar otra vez.';
- if(c=='rate')return'Spotify me pide esperar un momento, '+who+'. Intente de nuevo en unos segundos.';
- if(e&&e.reason=='PREMIUM_REQUIRED'||(c==403&&/premium/i.test(e&&e.msg||'')))return'Spotify solo deja controlar la reproducción desde aquí con una cuenta Premium, '+who+'.';
- if(c==403)return'Spotify rechazó la orden'+(e.msg?' ('+e.msg+')':'')+'. Puede que tu cuenta no esté autorizada en la app de Spotify (el modo desarrollo solo admite 5 personas): el creador debe agregar tu correo en User Management.';
- if(c==404||(e&&e.reason=='NO_ACTIVE_DEVICE'))return'No encontré ningún reproductor de Spotify disponible, '+who+'. Abre Spotify en algún dispositivo y vuelve a pedirlo.';
- return'No pude hablar con Spotify'+(e&&(e.msg||e.message)?' ('+(e.msg||e.message)+')':'')+', '+who+'.'}
-const spItems=j=>x=>((j&&j[x]&&j[x].items)||[]).filter(Boolean);
-async function spPlayCmd(q,hint){const who=jvWho(),h=norm(hint||q);
- const want=/\b(?:playlist|lista)\b/.test(h)?'playlist':/\b(?:album|disco)\b/.test(h)?'album':/\b(?:cancion|tema|rola)\b/.test(h)?'track':'';
- const j=await spApi('GET','/search?type='+(want||'track,artist,playlist,album')+'&limit=5&q='+encodeURIComponent(q)),I=spItems(j),
-  tr=I('tracks'),ar=I('artists'),pl=I('playlists'),al=I('albums'),nq=norm(q),nm=x=>norm(x.name),inq=x=>nm(x).length>2&&(' '+nq+' ').includes(' '+nm(x)+' ');
- const T=x=>({body:{uris:[x.uri]},say:x.name+', de '+x.artists.map(a=>a.name).join(' y '),url:x.external_urls&&x.external_urls.spotify}),
-  C=(x,by)=>({body:{context_uri:x.uri},say:(by?by+' ':'')+x.name,url:x.external_urls&&x.external_urls.spotify});
- let pick=null;
- if(want=='playlist'&&pl[0])pick=C(pl[0],'la playlist');
- else if(want=='album'&&al[0])pick=C(al[0],'el álbum');
- else if(want=='track'&&tr[0])pick=T(tr[0]);
- else if(!want){const t=tr.find(inq),a=ar.find(x=>nm(x)==nq||inq(x)),b=al.find(inq);
-  pick=t?T(t):a?C(a,'lo mejor de'):b?C(b,'el álbum'):pl[0]?C(pl[0],'la playlist'):tr[0]?T(tr[0]):ar[0]?C(ar[0],'lo mejor de'):null}
- if(!pick)return jvR('No encontré «'+q+'» en Spotify, '+who+'.',{m:'Noryx · Spotify'});
- await spStart(pick.body);
- const ch=pick.url?[{label:'♪ Abrir en Spotify',href:pick.url}]:[];
- return jvR('Reproduciendo '+pick.say+', '+who+'.',{chips:ch,log:'♪ Spotify · '+pick.say,m:'Noryx · Spotify',show:'Reproduciendo '+pick.say+' en Spotify.'})}
-async function spControl(n){const who=jvWho(),R=jvR,M={m:'Noryx · Spotify'};let m;
- try{
-  if(/^(?:pausa|pausar|pausa la musica)$/.test(n)){await spApi('PUT','/me/player/pause');return R('Música en pausa, '+who+'.',M)}
-  if(/^(?:reanuda|reanuda la musica|continua la musica)$/.test(n)){await spStart(undefined);return R('Continuando, '+who+'.',M)}
-  if(/^(?:siguiente cancion|cancion siguiente|salta (?:la )?cancion)$/.test(n)){await spApi('POST','/me/player/next');return R('Siguiente canción.',M)}
-  if(/^cancion anterior$/.test(n)){await spApi('POST','/me/player/previous');return R('Canción anterior.',M)}
-  if(/^(?:mutea|silencia la musica)$/.test(n)){await spApi('PUT','/me/player/volume?volume_percent=0');return R('Música en silencio, '+who+'.',M)}
-  if(m=n.match(/^(?:pon |ponle |sube |baja )?(?:el )?volumen (?:al|a|en) (\d{1,3})(?: por ciento)?$/)){const v=Math.min(100,+m[1]);await spApi('PUT','/me/player/volume?volume_percent='+v);return R('Volumen al '+v+' por ciento.',M)}
-  if(m=n.match(/^(sube|baja)(?: el)? volumen$/)){const c=await spApi('GET','/me/player'),cur=c.device&&typeof c.device.volume_percent=='number'?c.device.volume_percent:50,v=Math.max(0,Math.min(100,cur+(m[1]=='sube'?15:-15)));await spApi('PUT','/me/player/volume?volume_percent='+v);return R('Volumen al '+v+' por ciento.',M)}
-  if(/^(?:que suena|que cancion es esta|que estoy escuchando|que esta sonando)$/.test(n)){const c=await spApi('GET','/me/player/currently-playing'),it=c.item;return it?R('Suena '+it.name+(it.artists?', de '+it.artists.map(a=>a.name).join(' y '):'')+', '+who+'.',M):R('No hay nada sonando en Spotify ahora, '+who+'.',M)}
- }catch(e){return R(spErrText(e),{m:'Noryx · error'})}
- return null}
-function spCmd(a){const J='Noryx',cid=spCid(),shared=!S.get('nx-spcid','')&&!!cid,on=spReady();let m;a=(a||'').trim();
- if(/^(?:desconectar|salir|borrar|olvidar)$/i.test(a)){spDisconnect();S.set('nx-spcid','');return sysMsg('Spotify desconectado. Borré tu Client ID y los permisos de este navegador.',J)}
- if(/^(?:conectar|login|entrar)$/i.test(a))return spConnect();
- if(a){m=a.match(/^(?:id\s+)?(\S+)$/i);
-  if(m&&/^[0-9a-f]{32}$/i.test(m[1])){S.set('nx-spcid',m[1].toLowerCase());S.set('nx-sptok',null);return sysMsg('✅ Client ID guardado en este navegador. Ahora escribe `/spotify conectar`.\n(Nunca hace falta el Client Secret: no lo pegues en ningún lado.)',J)}
-  return sysMsg('Eso no parece un Client ID (son 32 letras y números). Cópialo del panel de tu app en developer.spotify.com y escribe `/spotify id EL_CODIGO`.',J)}
- if(shared&&!on)return sysMsg('**Spotify en Noryx** — listo para conectar.\n\nEscribe `/spotify conectar`, entra con TU cuenta de Spotify y acepta los permisos. Hace falta Spotify Premium. Si Spotify dice que tu cuenta no está autorizada, pídele al creador que agregue tu correo en la app de Spotify.',J)
- return sysMsg('**Spotify en Noryx** — '+(on?'✅ conectado':cid?'⚠ Client ID guardado, falta conectar':'sin configurar')+'\n\n'
-  +'Spotify no usa una «API key»: se entra con tu cuenta y solo se necesita el **Client ID** de tu app (el Client Secret no se usa y no debes pegarlo).\n\n'
-  +'1. En developer.spotify.com/dashboard abre tu app → Settings.\n'
-  +'2. En **Redirect URIs** agrega exactamente: `'+SP.redir()+'` (debe ser https, o http://127.0.0.1 en local).\n'
-  +'3. En «APIs used» marca **Web API** y **Web Playback SDK**. Si la app está en modo desarrollo, agrega tu cuenta en User Management.\n'
-  +'4. Aquí: `/spotify id TU_CLIENT_ID` y luego `/spotify conectar`.\n\n'
-  +'Hace falta Spotify Premium. Después, en `/noryx` di «pon música de Soda Stereo», «pausa», «siguiente canción», «sube el volumen» o «qué suena». `/spotify desconectar` borra todo.',J)}
-
-spCallback();
 loadCT();
 renderAll();
 </script>
