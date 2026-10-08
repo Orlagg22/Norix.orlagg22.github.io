@@ -592,7 +592,18 @@ function convUnits(t){const s=t.toLowerCase().normalize('NFD').replace(/[\u0300-
 /* ============ Memoria y aprendizaje ============ */
 const bag=t=>new Set(toks(t));
 const cos=(a,b)=>{let n=0;a.forEach(x=>b.has(x)&&n++);return a.size&&b.size?n/Math.sqrt(a.size*b.size):0};
-function taught(t){const v=bag(t);let b=null,bs=0;mem.taught.concat(CT).forEach(x=>{const d=cos(v,bag(x.q));if(d>=(x.auto?.8:.6)&&d>bs){bs=d;b=x}});return b}
+const TGU={},tgKey=q=>String(q||'').toLowerCase().replace(/[?!¿¡.]+/g,'').replace(/\s+/g,' ').trim();
+function tgPick(list,key){
+ if(list.length<2)return list[0];
+ const u=TGU[key]||(TGU[key]={used:[],last:null});let c=list.filter(x=>!u.used.includes(x.a));
+ if(!c.length){u.used=[];c=list.filter(x=>x.a!==u.last);if(!c.length)c=list}
+ const x=c[Math.floor(Math.random()*c.length)];u.used.push(x.a);u.last=x.a;return x}
+function taught(t){const v=bag(t),all=mem.taught.concat(CT);let b=null,bs=0;all.forEach(x=>{const d=cos(v,bag(x.q));if(d>=(x.auto?.8:.6)&&d>bs){bs=d;b=x}});
+ if(!b)return null;
+ /* todas las respuestas enseñadas a esa misma pregunta (sin repetir texto): se elige una distinta cada vez */
+ const k=tgKey(b.q),seen=new Set(),opts=[];
+ all.forEach(x=>{if(tgKey(x.q)!==k||seen.has(x.a))return;seen.add(x.a);opts.push(x)});
+ return tgPick(opts,k)}
 const isEn=t=>/\b(the|what|who|how|tell|weather|joke|hello|thanks|thank|you|your|please|time|date|explain)\b/i.test(t)&&!/[¿áéíóúñ]|\b(el|la|qué|que|quien|cómo|como|hola|gracias|dime|clima|hora)\b/i.test(t);
 const pick=a=>a[Math.floor(Math.random()*a.length)];
 const A={
@@ -637,7 +648,7 @@ async function brain(t){
   if(fm){const sub=fm[1].trim(),sw=sub.split(' ').filter(Boolean);
    if(sw.length&&sw.length<=3){const rx=new RegExp('(^|\\s)'+sub.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'($|\\s)');
     for(const k in TOP){if(k==ctx.topic)continue;if(TOP[k][0].split('|').some(p=>rx.test(norm(p)))){ctx.topic=k;ctx.q=TOP[k][0].split('|')[0];ctx.more=[];ctx.last=null;return{t:TOP[k][1].replace(/\{n\}/g,nm).replace(/\{H\}/g,H).replace(/\{ACC\}/g,ACC),m:'Conversación · seguimiento'}}}}}}
- if((m=t.match(/^\s*(?:aprende|learn|ensena|teach)\s*:\s*([\s\S]+?)\s*=\s*([\s\S]+)$/i))){const q=m[1].replace(/[?!¿¡.]+$/g,'').trim(),a=m[2].trim(),x=mem.taught.find(z=>z.q.toLowerCase()==q.toLowerCase());if(x)x.a=a;else mem.taught.push({q,a});mem.taught=mem.taught.slice(-200);save();if((tester||creator)&&cloudToken&&q.length>=3&&q.length<=200&&a.length<=700)tcmd('ensenar',q+' = '+a).catch(()=>{});return{t:en?'Learned. Ask me **"'+q+'"** anytime.':'Aprendido. Pregúntame **«'+q+'»** cuando quieras.',m:'Memoria · enseñado'}}
+ if((m=t.match(/^\s*(?:aprende|learn|ensena|teach)\s*:\s*([\s\S]+?)\s*=\s*([\s\S]+)$/i))){const q=m[1].replace(/[?!¿¡.]+$/g,'').trim(),a=m[2].trim(),x=mem.taught.find(z=>z.q.toLowerCase()==q.toLowerCase()&&z.a==a);if(!x){const au=mem.taught.find(z=>z.auto&&z.q.toLowerCase()==q.toLowerCase());if(au){au.a=a;delete au.auto}else mem.taught.push({q,a})}mem.taught=mem.taught.slice(-200);save();if((tester||creator)&&cloudToken&&q.length>=3&&q.length<=200&&a.length<=700)tcmd('ensenar',q+' = '+a).catch(()=>{});return{t:en?'Learned. Ask me **"'+q+'"** anytime.':'Aprendido. Pregúntame **«'+q+'»** cuando quieras.',m:'Memoria · enseñado'}}
  if((m=t.match(/(?:me llamo|mi nombre es|ll[aá]mame|my name is|call me)\s+([a-záéíóúñ]+)/i))){mem.name=m[1][0].toUpperCase()+m[1].slice(1);save();return{t:en?'Nice to meet you, **'+mem.name+'**. I\'ll remember it.':'Mucho gusto, **'+mem.name+'**. Lo recordaré.',m:'Memoria'}}
  if(/^(?:como me llamo|cual es mi nombre|what is my name|what's my name)/i.test(norm(t).replace(/^/,'')))return{t:mem.name?(en?'You\'re **'+mem.name+'**.':'Te llamas **'+mem.name+'**.'):(en?'You haven\'t told me yet.':'Aún no me lo has dicho. Dime «me llamo…».'),m:'Memoria'};
  for(const[re,k,msg]of[[/me gusta(?:n)?\s+(.{2,40}?)[.!]*$/i,'gusta','Anotado: te gusta **$**. ¿Desde cuándo?'],[/vivo en\s+(.{2,40}?)[.!]*$/i,'vive','**$**, qué buen lugar. Lo recordaré.'],[/tengo\s+(\d{1,3})\s+a[nñ]os/i,'edad','Tienes **$** años; lo guardo.']]){if((m=t.match(re))){mem[k]=m[1];save();return{t:msg.replace('$',m[1]),m:'Memoria'}}}
@@ -770,7 +781,7 @@ let cloudToken=null,creator=false,creatorAct=0,auth=false,authFails=0,authLock=0
 const TESTER_EMAILS=["proacsonicoyoutu@gmail.com"];
 const isTesterMail=e=>TESTER_EMAILS.some(x=>x.toLowerCase()==String(e||'').toLowerCase());
 let tester=false,tstep=0,tmail='',authFor='creator',privMail='',CT=S.get('nx-ct',[]);
-async function loadCT(){try{const r=await fetch(cloudBase()+'/rest/v1/ensenanzas?select=id,pregunta,respuesta,autor&order=id.desc&limit=1500',{headers:hdr()});if(!r.ok)return;const rows=await r.json(),seen=new Set();CT=[];rows.forEach(x=>{const k=String(x.pregunta).toLowerCase();if(seen.has(k))return;seen.add(k);CT.push({id:x.id,q:x.pregunta,a:x.respuesta,by:x.autor,cloud:1})});S.set('nx-ct',CT)}catch(e){}}
+async function loadCT(){try{const r=await fetch(cloudBase()+'/rest/v1/ensenanzas?select=id,pregunta,respuesta,autor&order=id.desc&limit=1500',{headers:hdr()});if(!r.ok)return;const rows=await r.json(),seen=new Set();CT=[];rows.forEach(x=>{const k=String(x.pregunta).toLowerCase()+'\u0001'+String(x.respuesta);if(seen.has(k))return;seen.add(k);CT.push({id:x.id,q:x.pregunta,a:x.respuesta,by:x.autor,cloud:1})});S.set('nx-ct',CT)}catch(e){}}
 async function cloudWrite(method,path,body,pref){if(!cloudToken){const e=new Error('expired');e.expired=1;throw e}const r=await fetch(cloudBase()+'/rest/v1/'+path,{method,headers:{apikey:SUPA_KEY,Authorization:'Bearer '+cloudToken,'Content-Type':'application/json',Prefer:pref||'return=representation'},body:body?JSON.stringify(body):undefined});if(r.status==401){cloudToken=null;const e=new Error('expired');e.expired=1;throw e}if(r.status==403)throw new Error('sin permiso (¿ejecutaste el SQL de accesos en Supabase? Míralo en el panel /accesos)');if(!r.ok)throw new Error('HTTP '+r.status);return r.json()}
 const cut=(x,n)=>x.length>n?x.slice(0,n)+'…':x;
 
@@ -790,7 +801,7 @@ async function tcmd(c,a){
   const q=m[1].replace(/[?!¿¡.]+$/g,'').trim(),r=m[2].trim();
   if(q.length<3||q.length>200||r.length<2||r.length>700)return sysMsg('La pregunta debe tener de 3 a 200 caracteres y la respuesta de 2 a 700.','Tester · nube');
   const row=await cloudWrite('POST','ensenanzas',{pregunta:q,respuesta:r,autor:privMail}),id=row[0]&&row[0].id;
-  CT=CT.filter(x=>x.q.toLowerCase()!=q.toLowerCase());CT.unshift({id,q,a:r,by:privMail,cloud:1});S.set('nx-ct',CT);
+  CT=CT.filter(x=>!(x.q.toLowerCase()==q.toLowerCase()&&x.a==r));CT.unshift({id,q,a:r,by:privMail,cloud:1});S.set('nx-ct',CT);
   const ok=sysMsg('✅ Aprendido para todos los usuarios: «'+q+'» (#'+id+'). Pruébalo preguntándomelo.','Tester · nube');
   nxPrivNote(q+' '+r);
   return ok}
