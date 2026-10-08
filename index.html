@@ -744,7 +744,7 @@ async function send(t){t=(t||'').trim();if(!t||busy)return;$('#in').value='';fit
  if(gate(t))return;
  let m;if((m=t.match(/^\/(\w+)\s*(.*)$/))){const k=m[1].toLowerCase();
   if(k=='mic'||k.startsWith('micr')){mdOpen();return}
-  if(k=='noryx'||k=='puente'||k=='atajo'||k=='rutina'){if(k!='puente')echoU(t);await noryxEntry(k,m[2]);return}
+  if(k=='noryx'||k=='puente'||k=='atajo'||k=='rutina'||k=='spotify'){if(k!='puente'&&k!='spotify')echoU(t);await noryxEntry(k,m[2]);return}
   if(k=='jarvis'){echoU(t);sysMsg('El comando ahora es `/noryx`.','Noryx');return}
   if(k=='solicitar'){echoU(t);await requestAccess(m[2]);return}
   if(k=='acceso'){echoU(t);await showAccess();return}
@@ -1334,11 +1334,15 @@ const JMUS={spotify:{n:'Spotify',app:q=>q?'spotify:search:'+encodeURIComponent(q
  'apple music':{n:'Apple Music',web:q=>q?'https://music.apple.com/search?term='+encodeURIComponent(q):'https://music.apple.com'},
  deezer:{n:'Deezer',web:q=>q?'https://www.deezer.com/search/'+encodeURIComponent(q):'https://www.deezer.com'}};
 const JSITES={youtube:'https://www.youtube.com',google:'https://www.google.com',gmail:'https://mail.google.com',correo:'https://mail.google.com',mapas:'https://www.google.com/maps',maps:'https://www.google.com/maps',whatsapp:'https://web.whatsapp.com',github:'https://github.com',netflix:'https://www.netflix.com',twitter:'https://x.com',instagram:'https://www.instagram.com',facebook:'https://www.facebook.com',drive:'https://drive.google.com',calendario:'https://calendar.google.com',calendar:'https://calendar.google.com',wikipedia:'https://es.wikipedia.org',chatgpt:'https://chatgpt.com',claude:'https://claude.ai',twitch:'https://www.twitch.tv',reddit:'https://www.reddit.com',linkedin:'https://www.linkedin.com',amazon:'https://www.amazon.com','mercado libre':'https://www.mercadolibre.com',tiktok:'https://www.tiktok.com',traductor:'https://translate.google.com',noticias:'https://news.google.com',fotos:'https://photos.google.com',supabase:'https://supabase.com'};
-function jvPlay(pv,q){const p=JMUS[pv]||JMUS.spotify,who=jvWho(),ch=[];let ok;
+async function jvPlay(pv,q,hint){
+ if(pv=='spotify'&&q&&spReady()){let note='';try{const r=await spPlayCmd(q,hint);if(r)return r}catch(e){note=spErrText(e)+' '}
+  const w=jvPlayWeb(pv,q);w.say=note+w.say;w.show=note+(w.show||'');return w}
+ return jvPlayWeb(pv,q)}
+function jvPlayWeb(pv,q){const p=JMUS[pv]||JMUS.spotify,who=jvWho(),ch=[];let ok;
  if(p.app){jvUri(p.app(q));ok=true;ch.push({label:'♪ '+p.n+' (app)',href:p.app(q)},{label:'♪ '+p.n+' web',href:p.web(q)})}
  else{ok=jvOpen(p.web(q));ch.push({label:'♪ '+p.n,href:p.web(q)})}
  return jvR((q?'Buscando '+q+' en '+p.n+', '+who+'.':'Abriendo '+p.n+', '+who+'.')+(ok?'':' El navegador bloqueó la ventana; toque el botón.'),{chips:ch,log:'♪ '+p.n+(q?' · '+q:''),m:'Noryx · música',
-  show:(q?'Buscando «'+q+'» en '+p.n+'.':'Abriendo '+p.n+'.')+(pv=='spotify'?' Si el navegador pregunta si abrir la app de Spotify, acepta. La búsqueda se abre lista, pero darle play automático requiere conectar la API de Spotify.':' Se abren los resultados; el play lo das tú.')})}
+  show:(q?'Buscando «'+q+'» en '+p.n+'.':'Abriendo '+p.n+'.')+(pv=='spotify'?' Si el navegador pregunta si abrir la app de Spotify, acepta. La búsqueda se abre lista; para que suene directo escribe `/spotify` y conecta tu cuenta.':' Se abren los resultados; el play lo das tú.')})}
 function jvWeb(u,what,site){const ok=jvOpen(u),who=jvWho();return jvR(ok?'Abriendo '+what+', '+who+'.':'El navegador bloqueó la ventana emergente, '+who+'. Toque el botón, o permita las ventanas emergentes de esta página para que lo haga sola.',{chips:[{label:'↗ '+(site||what),href:u}],log:'🌐 '+u.replace(/^https?:\/\//,'').slice(0,60),m:'Noryx · web'})}
 async function jvBridge(key,u,on){const act=on?'on':'off',url=u.replace(/\{accion\}/g,act),who=jvWho();
  try{await fetch(url,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body:JSON.stringify({accion:act,origen:'noryx'})});return jvR('Orden de '+(on?'encender':'apagar')+' enviada a '+key+', '+who+'.',{show:'Orden «'+act+'» enviada al puente «'+key+'» (el dispositivo no confirma la ejecución).',log:'🔌 '+key+' → '+act,m:'Noryx · puente'})}
@@ -1363,7 +1367,7 @@ async function jvBrief(n){const d=new Date(),h=d.getHours(),b=await jvBatt(),tk=
 async function jvRoutine(name,steps){const ch=[],out=[];for(const s of steps.slice(0,10)){const r=await jvCmd(s,jvPlain(s).replace(/[^a-z0-9 ]/g,' ').trim(),true);if(r){(r.chips||[]).forEach(c=>ch.push(c));out.push('• '+(r.show||r.say))}else out.push('• ?'+s);await sleep(400)}
  return jvR('Rutina '+name+' ejecutada, '+jvWho()+'.',{chips:ch,show:'Rutina «'+name+'»:\n'+out.join('\n'),m:'Noryx · rutina'})}
 
-const JHELP='Esto puedo hacer en modo Noryx:\n• Sitios: «abre YouTube», «abre github.com»\n• Música: «pon música de Soda Stereo», «reproduce jazz en YouTube», «abre Spotify y pon lofi»\n• Buscar: «busca recetas de pozole», «cómo llego a la Torre Eiffel»\n• Tiempo: «temporizador de 10 minutos», «recuérdame en 20 minutos que saque la ropa», «pomodoro»\n• Notas y tareas: «anota que compré leche», «agrega pan a mi lista», «qué tengo pendiente», «completa la tarea 2»\n• Sistema: «diagnóstico», «batería», «mantén la pantalla encendida», «pantalla completa», «modo claro»\n• Aparatos: «enciende el monitor» (con /puente)\n• Rutinas: «buenos días», «modo trabajo» (con /rutina)\n• Extras: tira un dado, lanza una moneda, copia un texto, habla más rápido\n• Y charlamos de lo que quieras.';
+const JHELP='Esto puedo hacer en modo Noryx:\n• Sitios: «abre YouTube», «abre github.com»\n• Música: «pon música de Soda Stereo», «reproduce jazz en YouTube», «abre Spotify y pon lofi»\n• Spotify directo (con /spotify): «pon Bohemian Rhapsody», «pausa», «siguiente canción», «sube el volumen», «qué suena»\n• Buscar: «busca recetas de pozole», «cómo llego a la Torre Eiffel»\n• Tiempo: «temporizador de 10 minutos», «recuérdame en 20 minutos que saque la ropa», «pomodoro»\n• Notas y tareas: «anota que compré leche», «agrega pan a mi lista», «qué tengo pendiente», «completa la tarea 2»\n• Sistema: «diagnóstico», «batería», «mantén la pantalla encendida», «pantalla completa», «modo claro»\n• Aparatos: «enciende el monitor» (con /puente)\n• Rutinas: «buenos días», «modo trabajo» (con /rutina)\n• Extras: tira un dado, lanza una moneda, copia un texto, habla más rápido\n• Y charlamos de lo que quieras.';
 
 /* ---- intérprete de órdenes: devuelve null si no es una orden (entonces se charla) ---- */
 const JSPLIT=/\s+(?:y\s+)?(?:luego|despues|ademas|y despues)\s+|\s+y\s+(?=(?:abre|abrir|pon|ponme|reproduce|toca|busca|enciende|prende|apaga|activa|desactiva|anota|apunta|recuerdame|avisame|temporizador|cambia|dime|cuentame|agrega|manten|tira|lanza)\b)/;
@@ -1436,11 +1440,13 @@ async function jvCmd(raw,pm,ns){
  if(T(/^(?:(?:tira|lanza|echa|vuela|tirame)\s+(?:una\s+)?moneda|cara o cruz)$/))return R(Math.random()<.5?'Cara.':'Cruz.');
  if(m=n.match(/^(?:dame\s+)?(?:un\s+)?numero aleatorio(?:\s+entre\s+(\d+)\s+y\s+(\d+))?$/)){let a=+m[1]||1,b=+m[2]||100;if(a>b)[a,b]=[b,a];return R('El número es '+(a+Math.floor(Math.random()*(b-a+1)))+'.')}
  if(q=X(/^(?:copia|copiame)\s+(?:esto\s*|al portapapeles\s*)?(.+)$/)){const tx=q[1];let ok=false;try{await navigator.clipboard.writeText(tx);ok=true}catch(e){}return ok?R('Copiado al portapapeles.'):R('El navegador no me deja copiar sin un toque suyo. Use el botón.',{chips:[{label:'📋 Copiar',fn:()=>navigator.clipboard.writeText(tx).then(()=>toast('Copiado'),()=>toast('No se pudo copiar'))}]})}
- if(T(/^(?:pausa|pausar|pausa la musica|reanuda|reanuda la musica|continua la musica|siguiente cancion|cancion siguiente|cancion anterior|salta (?:la )?cancion|sube el volumen|baja el volumen|sube volumen|baja volumen|mutea|silencia la musica)$/))return R('Desde el navegador no puedo controlar la reproducción ni el volumen de otras aplicaciones, '+who+'. Para eso necesitaría conectar la API de Spotify o un puente.',{m:'Noryx · límite honesto'});
+ if(T(/^(?:pausa|pausar|pausa la musica|reanuda|reanuda la musica|continua la musica|siguiente cancion|cancion siguiente|cancion anterior|salta (?:la )?cancion|sube el volumen|baja el volumen|sube volumen|baja volumen|mutea|silencia la musica|(?:pon |ponle |sube |baja )?(?:el )?volumen (?:al|a|en) \d{1,3}(?: por ciento)?|que suena|que cancion es esta|que estoy escuchando|que esta sonando)$/)){
+  if(spReady()){const r=await spControl(n);if(r)return r}
+  else return R('Para controlar la música (pausa, siguiente, volumen) necesito que conectes tu cuenta de Spotify con /spotify, '+who+'. Sin eso no puedo tocar otras aplicaciones desde el navegador.',{m:'Noryx · límite honesto'})}
  /* música */
  if(m=n.match(/^(reproduce|reproduceme|toca|tocame|quiero escuchar|quiero oir|play|escuchar|pon|ponme|pones)\s+(.+)$/)){let rest=m[2],pv=null;const pm2=rest.match(/\s+(?:en|on|por|con|desde)\s+(spotify|youtube music|yt music|youtube|apple music|deezer)$/);if(pm2){pv=pm2[1]=='yt music'?'youtube music':pm2[1];rest=rest.slice(0,pm2.index)}
   const soft=/^(?:pon|ponme|pones)$/.test(m[1]),musical=/\b(?:musica|cancion|canciones|playlist|album|disco|algo de|algo para|tema de|temazo|rola|rolas|lofi|jazz|rock|salsa|cumbia|reggaeton|clasica|pop|rap)\b/.test(rest);
-  if(!soft||pv||musical){const F=/^(?:algo de|algo para|un poco de|musica de|musica para|musica|la musica de|una cancion de|la cancion|cancion de|cancion|el album|la playlist|playlist de|playlist|mi musica|rolas de|un tema de|temazos de)\s+/;let s=rest.trim();s=s.replace(F,'').replace(F,'').replace(/^(?:musica|cancion|canciones)$/,'').trim();return jvPlay(pv||JV.music,s)}}
+  if(!soft||pv||musical){const F=/^(?:algo de|algo para|un poco de|musica de|musica para|musica|la musica de|una cancion de|la cancion|cancion de|cancion|el album|la playlist|playlist de|playlist|mi musica|rolas de|un tema de|temazos de)\s+/;let s=rest.trim();s=s.replace(F,'').replace(F,'').replace(/^(?:musica|cancion|canciones)$/,'').trim();return jvPlay(pv||JV.music,s,rest)}}
  /* mapas y búsqueda */
  if(q=X(/^(?:como llego a|como llegar a|ruta a|ruta hacia|llevame a|navega a|direcciones a|how do i get to)\s+(.+)$/))return jvWeb('https://www.google.com/maps/dir/?api=1&destination='+encodeURIComponent(q[1]),'la ruta a '+q[1],'Google Maps');
  if(q=X(/^(?:mapa de|muestrame el mapa de|muestrame en el mapa)\s+(.+)$/))return jvWeb('https://www.google.com/maps/search/'+encodeURIComponent(q[1]),'el mapa de '+q[1],'Google Maps');
@@ -1471,7 +1477,7 @@ function jvStart(){
  if(!jvAllowed()){sysMsg('El modo Noryx requiere acceso. Escribe /solicitar para pedírselo al creador.','Noryx');return}
  if(!window.speechSynthesis){toast('Tu navegador no admite voz. Prueba Chrome, Edge o Safari.');return}
  if(typeof VL!='undefined'&&VL.on)vlStop();
- closeMenu();creatorAct=Date.now();JV.on=true;JV.mute=!HAS_EAR;JV.proc=false;JV.h=[];JV.last='';jvEl.hidden=false;jvl.replaceChildren();jvChips([]);jvTick();jvWake(true);
+ closeMenu();creatorAct=Date.now();JV.on=true;JV.mute=!HAS_EAR;JV.proc=false;JV.h=[];JV.last='';jvEl.hidden=false;jvl.replaceChildren();jvChips([]);jvTick();jvWake(true);if(spReady())spInitPlayer().catch(()=>{});
  $('#jvm').textContent=JV.mute?'Activar micrófono':'Silenciar micrófono';$('#jvm').hidden=!HAS_EAR;
  const h=new Date().getHours(),g=(h<12?'Buenos días':h<20?'Buenas tardes':'Buenas noches')+', '+jvWho()+'. Noryx a sus órdenes.'+(HAS_EAR?'':' Su equipo no permite usar el micrófono: escríbame las órdenes.');
  jvText(g);jvLog('Noryx: '+g);jvSet('speak');speechSynthesis.cancel();say(g);Promise.all([jvWait(),micPrime()]).then(([_,ok])=>{if(!JV.on)return;if(ok===false){JV.mute=true;$('#jvm').textContent='Activar micrófono';jvSet('mute');return}jvListen()})}
@@ -1514,6 +1520,7 @@ function jvInput(t){if(!t||!JV.on)return;if(JV.proc){toast('Un momento, estoy pr
 
 /* ---- comandos escritos: /noryx /puente /atajo /rutina ---- */
 function jvAdmin(k,a){a=(a||'').trim();let m;const J='Noryx';
+ if(k=='spotify')return spCmd(a);
  if(k=='puente'){const B=S.get('nx-jbridge',{});
   if(!a){const ks=Object.keys(B);return sysMsg(ks.length?'Puentes enlazados (las direcciones se guardan solo en este navegador):\n'+ks.map(x=>'- '+x+': '+['on','off'].filter(z=>B[x][z]).join(' / ')).join('\n')+'\n\nDi «enciende el '+ks[0]+'» o «apaga el '+ks[0]+'».':'No hay puentes todavía. Un puente conecta a Noryx con tus aparatos mediante un webhook (Home Assistant, IFTTT, Shelly, Tuya…):\n`/puente monitor on https://…` — URL que enciende\n`/puente monitor off https://…` — URL que apaga\n`/puente borrar monitor`\n\nEl navegador solo puede llamar direcciones https (o http si abres esta página desde tu propio equipo).',J)}
   if(m=a.match(/^borrar\s+(.+)$/i)){const x=norm(m[1]);if(B[x]){delete B[x];S.set('nx-jbridge',B);return sysMsg('Puente «'+x+'» borrado.',J)}return sysMsg('No existe ese puente.',J)}
@@ -1808,6 +1815,119 @@ $('#bkf').onchange=async e=>{const f=e.target.files[0];e.target.value='';if(!f)r
   Object.entries(o.cfg||{}).forEach(([k,v])=>{if(CFGOK[k]&&CFGOK[k](v))S.set(k,v)});cur=null;save();renderAll();toast('Respaldo restaurado')}
  catch(er){toast('Ese archivo no es un respaldo válido de Noryx')}};
 
+/* ============ Spotify real (Web API + Web Playback SDK) ============
+   Inicio de sesión: Authorization Code con PKCE. SOLO usa el Client ID (nunca el Client Secret, que no debe estar en una página web).
+   Reproducir/controlar requiere cuenta Spotify Premium. Los tokens se guardan solo en este navegador. */
+const SP={player:null,dev:null,initing:null,err:''};
+SP.redir=()=>location.origin+location.pathname;
+SP.scopes='streaming user-read-email user-read-private user-read-playback-state user-modify-playback-state';
+const spReady=()=>!!S.get('nx-spcid','')&&!!S.get('nx-sptok',null);
+const spB64=b=>btoa(String.fromCharCode(...new Uint8Array(b))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+const spRand=n=>spB64(crypto.getRandomValues(new Uint8Array(n)));
+async function spConnect(){const J='Noryx',cid=S.get('nx-spcid','');
+ if(!cid)return sysMsg('Primero guarda tu Client ID: `/spotify id TU_CLIENT_ID` (escribe `/spotify` para ver los pasos).',J);
+ if(!window.crypto||!crypto.subtle||!(location.protocol=='https:'||location.hostname=='127.0.0.1'))return sysMsg('Spotify solo permite iniciar sesión desde una página https o desde http://127.0.0.1 (no acepta file:// ni localhost). Abre Noryx desde tu dirección https publicada, o en local desde http://127.0.0.1:PUERTO, y vuelve a intentarlo.',J);
+ const ver=spRand(64),state=spRand(16),ch=spB64(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(ver)));
+ S.set('nx-spv',ver);S.set('nx-spst',state);
+ const url='https://accounts.spotify.com/authorize?'+new URLSearchParams({client_id:cid,response_type:'code',redirect_uri:SP.redir(),scope:SP.scopes,state,code_challenge_method:'S256',code_challenge:ch});
+ const w=window.open(url,'nx-spotify','width=480,height=740');
+ if(!w){location.href=url;return}
+ sysMsg('Se abrió la ventana de Spotify: acepta los permisos y se cerrará sola. Si no la ves, permite las ventanas emergentes de esta página.',J)}
+function spDisconnect(){try{SP.player&&SP.player.disconnect()}catch(e){}SP.player=null;SP.dev=null;SP.initing=null;S.set('nx-sptok',null);S.set('nx-spv','');S.set('nx-spst','')}
+async function spTokenReq(params){const r=await fetch('https://accounts.spotify.com/api/token',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams(params)});let j={};try{j=await r.json()}catch(e){}if(!r.ok)throw new Error(j.error_description||j.error||('HTTP '+r.status));return j}
+async function spCallback(){
+ let u;try{u=new URL(location.href)}catch(e){return}
+ const code=u.searchParams.get('code'),st=u.searchParams.get('state'),err=u.searchParams.get('error');
+ if(!st||!(code||err)||st!==S.get('nx-spst',''))return;
+ try{history.replaceState(null,'',location.pathname)}catch(e){}
+ S.set('nx-spst','');const pop=!!window.opener;
+ if(err){if(pop){window.close();return}sysMsg('Spotify no dio el permiso ('+err+'). Si quieres, vuelve a intentarlo con `/spotify conectar`.','Noryx');return}
+ try{const j=await spTokenReq({grant_type:'authorization_code',code,redirect_uri:SP.redir(),client_id:S.get('nx-spcid',''),code_verifier:S.get('nx-spv','')});
+  S.set('nx-sptok',{access:j.access_token,refresh:j.refresh_token,exp:Date.now()+j.expires_in*1000});S.set('nx-spv','');
+  if(pop){document.title='Spotify conectado';try{window.close()}catch(e){}return}
+  sysMsg('✅ Spotify conectado. Abre `/noryx` y di «pon música de Soda Stereo». Necesitas Spotify Premium para que suene dentro de Noryx.','Noryx');spInitPlayer().catch(()=>{})}
+ catch(e){sysMsg('No pude completar la conexión con Spotify: '+(e&&e.message||e)+'. Revisa que el Redirect URI en tu app de Spotify sea exactamente `'+SP.redir()+'`.','Noryx')}}
+addEventListener('storage',e=>{if(e.key=='nx-sptok'&&e.newValue&&e.newValue!='null'){sysMsg('✅ Spotify conectado. Abre `/noryx` y di «pon música de Soda Stereo». Necesitas Spotify Premium.','Noryx');spInitPlayer().catch(()=>{})}});
+async function spToken(){let t=S.get('nx-sptok',null);if(!t)return null;if(Date.now()<t.exp-60000)return t.access;
+ try{const j=await spTokenReq({grant_type:'refresh_token',refresh_token:t.refresh,client_id:S.get('nx-spcid','')});
+  t={access:j.access_token,refresh:j.refresh_token||t.refresh,exp:Date.now()+j.expires_in*1000};S.set('nx-sptok',t);return t.access}
+ catch(e){S.set('nx-sptok',null);return null}}
+async function spApi(method,path,body){const tk=await spToken();if(!tk)throw{code:'auth'};
+ const r=await fetch('https://api.spotify.com/v1'+path,{method,headers:Object.assign({Authorization:'Bearer '+tk},body?{'Content-Type':'application/json'}:{}),body:body?JSON.stringify(body):undefined});
+ if(r.status==204||r.status==202)return{};
+ let j=null;try{j=await r.json()}catch(e){}
+ if(r.status==401)throw{code:'auth'};
+ if(r.status==429)throw{code:'rate'};
+ if(!r.ok)throw{code:r.status,msg:j&&j.error&&j.error.message,reason:j&&j.error&&j.error.reason};
+ return j||{}}
+function spLoadSDK(){return new Promise((ok,no)=>{if(window.Spotify)return ok();window.onSpotifyWebPlaybackSDKReady=ok;const e=document.createElement('script');e.src='https://sdk.scdn.co/spotify-player.js';e.onerror=()=>no(new Error('No pude cargar el reproductor de Spotify'));document.head.append(e)})}
+function spInitPlayer(){if(SP.dev)return Promise.resolve(SP.dev);if(SP.initing)return SP.initing;
+ SP.initing=(async()=>{await spLoadSDK();
+  return new Promise(res=>{let done=false;const fin=v=>{if(done)return;done=true;if(!v){SP.initing=null;try{SP.player&&SP.player.disconnect()}catch(e){}SP.player=null}res(v)};
+   const p=new Spotify.Player({name:'Noryx',getOAuthToken:cb=>spToken().then(t=>cb(t||'')),volume:.8});
+   p.addListener('ready',({device_id})=>{SP.dev=device_id;fin(device_id)});
+   p.addListener('not_ready',()=>{SP.dev=null;SP.initing=null});
+   ['initialization_error','authentication_error','account_error','playback_error'].forEach(ev=>p.addListener(ev,e=>{SP.err=ev+(e&&e.message?': '+e.message:'');if(ev!='playback_error')fin(null)}));
+   SP.player=p;try{p.activateElement&&p.activateElement()}catch(e){}
+   p.connect().then(ok=>{if(!ok)fin(null)}).catch(()=>fin(null));setTimeout(()=>fin(null),12000)})})();
+ return SP.initing}
+async function spDevice(){if(SP.dev)return SP.dev;const d=await spInitPlayer().catch(()=>null);if(d)return d;
+ const j=await spApi('GET','/me/player/devices'),L=j.devices||[],a=L.find(x=>x.is_active)||L[0];return a?a.id:null}
+async function spStart(body){const id=await spDevice();if(!id)throw{code:404,reason:'NO_ACTIVE_DEVICE'};
+ const go=()=>spApi('PUT','/me/player/play?device_id='+encodeURIComponent(id),body);
+ try{await go()}catch(e){if(e.code==404||e.code==502){await spApi('PUT','/me/player',{device_ids:[id],play:false}).catch(()=>{});await sleep(700);await go()}else throw e}
+ return id}
+function spErrText(e){const who=jvWho(),c=e&&e.code;
+ if(c=='auth')return'La conexión con Spotify caducó, '+who+'. Escribe /spotify conectar para entrar otra vez.';
+ if(c=='rate')return'Spotify me pide esperar un momento, '+who+'. Intente de nuevo en unos segundos.';
+ if(e&&e.reason=='PREMIUM_REQUIRED'||(c==403&&/premium/i.test(e&&e.msg||'')))return'Spotify solo deja controlar la reproducción desde aquí con una cuenta Premium, '+who+'.';
+ if(c==403)return'Spotify rechazó la orden'+(e.msg?' ('+e.msg+')':'')+'. Si tu app está en modo desarrollo, agrega tu cuenta en User Management del panel de Spotify.';
+ if(c==404||(e&&e.reason=='NO_ACTIVE_DEVICE'))return'No encontré ningún reproductor de Spotify disponible, '+who+'. Abre Spotify en algún dispositivo y vuelve a pedirlo.';
+ return'No pude hablar con Spotify'+(e&&(e.msg||e.message)?' ('+(e.msg||e.message)+')':'')+', '+who+'.'}
+const spItems=j=>x=>((j&&j[x]&&j[x].items)||[]).filter(Boolean);
+async function spPlayCmd(q,hint){const who=jvWho(),h=norm(hint||q);
+ const want=/\b(?:playlist|lista)\b/.test(h)?'playlist':/\b(?:album|disco)\b/.test(h)?'album':/\b(?:cancion|tema|rola)\b/.test(h)?'track':'';
+ const j=await spApi('GET','/search?type='+(want||'track,artist,playlist,album')+'&limit=5&q='+encodeURIComponent(q)),I=spItems(j),
+  tr=I('tracks'),ar=I('artists'),pl=I('playlists'),al=I('albums'),nq=norm(q),nm=x=>norm(x.name),inq=x=>nm(x).length>2&&(' '+nq+' ').includes(' '+nm(x)+' ');
+ const T=x=>({body:{uris:[x.uri]},say:x.name+', de '+x.artists.map(a=>a.name).join(' y '),url:x.external_urls&&x.external_urls.spotify}),
+  C=(x,by)=>({body:{context_uri:x.uri},say:(by?by+' ':'')+x.name,url:x.external_urls&&x.external_urls.spotify});
+ let pick=null;
+ if(want=='playlist'&&pl[0])pick=C(pl[0],'la playlist');
+ else if(want=='album'&&al[0])pick=C(al[0],'el álbum');
+ else if(want=='track'&&tr[0])pick=T(tr[0]);
+ else if(!want){const t=tr.find(inq),a=ar.find(x=>nm(x)==nq||inq(x)),b=al.find(inq);
+  pick=t?T(t):a?C(a,'lo mejor de'):b?C(b,'el álbum'):pl[0]?C(pl[0],'la playlist'):tr[0]?T(tr[0]):ar[0]?C(ar[0],'lo mejor de'):null}
+ if(!pick)return jvR('No encontré «'+q+'» en Spotify, '+who+'.',{m:'Noryx · Spotify'});
+ await spStart(pick.body);
+ const ch=pick.url?[{label:'♪ Abrir en Spotify',href:pick.url}]:[];
+ return jvR('Reproduciendo '+pick.say+', '+who+'.',{chips:ch,log:'♪ Spotify · '+pick.say,m:'Noryx · Spotify',show:'Reproduciendo '+pick.say+' en Spotify.'})}
+async function spControl(n){const who=jvWho(),R=jvR,M={m:'Noryx · Spotify'};let m;
+ try{
+  if(/^(?:pausa|pausar|pausa la musica)$/.test(n)){await spApi('PUT','/me/player/pause');return R('Música en pausa, '+who+'.',M)}
+  if(/^(?:reanuda|reanuda la musica|continua la musica)$/.test(n)){await spStart(undefined);return R('Continuando, '+who+'.',M)}
+  if(/^(?:siguiente cancion|cancion siguiente|salta (?:la )?cancion)$/.test(n)){await spApi('POST','/me/player/next');return R('Siguiente canción.',M)}
+  if(/^cancion anterior$/.test(n)){await spApi('POST','/me/player/previous');return R('Canción anterior.',M)}
+  if(/^(?:mutea|silencia la musica)$/.test(n)){await spApi('PUT','/me/player/volume?volume_percent=0');return R('Música en silencio, '+who+'.',M)}
+  if(m=n.match(/^(?:pon |ponle |sube |baja )?(?:el )?volumen (?:al|a|en) (\d{1,3})(?: por ciento)?$/)){const v=Math.min(100,+m[1]);await spApi('PUT','/me/player/volume?volume_percent='+v);return R('Volumen al '+v+' por ciento.',M)}
+  if(m=n.match(/^(sube|baja)(?: el)? volumen$/)){const c=await spApi('GET','/me/player'),cur=c.device&&typeof c.device.volume_percent=='number'?c.device.volume_percent:50,v=Math.max(0,Math.min(100,cur+(m[1]=='sube'?15:-15)));await spApi('PUT','/me/player/volume?volume_percent='+v);return R('Volumen al '+v+' por ciento.',M)}
+  if(/^(?:que suena|que cancion es esta|que estoy escuchando|que esta sonando)$/.test(n)){const c=await spApi('GET','/me/player/currently-playing'),it=c.item;return it?R('Suena '+it.name+(it.artists?', de '+it.artists.map(a=>a.name).join(' y '):'')+', '+who+'.',M):R('No hay nada sonando en Spotify ahora, '+who+'.',M)}
+ }catch(e){return R(spErrText(e),{m:'Noryx · error'})}
+ return null}
+function spCmd(a){const J='Noryx',cid=S.get('nx-spcid',''),on=spReady();let m;a=(a||'').trim();
+ if(/^(?:desconectar|salir|borrar|olvidar)$/i.test(a)){spDisconnect();S.set('nx-spcid','');return sysMsg('Spotify desconectado. Borré tu Client ID y los permisos de este navegador.',J)}
+ if(/^(?:conectar|login|entrar)$/i.test(a))return spConnect();
+ if(a){m=a.match(/^(?:id\s+)?(\S+)$/i);
+  if(m&&/^[0-9a-f]{32}$/i.test(m[1])){S.set('nx-spcid',m[1].toLowerCase());S.set('nx-sptok',null);return sysMsg('✅ Client ID guardado en este navegador. Ahora escribe `/spotify conectar`.\n(Nunca hace falta el Client Secret: no lo pegues en ningún lado.)',J)}
+  return sysMsg('Eso no parece un Client ID (son 32 letras y números). Cópialo del panel de tu app en developer.spotify.com y escribe `/spotify id EL_CODIGO`.',J)}
+ return sysMsg('**Spotify en Noryx** — '+(on?'✅ conectado':cid?'⚠ Client ID guardado, falta conectar':'sin configurar')+'\n\n'
+  +'Spotify no usa una «API key»: se entra con tu cuenta y solo se necesita el **Client ID** de tu app (el Client Secret no se usa y no debes pegarlo).\n\n'
+  +'1. En developer.spotify.com/dashboard abre tu app → Settings.\n'
+  +'2. En **Redirect URIs** agrega exactamente: `'+SP.redir()+'` (debe ser https, o http://127.0.0.1 en local).\n'
+  +'3. En «APIs used» marca **Web API** y **Web Playback SDK**. Si la app está en modo desarrollo, agrega tu cuenta en User Management.\n'
+  +'4. Aquí: `/spotify id TU_CLIENT_ID` y luego `/spotify conectar`.\n\n'
+  +'Hace falta Spotify Premium. Después, en `/noryx` di «pon música de Soda Stereo», «pausa», «siguiente canción», «sube el volumen» o «qué suena». `/spotify desconectar` borra todo.',J)}
+
+spCallback();
 loadCT();
 renderAll();
 </script>
