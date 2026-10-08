@@ -4,13 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#07090d">
-<link rel="manifest" href="manifest.webmanifest">
-<link rel="icon" type="image/png" href="icons/favicon.png">
-<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Noryx">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>Noryx Chat</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;800&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -177,7 +170,7 @@ textarea{flex:1;resize:none;border:0;outline:0;background:none;color:var(--ink);
   <div id="pro" hidden><button id="vlb"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>Voz en vivo</button><button id="imb"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="9" cy="10" r="1.8"/><path d="M21 16l-5-5-8 8"/></svg>Imágenes</button></div>
   <button id="jvb" hidden><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/></svg>Modo Noryx</button>
   <input id="q" placeholder="Buscar en conversaciones" aria-label="Buscar"><nav id="list"></nav>
-  <div class="foot"><button id="thm">Tema</button><button id="pwa" hidden>Instalar app</button><button id="spk">Voz: no</button><button id="mdopen">Micrófono</button><button id="mae">Maestro: sí</button><button id="acc">Entrar</button><button id="exp">Exportar</button><button id="forget">Olvidar todo</button><button id="bk" title="Descargar una copia de tus conversaciones y memoria">Respaldo</button><button id="gxb" hidden>Accesos</button></div>
+  <div class="foot"><button id="thm">Tema</button><button id="spk">Voz: no</button><button id="mdopen">Micrófono</button><button id="mae">Maestro: sí</button><button id="acc">Entrar</button><button id="exp">Exportar</button><button id="forget">Olvidar todo</button><button id="bk" title="Descargar una copia de tus conversaciones y memoria">Respaldo</button><button id="gxb" hidden>Accesos</button></div>
  </aside>
  <div id="scrim"></div>
  <main>
@@ -738,7 +731,7 @@ async function send(t){t=(t||'').trim();if(!t||busy)return;$('#in').value='';fit
  if(gate(t))return;
  let m;if((m=t.match(/^\/(\w+)\s*(.*)$/))){const k=m[1].toLowerCase();
   if(k=='mic'||k.startsWith('micr')){mdOpen();return}
-  if(k=='noryx'||k=='puente'||k=='atajo'||k=='rutina'||k=='ytkey'){if(k!='puente')echoU(t);await noryxEntry(k,m[2]);return}
+  if(k=='noryx'||k=='puente'||k=='atajo'||k=='rutina'){if(k!='puente')echoU(t);await noryxEntry(k,m[2]);return}
   if(k=='jarvis'){echoU(t);sysMsg('El comando ahora es `/noryx`.','Noryx');return}
   if(k=='solicitar'){echoU(t);await requestAccess(m[2]);return}
   if(k=='acceso'){echoU(t);await showAccess();return}
@@ -913,13 +906,77 @@ const mb=$('#mae'),paintMae=()=>{mb.textContent='Maestro: '+(MAESTRO?'sí':'no')
 $('#exp').onclick=exportMd;
 $('#forget').onclick=()=>{if(confirm('¿Borrar todas las conversaciones y lo que Noryx aprendió?')){convs=[];cur=null;mem={name:'',taught:[]};save();renderAll();toast('Listo, empezamos de cero')}};
 const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-$('#mic').onclick=async function(){const b=this;if(!SR)return toast('Tu navegador no admite dictado por voz. Prueba Chrome, Edge o Safari.');if(b.classList.contains('on'))return;
+$('#mic').onclick=async function(){const b=this;if(b.classList.contains('on'))return;if(!SR)ASRL=true;
  if(!await micPrime())return;
+ if(ASRL){listenLocal(b);return}
  let tries=0;const go=()=>{const r=new SR();let got=false,err=false,heard=false;r.lang=navigator.language||'es-MX';
   r.onaudiostart=()=>{heard=true};r.onresult=e=>{got=true;micOk();send(e.results[0][0].transcript)};
-  r.onerror=e=>{err=true;b.classList.remove('on');micFail(e&&e.error)};
+  r.onerror=e=>{err=true;b.classList.remove('on');if(e&&e.error=='network'){ASRL=true;setTimeout(()=>listenLocal(b),300);return}micFail(e&&e.error)};
   r.onend=()=>{if(got||err){b.classList.remove('on');return}if(!heard&&tries++<1){setTimeout(go,150);return}b.classList.remove('on');micFail('no-speech')};
   b.classList.add('on');try{r.start()}catch(e){b.classList.remove('on')}};go()};
+
+/* ============ Dictado local (Whisper en el navegador): respaldo cuando el reconocimiento de Chrome da «network» ============ */
+var ASRL=false,_asr=null,_asrP=null;
+async function asrLoad(say){
+ if(_asr)return _asr;
+ if(!_asrP)_asrP=(async()=>{
+  say&&say('Descargando el modelo de voz (solo la primera vez, ~80 MB)…');
+  const {pipeline}=await import('https://cdn.jsdelivr.net/npm/@huggingface/transformers@3');
+  _asr=await pipeline('automatic-speech-recognition','Xenova/whisper-base',{progress_callback:p=>{if(say&&p.status=='progress'&&p.progress!=null)say('Descargando modelo de voz… '+Math.round(p.progress)+' %')}});
+  return _asr})().catch(e=>{_asrP=null;throw e});
+ return _asrP}
+async function recordUtterance(maxMs,shouldStop){
+ maxMs=maxMs||12000;
+ const st=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true}});
+ const AC=window.AudioContext||window.webkitAudioContext,ac=new AC();try{await ac.resume()}catch(e){}
+ const src=ac.createMediaStreamSource(st),an=ac.createAnalyser();an.fftSize=1024;src.connect(an);
+ const mr=new MediaRecorder(st),chunks=[];mr.ondataavailable=e=>{if(e.data&&e.data.size)chunks.push(e.data)};
+ const done=new Promise(r=>mr.onstop=r);mr.start();
+ const buf=new Float32Array(an.fftSize);let spoke=false,quiet=0,aborted=false;const t0=Date.now();
+ await new Promise(res=>{const iv=setInterval(()=>{
+  if(shouldStop&&shouldStop()){aborted=true;clearInterval(iv);res();return}
+  an.getFloatTimeDomainData(buf);let q=0;for(let i=0;i<buf.length;i++)q+=buf[i]*buf[i];const rms=Math.sqrt(q/buf.length);
+  if(rms>.015){spoke=true;quiet=0}else if(spoke)quiet+=100;
+  if((spoke&&quiet>1200)||Date.now()-t0>maxMs||(!spoke&&Date.now()-t0>7000)){clearInterval(iv);res()}},100)});
+ try{mr.stop()}catch(e){}await done;st.getTracks().forEach(t=>t.stop());try{ac.close()}catch(e){}
+ return spoke&&!aborted&&chunks.length?new Blob(chunks,{type:mr.mimeType||'audio/webm'}):null}
+async function blobTo16k(blob){const AC=window.AudioContext||window.webkitAudioContext,ac=new AC({sampleRate:16000});try{const a=await ac.decodeAudioData(await blob.arrayBuffer());return a.getChannelData(0)}finally{try{ac.close()}catch(e){}}}
+async function asrText(blob,say){
+ const asr=await asrLoad(say);say&&say('Transcribiendo…');
+ const lg=/^en/i.test(navigator.language||'')?'english':'spanish';
+ const out=await asr(await blobTo16k(blob),{language:lg,task:'transcribe'});
+ const t=(out.text||'').trim();
+ return(/^[\[(].*[\])]$/.test(t)||t.length<2)?'':t}
+async function listenLocal(b){
+ ASRL=true;b.classList.add('on');toast('Escuchando… habla ahora');
+ try{const blob=await recordUtterance(12000);if(!blob){toast('No te escuché');return}
+  const t=await asrText(blob,toast);if(t)send(t);else toast('No entendí, intenta de nuevo')}
+ catch(e){toast('Error del dictado local: '+(e&&e.message||e))}
+ finally{b.classList.remove('on')}}
+async function vlListenLocal(){
+ if(VL.loc)return;VL.loc=true;let blob=null,err=null;
+ try{vlSet('listen');blob=await recordUtterance(15000,()=>!VL.on||VL.mute)}catch(e){err=e}
+ VL.loc=false;if(!VL.on)return;
+ if(err){toast('No pude abrir el micrófono');vlStop();return}
+ if(VL.mute){vlSet('mute');return}
+ if(!blob){setTimeout(vlListen,100);return}
+ vlSet('think');vlText('Transcribiendo…');let t='';
+ try{t=await asrText(blob,m=>vlText(m))}catch(e){toast('Error del dictado local: '+(e&&e.message||e));vlStop();return}
+ if(!VL.on)return;
+ if(t)vlTurn(t);else{vlText('');vlListen()}}
+async function jvListenLocal(){
+ if(JV.rec||JV.proc||JV.st=='speak')return;
+ let abort=false;const me={abort(){abort=true}};JV.rec=me;jvSet('listen');
+ let blob=null,err=null;
+ try{blob=await recordUtterance(15000,()=>abort||!JV.on||JV.mute||JV.proc||JV.st=='speak')}catch(e){err=e}
+ if(JV.rec===me)JV.rec=null;
+ if(!JV.on||JV.mute)return;
+ if(err){JV.mute=true;$('#jvm').textContent='Activar micrófono';jvSet('mute');micFail('not-allowed',false,err&&err.name);return}
+ if(!blob){setTimeout(jvListen,150);return}
+ jvSet('think');jvText('Transcribiendo…');let t='';
+ try{t=await asrText(blob,m=>jvText(m))}catch(e){jvLog('⚠ Dictado local: '+(e&&e.message||e));toast('Error del dictado local: '+(e&&e.message||e));JV.proc=false;setTimeout(jvListen,800);return}
+ if(t&&!JV.proc&&JV.st!='speak'){jvTurn(t);return}
+ setTimeout(jvListen,150)}
 
 /* ============ Red neuronal viva (hero) ============ */
 function neural(cv){const x=cv.getContext('2d'),L=[4,6,6,3],N=[];let w=0,h=0;const rm=matchMedia('(prefers-reduced-motion:reduce)').matches;
@@ -941,10 +998,11 @@ function vlStart(){if(window.JV&&JV.on)jvStop();if(!sess)return openDlg();if(!SR
  closeMenu();VL.on=true;VL.mute=false;vl.hidden=false;speechSynthesis.cancel();vlText('');$('#vlm').textContent='Silenciar micrófono';micPrime().then(ok=>{if(VL.on){if(ok)vlListen();else vlStop()}})}
 function vlStop(){VL.on=false;const r=VL.rec;VL.rec=null;try{r&&r.abort()}catch(e){}window.speechSynthesis&&speechSynthesis.cancel();vl.hidden=true}
 function vlListen(){if(!VL.on||!mdEl.hidden)return;if(VL.mute){vlSet('mute');return}
+ if(ASRL||!SR){vlListenLocal();return}
  let fin='',r;try{r=new SR()}catch(e){return}
  VL.rec=r;r.lang=navigator.language||'es-MX';r.interimResults=true;r.continuous=false;
  r.onresult=e=>{let it='';fin='';for(let i=0;i<e.results.length;i++){const x=e.results[i];if(x.isFinal)fin+=x[0].transcript;else it+=x[0].transcript}vlText(fin+it);micOk()};
- r.onerror=e=>{const hard=e.error=='not-allowed'||e.error=='service-not-allowed'||e.error=='audio-capture';if(hard)vlStop();micFail(e.error,!hard)};
+ r.onerror=e=>{if(e.error=='network'){ASRL=true;VL.rec=null;toast('El reconocimiento de Chrome falló; Noryx usa dictado local');setTimeout(vlListen,100);return}const hard=e.error=='not-allowed'||e.error=='service-not-allowed'||e.error=='audio-capture';if(hard)vlStop();micFail(e.error,!hard)};
  r.onend=()=>{if(VL.rec!==r)return;VL.rec=null;if(!VL.on||VL.mute)return;const t=fin.trim();t?vlTurn(t):setTimeout(vlListen,200)};
  try{r.start();vlSet('listen')}catch(e){setTimeout(vlListen,500)}}
 async function vlWait(){const q=window.speechSynthesis;await sleep(250);let k=0;while(VL.on&&(q.speaking||q.pending)&&k<2400){await sleep(150);k++}}
@@ -1170,95 +1228,6 @@ async function jvPhysical(nm,on){const who=jvWho(),scr=/\b(monitor|pantalla|disp
  const ej=scr?'monitor':nm;
  return jvR('No puedo '+(on?'encender':'apagar')+' '+nm+' directamente desde el navegador, '+who+'. Si lo enlaza con un puente, lo hago.'+extra,{m:'Noryx · límite honesto',show:'Un navegador no tiene acceso al hardware. Para esto crea un «puente»: un webhook (Home Assistant, IFTTT, Shelly, Tuya…) que encienda o apague el aparato.\nEjemplo: /puente '+ej+' on https://tu-webhook-encender\n         /puente '+ej+' off https://tu-webhook-apagar'+extra})}
 
-/* ---- YouTube: buscar, «el más reciente de…», recomendar ---- */
-const YTSP={fecha:'CAISAhAB',vistas:'CAMSAhAB',canal:'EgIQAg%3D%3D',vivo:'EgJAAQ%3D%3D',corto:'EgIYAQ%3D%3D',largo:'EgIYAg%3D%3D',semana:'EgIIAw%3D%3D',hoy:'EgIIAg%3D%3D',lista:'EgIQAw%3D%3D'};
-const ytUrl=(q,sp)=>'https://www.youtube.com/results?search_query='+encodeURIComponent(q)+(sp?'&sp='+sp:'');
-const ytWatch=id=>'https://www.youtube.com/watch?v='+id;
-const ytKey=()=>S.get('nx-ytkey','');
-const ytDec=t=>String(t||'').replace(/&quot;/g,'"').replace(/&#39;/g,"'").replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>');
-async function ytApi(path,params){const k=ytKey();if(!k)return null;try{const r=await fetch('https://www.googleapis.com/youtube/v3/'+path+'?'+new URLSearchParams({...params,key:k}));if(!r.ok)return null;return await r.json()}catch(e){return null}}
-const ytTitle=s=>s.replace(/\b\w/g,c=>c.toUpperCase());
-function ytClean(q){return q.replace(/\b(?:por favor|porfa|en youtube|de youtube|en yt|youtube|el video|un video|videos?|el canal de|canal de|del youtuber|de el youtuber|el youtuber|youtuber)\b/g,' ').replace(/\s+/g,' ').trim()}
-function ytOpenR(u,say,show,chips,log){const ok=jvOpen(u),who=jvWho();return jvR(say+(ok?'':' El navegador bloqueó la ventana; toque el botón.'),{chips:[{label:'▶ Abrir en YouTube',href:u},...(chips||[])],log:'▶ '+log,m:'Noryx · YouTube',show:show||say})}
-const YTMOODS=[
- {k:/divertid|gracios|comedi|risa|reir|chistos/,n:'algo divertido',q:['los mejores momentos de comedia','videos graciosos que te harán reír','stand up comedia mexicana completa','bloopers y momentos graciosos']},
- {k:/relaj|calma|tranquil|dormir|descans/,n:'algo relajante',q:['paisajes relajantes 4k con música','lofi para relajarse','sonidos de lluvia para dormir','documental de naturaleza relajante']},
- {k:/document|aprender|ensen|cultura|interesan|curios/,n:'un documental o algo para aprender',q:['documental corto interesante','datos curiosos que no sabías','como funciona el universo documental','historia que no te contaron']},
- {k:/miedo|terror|suspenso|misterio|paranormal|creepy/,n:'algo de misterio',q:['casos misteriosos sin resolver','historias de terror reales','misterios de internet explicados','lugares abandonados exploracion']},
- {k:/cocin|receta|comida|food/,n:'algo de cocina',q:['recetas faciles y rapidas mexicanas','street food mexico tour','chef reta cocinar en casa','comida callejera del mundo']},
- {k:/tecnolog|gadget|celular|compu|ia|inteligencia artificial|programa/,n:'algo de tecnología',q:['lo ultimo en inteligencia artificial explicado','review de gadgets del año','tecnologia que cambiara el futuro','setup gamer tour']},
- {k:/gaming|juego|videojuego|gamer|gameplay/,n:'algo de videojuegos',q:['mejores momentos gaming del año','gameplay épico sin comentarios','speedrun increible','retro gaming documental']},
- {k:/motiva|inspira|supera|exito|reflexi/,n:'algo motivador',q:['discurso motivacional en español','historias de superación reales','habitos para cambiar tu vida','entrevista inspiradora']},
- {k:/musica|cancion|concierto|rola/,n:'música',q:['conciertos completos en vivo','sesiones acusticas en vivo','mejores canciones en español playlist','tiny desk concert']},
- {k:/deporte|futbol|nba|box|gol/,n:'algo de deportes',q:['mejores jugadas de la historia','goles imposibles resumen','documental deportivo','entrevistas a leyendas del deporte']},
- {k:/ciencia|espacio|universo|fisica|nasa/,n:'algo de ciencia',q:['ciencia explicada de forma sencilla','misterios del universo','experimentos cientificos increibles','lo que descubrio la nasa']},
- {k:/viaj|turismo|mundo|lugares/,n:'algo de viajes',q:['viaje por mexico tour completo','los lugares mas bonitos del mundo 4k','vlog de viaje increible','pueblos magicos que visitar']}];
-const YTANY=['experimentos sociales en la calle','retos locos que salieron bien','los mejores momentos de youtube en español','historias increibles que parecen mentira','videos que te harán el día','documentales cortos que enganchan','cosas curiosas que no sabías del mundo','momentos virales mas graciosos','mejores cortometrajes animados','vlogs de aventuras extremas','comedia en español para reír sin parar','datos curiosos mexico','talentos increibles sorprenden al jurado'];
-const ytPick=a=>a[Math.floor(Math.random()*a.length)];
-const ytJson=t=>{try{const m=String(t||'').match(/\{[\s\S]*\}/);return m?JSON.parse(m[0]):null}catch(e){return null}};
-const ytRace=(p,ms)=>Promise.race([p,sleep(ms).then(()=>null)]);
-async function ytAIQuery(txt,mood){if(!MAESTRO)return null;JV.yq=JV.yq||[];
- const r=await ytRace(ask([{role:'system',content:'Devuelves SOLO una consulta de búsqueda de YouTube en español, de 3 a 7 palabras, sin comillas ni explicación, para encontrar videos populares y buenos que encajen con lo que pide el usuario. Si pide algo vago, elige un tema variado y atractivo. Nunca inventes títulos, canales ni enlaces: solo describe el tipo de video. Evita repetir estas consultas previas: '+(JV.yq.join(' | ')||'ninguna')+'.'},{role:'user',content:'Pedido: '+txt+(mood?' (tema: '+mood+')':'')}]),9000);
- let q=r&&r.t?r.t.split('\n')[0].replace(/^["'«¿\s-]+|["'»?.\s]+$/g,'').trim():'';
- if(q.length<4||q.length>70||/https?:|www\./i.test(q))return null;JV.yq.push(q);JV.yq=JV.yq.slice(-6);return q}
-async function ytAI(raw){if(!MAESTRO)return null;const who=jvWho();
- const r=await ytRace(ask([{role:'system',content:'Clasificas pedidos de YouTube. Responde SOLO un JSON: {"accion":"buscar|reciente|recomendar|canal|vivo|no","consulta":"..."}. buscar = quiere un video o tema concreto; reciente = el video más nuevo de un youtuber o canal (consulta = solo su nombre, corrige errores de ortografía de nombres famosos); recomendar = quiere una sugerencia (consulta = lo que describió); canal = abrir un canal (consulta = nombre); vivo = transmisión en vivo; no = no tiene que ver con YouTube. Nunca inventes enlaces ni IDs.'},{role:'user',content:raw}]),9000);
- const j=r&&r.t?ytJson(r.t):null;if(!j||!j.accion||j.accion=='no')return null;
- const c=String(j.consulta||'').replace(/\s+/g,' ').trim().slice(0,80);
- if(j.accion=='recomendar')return ytRecommend(norm(c||raw));
- if(!c)return null;
- if(j.accion=='reciente')return ytLatest(c);
- if(j.accion=='canal')return ytOpenR(ytUrl(c,YTSP.canal),'Abriendo el canal de '+ytTitle(c)+', '+who+'.',null,null,'canal '+c);
- if(j.accion=='vivo')return ytOpenR(ytUrl(c,YTSP.vivo),'Buscando transmisiones en vivo de '+c+', '+who+'.',null,null,'vivo '+c);
- return ytOpenR(ytUrl(c),'Buscando «'+c+'» en YouTube, '+who+'.',null,null,c)}
-async function ytRecommend(txt){const who=jvWho();let mood=YTMOODS.find(x=>x.k.test(txt));let q=ytPick(mood?mood.q:YTANY);const what=mood?mood.n:'algo entretenido';const gq=await ytAIQuery(txt,mood?mood.n:'');if(gq)q=gq;
- const d=await ytApi('search',{part:'snippet',q,type:'video',maxResults:'15',order:'relevance',regionCode:'MX',relevanceLanguage:'es',videoEmbeddable:'true',safeSearch:'moderate'});
- const it=d&&d.items&&d.items.length?ytPick(d.items):null;
- if(it){const u=ytWatch(it.id.videoId),t=ytDec(it.snippet.title),c=ytDec(it.snippet.channelTitle);
-  return ytOpenR(u,'Le recomiendo «'+t+'», de '+c+'. Se lo abro, '+who+'.','Recomendación ('+what+'): '+t+'\nCanal: '+c+'\n'+u,[{label:'🎲 Otro distinto',fn:()=>jvInput('recomiendame otro video '+(mood?txt:'entretenido'))}],t.slice(0,60))}
- const u=ytUrl(q,YTSP.vistas);
- return ytOpenR(u,'Le busco '+what+', '+who+': «'+q+'». Le abro los más vistos.','Búsqueda recomendada ('+what+'): «'+q+'», ordenada por popularidad.\nTip: con /ytkey abro directo un video concreto en vez de los resultados.',[{label:'🎲 Otra sugerencia',fn:()=>jvInput('recomiendame otro video '+(mood?txt:'entretenido'))}],q)}
-async function ytLatest(name){const who=jvWho();let u=ytUrl(name,YTSP.fecha);
- const ch=await ytApi('search',{part:'snippet',q:name,type:'channel',maxResults:'1'});
- const c=ch&&ch.items&&ch.items[0];
- if(c){const cid=c.snippet.channelId||c.id.channelId,cn=ytDec(c.snippet.channelTitle),
-  v=await ytApi('search',{part:'snippet',channelId:cid,type:'video',order:'date',maxResults:'1'}),it=v&&v.items&&v.items[0];
-  if(it){const t=ytDec(it.snippet.title),f=new Date(it.snippet.publishedAt).toLocaleDateString('es-MX',{day:'numeric',month:'long'});
-   return ytOpenR(ytWatch(it.id.videoId),'El más reciente de '+cn+' es «'+t+'», publicado el '+f+'. Se lo pongo, '+who+'.','Último video de '+cn+': '+t+' ('+f+')\n'+ytWatch(it.id.videoId),[{label:'📺 Canal',href:'https://www.youtube.com/channel/'+cid},{label:'📅 Más recientes',href:'https://www.youtube.com/channel/'+cid+'/videos'}],cn+' · '+t.slice(0,50))}}
- return ytOpenR(u,'Abriendo los videos más recientes de '+ytTitle(name)+', '+who+'. Ya van ordenados por fecha.','Resultados de «'+name+'» ordenados por fecha de subida.'+(ytKey()?'':'\nTip: con /ytkey TU_CLAVE (YouTube Data API, gratis) abro directo el último video del canal.'),[{label:'📺 Buscar el canal',href:ytUrl(name,YTSP.canal)}],name+' · más reciente')}
-async function ytCmd(n,raw){const who=jvWho();let q,m;
- /* recomendaciones */
- if(/\b(?:recomiend\w*|sugier\w*|sugerenc\w*|aconsej\w*|ponme algo|pon algo|algo para ver|que (?:video )?(?:puedo|veo|vemos)|dame un video|ensename un video|sorprendeme|estoy aburrid\w*)\b/.test(n)&&/\b(?:video|videos|youtube|yt|ver|veo|vemos|entreten\w*|divertid\w*|document\w*|aburrid\w*|sorprend\w*)\b/.test(n)&&(/\b(?:video|videos|youtube|yt)\b/.test(n)||!/\b(?:pelicula|peliculas|serie|series|libro|libros|musica|cancion|canciones|juego|juegos|restaurante|anime|podcast|app)\b/.test(n)))return ytRecommend(n);
- /* el más reciente / último video de X */
- if(/\b(?:video|videos|youtube|youtuber|yt|canal|vlog|episodio|subio|publico|ponme|pon|reproduce|reproduceme|muestrame|ensename|quiero ver)\b/.test(n)&&(m=n.match(/\b(?:(?:el|la|los|las)\s+)?(?:mas\s+reciente|ultimo|ultima|nuevo|nueva|recien\s+subido|recien\s+salido|mas\s+nuevo)s?\s+(?:video|videos|vlog|episodio|upload|subida)?\s*(?:de|del|por)\s+(.+)$/)||n.match(/\b(?:video|videos|vlog|episodio)\s+(?:mas\s+reciente|ultimo|nuevo|mas\s+nuevo)\s+(?:de|del)\s+(.+)$/)||n.match(/^(?:que\s+)?(?:subio|publico|saco)\s+(?:hoy\s+|ultimamente\s+|recientemente\s+)?(.+)$/))){const nm=ytClean(m[1].replace(/\b(?:hoy|ultimamente|recientemente|ahorita|ahora)\b/g,' '));if(nm)return ytLatest(nm)}
- /* canal */
- if(m=n.match(/^(?:abre|abreme|ve a|ir a|muestrame|ensename|busca|buscame|pon|ponme)\s+(?:el\s+)?canal\s+(?:de\s+)?(.+?)(?:\s+(?:en|de)\s+youtube)?$/)){const nm=ytClean(m[1]);if(nm)return ytOpenR(ytUrl(nm,YTSP.canal),'Abriendo el canal de '+ytTitle(nm)+', '+who+'.',null,null,'canal '+nm)}
- /* en vivo */
- if(m=n.match(/^(?:busca|buscame|pon|ponme|abre|muestrame)\s+(?:un\s+)?(?:en\s+vivo|directo|live|stream|transmision)\s+(?:de\s+)?(.+?)(?:\s+en\s+youtube)?$/)){const nm=ytClean(m[1]);if(nm)return ytOpenR(ytUrl(nm,YTSP.vivo),'Buscando transmisiones en vivo de '+nm+', '+who+'.',null,null,'vivo '+nm)}
- /* búsqueda directa de video: «busca/pon/reproduce X en youtube», «youtube X» */
- const wantsYT=/\b(?:en|de|por|desde|con|on)\s+(?:youtube|yt)\b|^(?:youtube|yt)\s+\S/.test(n);
- if(wantsYT||/\b(?:video|videos|trailers?|tutoriales?|clips?|entrevistas?|capitulos?|episodios?|documentales?|stand up|reaccion\w*)\b/.test(n)&&/^(?:busca|buscame|pon|ponme|reproduce|reproduceme|muestrame|ensename|quiero ver|quiero mirar|play|ver)\b/.test(n)){
-  m=n.match(/^(?:busca|buscame|pon|ponme|pones|reproduce|reproduceme|muestrame|ensename|quiero ver|quiero mirar|quiero escuchar|play|ver|abre|youtube|yt)\s+(?:en\s+youtube\s+)?(.+)$/);
-  if(!m&&MAESTRO){const ai=await ytAI(raw);if(ai)return ai}
-  let s=ytClean(m?m[1]:n);
-  if(/\b(?:musica|cancion|canciones|playlist|disco|album|rolas?|lofi)\b/.test(s)&&!/\bvideo\b/.test(n))return null;
-  s=s.replace(/^(?:el|la|los|las|un|una)\s+(?=\S)/,'').trim();
-  let sp=null,tag='';
-  if(/\b(?:en vivo|directo|live)\b/.test(s)&&!/concierto/.test(s)){sp=YTSP.vivo;tag=' en vivo'}
-  else if(/\b(?:de hoy|hoy)\b$/.test(s)){sp=YTSP.hoy;s=s.replace(/\bhoy$/,'').replace(/\bde$/,'').trim();tag=' de hoy'}
-  else if(/\besta semana\b/.test(s)){sp=YTSP.semana;s=s.replace(/\besta semana\b/,'').trim();tag=' de esta semana'}
-  else if(/\b(?:mas vistos?|mas populares?|mas famosos?)\b/.test(s)){sp=YTSP.vistas;s=s.replace(/\b(?:los\s+)?mas (?:vistos?|populares?|famosos?)\b(?:\s+de)?/,'').trim()}
-  else if(/\b(?:cortos?|rapidos?)\b$/.test(s)){sp=YTSP.corto}
-  else if(/\b(?:completos?|largos?)\b$/.test(s)&&!/documental/.test(s)){sp=YTSP.largo}
-  if(!s)return ytOpenR('https://www.youtube.com','Abriendo YouTube, '+who+'.',null,null,'YouTube');
-  const dir=/^(?:pon|ponme|reproduce|reproduceme|play|quiero ver|quiero mirar)\b/.test(n);
-  if(dir&&ytKey()){const d=await ytApi('search',{part:'snippet',q:s,type:'video',maxResults:'1',regionCode:'MX'}),it=d&&d.items&&d.items[0];
-   if(it){const t=ytDec(it.snippet.title);return ytOpenR(ytWatch(it.id.videoId),'Poniendo «'+t+'», '+who+'.','Reproduciendo: '+t+'\nCanal: '+ytDec(it.snippet.channelTitle),[{label:'🔎 Ver más resultados',href:ytUrl(s)}],t.slice(0,60))}}
-  const u=ytUrl(s,sp),lucky='https://www.google.com/search?btnI=1&q='+encodeURIComponent('site:youtube.com/watch '+s);
-  return ytOpenR(u,(dir?'Buscando ':'Buscando ')+'«'+s+'»'+tag+' en YouTube, '+who+'.','Resultados de YouTube para «'+s+'»'+tag+'.\nSi quieres que abra directo el primer video, guarda una clave con /ytkey.',[{label:'🍀 Primer resultado',href:lucky}],s)}
- if(/\b(?:youtube|yt|youtuber|youtubers|video|videos|canal|vlog)\b/.test(n))return ytAI(raw);
- return null}
-
 /* ---- resúmenes ---- */
 async function jvStatus(){const b=await jvBatt(),cn=navigator.connection&&navigator.connection.effectiveType,who=jvWho();
  const l=['Núcleo: '+H+' neuronas · '+ACC+' % de precisión','Batería: '+(b?b.p+' %'+(b.c?' (cargando)':''):'no disponible en este navegador'),'Red: '+(navigator.onLine?'conectado'+(cn?' ('+cn+')':''):'sin conexión'),'Memoria: '+mem.taught.length+' enseñanzas','Temporizadores activos: '+JV.timers.length,'Maestro externo: '+(MAESTRO?'activo':'apagado')];
@@ -1274,7 +1243,7 @@ async function jvBrief(n){const d=new Date(),h=d.getHours(),b=await jvBatt(),tk=
 async function jvRoutine(name,steps){const ch=[],out=[];for(const s of steps.slice(0,10)){const r=await jvCmd(s,jvPlain(s).replace(/[^a-z0-9 ]/g,' ').trim(),true);if(r){(r.chips||[]).forEach(c=>ch.push(c));out.push('• '+(r.show||r.say))}else out.push('• ?'+s);await sleep(400)}
  return jvR('Rutina '+name+' ejecutada, '+jvWho()+'.',{chips:ch,show:'Rutina «'+name+'»:\n'+out.join('\n'),m:'Noryx · rutina'})}
 
-const JHELP='Esto puedo hacer en modo Noryx:\n• Sitios: «abre YouTube», «abre github.com»\n• YouTube: «busca luisito comunica en youtube», «ponme el video más reciente de Fernanfloo», «recomiéndame un video entretenido» (o «divertido», «relajante», «documental», «de terror»…), «abre el canal de Mark Rober», «en vivo de noticias»; si no entiendo una frase, le pregunto al Maestro (Gemini, sin clave); con /ytkey abro el video directo\n• Música: «pon música de Soda Stereo», «reproduce jazz en YouTube», «abre Spotify y pon lofi»\n• Buscar: «busca recetas de pozole», «cómo llego a la Torre Eiffel»\n• Tiempo: «temporizador de 10 minutos», «recuérdame en 20 minutos que saque la ropa», «pomodoro»\n• Notas y tareas: «anota que compré leche», «agrega pan a mi lista», «qué tengo pendiente», «completa la tarea 2»\n• Sistema: «diagnóstico», «batería», «mantén la pantalla encendida», «pantalla completa», «modo claro»\n• Aparatos: «enciende el monitor» (con /puente)\n• Rutinas: «buenos días», «modo trabajo» (con /rutina)\n• Extras: tira un dado, lanza una moneda, copia un texto, habla más rápido\n• Y charlamos de lo que quieras.';
+const JHELP='Esto puedo hacer en modo Noryx:\n• Sitios: «abre YouTube», «abre github.com»\n• Música: «pon música de Soda Stereo», «reproduce jazz en YouTube», «abre Spotify y pon lofi»\n• Buscar: «busca recetas de pozole», «cómo llego a la Torre Eiffel»\n• Tiempo: «temporizador de 10 minutos», «recuérdame en 20 minutos que saque la ropa», «pomodoro»\n• Notas y tareas: «anota que compré leche», «agrega pan a mi lista», «qué tengo pendiente», «completa la tarea 2»\n• Sistema: «diagnóstico», «batería», «mantén la pantalla encendida», «pantalla completa», «modo claro»\n• Aparatos: «enciende el monitor» (con /puente)\n• Rutinas: «buenos días», «modo trabajo» (con /rutina)\n• Extras: tira un dado, lanza una moneda, copia un texto, habla más rápido\n• Y charlamos de lo que quieras.';
 
 /* ---- intérprete de órdenes: devuelve null si no es una orden (entonces se charla) ---- */
 const JSPLIT=/\s+(?:y\s+)?(?:luego|despues|ademas|y despues)\s+|\s+y\s+(?=(?:abre|abrir|pon|ponme|reproduce|toca|busca|enciende|prende|apaga|activa|desactiva|anota|apunta|recuerdame|avisame|temporizador|cambia|dime|cuentame|agrega|manten|tira|lanza)\b)/;
@@ -1348,8 +1317,6 @@ async function jvCmd(raw,pm,ns){
  if(m=n.match(/^(?:dame\s+)?(?:un\s+)?numero aleatorio(?:\s+entre\s+(\d+)\s+y\s+(\d+))?$/)){let a=+m[1]||1,b=+m[2]||100;if(a>b)[a,b]=[b,a];return R('El número es '+(a+Math.floor(Math.random()*(b-a+1)))+'.')}
  if(q=X(/^(?:copia|copiame)\s+(?:esto\s*|al portapapeles\s*)?(.+)$/)){const tx=q[1];let ok=false;try{await navigator.clipboard.writeText(tx);ok=true}catch(e){}return ok?R('Copiado al portapapeles.'):R('El navegador no me deja copiar sin un toque suyo. Use el botón.',{chips:[{label:'📋 Copiar',fn:()=>navigator.clipboard.writeText(tx).then(()=>toast('Copiado'),()=>toast('No se pudo copiar'))}]})}
  if(T(/^(?:pausa|pausar|pausa la musica|reanuda|reanuda la musica|continua la musica|siguiente cancion|cancion siguiente|cancion anterior|salta (?:la )?cancion|sube el volumen|baja el volumen|sube volumen|baja volumen|mutea|silencia la musica)$/))return R('Desde el navegador no puedo controlar la reproducción ni el volumen de otras aplicaciones, '+who+'. Para eso necesitaría conectar la API de Spotify o un puente.',{m:'Noryx · límite honesto'});
- /* YouTube */
- {const yr=await ytCmd(n,raw);if(yr)return yr}
  /* música */
  if(m=n.match(/^(reproduce|reproduceme|toca|tocame|quiero escuchar|quiero oir|play|escuchar|pon|ponme|pones)\s+(.+)$/)){let rest=m[2],pv=null;const pm2=rest.match(/\s+(?:en|on|por|con|desde)\s+(spotify|youtube music|yt music|youtube|apple music|deezer)$/);if(pm2){pv=pm2[1]=='yt music'?'youtube music':pm2[1];rest=rest.slice(0,pm2.index)}
   const soft=/^(?:pon|ponme|pones)$/.test(m[1]),musical=/\b(?:musica|cancion|canciones|playlist|album|disco|algo de|algo para|tema de|temazo|rola|rolas|lofi|jazz|rock|salsa|cumbia|reggaeton|clasica|pop|rap)\b/.test(rest);
@@ -1387,39 +1354,18 @@ function jvStart(){
  closeMenu();creatorAct=Date.now();JV.on=true;JV.mute=!SR;JV.proc=false;JV.h=[];JV.last='';jvEl.hidden=false;jvl.replaceChildren();jvChips([]);jvTick();jvWake(true);
  $('#jvm').textContent=JV.mute?'Activar micrófono':'Silenciar micrófono';$('#jvm').hidden=!SR;
  const h=new Date().getHours(),g=(h<12?'Buenos días':h<20?'Buenas tardes':'Buenas noches')+', '+jvWho()+'. Noryx a sus órdenes.'+(SR?'':' Su navegador no admite micrófono: escríbame las órdenes.');
- jvText(g);jvLog('Noryx: '+g);jvSet('speak');speechSynthesis.cancel();say(g);Promise.all([jvWait(),SR?jvMicOn():true]).then(([_,ok])=>{if(!JV.on)return;if(ok===false){JV.mute=true;$('#jvm').textContent='Activar micrófono';jvSet('mute');return}jvListen()})}
-function jvStop(){JV.on=false;const r=JV.rec;JV.rec=null;try{r&&r.abort()}catch(e){}jvMicOff();window.speechSynthesis&&speechSynthesis.cancel();jvEl.hidden=true;JV.proc=false;if(!JV.pin)jvWake(false)}
-/* Micrófono abierto durante toda la sesión (como la «voz en vivo» que sí funcionó): mantiene activa la captura de audio del navegador */
-async function jvMicOn(){
- if(JV.ms&&JV.ms.getAudioTracks().some(t=>t.readyState=='live'))return true;
- if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia)return true;
- try{JV.ms=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true}});await sleep(150);return true}
- catch(e){const n=e&&e.name;micFail(n=='NotFoundError'||n=='NotReadableError'?'audio-capture':'not-allowed',false,n);return false}}
-function jvMicOff(){try{JV.ms&&JV.ms.getTracks().forEach(t=>t.stop())}catch(e){}JV.ms=null}
-function jvDeaf(){const n=Date.now();if(n-(JV.deafT||0)<180000)return;JV.deafT=n;const m='No estoy recibiendo sonido de tu micrófono. Si estás hablando, el navegador usa otro micrófono: ponlo como predeterminado (Windows: Configuración → Sistema → Sonido → Entrada) o elígelo en chrome://settings/content/microphone.';jvLog('⚠ '+m);toast('No recibo sonido del micrófono · revisa el micrófono predeterminado')}
-function jvListen(){if(!JV.on||!mdEl.hidden)return;if(JV.mute||!SR){jvSet('mute');return}
+ jvText(g);jvLog('Noryx: '+g);jvSet('speak');speechSynthesis.cancel();say(g);Promise.all([jvWait(),SR?micPrime():true]).then(([_,ok])=>{if(!JV.on)return;if(ok===false){JV.mute=true;$('#jvm').textContent='Activar micrófono';jvSet('mute');return}jvListen()})}
+function jvStop(){JV.on=false;const r=JV.rec;JV.rec=null;try{r&&r.abort()}catch(e){}window.speechSynthesis&&speechSynthesis.cancel();jvEl.hidden=true;JV.proc=false;if(!JV.pin)jvWake(false)}
+function jvListen(){if(!JV.on||!mdEl.hidden)return;if(JV.mute||(!SR&&!ASRL)){jvSet('mute');return}
  if(Date.now()-creatorAct>6e5){jvStop();if(creator)lock(false);sysMsg('🔒 Modo Noryx cerrado por inactividad (10 min). '+(creator?'Escribe /creador para entrar otra vez.':'Escribe /noryx para volver a entrar.'),'Noryx');return}
  if(!jvAllowed()){jvStop();sysMsg('⏳ Tu acceso al modo Noryx terminó.','Noryx');return}
- if(JV.rec){if(!JV.proc&&JV.st!='speak')jvSet('listen');return}  /* ya hay una escucha continua activa */
- let lt='',snd=0,r;try{r=new SR()}catch(e){return}
- JV.rec=r;r.lang=/^es/i.test(navigator.language||'es')?'es-MX':(navigator.language||'en-US');r.continuous=true;r.interimResults=true;r.maxAlternatives=1;
- r.onresult=e=>{
-  if(JV.mute||JV.proc||JV.st=='speak'||Date.now()<(JV.quiet||0))return;  /* no se oye a sí misma ni mientras piensa */
-  let it='',fin='';for(let i=e.resultIndex;i<e.results.length;i++){const x=e.results[i];if(x.isFinal)fin+=x[0].transcript;else it+=x[0].transcript}
-  micOk();JV.deaf=0;
-  if(fin.trim()){lt='';jvTurn(fin.trim());return}
-  lt=it;if(it)jvText(it)};
- r.onaudiostart=()=>{if(JV.st=='listen')jvs.textContent='Te escucho… (micrófono activo)'};
- r.onsoundstart=()=>{snd=1;JV.deaf=0;if(JV.st=='listen')jvs.textContent='Te escucho… 🔊 detecto sonido'};
- r.onspeechstart=()=>{if(JV.st=='listen')jvs.textContent='Te escucho… 🗣 detecto tu voz'};
- r.onerror=e=>{if(e.error=='no-speech'||e.error=='aborted')return;  /* silencio: simplemente se reinicia la escucha */
-  const hard=e.error=='not-allowed'||e.error=='service-not-allowed'||e.error=='audio-capture';if(hard){JV.mute=true;JV.rec=null;$('#jvm').textContent='Activar micrófono';jvSet('mute')}micFail(e.error,!hard)};
- r.onend=()=>{if(JV.rec!==r)return;JV.rec=null;if(!JV.on||JV.mute)return;
-  const t=lt.trim();lt='';
-  if(t&&!JV.proc&&JV.st!='speak'){jvTurn(t);return}  /* frase que Chrome cerró sin confirmar: no se pierde */
-  if(!snd){JV.deaf=(JV.deaf||0)+1;if(JV.deaf>=4)jvDeaf()}
-  setTimeout(jvListen,150)};
- try{r.start();if(!JV.proc&&JV.st!='speak')jvSet('listen')}catch(e){JV.rec=null;setTimeout(jvListen,600)}}
+ if(ASRL){jvListenLocal();return}
+ let fin='',r;try{r=new SR()}catch(e){return}
+ JV.rec=r;r.lang=navigator.language||'es-MX';r.interimResults=true;r.continuous=false;
+ r.onresult=e=>{let it='';fin='';for(let i=0;i<e.results.length;i++){const x=e.results[i];if(x.isFinal)fin+=x[0].transcript;else it+=x[0].transcript}jvText(fin+it);micOk()};
+ r.onerror=e=>{if(e.error=='network'){ASRL=true;if(JV.rec===r)JV.rec=null;toast('El reconocimiento de Chrome falló; Noryx usa dictado local');setTimeout(jvListen,100);return}const hard=e.error=='not-allowed'||e.error=='service-not-allowed'||e.error=='audio-capture';if(hard){JV.mute=true;JV.rec=null;$('#jvm').textContent='Activar micrófono';jvSet('mute')}micFail(e.error,!hard)};
+ r.onend=()=>{if(JV.rec!==r)return;JV.rec=null;if(!JV.on||JV.mute)return;const t=fin.trim();t?jvTurn(t):setTimeout(jvListen,250)};
+ try{r.start();jvSet('listen')}catch(e){setTimeout(jvListen,600)}}
 async function jvWait(){const q=window.speechSynthesis;await sleep(250);let k=0;while(JV.on&&(q.speaking||q.pending)&&k<2400){await sleep(150);k++}}
 const JBYE=/^(?:adios|chao|hasta luego|terminar|terminar sesion|colgar|desconectate|apagate|goodbye|bye|end session|salir|cierra el modo jarvis|cierra el modo noryx)$/;
 async function jvTurn(raw0,typed){
@@ -1427,8 +1373,8 @@ async function jvTurn(raw0,typed){
  try{
   if(!jvAllowed()||Date.now()-creatorAct>6e5){jvStop();if(creator)lock(false);sysMsg('🔒 Modo Noryx cerrado: '+(creator?'la verificación de creador expiró (10 min sin actividad). Escribe /creador para entrar otra vez.':'tu acceso terminó o pasaron 10 min sin actividad. Escribe /noryx para volver a intentarlo.'),'Noryx');return}
   let raw=raw0.trim(),pm=jvPlain(raw);if(pm.length!==raw.length)raw=pm;pm=pm.replace(/[^a-z0-9 ]/g,' ');
-  const sm=pm.match(/^\s*(?:(?:oye|hey|ok|okay|ey)\s+)?((?:nor[iy]c?k?s|nor[iy]x|nor[iy]|norx|noryx|jarvis|yarvis)\b\s*)?(?:por favor\s+|porfa\s+)?/),woke=!!(sm&&sm[1]);
-  if(JV.wake&&!typed&&!woke&&!/\b(?:nor[iy]c?k?s|nor[iy]x|nor[iy]|norx|noryx|jarvis|yarvis)\b/.test(pm.slice(0,40))){jvText('Palabra clave activa: empieza diciendo «Noryx». Oí: «'+raw0+'»');jvLog('(ignorado, falta decir «Noryx») '+raw0);return}
+  const sm=pm.match(/^\s*(?:(?:oye|hey|ok|okay|ey)\s+)?((?:noryx|jarvis)\b\s*)?(?:por favor\s+|porfa\s+)?/),woke=!!(sm&&sm[1]);
+  if(JV.wake&&!typed&&!woke&&!/\b(?:noryx|jarvis)\b/.test(pm.slice(0,40)))return;
   const cut=sm?sm[0].length:0;raw=raw.slice(cut);pm=pm.slice(cut);
   const e=pm.length-pm.trimEnd().length;if(e){raw=raw.slice(0,raw.length-e);pm=pm.slice(0,pm.length-e)}
   creatorAct=Date.now();jvSet('think');jvText('Tú: '+raw0);jvChips([]);jvLog('» '+raw0);
@@ -1443,7 +1389,7 @@ async function jvTurn(raw0,typed){
   jvLogChat(raw0,show,out.m);
   if(out.say){JV.last=out.say;jvSet('speak');say(jvShort(out.say));await jvWait()}
  }catch(er){jvLog('⚠ '+(er&&er.message||er))}
- finally{JV.proc=false;JV.quiet=Date.now()+700;if(JV.on)jvListen()}}
+ finally{JV.proc=false;if(JV.on)jvListen()}}
 function jvInput(t){if(!t||!JV.on)return;if(JV.proc){toast('Un momento, estoy procesando');return}const r=JV.rec;JV.rec=null;try{r&&r.abort()}catch(e){}window.speechSynthesis&&speechSynthesis.cancel();jvTurn(t,true)}
 
 /* ---- comandos escritos: /noryx /puente /atajo /rutina ---- */
@@ -1454,11 +1400,6 @@ function jvAdmin(k,a){a=(a||'').trim();let m;const J='Noryx';
   if(m=a.match(/^(.+?)\s+(on|off|encender|apagar)\s+(https?:\/\/\S+)$/i)){const x=norm(m[1]),act=/^(?:on|encender)$/i.test(m[2])?'on':'off';B[x]=B[x]||{};B[x][act]=m[3];S.set('nx-jbridge',B);return sysMsg('✅ Puente «'+x+'» ('+act+') guardado. Envío un POST con {"accion":"'+act+'"}; si pones {accion} en la URL lo reemplazo por on/off.'+(/^http:/i.test(m[3])&&location.protocol=='https:'?'\n⚠ Esta página está en https: el navegador bloqueará esa dirección http.':''),J)}
   if(m=a.match(/^(.+?)\s+(https?:\/\/\S+)$/i)){const x=norm(m[1]);B[x]={on:m[2],off:m[2]};S.set('nx-jbridge',B);return sysMsg('✅ Puente «'+x+'» guardado (misma URL para encender y apagar; envío {"accion":"on|off"}).',J)}
   return sysMsg('Uso: `/puente nombre on https://…`, `/puente nombre off https://…` o `/puente borrar nombre`.',J)}
- if(k=='ytkey'){
-  if(!a){return sysMsg(S.get('nx-ytkey','')?'Clave de YouTube guardada en este navegador. Con ella reproduzco directo «el más reciente de…» y recomiendo videos populares. Para quitarla: `/ytkey borrar`.':'Sin clave de YouTube. Funciona igual (abro los resultados ya ordenados), pero con una clave gratuita de la YouTube Data API v3 abro el video directo.\n`/ytkey TU_CLAVE`\n`/ytkey borrar`',J)}
-  if(/^borrar$/i.test(a)){S.set('nx-ytkey','');return sysMsg('Clave de YouTube borrada.',J)}
-  if(/^[\w-]{30,60}$/.test(a)){S.set('nx-ytkey',a);return sysMsg('✅ Clave de YouTube guardada solo en este navegador. Prueba: «ponme el video más reciente de Luisito Comunica».',J)}
-  return sysMsg('Uso: `/ytkey TU_CLAVE` o `/ytkey borrar`.',J)}
  if(k=='atajo'){const A=S.get('nx-jsites',{});
   if(!a){const ks=Object.keys(A);return sysMsg(ks.length?'Atajos:\n'+ks.map(x=>'- '+x+' → '+A[x]).join('\n'):'Sin atajos. Crea uno: `/atajo mi blog = https://ejemplo.com` y di «abre mi blog».',J)}
   if(m=a.match(/^borrar\s+(.+)$/i)){const x=norm(m[1]);delete A[x];S.set('nx-jsites',A);return sysMsg('Atajo «'+x+'» borrado.',J)}
@@ -1487,12 +1428,13 @@ setInterval(()=>{const b=$('#jvb');if(b)b.hidden=!jvAllowed();const gb=$('#gxb')
    y dice con palabras claras en qué paso falla. También se abre solo cuando el dictado falla. */
 var MD={stream:null,ctx:null,raf:0,peak:0,t0:0,rec:null,to:0,perm:'',ok:0,silent:0},MDs={streak:0,last:0};
 const mdEl=$('#md'),mdl=$('#mdl'),mds=$('#mds'),mdb=$('#mdb'),mdn=$('#mdn'),mdo=$('#mdo'),mdw=$('#mdw'),mdlog=$('#mdlog');
-const MIC_WHY={'not-allowed':'El navegador bloqueó el micrófono para esta página.','service-not-allowed':'El navegador bloqueó el reconocimiento de voz para esta página.','audio-capture':'No se pudo capturar audio: no hay micrófono disponible o otro programa lo está usando.','network':'El reconocimiento de voz no pudo conectar con su servicio (Chrome envía el audio a Google). Revisa tu internet; Brave y algunos bloqueadores lo impiden.','no-speech':'No se oyó ninguna voz.','language-not-supported':'El idioma no es compatible con el reconocimiento de voz de este navegador.'};
+const MIC_WHY={'not-allowed':'El navegador bloqueó el micrófono para esta página.','service-not-allowed':'El navegador bloqueó el reconocimiento de voz para esta página.','audio-capture':'No se pudo capturar audio: no hay micrófono disponible o otro programa lo está usando.','network':'El reconocimiento de voz no pudo conectar con su servicio (Chrome envía el audio a Google). Revisa tu internet; Brave y algunos bloqueadores lo impiden. Noryx cambió solo a dictado local (Whisper): cierra este panel y vuelve a hablar.','no-speech':'No se oyó ninguna voz.','language-not-supported':'El idioma no es compatible con el reconocimiento de voz de este navegador.'};
 const mdVerdict=(k,t)=>{mdo.className=k;mdo.textContent=t};
 const mdAdd=t=>{const d=document.createElement('div');d.textContent=t;mdlog.append(d)};
 const mdSettings=()=>(/Edg\//.test(navigator.userAgent)?'edge':'chrome')+'://settings/content/microphone';
 function micOk(){MDs.streak=0}
 function micFail(code,loop,why){
+ if(code=='network')ASRL=true;
  if(!code||code=='aborted'||!mdEl.hidden)return;
  if(code=='no-speech'){const n=++MDs.streak;if(n<(loop?4:2)){if(!loop)toast('No te escuché. Inténtalo de nuevo.');return}MDs.streak=0}
  if(code=='network'&&Date.now()-MDs.last<60000)return;
@@ -1554,7 +1496,7 @@ function mdRec(){
  r.onsoundstart=()=>{ev.sound=1;mdAdd('🔊 Detecta sonido')};
  r.onspeechstart=()=>{ev.speech=1;mdAdd('🗣 Detecta voz')};
  r.onresult=e=>{const last=e.results[e.results.length-1];let t='';for(let i=0;i<e.results.length;i++)t+=e.results[i][0].transcript;if(last.isFinal){ev.fin=1;mdAdd('✅ Entendí: «'+t+'»')}else mdn.textContent='… '+t};
- r.onerror=e=>{ev.err=e.error;mdAdd('⚠ Error: '+e.error)};
+ r.onerror=e=>{ev.err=e.error;if(e.error=='network')ASRL=true;mdAdd('⚠ Error: '+e.error)};
  r.onend=()=>{if(MD.rec!==r)return;MD.rec=null;clearTimeout(MD.to);mdn.textContent='';
   if(ev.fin)mdVerdict('ok','✅ El reconocimiento de voz funciona de punta a punta. Si Noryx no responde en el chat, recarga la página y vuelve a intentarlo.');
   else if(ev.err)mdVerdict('bad','❌ '+(MIC_WHY[ev.err]||'Error del reconocimiento: '+ev.err)+(ev.err=='not-allowed'||ev.err=='service-not-allowed'?'\nAbre el candado junto a la dirección → Micrófono → Permitir, y recarga.':''));
@@ -1754,46 +1696,6 @@ $('#bkf').onchange=async e=>{const f=e.target.files[0];e.target.value='';if(!f)r
 
 loadCT();
 renderAll();
-
-/* ============ App instalable (PWA) + actualización automática ============
-   - Instalar: botón «Instalar app» (Chrome/Edge/Android) o instrucciones en iPhone/iPad.
-   - Actualizar: al abrir, al volver a la app y cada 20 min compara el código publicado con el
-     que está corriendo; si cambió, recarga sola (cuando no estás hablando ni escribiendo). */
-(function(){
- const isHttp=/^https?:$/.test(location.protocol),btn=$('#pwa');
- const standalone=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
- const ios=/iphone|ipad|ipod/i.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
- let dp=null;
- if(btn){
-  if(standalone())btn.hidden=true;
-  else if(ios){btn.hidden=false}
-  addEventListener('beforeinstallprompt',e=>{e.preventDefault();dp=e;if(!standalone())btn.hidden=false});
-  addEventListener('appinstalled',()=>{dp=null;btn.hidden=true;toast('Noryx instalada ✔')});
-  btn.onclick=async()=>{
-   if(dp){dp.prompt();try{await dp.userChoice}catch(e){}dp=null;btn.hidden=true;return}
-   if(ios){sysMsg('Para instalar Noryx en iPhone o iPad:\n1. Abre esta página en **Safari**.\n2. Toca el botón **Compartir** (el cuadrado con la flecha).\n3. Elige **Agregar a pantalla de inicio**.\nQueda como una app y se actualiza sola.','Noryx');return}
-   sysMsg('Tu navegador no ofrece instalar desde aquí. En Chrome o Edge usa el ícono de instalar en la barra de direcciones, o el menú ⋮ → «Instalar Noryx».','Noryx')}}
- if(!isHttp||!('serviceWorker' in navigator))return;
- /* service worker */
- navigator.serviceWorker.register('sw.js').then(reg=>{
-  const upd=()=>{try{reg.update()}catch(e){}};
-  setInterval(upd,20*60*1000);
-  addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')upd()})}).catch(()=>{});
- /* ¿hay una versión nueva del código publicado? */
- const fnv=t=>{let h=2166136261;for(let i=0;i<t.length;i++){h^=t.charCodeAt(i);h=Math.imul(h,16777619)}return (h>>>0).toString(36)+t.length};
- let mine=null,waiting=false;
- const grab=async()=>{try{const r=await fetch(location.pathname,{cache:'no-store'});if(!r.ok)return null;return fnv(await r.text())}catch(e){return null}};
- const idle=()=>!(typeof JV!=='undefined'&&JV.on)&&!(typeof busy!=='undefined'&&busy)&&!(($('#in')||{}).value||'').trim();
- const apply=()=>{
-  const last=+sessionStorage.getItem('nx-reloaded')||0;if(Date.now()-last<60000)return;
-  if(!idle()){if(!waiting){waiting=true;toast('Hay una versión nueva de Noryx; se aplicará en cuanto termines');const t=setInterval(()=>{if(idle()){clearInterval(t);waiting=false;apply()}},15000)}return}
-  sessionStorage.setItem('nx-reloaded',Date.now());toast('Actualizando Noryx…');setTimeout(()=>location.reload(),900)};
- const check=async()=>{const h=await grab();if(!h)return;if(mine===null){mine=h;return}if(h!==mine)apply()};
- grab().then(h=>{mine=h});
- setInterval(check,20*60*1000);
- addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')check()});
- addEventListener('online',check);
-})();
 </script>
 </body>
 </html>
