@@ -602,12 +602,12 @@ thanks:[['¡Con gusto{n}!','Para eso estoy.'],['Anytime{n}!','Glad to help.']],
 bye:[['Hasta luego{n}. Aquí sigo aprendiendo.'],['See you{n}. I\'ll keep learning.']],
 who:[['Soy **Noryx**: una IA con núcleo propio, una red neuronal de {H} neuronas ocultas que se entrena en tu navegador al abrir esta página ({ACC} % de acierto). No dependo de ChatGPT ni de Gemini. Calculo, resuelvo ecuaciones, busco en Wikipedia, consulto el clima y aprendo lo que me enseñes.'],['I\'m **Noryx**: an AI with its own core, a {H}-hidden-neuron network trained in your browser when this page opens ({ACC}% accuracy). No ChatGPT or Gemini behind me. I calculate, solve equations, search Wikipedia, check weather and learn what you teach me.']],
 maker:[['Me creó **Orlando**, que armó mi red neuronal desde cero.'],['**Orlando** created me and built my neural network from scratch.']],
-help:[['Esto sé hacer:\n- **Calcular**: `15% de 2480`, `raíz de 144`, `5!`\n- **Estadística**: `media de 4, 8, 15, 16`\n- **Álgebra**: `x^2 - 5x + 6 = 0`\n- **Saber**: `¿quién fue Nikola Tesla?` (Wikipedia)\n- **Clima**: `clima en Madrid`\n- **Países**: `población de Perú`, `pib per cápita de Chile`\n- **Conversiones**: `10 millas a km`, `100 °F a °C`\n- **Aprender**: `aprende: mi color favorito = azul`\n- **Vocabulario**: `¿qué significa extravagante?`, `dime una palabra rara`, `sinónimos de efímero`, `aprende palabra: x = significado`\n- **Con cuenta**: voz en vivo e imágenes (subir y crear)\n- **Comandos**: `/nuevo` `/limpiar` `/exportar` `/nombre Ana` `/memoria` `/olvidar` `/respaldo` `/restaurar`\n- **Asistente de voz**: `/noryx` (con acceso), `/acceso` para ver el tuyo, `/solicitar` para pedirlo al creador'],['What I can do:\n- **Calculate**: `15% of 2480`, `sqrt 144`, `5!`\n- **Stats**: `mean of 4, 8, 15, 16`\n- **Algebra**: `x^2 - 5x + 6 = 0`\n- **Look up**: `who was Nikola Tesla?`\n- **Weather**: `weather in London`\n- **Learn**: `learn: my favorite color = blue`\n- **Commands**: `/nuevo` `/limpiar` `/exportar` `/nombre Ana` `/memoria` `/olvidar`']],
+help:[['Esto sé hacer:\n- **Calcular**: `15% de 2480`, `raíz de 144`, `5!`\n- **Estadística**: `media de 4, 8, 15, 16`\n- **Álgebra**: `x^2 - 5x + 6 = 0`\n- **Saber**: `¿quién fue Nikola Tesla?` (Wikipedia)\n- **Clima**: `clima en Madrid`\n- **Países**: `población de Perú`, `pib per cápita de Chile`\n- **Conversiones**: `10 millas a km`, `100 °F a °C`\n- **Aprender**: `aprende: mi color favorito = azul`\n- **Con cuenta**: voz en vivo e imágenes (subir y crear)\n- **Comandos**: `/nuevo` `/limpiar` `/exportar` `/nombre Ana` `/memoria` `/olvidar` `/respaldo` `/restaurar`\n- **Asistente de voz**: `/noryx` (con acceso), `/acceso` para ver el tuyo, `/solicitar` para pedirlo al creador'],['What I can do:\n- **Calculate**: `15% of 2480`, `sqrt 144`, `5!`\n- **Stats**: `mean of 4, 8, 15, 16`\n- **Algebra**: `x^2 - 5x + 6 = 0`\n- **Look up**: `who was Nikola Tesla?`\n- **Weather**: `weather in London`\n- **Learn**: `learn: my favorite color = blue`\n- **Commands**: `/nuevo` `/limpiar` `/exportar` `/nombre Ana` `/memoria` `/olvidar`']],
 joke:[['¿Por qué las redes neuronales no pagan renta? Porque ya tienen muchas capas ocultas.','Mi red tiene {H} neuronas y ninguna sabe contar chistes. Yo tampoco.'],['Why did the neural net go to therapy? Too many hidden layers.']]};
 
 /* ============ Maestro externo: otra IA (estilo Gemini) sin API key; Noryx aprende de sus respuestas ============ */
 let MAESTRO=S.get('nx-teacher',true),busyAsk=0;
-const SYS='Eres Noryx, una IA amable con trato femenino, creada por Orlando. Responde en el idioma del usuario, con claridad y calidez, en menos de 130 palabras. Usa markdown simple (**negritas** y listas con "- "). Si no sabes algo, dilo con honestidad. Sigue el hilo de la conversación: entiende referencias como "eso", "y tú" o "explícalo más simple" usando los mensajes anteriores, responde a lo último que dijo la persona y, cuando ayude, cierra con una pregunta corta para continuar. Cuida el vocabulario: usa palabras precisas y entiende las palabras raras o cultas que use la persona.';
+const SYS='Eres Noryx, una IA amable con trato femenino, creada por Orlando. Responde en el idioma del usuario, con claridad y calidez, en menos de 130 palabras. Usa markdown simple (**negritas** y listas con "- "). Si no sabes algo, dilo con honestidad.';
 const clean=x=>x.replace(/\n*(?:---+\s*)?(?:\*\*)?(?:Powered by|Support) Pollinations[\s\S]*$/i,'').replace(/<think>[\s\S]*?<\/think>/g,'').trim();
 async function ask(msgs){
  const post=async m=>{const c=new AbortController(),t=setTimeout(()=>c.abort(),28000);try{const r=await fetch('https://text.pollinations.ai/openai',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:m,messages:msgs,private:true}),signal:c.signal});if(r.status==429)return{err:'rate'};if(!r.ok)return null;const d=await r.json(),x=d.choices&&d.choices[0]&&d.choices[0].message&&d.choices[0].message.content;return x?{t:clean(x)}:null}catch(e){return null}finally{clearTimeout(t)}};
@@ -615,203 +615,16 @@ async function ask(msgs){
  try{const u=msgs[msgs.length-1].content,r=await fetch('https://text.pollinations.ai/'+encodeURIComponent(u.slice(0,1500))+'?model=openai&private=true&system='+encodeURIComponent(SYS));if(r.status==429)return{err:'rate'};if(r.ok){const x=clean(await r.text());if(x)return{t:x}}}catch(e){}
  return last||{err:'net'}}
 async function maestro(t){
- const c=conv(),h=((c&&c.msgs)||[]).slice(-13,-1).map(m=>({role:m.r=='u'?'user':'assistant',content:m.t.slice(0,600)}));
- return ask([{role:'system',content:SYS+(mem.name?' El usuario se llama '+mem.name+'.':'')+lexGloss(t)},...h,{role:'user',content:t}])}
+ const c=conv(),h=((c&&c.msgs)||[]).slice(-9,-1).map(m=>({role:m.r=='u'?'user':'assistant',content:m.t.slice(0,600)}));
+ return ask([{role:'system',content:SYS+(mem.name?' El usuario se llama '+mem.name+'.':'')},...h,{role:'user',content:t}])}
 function learn(q,a){if(toks(q).length<3||a.length>700||/^y\s/i.test(q.trim()))return;const k=q.replace(/[?!¿¡.]+$/g,'').trim(),x=mem.taught.find(z=>z.q.toLowerCase()==k.toLowerCase());if(x){if(x.auto)x.a=a}else mem.taught.push({q:k,a,auto:1});if(mem.taught.length>250){const i=mem.taught.findIndex(z=>z.auto);mem.taught.splice(i<0?0:i,1)}save()}
 async function askOpen(t,q,en){
  let note='';if(MAESTRO){const r=await maestro(t);if(r.t){learn(t,r.t);return{t:r.t,m:'Maestro externo · aprendido'}}note=r.err=='rate'?'El maestro externo está saturado ahora mismo. ':'No pude contactar al maestro externo. '}
  if(q.length>2){const w=await wiki(q,en);if(w)return{t:note?note+'Esto encontré en Wikipedia:\n\n'+w:w,m:'Wikipedia'}}
  return note?{t:note+'Inténtalo de nuevo en unos segundos o enséñame con `aprende: pregunta = respuesta`.',m:'Sin respuesta'}:null}
-/* ============ Vocabulario raro + conversación fluida ============ */
-const LEX_RAW=[
-'extravagante@@Que se sale de lo común, de lo razonable o de lo habitual, casi siempre de forma llamativa.@@excéntrico, estrafalario, singular@@Llegó a la boda con un sombrero extravagante.',
-'aborrecido@@Que provoca o siente aborrecimiento, es decir, aversión o rechazo muy fuerte. En el habla coloquial de varios países también se usa para «harto» o «hastiado».@@detestado, odiado, harto@@Estaba aborrecido de tantas reuniones inútiles.',
-'efímero@@Que dura muy poco tiempo.@@fugaz, pasajero, breve@@La fama de aquella canción fue efímera.',
-'ubicuo@@Que está presente en todas partes al mismo tiempo.@@omnipresente@@Los teléfonos móviles son ubicuos en la vida moderna.',
-'inefable@@Que no se puede expresar con palabras.@@indescriptible, indecible@@Sintió una alegría inefable al verla de nuevo.',
-'sempiterno@@Que durará siempre; que, habiendo tenido principio, no tendrá fin.@@eterno, perpetuo, imperecedero@@Prometieron un amor sempiterno.',
-'melifluo@@Dulce y suave al hablar, a menudo de manera empalagosa o poco sincera.@@meloso, empalagoso, azucarado@@Habló con tono melifluo para convencernos.',
-'parsimonia@@Lentitud y calma excesivas al hacer algo.@@cachaza, pachorra, flema@@Revolvió el café con parsimonia.',
-'inexorable@@Que no se puede evitar ni detener; que no se deja vencer por ruegos.@@ineludible, implacable, inevitable@@El paso del tiempo es inexorable.',
-'perspicaz@@Que percibe con agudeza cosas que otros no notan.@@sagaz, agudo, astuto@@Una observación perspicaz resolvió el misterio.',
-'acérrimo@@Muy fuerte, firme o intransigente, dicho de una defensa, un seguidor o un enemigo.@@tenaz, fanático, férreo@@Es un defensor acérrimo de los animales.',
-'pernicioso@@Gravemente dañino o perjudicial.@@nocivo, dañino, perjudicial@@Fumar es un hábito pernicioso para la salud.',
-'vehemente@@Que actúa o habla con mucha fuerza, pasión e impulso.@@apasionado, ardiente, fogoso@@Defendió su idea con palabras vehementes.',
-'lacónico@@Breve y conciso al hablar o escribir; que usa muy pocas palabras.@@escueto, sucinto, breve@@Su respuesta fue lacónica: «No».',
-'locuaz@@Que habla mucho o con mucha facilidad.@@parlanchín, hablador, charlatán@@Mi tío es tan locuaz que nunca deja hablar a nadie.',
-'verborrea@@Abundancia excesiva de palabras, sobre todo cuando dicen poco.@@labia, parloteo, palabrería@@Tanta verborrea y al final no dijo nada.',
-'idiosincrasia@@Conjunto de rasgos y carácter propios de una persona o de un grupo.@@carácter, talante, forma de ser@@La idiosincrasia de cada pueblo se nota en su comida.',
-'vorágine@@Mezcla confusa y agitada de sucesos o sentimientos; también, remolino impetuoso.@@torbellino, remolino, tumulto@@Se perdió en la vorágine del trabajo.',
-'efusivo@@Que muestra sus sentimientos con mucha intensidad y calidez.@@caluroso, expansivo, cariñoso@@Me recibió con un abrazo efusivo.',
-'inconmensurable@@Que no se puede medir; enorme.@@inmenso, incalculable, infinito@@Le tengo una gratitud inconmensurable.',
-'impávido@@Que no muestra miedo ni se altera ante el peligro o la sorpresa.@@sereno, imperturbable, impasible@@Permaneció impávido ante la tormenta.',
-'ominoso@@Que anuncia desgracia; abominable.@@funesto, siniestro, aciago@@Un silencio ominoso cayó sobre la sala.',
-'peregrino@@Extraño, raro o poco común; también, persona que viaja a un lugar sagrado.@@raro, extraño, singular@@Tuvo la peregrina idea de cruzar el río a nado.',
-'insólito@@Que no es habitual ni se espera.@@inusual, extraordinario, raro@@Nevó en pleno verano, algo insólito.',
-'baladí@@De poca importancia o valor.@@insignificante, trivial, nimio@@No discutamos por un asunto tan baladí.',
-'pusilánime@@Falto de ánimo y valor para enfrentar situaciones difíciles.@@cobarde, timorato, apocado@@Fue pusilánime y no se atrevió a decir la verdad.',
-'cavilar@@Pensar algo con mucha atención y, a veces, con preocupación.@@meditar, rumiar, reflexionar@@Pasó la noche cavilando sobre su decisión.',
-'enjundia@@Sustancia, importancia o fuerza de algo, sobre todo de un escrito o discurso.@@sustancia, meollo, peso@@Es un ensayo breve pero de mucha enjundia.',
-'sibarita@@Persona que ama el lujo y los placeres refinados.@@refinado, gourmet, epicúreo@@Es tan sibarita que solo cena en restaurantes con estrella.',
-'bucólico@@Relativo a la vida del campo y los pastores; apacible y campestre.@@campestre, pastoril, idílico@@Pasamos una tarde bucólica junto al arroyo.',
-'soez@@Grosero, vulgar o de mal gusto.@@grosero, ordinario, vulgar@@Lo expulsaron por su lenguaje soez.',
-'rimbombante@@Ostentoso, llamativo y exagerado, sobre todo en el lenguaje o el estilo.@@pomposo, grandilocuente, ampuloso@@Presentó su proyecto con un título rimbombante.',
-'acaecer@@Suceder o producirse un hecho.@@ocurrir, suceder, acontecer@@Lo que acaeció aquella noche nadie lo olvida.',
-'taciturno@@Callado, reservado y de ánimo triste o melancólico.@@silencioso, callado, melancólico@@Llegó taciturno y se sentó al fondo.',
-'zozobra@@Inquietud, aflicción o temor por algo incierto; también, hundimiento de una embarcación.@@inquietud, angustia, desasosiego@@Esperó los resultados con zozobra.',
-'candor@@Sencillez, sinceridad e ingenuidad sin malicia.@@ingenuidad, inocencia, pureza@@Preguntó con candor si podía quedarse el cohete.',
-'diáfano@@Transparente o muy claro; que deja pasar la luz.@@transparente, nítido, límpido@@Explicó el asunto con una claridad diáfana.',
-'mordaz@@Que critica de forma punzante, con ironía o sarcasmo.@@sarcástico, incisivo, cáustico@@Hizo un comentario mordaz sobre el discurso.',
-'procaz@@Desvergonzado y atrevido en palabras o actos.@@descarado, atrevido, indecente@@Su chiste procaz incomodó a todos.',
-'vetusto@@Muy viejo o anticuado.@@antiguo, ruinoso, decrépito@@Vivían en una casona vetusta.',
-'lúgubre@@Triste, oscuro y sombrío; propio de un funeral.@@sombrío, fúnebre, tétrico@@El sótano tenía un aire lúgubre.',
-'arcano@@Secreto, oculto y difícil de conocer; también, un misterio.@@enigma, secreto, recóndito@@Los arcanos de la alquimia fascinaban a los curiosos.',
-'ecuánime@@Que tiene equilibrio de ánimo y juzga con imparcialidad.@@imparcial, sereno, equilibrado@@Se mantuvo ecuánime en medio de la discusión.',
-'proclive@@Inclinado o con tendencia hacia algo.@@propenso, dado, inclinado@@Es proclive a distraerse con cualquier ruido.',
-'nimio@@Insignificante, de muy poca importancia.@@minúsculo, trivial, baladí@@No te preocupes por detalles nimios.',
-'ávido@@Que desea algo con ansia.@@ansioso, voraz, ambicioso@@Es un lector ávido de novelas de misterio.',
-'magnánimo@@Generoso y de gran corazón, sobre todo al perdonar.@@generoso, clemente, noble@@El rey fue magnánimo con sus rivales.',
-'bizarro@@Valiente y generoso. Hoy, por influencia del inglés, mucha gente lo usa como «raro» o «extraño».@@valiente, gallardo, apuesto@@El capitán, bizarro, encabezó la defensa.',
-'ufano@@Orgulloso y satisfecho de sí mismo.@@orgulloso, engreído, pagado de sí@@Salió ufano con su trofeo.',
-'cuita@@Pena, aflicción o preocupación.@@pena, aflicción, desvelo@@Me contó sus cuitas de amor.',
-'galimatías@@Lenguaje o asunto confuso y difícil de entender.@@embrollo, enredo, jerigonza@@El contrato era un galimatías legal.',
-'patidifuso@@Que se queda atónito por la sorpresa.@@atónito, pasmado, estupefacto@@Se quedó patidifuso al ver el regalo.',
-'estrafalario@@Extravagante, raro en el modo de ser o de vestir.@@extravagante, excéntrico, raro@@Siempre usa unos lentes estrafalarios.',
-'peripecia@@Cambio repentino en una situación; incidente imprevisto en un viaje o relato.@@aventura, vicisitud, percance@@Nos contó las peripecias de su viaje.',
-'zaherir@@Herir con palabras o burlas a alguien, humillándolo.@@humillar, mortificar, ofender@@Le dolió que lo zahirieran en público.',
-'sosegado@@Tranquilo, pacífico y sin agitación.@@sereno, calmado, apacible@@Habló con voz sosegada.',
-'ignominia@@Afrenta o deshonra pública.@@deshonra, oprobio, vergüenza@@Cayó en la ignominia tras el escándalo.',
-'holgazán@@Que evita el trabajo y prefiere no hacer nada.@@perezoso, haragán, vago@@Es tan holgazán que hasta el sofá se cansa de él.',
-'petulante@@Que presume de lo que tiene o sabe, con desprecio hacia los demás.@@engreído, arrogante, vanidoso@@Su tono petulante molestó a todo el equipo.',
-'sagaz@@Astuto y listo para anticipar o resolver situaciones.@@astuto, perspicaz, ladino@@Una jugada sagaz le dio la victoria.',
-'circunspecto@@Serio, prudente y reservado en su comportamiento.@@prudente, mesurado, comedido@@Se mostró circunspecto durante la reunión.',
-'inverosímil@@Que no parece verdad o no es creíble.@@increíble, improbable, absurdo@@La coartada resultaba inverosímil.',
-'exiguo@@Escaso, insuficiente, muy poco.@@escaso, mísero, reducido@@Vivían con un sueldo exiguo.',
-'prístino@@Original, primitivo, puro y sin alteraciones.@@puro, original, intacto@@Encontraron un lago de aguas prístinas.',
-'furtivo@@Que se hace a escondidas y a hurtadillas.@@sigiloso, clandestino, oculto@@Le lanzó una mirada furtiva.',
-'abstruso@@Difícil de comprender por ser muy complicado.@@complejo, recóndito, oscuro@@El libro era tan abstruso que lo dejó en la página diez.',
-'hosco@@Poco amable, de carácter áspero y esquivo.@@huraño, arisco, ceñudo@@Un vecino hosco apenas saluda.',
-'jocoso@@Gracioso, divertido y que provoca risa.@@chistoso, humorístico, risible@@Contó una anécdota jocosa.',
-'apático@@Sin interés, sin ganas ni emoción ante las cosas.@@indiferente, desganado, abúlico@@Llegó apático a la clase de lunes.',
-'alborozo@@Alegría muy grande y expresada con ruido o entusiasmo.@@júbilo, regocijo, jolgorio@@Los niños recibieron la noticia con alborozo.',
-'ecléctico@@Que reúne ideas, gustos o estilos de distintas fuentes.@@variado, mixto, plural@@Tiene un gusto musical ecléctico.',
-'erudito@@Que posee conocimientos profundos y amplios, sobre todo de libros y estudio.@@docto, sabio, instruido@@Es un erudito en historia medieval.',
-'hermético@@Que está cerrado del todo; también, difícil de comprender o de comunicar.@@cerrado, impenetrable, reservado@@Se mostró hermético y no soltó ni una pista.',
-'inane@@Vano, fútil, sin sustancia ni utilidad.@@fútil, vacío, estéril@@Fue una charla inane que no llevó a nada.',
-'procrastinar@@Dejar para después lo que se debería hacer ahora.@@posponer, aplazar, dilatar@@Llevo una semana procrastinando ese informe.',
-'resiliencia@@Capacidad de adaptarse y recuperarse tras una situación adversa.@@aguante, entereza, fortaleza@@Su resiliencia le ayudó a levantarse tras el fracaso.',
-'albur@@Contingencia o azar; en México, juego de palabras de doble sentido.@@azar, riesgo, doble sentido@@Se lanzó a ese albur sin saber cómo saldría.',
-'aciago@@De mal agüero; que trae desgracia.@@funesto, infausto, desdichado@@Fue un día aciago para el equipo.',
-'desazón@@Inquietud o malestar interior, sin una causa clara.@@inquietud, desasosiego, intranquilidad@@Una vaga desazón no la dejaba dormir.',
-'incólume@@Sano, sin daño ni menoscabo.@@ileso, intacto, indemne@@Salió incólume del accidente.',
-'desidia@@Falta de interés, cuidado o ganas al hacer algo.@@dejadez, apatía, negligencia@@La desidia de las autoridades arruinó el parque.',
-'ahínco@@Empeño y esfuerzo grandes al hacer algo.@@empeño, tesón, denuedo@@Estudió con ahínco para el examen.',
-'circunloquio@@Rodeo de palabras para decir algo que se podría decir más directamente.@@rodeo, perífrasis, vueltas@@Déjate de circunloquios y dime la verdad.',
-'anodino@@Insignificante, sin gracia ni interés.@@insulso, soso, insípido@@Fue una película anodina que olvidé al salir.',
-'recóndito@@Muy escondido, apartado o profundo.@@oculto, apartado, íntimo@@Guardaba su secreto en lo más recóndito del alma.',
-'inopinado@@Que sucede sin pensarlo ni esperarlo.@@inesperado, repentino, imprevisto@@Recibimos una visita inopinada.',
-'ripio@@Palabra o frase inútil que se usa solo para completar un verso o un texto; también, escombro.@@relleno, palabrería, cascajo@@Ese párrafo es puro ripio.',
-'hastío@@Cansancio, aburrimiento o repugnancia por algo repetido o excesivo.@@aburrimiento, tedio, fastidio@@Sintió hastío tras repetir lo mismo mil veces.',
-'embeleso@@Estado de quien queda cautivado y absorto por algo.@@fascinación, arrobo, encanto@@Miraba el atardecer con embeleso.',
-'tesón@@Firmeza y constancia para lograr algo.@@constancia, perseverancia, ahínco@@Con tesón terminó la carrera.',
-'cabal@@Completo y exacto; también, honrado e íntegro.@@íntegro, exacto, completo@@Es una persona cabal, siempre cumple.',
-'exultante@@Que muestra gran alegría y excitación.@@eufórico, radiante, jubiloso@@Salió exultante tras ganar la final.',
-'ñoño@@Apocado, sin gracia o remilgado; en algunos países, persona muy aplicada al estudio.@@remilgado, apocado, cursi@@No seas ñoño y anímate a probarlo.',
-'mendaz@@Mentiroso o falso.@@mentiroso, embustero, falaz@@Un testimonio mendaz casi lo hunde.',
-'gazmoño@@Que finge devoción o se escandaliza con facilidad por todo.@@mojigato, santurrón, puritano@@No seas gazmoño, es solo una broma.',
-'pazguato@@Simple, que se asombra de todo.@@bobalicón, simple, cándido@@Lo miraba como un pazguato.',
-'badulaque@@Persona de poco juicio y poca seriedad.@@bobo, necio, mentecato@@Dejó que ese badulaque manejara el dinero.',
-'zafio@@Grosero y tosco en el trato.@@tosco, basto, rudo@@Fue zafio con el camarero.',
-'vacuo@@Vacío, sin contenido ni profundidad.@@vano, hueco, superficial@@Dio un discurso vacuo.',
-'trémulo@@Que tiembla.@@tembloroso, vacilante, estremecido@@Habló con voz trémula.',
-'efervescente@@Que bulle o está lleno de entusiasmo y energía.@@burbujeante, vivaz, animado@@Era un ambiente efervescente.',
-'pernoctar@@Pasar la noche en un lugar que no es el propio.@@alojarse, hospedarse@@Pernoctamos en un pueblito de montaña.',
-'sobrecogedor@@Que impresiona y deja sin palabras.@@impresionante, estremecedor@@Fue un silencio sobrecogedor.',
-'pícaro@@Astuto y sinvergüenza, pero de forma simpática; que obra con malicia traviesa.@@travieso, bribón, taimado@@Me guiñó un ojo con una sonrisa pícara.',
-'chiflado@@Que ha perdido un poco el juicio o está medio loco; muy aficionado a algo.@@loco, lunático, maniático@@Está chiflado por los trenes.',
-'mequetrefe@@Persona entrometida, bulliciosa y de poco juicio.@@botarate, zascandil, tarambana@@Ese mequetrefe se cree importante.',
-'efluvio@@Emanación sutil que se desprende de un cuerpo, como un aroma.@@aroma, emanación, vaho@@Un efluvio de pan recién hecho llegaba a la calle.',
-'sortilegio@@Hechizo o encantamiento; también, atractivo irresistible.@@hechizo, embrujo, conjuro@@Cayó bajo el sortilegio de su voz.',
-'quimera@@Cosa que se imagina como posible y no lo es; ilusión sin fundamento.@@ilusión, utopía, fantasía@@Vivir sin trabajar es una quimera.',
-'abnegado@@Que se sacrifica por los demás sin pensar en sí mismo.@@altruista, sacrificado, desinteresado@@Una enfermera abnegada cuidó de todos.',
-'rebuscado@@Poco natural, complicado a propósito.@@afectado, artificioso, enrevesado@@Escribe en un estilo muy rebuscado.',
-'estoico@@Que soporta el dolor o la adversidad con serenidad y sin quejarse.@@impasible, sereno, resignado@@Se mostró estoico ante el dolor.',
-'prolijo@@Largo y detallado en exceso; en América, también cuidadoso y esmerado.@@extenso, minucioso, detallado@@Dio una explicación prolija.',
-'contumaz@@Obstinado en mantener un error o una conducta.@@terco, obstinado, porfiado@@Es un deudor contumaz que nunca paga.',
-'acucioso@@Que obra con diligencia y esmero.@@diligente, minucioso, esmerado@@Un investigador acucioso revisó cada dato.',
-'laxo@@Poco estricto, flojo o relajado.@@flojo, relajado, permisivo@@Tiene una disciplina laxa.',
-'lerdo@@Lento y torpe para comprender o actuar.@@torpe, tardo, pesado@@Fue lerdo para darse cuenta.'
-];
-const LEX={};LEX_RAW.forEach(r=>{const[w,d,s,e]=r.split('@@');LEX[norm(w)]={w,d,s,e}});
-ctx.turn=0;ctx.lexT=-9;ctx.seen=[];
-const lexGet=k=>LEX[k]||(mem.lex&&mem.lex[k])||null;
-const lexKeys=()=>Object.keys(LEX).concat(Object.keys(mem.lex||{}));
-const firstS=d=>(d.match(/^[^.!?]+[.!?]?/)||[d])[0];
-const lexFmt=x=>'**'+x.w[0].toUpperCase()+x.w.slice(1)+'** — '+x.d+(x.s?'\n- **Sinónimos:** '+x.s:'')+(x.e?'\n- **Ejemplo:** «'+x.e+'»':'');
-function lexTok(w){if(!w||w.length<4)return null;const b=w.replace(/(es|s)$/,'');for(const c of[w,b,w.replace(/(a|as|os)$/,'o'),b.replace(/a$/,'o'),b.replace(/o$/,'a')])if(lexGet(c))return c;return null}
-function lexNear(k){if(k.length<5)return null;const m=k.length>=8?2:1;let best=null,bd=m+1;for(const x of lexKeys()){const d=lev(k,x,m);if(d<bd){bd=d;best=x}}return best}
-function lexPick(){const ks=lexKeys();let c=ks.filter(k=>!ctx.seen.includes(k));if(!c.length){ctx.seen=[];c=ks}const k=c[Math.floor(Math.random()*c.length)];ctx.seen.push(k);return k}
-function lexGloss(t){const f=[];toks(t).forEach(w=>{const k=lexTok(w);if(k&&!f.includes(k)&&f.length<3)f.push(k)});return f.length?' Glosario de palabras que aparecen en el mensaje: '+f.map(k=>lexGet(k).w+' = '+firstS(lexGet(k).d)).join(' ')+' Entiéndelas y, si ayuda, usa o explica esas palabras.':''}
-const REPRX=/^(?:otra vez|repite|repitelo|repitemelo|que dijiste|como dijiste|que|como|eh|perdon|perdona|puedes repetir|puedes repetirlo|repitelo por favor)$/,SIMRX=/^(?:no entendi|no comprendo|no entiendo|no te entendi|no lo entendi|no le entendi|no capto|no lo capto|explicamelo (?:mas )?(?:facil|simple|sencillo)|explicalo (?:mas )?(?:facil|simple|sencillo)|mas (?:facil|simple|sencillo)|en palabras simples|en palabras sencillas|como si tuviera 5 anos|con peras y manzanas)$/;
-const QW=/^(que|como|cuando|donde|quien|quienes|cual|cuales|cuanto|cuantos|por que|para que|porque|what|how|when|where|who|why)\b/;
-const DEFRX=/^(?:(?:oye|hey|ok|noryx|dime|sabes|sabrias|por favor|porfa|me dices|me podrias decir|me puedes decir|me explicas|me puedes explicar|puedes decirme|puedes explicarme|podrias decirme|podrias explicarme)\s+)*(?:que significa|que significan|que quiere decir|que es|que son|significado de|definicion de|define|definem[ei]|defineme|explicame|explica|a que se refiere|que quieres decir con|what does|what is|meaning of)\s+(?:la |el |las |los |una |un )?(?:palabra |termino |expresion |vocablo )?(?:la |el )?(.+?)(?: significa| quiere decir| means)?$/;
-async function dialog(t,en,nm){
- let m;const n=norm(t).replace(/\s+/g,' '),w=n?n.split(' '):[],T=ctx.turn||0,recent=T-ctx.lexT<=3,hasQ=/[?¿]/.test(t)||QW.test(n);
- const gl=k=>{const x=lexGet(k);ctx.lexT=T;ctx.word=k;ctx.q=x.w;ctx.more=[];return{t:lexFmt(x),m:'Vocabulario'}};
- /* enseñar palabras: «aprende palabra: picio = definición» */
- if((m=t.match(/^\s*(?:aprende|ense[nñ]a|teach|learn)\s+(?:la\s+)?(?:palabra|word)\s*:?\s*([^=]{2,40}?)\s*=\s*([\s\S]{3,400})$/i))){const k=norm(m[1]);if(!k||k.split(' ').length>3)return null;mem.lex=mem.lex||{};mem.lex[k]={w:m[1].trim(),d:m[2].trim()};const ks=Object.keys(mem.lex);if(ks.length>200)delete mem.lex[ks[0]];save();return{t:'Aprendida: **'+m[1].trim()+'**. Pregúntame «¿qué significa '+m[1].trim()+'?» cuando quieras.',m:'Memoria · vocabulario'}}
- /* respuestas a lo que Noryx acaba de preguntar */
- const p=ctx.pend2;ctx.pend2=null;
- if(ctx.sugg&&T-ctx.suggT<=1){const s=ctx.sugg;ctx.sugg=null;if(/^(si|sii|sip|ese|esa|eso|esa misma|asi es|exacto|correcto|yes)$/.test(n))return gl(s)}
- if(p=='how'&&w.length<=6&&!hasQ){const neg=/\bno\b|\b(mal|regular|cansad[oa]|triste|fatal|pesimo|estresad[oa]|agobiad[oa]|asi asi|aburrid[oa]|hart[oa]|mas o menos)\b/.test(n),pos=/\b(bien|genial|excelente|super|chido|padre|feliz|content[oa]|de maravilla|perfecto|tranquil[oa])\b/.test(n);
-  if(neg)return{t:'Lamento oírlo'+nm+'. Si quieres, cuéntame qué pasó; te escucho.',m:'Conversación',pend:'why'};
-  if(pos)return{t:'¡Qué bueno'+nm+'! Me gusta oírlo. ¿Qué tienes en mente hoy?',m:'Conversación'}}
- if(p=='usew'&&ctx.word&&w.length>=3&&!hasQ){const x=lexGet(ctx.word);if(x&&n.includes(norm(x.w).slice(0,Math.max(4,norm(x.w).length-2))))return{t:'¡Muy bien usada! Tu frase deja claro el sentido de **'+x.w+'**. ¿Probamos con otra palabra rara?',m:'Vocabulario'};if(x)return{t:'Casi. Usa **'+x.w+'** dentro de la frase y la comentamos.',m:'Vocabulario',pend:'usew'}}
- if(p=='why'&&!hasQ&&w.length>=2&&!REPRX.test(n)&&!SIMRX.test(n)&&!/\d/.test(n)&&!/^(aprende|learn|ense[nñ]a|teach)\b/.test(n)){
-  if(MAESTRO){const r=await maestro(t);if(r&&r.t)return{t:r.t,m:'Conversación · maestro'}}
-  return{t:pick(['Te escucho'+nm+'. Gracias por contármelo; eso suena a algo que importa. ¿Cómo te hace sentir?','Entiendo'+nm+'. A veces ayuda ponerlo en palabras, y lo estás haciendo bien. ¿Qué te gustaría que pasara ahora?']),m:'Conversación'}}
- if(w.length>9)return null;
- /* definiciones */
- if((m=n.match(DEFRX))){const c=m[1].trim(),tk=c.split(' ').filter(x=>x&&!/^(la|el|las|los|un|una|de|del|palabra)$/.test(x));
-  if(c.split(' ').length<=3){let k=lexGet(c)?c:null;for(let i=0;!k&&i<tk.length;i++)k=lexTok(tk[i]);if(k)return gl(k);
-   if(tk.length==1){const nr=lexNear(tk[0]);if(nr){ctx.sugg=nr;ctx.suggT=T;return{t:'No tengo «'+c+'» en mi vocabulario. ¿Quisiste decir **'+lexGet(nr).w+'**? Si es otra palabra, enséñamela con `aprende palabra: '+c+' = su significado`.',m:'Vocabulario'}}}}}
- if(w.length==1&&w[0].length>=5){const k=lexTok(w[0]);if(k)return gl(k)}
- if(recent&&(m=n.match(/^(?:y )?(?:que significa|que quiere decir|que es) (?:eso|esa palabra|esa)$/)))return gl(ctx.word);
- if(recent&&(m=n.match(/^(?:y|and|y que significa|y que es|y que quiere decir) (?:la |el )?([a-z ]{4,25})$/))){const k=lexTok(m[1].trim());if(k)return gl(k)}
- /* ejemplos y sinónimos */
- if((m=n.match(/^(?:dame |dime |ponme |quiero )?(?:un |otro |otro un )?ejemplo(?: de | con | para )?(.*)$|^(?:usa|usalo|usala|utiliza|utilizala|utilizalo)(?: en| con)? (?:una |un )?(?:frase|oracion|ejemplo)(?: con (.+))?$/))){const c=(m[1]||m[2]||'').trim(),k=c?lexTok(c.split(' ').pop()):(recent?ctx.word:null);
-  if(k){const x=lexGet(k);ctx.lexT=T;ctx.word=k;if(x.e)return{t:'**'+x.w[0].toUpperCase()+x.w.slice(1)+'**: «'+x.e+'»\n\nAhora te toca a ti: escribe una frase con **'+x.w+'** y te digo si la usaste bien.',m:'Vocabulario',pend:'usew'};return{t:'Aún no tengo un ejemplo de **'+x.w+'**. Escribe tú uno y lo comentamos.',m:'Vocabulario',pend:'usew'}}}
- if((m=n.match(/^(?:sinonimos?|sinonimo)(?: de| para)? ?(.*)$|^(?:otra palabra|otras palabras|como se dice de otra forma|como se dice de otra manera)(?: para| de)? ?(.*)$/))){const c=(m[1]||m[2]||'').trim(),k=c?lexTok(c.split(' ').pop()):(recent?ctx.word:null);
-  if(k){const x=lexGet(k);ctx.lexT=T;ctx.word=k;if(x.s)return{t:'Sinónimos de **'+x.w+'**: '+x.s+'.',m:'Vocabulario'}}}
- /* palabra rara al azar, varias o diccionario */
- if((m=n.match(/^(?:dime|dame|ensename|ensenanos|muestrame|cuentame)\s+(?:(\d|dos|tres|cuatro|cinco|seis)\s+)?(?:una |otra |otras |unas )?(?:palabras?)(?: raras?| bonitas?| nuevas?| rebuscadas?| curiosas?| dificiles| cultas?| extranas?| del dia)?$|^(?:palabra|palabras) (?:del dia|rara|raras|nueva|rebuscada|rebuscadas)$/))||(recent&&/^(?:otra|otra mas|otra palabra|otra palabra rara|dame otra|dime otra|siguiente)$/.test(n))){
-  const N={dos:2,tres:3,cuatro:4,cinco:5,seis:6}[m&&m[1]]||(m&&+m[1])||1;
-  if(N>1){const ks=[];for(let i=0;i<Math.min(6,N);i++)ks.push(lexPick());return{t:'Aquí van '+ks.length+' palabras raras:\n'+ks.map(k=>'- **'+lexGet(k).w+'**: '+firstS(lexGet(k).d)).join('\n')+'\n\nDi el nombre de una para ver sinónimos y un ejemplo.',m:'Vocabulario'}}
-  return gl(lexPick())}
- if(/^(?:diccionario|vocabulario|palabras que sabes|cuantas palabras sabes|cuantas palabras raras sabes)$/.test(n))return{t:'Conozco **'+lexKeys().length+'** palabras raras. Pídeme una («dime una palabra rara»), pregunta «¿qué significa…?» o enséñame otra con `aprende palabra: palabra = significado`.',m:'Vocabulario'};
- /* seguir el hilo */
- if(ctx.lastA){
-  if(/^(?:ok|okay|okey|vale|ya|aja|aha|entiendo|entendido|ya veo|ah ya|ah ok|ah vale|mmm+|hmm+|listo|perfecto|genial|interesante|wow|guau|que bien|que interesante|ya entendi|ahora si|comprendo)$/.test(n))return{t:recent?pick(['¿Quieres un ejemplo, sinónimos u otra palabra rara?','Si quieres, pídeme otra palabra rara o un ejemplo con esa.']):(ctx.more&&ctx.more.length?'Hay más sobre esto: di «más» y sigo.':pick(['Perfecto'+nm+'. ¿Seguimos con eso o cambiamos de tema?','Genial'+nm+'. ¿Qué más te gustaría saber?'])),m:'Conversación'};
-  if(REPRX.test(n))return{t:'Te lo repito:\n\n'+ctx.lastA,m:'Conversación'};
-  if(SIMRX.test(n)){
-   if(recent&&ctx.word){const x=lexGet(ctx.word);if(x)return{t:'Dicho fácil: **'+x.w+'** es algo así como «'+(x.s||'').split(',')[0].trim()+'».'+(x.e?' Mira cómo suena en una frase: «'+x.e+'»':''),m:'Vocabulario'}}
-   if(MAESTRO){const r=await maestro('Explícalo más simple y con un ejemplo cotidiano: '+ctx.lastA.replace(/[*`_]/g,'').slice(0,500));if(r&&r.t)return{t:r.t,m:'Conversación · maestro'}}
-   return{t:'Dicho corto: '+firstS(ctx.lastA.replace(/[*`_]/g,'')),m:'Conversación'}}
-  if(/^(?:en serio|de verdad|neta|enserio|en verdad|seguro|segura|estas seguro|estas segura)$/.test(n))return{t:'Sí, es lo que sé. Si te queda la duda, contrástalo con otra fuente; ¿quieres que profundice?',m:'Conversación'}}
- if(/^(?:(?:ja|je|ji|ha)+|jaj+a*|lol|xd+)$/.test(n))return{t:pick(['Jaja, me alegra sacarte una sonrisa'+nm+'.','Esa risa me gusta. ¿Seguimos platicando?']),m:'Conversación'};
- if(/^(?:y tu|y tu que|y tu como estas|y tu que tal|tu como estas)$/.test(n)&&ctx.lastA)return{t:'Yo, aprendiendo palabras nuevas y a escucharte mejor. ¿Y tú, cómo vas?',m:'Conversación',pend:'how'};
- /* estados de ánimo */
- if((m=n.match(/^(?:hoy |ahorita |ahora |pues |la verdad |ya )?(?:ando|estoy|me siento|me encuentro|me puse)\s+(?:muy |un poco |bastante |super |medio |tan |algo |re |demasiado )?([a-z]+)(?: hoy| ahorita| ahora| la verdad)?$/))){
-  const EMO=[[/^aburrid/,'El aburrimiento incomoda, pero también es el terreno donde nacen las ideas.','hastio','¿Quieres que te entretenga con una palabra rara o platicamos de algo?'],[/^aborrecid/,'Aborrecido... suena a que algo te tiene muy harto.','aborrecido','¿Qué fue lo que te fastidió?'],[/^(trist|deprimid|decaid|desanimad)/,'Lamento que te sientas así'+nm+'. Gracias por decírmelo.',null,'¿Quieres contarme qué pasó? Te escucho.'+(/^deprimid/.test(m[1])?' Y si esa sensación dura o se hace pesada, hablar con alguien de confianza o con un profesional ayuda mucho.':'')],[/^(cansad|agotad|exhaust|molid|rendid)/,'Se nota el desgaste. Descansar también es avanzar.',null,'¿Fue un día largo?'],[/^(estresad|agobiad|ansios|nervios|preocupad|abrumad)/,'Respira hondo un momento; lo vemos por partes.','zozobra','¿Qué es lo que más te pesa ahora mismo?'],[/^(feliz|content|emocionad|alegre|animad|radiante)/,'¡Qué bien'+nm+'!','alborozo','¿Qué lo provocó?'],[/^(enojad|molest|enfadad|furios|hart)/,'Suena a que algo te hizo hervir la sangre.',null,'¿Quieres desahogarte? Te escucho sin juzgar.'],[/^(sol[oa]?|solit)/,'Aquí estoy; platiquemos todo lo que quieras.',null,'¿Cómo ha estado tu día?'],[/^(bien|excelente|genial|perfecto)$/,'¡Me alegra'+nm+'!',null,'¿Qué has hecho hoy?'],[/^(mal|regular|fatal)$/,'Vaya, lamento oírlo.',null,'¿Qué pasó?']];
-  for(const[re,tx,lk,q]of EMO)if(re.test(m[1])){const x=lk&&lexGet(lk);if(x){ctx.lexT=T;ctx.word=lk}return{t:tx+(x?' Por cierto, hay una palabra para eso: **'+x.w+'**. '+firstS(x.d):'')+' '+q,m:'Conversación',pend:'why'}}}
- /* el usuario usa una palabra rara en una frase corta */
- if(!hasQ&&w.length>=2&&w.length<=8&&!/\d/.test(n)&&!/^(aprende|learn|ense[nñ]a|teach)\b/.test(n)){for(const tk of w){const k=lexTok(tk);if(k){const x=lexGet(k);ctx.lexT=T;ctx.word=k;ctx.q=x.w;return{t:pick(['Buena palabra, **'+x.w+'**: '+firstS(x.d)+' ¿Qué te hizo pensar en ella'+nm+'?','Me encanta que uses **'+x.w+'**. '+firstS(x.d)+' Cuéntame más de lo que querías decir.']),m:'Vocabulario',pend:'why'}}}}
- return null}
-async function brain(t){const r=await brain0(t);ctx.turn++;if(r&&r.t){ctx.lastU=t;ctx.lastA=r.t;ctx.pend2=r.pend||(/(?:¿Y tú|And you)/.test(r.t)?'how':null)}return r}
-async function brain0(t){
+async function brain(t){
  await ready;
  const en=isEn(t),nm=mem.name?', '+mem.name:'',tm=Date.now();let m;
- {const x=await dialog(t,en,nm);if(x)return x}
  /* seguimiento de conversación: si Noryx preguntó la ciudad, la siguiente respuesta corta es la ciudad; "y en Madrid?" repite el clima */
  if(ctx.pend=='weather'||ctx.last=='weather'){const n=norm(t),w=toks(t),ask=ctx.pend=='weather',SM=['hi','how','thanks','bye','yes','no','help','joke','who','maker','time','date','more','why','love','insult','sorry'];ctx.pend=null;
   const cl=classify(t),small=cl.k&&SM.includes(cl.k)&&cl.p>.6&&!/^(y|and)\b/.test(n);
@@ -1205,17 +1018,18 @@ async function vlListenLocal(){
  try{t=await asrText(rec,m=>vlText(m))}catch(e){toast('Dictado: '+(e&&e.message||e),7000);vlStop();return}
  if(!VL.on)return;
  if(t)vlTurn(t);else{vlText('');vlListen()}}
-const jvTalking=()=>!!(window.speechSynthesis&&(speechSynthesis.speaking||speechSynthesis.pending));
 async function jvListenLocal(){
  if(JV.rec||JV.proc)return;
- if(jvTalking()){setTimeout(jvListen,300);return}
+ /* BUG ARREGLADO: antes se comprobaba JV.st=='speak', pero ese estado se queda puesto después de que Noryx termina de hablar,
+    así que el modo Noryx nunca volvía a escuchar. Ahora se mira si la voz sintetizada realmente sigue sonando. */
+ if(window.speechSynthesis&&(speechSynthesis.speaking||speechSynthesis.pending)){setTimeout(()=>{if(JV.on&&!JV.mute&&!JV.rec&&!JV.proc)jvListen()},250);return}
  let abort=false;const me={abort(){abort=true}};JV.rec=me;
  let rec=null,err=null;
  try{
   if(!_asr){jvSet('think');jvText('Preparando el oído de Noryx…');await asrLoad(m=>jvText(m))}
   if(abort||!JV.on||JV.mute||JV.proc){if(JV.rec===me)JV.rec=null;if(JV.on&&!JV.mute&&!JV.proc)setTimeout(jvListen,150);return}
   jvSet('listen');jvText('');
-  rec=await earRecord({maxMs:20000,stop:()=>abort||!JV.on||JV.mute||JV.proc,onSpeech:()=>{jvs.textContent='Te escucho… 🗣'}})}
+  rec=await earRecord({maxMs:20000,stop:()=>abort||!JV.on||JV.mute||JV.proc||(window.speechSynthesis&&speechSynthesis.speaking),onSpeech:()=>{jvs.textContent='Te escucho… 🗣'}})}
  catch(e){err=e}
  if(JV.rec===me)JV.rec=null;
  if(!JV.on||JV.mute)return;
@@ -1223,7 +1037,7 @@ async function jvListenLocal(){
  if(!rec){setTimeout(jvListen,150);return}
  jvSet('think');jvText('Transcribiendo…');let t='';
  try{t=await asrText(rec,m=>jvText(m))}catch(e){jvLog('⚠ Dictado: '+(e&&e.message||e));toast('Dictado: '+(e&&e.message||e),7000);setTimeout(jvListen,1500);return}
- if(t&&!JV.proc){jvTurn(t);return}
+ if(t&&!JV.proc&&JV.st!='speak'){jvTurn(t);return}
  jvText('');setTimeout(jvListen,150)}
 
 /* ============ Red neuronal viva (hero) ============ */
@@ -1661,7 +1475,7 @@ function jvAdmin(k,a){a=(a||'').trim();let m;const J='Noryx';
 
 $('#jvb').onclick=jvStart;$('#jvx').onclick=jvStop;
 $('#jvo').onclick=()=>{if(JV.st=='speak')speechSynthesis.cancel()};
-$('#jvm').onclick=function(){JV.mute=!JV.mute;this.textContent=JV.mute?'Activar micrófono':'Silenciar micrófono';if(JV.mute){const r=JV.rec;JV.rec=null;try{r&&r.abort()}catch(e){}if(JV.st=='listen')jvSet('mute')}else if(JV.on&&!JV.proc&&JV.st!='speak')jvListen()};
+$('#jvm').onclick=function(){JV.mute=!JV.mute;this.textContent=JV.mute?'Activar micrófono':'Silenciar micrófono';if(JV.mute){const r=JV.rec;JV.rec=null;try{r&&r.abort()}catch(e){}if(JV.st=='listen')jvSet('mute')}else if(JV.on&&!JV.proc)jvListen()};
 $('#jvw').onclick=function(){JV.wake=!JV.wake;this.textContent='Palabra clave: '+(JV.wake?'sí':'no');toast(JV.wake?'Solo responderé si dices «Noryx» al inicio':'Responderé a todo lo que oiga')};
 $('#jvh').onclick=()=>jvInput('que puedes hacer');
 const jvSendTxt=()=>{const t=jvi.value.trim();jvi.value='';jvInput(t)};
@@ -1931,7 +1745,7 @@ $('#bk').onclick=()=>{closeMenu();backup()};
 $('#bkf').onchange=async e=>{const f=e.target.files[0];e.target.value='';if(!f)return;
  try{const o=JSON.parse(await f.text());if(!o||o.v!==1||!Array.isArray(o.convs)||!o.convs.every(c=>c&&typeof c.title=='string'&&Array.isArray(c.msgs)&&c.msgs.every(m=>m&&(m.r=='u'||m.r=='a')&&typeof m.t=='string')))throw 0;
   if(!confirm('¿Reemplazar tus conversaciones y tu memoria actuales por las del respaldo?'))return;
-  convs=o.convs.slice(-60);const mm=o.mem&&typeof o.mem=='object'?o.mem:{};mem={name:typeof mm.name=='string'?mm.name.slice(0,40):'',taught:(Array.isArray(mm.taught)?mm.taught:[]).filter(x=>x&&typeof x.q=='string'&&typeof x.a=='string').slice(-250),lex:(mm.lex&&typeof mm.lex=='object')?Object.fromEntries(Object.entries(mm.lex).filter(([k,v])=>v&&typeof v.w=='string'&&typeof v.d=='string').slice(-200)):{}};
+  convs=o.convs.slice(-60);const mm=o.mem&&typeof o.mem=='object'?o.mem:{};mem={name:typeof mm.name=='string'?mm.name.slice(0,40):'',taught:(Array.isArray(mm.taught)?mm.taught:[]).filter(x=>x&&typeof x.q=='string'&&typeof x.a=='string').slice(-250)};
   ['gusta','vive','edad'].forEach(k=>{if(typeof mm[k]=='string')mem[k]=mm[k].slice(0,60)});
   Object.entries(o.cfg||{}).forEach(([k,v])=>{if(CFGOK[k]&&CFGOK[k](v))S.set(k,v)});cur=null;save();renderAll();toast('Respaldo restaurado')}
  catch(er){toast('Ese archivo no es un respaldo válido de Noryx')}};
