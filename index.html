@@ -1480,8 +1480,11 @@ function jvStart(){
  closeMenu();creatorAct=Date.now();JV.on=true;JV.mute=!HAS_EAR;JV.proc=false;JV.h=[];JV.last='';jvEl.hidden=false;jvl.replaceChildren();jvChips([]);jvTick();jvWake(true);if(spReady())spInitPlayer().catch(()=>{});
  $('#jvm').textContent=JV.mute?'Activar micrófono':'Silenciar micrófono';$('#jvm').hidden=!HAS_EAR;
  const h=new Date().getHours(),g=(h<12?'Buenos días':h<20?'Buenas tardes':'Buenas noches')+', '+jvWho()+'. Noryx a sus órdenes.'+(HAS_EAR?'':' Su equipo no permite usar el micrófono: escríbame las órdenes.');
- jvSet('speak');speechSynthesis.cancel();if(!creator){jvText(g);jvLog('Noryx: '+g);say(g)}Promise.all([creator?jvIntroCreator():jvWait(),micPrime()]).then(([_,ok])=>{if(!JV.on)return;if(ok===false){JV.mute=true;$('#jvm').textContent='Activar micrófono';jvSet('mute');return}jvListen()})}
+ const full=creator&&!JV_INTRO_DONE;if(full)JV_INTRO_DONE=true;
+ jvSet('speak');speechSynthesis.cancel();if(!full){jvText(g);jvLog('Noryx: '+g);say(g)}Promise.all([full?jvIntroCreator():jvWait(),micPrime()]).then(([_,ok])=>{if(!JV.on)return;if(ok===false){JV.mute=true;$('#jvm').textContent='Activar micrófono';jvSet('mute');return}jvListen()})}
 /* Saludo de siempre para el creador: saludo → clima CDMX → hora → música de rock → despedida según la hora */
+/* El saludo largo solo ocurre la primera vez que el creador abre el asistente después de cargar la app; las siguientes veces usa el saludo corto. */
+let JV_INTRO_DONE=false;
 const JROCK=['AC/DC','Queen','Nirvana',"Guns N' Roses",'Led Zeppelin','Metallica','Pink Floyd','The Rolling Stones'];
 async function jvIntroCreator(){
  const N='Orlando',h=new Date().getHours(),sal=h<12?'Buenos días':h<20?'Buenas tardes':'Buenas noches',fel=h<12?'Feliz día':h<20?'Feliz tarde':'Feliz noche';
