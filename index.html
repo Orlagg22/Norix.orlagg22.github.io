@@ -1480,7 +1480,23 @@ function jvStart(){
  closeMenu();creatorAct=Date.now();JV.on=true;JV.mute=!HAS_EAR;JV.proc=false;JV.h=[];JV.last='';jvEl.hidden=false;jvl.replaceChildren();jvChips([]);jvTick();jvWake(true);if(spReady())spInitPlayer().catch(()=>{});
  $('#jvm').textContent=JV.mute?'Activar micrófono':'Silenciar micrófono';$('#jvm').hidden=!HAS_EAR;
  const h=new Date().getHours(),g=(h<12?'Buenos días':h<20?'Buenas tardes':'Buenas noches')+', '+jvWho()+'. Noryx a sus órdenes.'+(HAS_EAR?'':' Su equipo no permite usar el micrófono: escríbame las órdenes.');
- jvText(g);jvLog('Noryx: '+g);jvSet('speak');speechSynthesis.cancel();say(g);Promise.all([jvWait(),micPrime()]).then(([_,ok])=>{if(!JV.on)return;if(ok===false){JV.mute=true;$('#jvm').textContent='Activar micrófono';jvSet('mute');return}jvListen()})}
+ jvSet('speak');speechSynthesis.cancel();if(!creator){jvText(g);jvLog('Noryx: '+g);say(g)}Promise.all([creator?jvIntroCreator():jvWait(),micPrime()]).then(([_,ok])=>{if(!JV.on)return;if(ok===false){JV.mute=true;$('#jvm').textContent='Activar micrófono';jvSet('mute');return}jvListen()})}
+/* Saludo de siempre para el creador: saludo → clima CDMX → hora → música de rock → despedida según la hora */
+const JROCK=['AC/DC','Queen','Nirvana',"Guns N' Roses",'Led Zeppelin','Metallica','Pink Floyd','The Rolling Stones'];
+async function jvIntroCreator(){
+ const N='Orlando',h=new Date().getHours(),sal=h<12?'Buenos días':h<20?'Buenas tardes':'Buenas noches',fel=h<12?'Feliz día':h<20?'Feliz tarde':'Feliz noche';
+ const step=async t=>{if(!JV.on)return false;jvText(t);jvLog('Noryx: '+t);jvSet('speak');say(t);await jvWait();return JV.on};
+ if(!await step(sal+', '+N+'. ¿Cómo se encuentra hoy?'))return;
+ let wl='No pude consultar el clima de la Ciudad de México en este momento.';
+ try{const w=await J('https://api.open-meteo.com/v1/forecast?current=temperature_2m,apparent_temperature,weather_code&timezone=America%2FMexico_City&latitude=19.4326&longitude=-99.1332'),c=w&&w.current;
+  if(c){const d=(WC.find(x=>c.weather_code<=x[0])||WC[7])[1];wl='El clima en la Ciudad de México: '+d+', '+Math.round(c.temperature_2m)+' grados, con sensación térmica de '+Math.round(c.apparent_temperature)+' grados.'}}catch(e){}
+ if(!await step(wl))return;
+ const d=new Date(),hh=d.getHours()%12||12;
+ if(!await step((hh==1?'Es la ':'Son las ')+hh+':'+jvPad(d.getMinutes())+(h<12?' de la mañana':h<19?' de la tarde':' de la noche')+'.'))return;
+ if(!await step('Música activada.'))return;
+ const art=JROCK[Math.floor(Math.random()*JROCK.length)];
+ try{const r=await jvPlay(JV.music,art,art);if(r){if(r.chips)jvChips(r.chips);jvLog('Noryx: '+(r.log||('♪ '+art)))}}catch(e){}
+ await step(fel+', '+N+'.')}
 function jvStop(){JV.on=false;const r=JV.rec;JV.rec=null;try{r&&r.abort()}catch(e){}window.speechSynthesis&&speechSynthesis.cancel();jvEl.hidden=true;JV.proc=false;earRelease();if(!JV.pin)jvWake(false)}
 function jvListen(){if(!JV.on||!mdEl.hidden)return;if(JV.mute||!HAS_EAR){jvSet('mute');return}
  if(Date.now()-creatorAct>6e5){jvStop();if(creator)lock(false);sysMsg('🔒 Modo Noryx cerrado por inactividad (10 min). '+(creator?'Escribe /creador para entrar otra vez.':'Escribe /noryx para volver a entrar.'),'Noryx');return}
