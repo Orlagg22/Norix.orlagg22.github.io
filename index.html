@@ -736,7 +736,10 @@ function speechNums(s,en){
 
 const FEM=/paulina|monica|sabina|dalia|elvira|helena|lucia|laura|marisol|camila|samantha|zira|jenny|aria|female|mujer|google espa|google us/i,MALE=/jorge|diego|pablo|raul|juan|carlos|david|mark|james|male|hombre|enrique|alvaro|miguel/i;
 function voiceFor(l){const sc=v=>(/natural|neural|online/i.test(v.name)?4:0)+(FEM.test(v.name)?3:0)+(MALE.test(v.name)?-9:0)+(l=='es'&&/MX|US|419/i.test(v.lang)?1:0);return speechSynthesis.getVoices().filter(v=>v.lang.toLowerCase().startsWith(l)).sort((a,b)=>sc(b)-sc(a))[0]}
-function say(t){if(!window.speechSynthesis)return;speechSynthesis.cancel();const en=isEn(t),u=new SpeechSynthesisUtterance(speechNums(t.replace(/\[[^\]]*\]\([^)]*\)/g,'').replace(/[*`_·]/g,'').replace(/\s+/g,' '),en).replace(/\s+/g,' ').trim());u.lang=en?'en-US':'es-MX';const v=voiceFor(en?'en':'es');if(v){u.voice=v;u.lang=v.lang}u.pitch=S.get('nx-vp',1.12);u.rate=S.get('nx-vr',1.03);speechSynthesis.speak(u)}
+/* Pronunciación: la voz del navegador se comía la «r» de Orlando ("Olando"). Se escribe separado solo para el audio; en pantalla se ve normal. */
+const PRON=[[/\borlando\b/gi,'Or lando']];
+const pron=t=>PRON.reduce((a,r)=>a.replace(r[0],r[1]),t);
+function say(t){if(!window.speechSynthesis)return;speechSynthesis.cancel();const en=isEn(t),u=new SpeechSynthesisUtterance(pron(speechNums(t.replace(/\[[^\]]*\]\([^)]*\)/g,'').replace(/[*`_·]/g,'').replace(/\s+/g,' '),en).replace(/\s+/g,' ').trim()));u.lang=en?'en-US':'es-MX';const v=voiceFor(en?'en':'es');if(v){u.voice=v;u.lang=v.lang}u.pitch=S.get('nx-vp',1.12);u.rate=S.get('nx-vr',1.03);speechSynthesis.speak(u)}
 
 /* ============ Flujo del chat ============ */
 function setThink(v){thinking=v;$('#chip').classList.toggle('think',v)}
