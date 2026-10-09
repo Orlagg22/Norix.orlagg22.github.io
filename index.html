@@ -234,11 +234,11 @@ textarea{flex:1;resize:none;border:0;outline:0;background:none;color:var(--ink);
   <div id="imtb" class="imtb"></div>
   <div id="imw" class="pn" hidden>
    <canvas id="imc"></canvas><div id="imi"></div><div id="pal"></div>
-   <div class="qh" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">Pregúntale a Noryx sobre tus imágenes<button id="imeng" class="eng" title="Cambiar motor de visión"></button></div>
+   <div class="qh" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">Pregúntale a Noryx sobre tus imágenes<button id="imeng" class="eng" hidden style="display:none"></button></div>
    <div id="imch" class="chips2"></div>
    <div class="figbox"><div class="figh"><label for="imfig">Datos de la figura <small>(opcional, para ejercicios con dibujo)</small></label></div>
-   <div class="qrow"><input type="text" id="imfig" placeholder="Ej.: plano de 30°, altura 5 m, masa 2 kg · A: 3R, B: R" maxlength="300" autocomplete="off"><button id="imrd" title="Lee ángulos, alturas y rótulos con un modelo de visión (necesita conexión)">Leer figura</button></div>
-   <label class="chk"><input type="checkbox" id="imauto"><span>Leer la figura automáticamente cuando haya conexión (la imagen reducida sale a Pollinations)</span></label>
+   <div class="qrow"><input type="text" id="imfig" placeholder="Ej.: plano de 30°, altura 5 m, masa 2 kg · A: 3R, B: R" maxlength="300" autocomplete="off"><button id="imrd" title="Lee ángulos, alturas y rótulos con un modelo de visión que corre en tu navegador">Leer figura</button></div>
+   <label class="chk"><input type="checkbox" id="imauto"><span>Leer la figura automáticamente con el modelo de visión del navegador (la imagen no sale de tu equipo)</span></label>
    <small id="imfn">Noryx lee el texto del dibujo con OCR, pero no interpreta la figura. Escribe aquí lo que muestra (ángulos, alturas, rótulos) y lo sumo al ejercicio.</small></div>
    <div class="qrow"><input type="text" id="imq" placeholder="Escribe tu pregunta… ej. ¿qué música le queda a esta foto?" maxlength="400" autocomplete="off"><button class="pri" id="imd">Preguntar</button></div>
    <div id="imo" aria-live="polite"></div>
@@ -255,9 +255,9 @@ textarea{flex:1;resize:none;border:0;outline:0;background:none;color:var(--ink);
   <div class="row" id="mka" hidden><button id="mkv">Otra variante</button><button id="mkd">Descargar</button></div>
   <small>La imagen la genera un servicio externo (Pollinations) a partir de tu descripción; funciona mejor si la escribes con detalle. Si no responde, Noryx dibuja arte generativo local como respaldo.</small>
  </div>
- <details class="ed" id="pkd"><summary>Conexión con Pollinations (clave gratuita)</summary>
+ <details class="ed" id="pkd"><summary>Clave de Pollinations (solo para crear imágenes)</summary>
   <div class="qrow" style="margin-top:8px"><input type="password" id="pkey" placeholder="pk_…" autocomplete="off" spellcheck="false"><button id="pks">Guardar</button></div>
-  <small>Si las imágenes o el análisis fallan, el servicio ahora pide una clave. Créala gratis en <a href="https://enter.pollinations.ai" target="_blank" rel="noopener">enter.pollinations.ai</a> (elige tipo «publishable», pk_). Se guarda solo en este navegador y se envía únicamente a Pollinations. Usa una clave pk_, nunca una sk_.</small>
+  <small>Si la creación de imágenes falla, el servicio ahora pide una clave. El análisis de imágenes ya no la necesita. Créala gratis en <a href="https://enter.pollinations.ai" target="_blank" rel="noopener">enter.pollinations.ai</a> (elige tipo «publishable», pk_). Se guarda solo en este navegador y se envía únicamente a Pollinations. Usa una clave pk_, nunca una sk_.</small>
  </details>
 </div></div>
 <div id="jv" hidden role="dialog" aria-label="Modo Noryx">
@@ -3999,49 +3999,77 @@ exBadge();
 
 /* ================= Punto 7: datos de la figura ================= */
 const fi=$('#imfig'),fn=$('#imfn'),FIGNOTE=fn.textContent,
- FIGSYS='Eres un lector de figuras de ejercicios de física y matemáticas. Mira la figura y devuelve SOLO los datos que se ven, en una sola línea separada por comas, cada uno con su rótulo y unidad: ángulos (p. ej. ángulo = 30°), alturas, longitudes, radios, masas, resistencias, fuerzas y rótulos como A: 3R, B: R. No resuelvas nada, no expliques y no inventes: si un dato no se ve con claridad, no lo pongas. Si no hay datos, responde exactamente SIN DATOS.';
+ FIGQ='List only the measurements and labels visible in this diagram: angles in degrees, heights, lengths, radii, masses, forces, distances, and letter labels. Write them as short items separated by commas, for example: angle = 30°, height = 5 m, A = 3R, B = R. Do not explain and do not solve anything. If nothing is visible, answer NONE.';
 fi.addEventListener('input',()=>{if(imList[imSel])imList[imSel].fig=fi.value});
 /* cada imagen recuerda sus propios datos; al cambiar de imagen no se arrastran los de otra */
 const _imShow=imShow;
 imShow=function(i){_imShow(i);const it=imList[i];fi.value=(it&&it.fig)||''};
 $('#imauto').checked=!!S.get('nx-figauto',false);
-$('#imauto').onchange=function(){S.set('nx-figauto',this.checked);if(this.checked&&!pKey())toast('Si el servicio pide clave, pégala en «Conexión con Pollinations»',3200)};
+$('#imauto').onchange=function(){S.set('nx-figauto',this.checked)};
+/* --- modelo de visión dentro del navegador (SmolVLM vía transformers.js): sin Pollinations, la imagen no sale del equipo --- */
+let vlmP=null;
+function vlmLoad(say){
+ if(vlmP)return vlmP;
+ vlmP=(async()=>{
+  const T=await import('https://cdn.jsdelivr.net/npm/@huggingface/transformers@3.5.1');
+  const prog=p=>{if(say&&p&&p.status=='progress'&&isFinite(p.progress))say('Descargando el modelo de visión (solo la primera vez)… '+Math.round(p.progress)+' %')};
+  let last=null;
+  const cfgs=[];
+  if(navigator.gpu)cfgs.push({device:'webgpu',dtype:{embed_tokens:'fp16',vision_encoder:'q4',decoder_model_merged:'q4'}});
+  cfgs.push({device:'wasm',dtype:{embed_tokens:'q8',vision_encoder:'q8',decoder_model_merged:'q8'}});
+  for(const id of['HuggingFaceTB/SmolVLM-256M-Instruct','onnx-community/SmolVLM-256M-Instruct']){
+   for(const c of cfgs){
+    try{const processor=await T.AutoProcessor.from_pretrained(id,{progress_callback:prog}),
+      model=await T.AutoModelForVision2Seq.from_pretrained(id,{...c,progress_callback:prog});
+     return{T,processor,model}}catch(e){last=e}}}
+  throw last||new Error('no pude cargar el modelo')})();
+ vlmP.catch(()=>{vlmP=null});return vlmP}
+async function vlmAsk(canvas,prompt,say,maxTok){
+ const{T,processor,model}=await vlmLoad(say);
+ if(say)say('El modelo está mirando la imagen…');
+ const k=Math.min(1,1024/Math.max(canvas.width,canvas.height)),t=document.createElement('canvas');
+ t.width=Math.max(1,Math.round(canvas.width*k));t.height=Math.max(1,Math.round(canvas.height*k));
+ const x=t.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,t.width,t.height);x.drawImage(canvas,0,0,t.width,t.height);
+ const image=await T.load_image(t.toDataURL('image/jpeg',.9)),
+  text=processor.apply_chat_template([{role:'user',content:[{type:'image'},{type:'text',text:prompt}]}],{add_generation_prompt:true}),
+  inputs=await processor(text,[image]),
+  ids=await model.generate({...inputs,max_new_tokens:maxTok||160,do_sample:false}),
+  out=processor.batch_decode(ids.slice(null,[inputs.input_ids.dims.at(-1),null]),{skip_special_tokens:true});
+ return String(out[0]||'').trim()}
+const FIGES=[[/\bangles?\b/gi,'ángulo'],[/\bheights?\b/gi,'altura'],[/\blengths?\b/gi,'longitud'],[/\bradius\b|\bradii\b/gi,'radio'],[/\bmass(?:es)?\b/gi,'masa'],[/\bforces?\b/gi,'fuerza'],[/\bdistances?\b/gi,'distancia'],[/\bweights?\b/gi,'peso'],[/\bdegrees?\b/gi,'°']];
 async function figRead(say,silent){
  if(!orig||!imc.width||!imc.height)return false;
- if(navigator.onLine===false){if(!silent)toast('Sin conexión: escribe los datos de la figura a mano');return false}
- const btn=$('#imrd');btn.disabled=true;if(say)say('Leyendo la figura con visión en línea…');if(!silent)fn.textContent='Leyendo la figura…';
+ const btn=$('#imrd');btn.disabled=true;const tell=m=>{if(say)say(m);if(!silent)fn.textContent=m};
  try{
-  const k=Math.min(1,1024/Math.max(imc.width,imc.height)),t=document.createElement('canvas');t.width=Math.round(imc.width*k);t.height=Math.round(imc.height*k);
-  const x=t.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,t.width,t.height);x.drawImage(imc,0,0,t.width,t.height);
-  const r=await pollChat([{role:'system',content:FIGSYS},{role:'user',content:[{type:'text',text:'Lee los datos de la figura.'},{type:'image_url',image_url:{url:t.toDataURL('image/jpeg',.85)}}]}],45000);
-  if(r.t){
-   let line=r.t.replace(/[*`#>]/g,'').replace(/\n+/g,', ').replace(/\s+/g,' ').replace(/^[-•,\s]+|[,\s]+$/g,'').slice(0,300);
-   if(!line||/^SIN DATOS/i.test(line)){fn.textContent='El modelo no encontró datos legibles en la figura. Escríbelos a mano.';return false}
-   fi.value=line;if(imList[imSel])imList[imSel].fig=line;
-   fn.textContent='Datos leídos por visión en línea (la imagen reducida se envió a Pollinations). Revísalos y corrígelos si hace falta.';return true}
-  fn.textContent=r.err==401||r.err==402||r.err==403?'Pollinations pide una clave gratuita: pégala en «Conexión con Pollinations» (abajo). Mientras tanto escribe los datos a mano.':r.err==429?'El servicio de visión está saturado. Espera unos segundos o escribe los datos a mano.':'No pude contactar al servicio de visión. Escribe los datos a mano.';
-  return false}
- catch(e){fn.textContent='No pude leer la figura en línea. Escribe los datos a mano.';return false}
+  let line=await vlmAsk(imc,FIGQ,tell,120);
+  line=line.replace(/[*`#>]/g,'').replace(/\n+/g,', ').replace(/\s+/g,' ').replace(/^[-•,.\s]+|[,.\s]+$/g,'');
+  FIGES.forEach(([re,s])=>{line=line.replace(re,s)});line=line.slice(0,300);
+  if(!line||/^(none|nothing|no )/i.test(line)){fn.textContent='El modelo no encontró datos legibles en la figura. Escríbelos a mano.';return false}
+  fi.value=line;if(imList[imSel])imList[imSel].fig=line;
+  fn.textContent='Datos leídos por el modelo de visión de tu navegador. Es un modelo pequeño: revisa los números y corrígelos si hace falta.';return true}
+ catch(e){fn.textContent='No pude cargar el modelo de visión'+(e&&e.message?' ('+String(e.message).slice(0,80)+')':'')+'. La primera vez necesita conexión para descargarlo (~250 MB); mientras tanto escribe los datos a mano.';return false}
  finally{btn.disabled=false}}
 $('#imrd').onclick=async()=>{if(!orig){toast('Primero sube una imagen');return}const ok=await figRead(null,false);if(ok)toast('Datos de la figura listos: ahora pregunta')};
 /* los datos de la figura se suman al texto que Noryx lee de la imagen */
 const _imOcr=imOcr;
 imOcr=async function(say){
  const tx=await _imOcr(say);
- if(!fi.value.trim()&&S.get('nx-figauto',false)&&navigator.onLine!==false)await figRead(say,true);
+ if(!fi.value.trim()&&S.get('nx-figauto',false))await figRead(say,true);
  const fig=fi.value.trim();
  return fig?(tx?tx+'\n':'')+'Datos de la figura: '+fig.replace(/\s*;\s*/g,', '):tx};
 /* con datos de figura escritos, una pregunta normal se trata como ejercicio */
 const _localVision=localVision;
 localVision=function(q,wait){
  if(fi.value.trim()&&!/music|cancion|playlist|escuchar|soundtrack|titulo|redes|instagram|caption|pie de foto|publicar|color|paleta|combin|decor/.test(norm(q)))q=q+' resuelve el ejercicio';
- return _localVision(q,wait)};
+ return _localVision(q,wait).then(async r=>{
+  if(!/^\*\*Creo que veo:\*\*/.test(r))return r;
+  try{const a=await vlmAsk(imc,q.replace(/ resuelve el ejercicio$/,''),m=>{wait.textContent=m},200);
+   if(a)return'**Lo que veo** (modelo de visión de tu navegador):\n\n'+a+'\n\n*Modelo pequeño: responde mejor en inglés y puede equivocarse con números o letra pequeña.*'+'\n\n'+r.replace(/^\*\*Creo que veo:\*\*/,'**Objetos que reconoce MobileNet:**')}catch(e){}
+  return r})};
 /* con el motor en línea, el modelo de visión recibe también los datos que escribiste */
-const _imAsk=imAsk;
-imAsk=function(q){
- q=(q||$('#imq').value||'').trim();const fig=fi.value.trim();
- if(q&&fig&&S.get('nx-veng','local')!='local')q+=' [Datos de la figura: '+fig+']';
- return _imAsk(q)};
+/* el análisis de imágenes es siempre local: se fuerza el motor y se actualiza la nota */
+S.set('nx-veng','local');
+$('#imnote').textContent='Todo corre en tu navegador y la imagen no sale de tu equipo. Noryx lee texto (Tesseract), reconoce objetos (MobileNet) y, para leer figuras y describir imágenes, usa un modelo de visión pequeño (SmolVLM): la primera vez descarga unos 250 MB y luego queda guardado. No es una IA grande: revisa sus resultados.';
 })();
 </script>
 </body>
