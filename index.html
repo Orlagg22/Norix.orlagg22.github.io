@@ -825,7 +825,7 @@ const TOP_RAW=[
 'c_halago@@eres genial|eres inteligente|eres muy buena|me caes bien|you are smart|eres lo mejor@@Gracias{n}, que lindo. Hago lo posible con mis neuronas. Si algo no lo se, enseñame con aprende: pregunta = respuesta.',
 'c_error@@te equivocaste|eso esta mal|no es correcto|you are wrong|esa respuesta no es@@Gracias por avisarme{n}, puedo equivocarme. Corrigeme con aprende: pregunta = respuesta y la proxima vez respondere mejor.',
 'c_noentiendo@@no entiendo|explicalo mas facil|no me quedo claro|i dont understand|repitelo|no comprendi@@Sin problema{n}. Dime que parte no quedo clara o escribe «mas» para que profundice, y lo explico de otra forma o con un ejemplo.',
-'c_ayuda2@@necesito ayuda|ayudame con algo|puedes ayudarme|can you help me|me ayudas@@Claro{n}. Cuentame que necesitas: puedo explicar temas, calcular, resolver ecuaciones, convertir unidades, ver el clima o platicar.',
+'c_ayuda2@@necesito ayuda|ayudame con algo|puedes ayudarme|can you help me|me ayudas@@Claro{n}. Cuentame que necesitas: puedo explicar temas, calcular, resolver ecuaciones y problemas de física, convertir unidades, ver el clima o platicar.',
 'c_consejo@@dame un consejo|que me recomiendas|necesito un consejo|give me advice|aconsejame@@Un consejo general: divide lo que te preocupa en pasos pequeños y haz solo el primero hoy. Si me cuentas tu situacion, te doy ideas mas concretas.',
 'c_noches@@buenas noches|me voy a dormir|hasta manana|good night|a dormir@@Buenas noches{n}. Descansa, que dormir bien ayuda a la memoria y al animo. Aqui sigo cuando regreses.',
 'c_edadia@@cuantos anos tienes|cuando naciste|how old are you|que edad tienes@@No tengo edad como las personas: existo desde que abres esta pagina y me entrenas. Lo que si tengo es memoria de lo que me enseñas.',
@@ -1189,6 +1189,430 @@ function algebra(t){
  if(D>0)return head+g+'- **x₁ = '+fmt((-b+Math.sqrt(D))/(2*a))+'**\n- **x₂ = '+fmt((-b-Math.sqrt(D))/(2*a))+'**';
  if(D==0)return head+g+'Raíz doble → **x = '+fmt(-b/(2*a))+'**';
  return head+g+'Raíces complejas → **x = '+fmt(-b/(2*a))+' ± '+fmt(Math.sqrt(-D)/(2*Math.abs(a)))+'i**'}catch(e){return null}}
+
+/* ============ Física: ejercicios planteados con oraciones ============ */
+const PH_U={
+ mass:{kg:1,kgs:1,kilo:1,kilos:1,kilogramo:1,kilogramos:1,g:1e-3,gr:1e-3,gramo:1e-3,gramos:1e-3,mg:1e-6,ton:1e3,tonelada:1e3,toneladas:1e3},
+ length:{m:1,mt:1,mts:1,metro:1,metros:1,cm:.01,centimetro:.01,centimetros:.01,mm:.001,milimetro:.001,milimetros:.001,km:1e3,kilometro:1e3,kilometros:1e3},
+ time:{s:1,seg:1,segs:1,segundo:1,segundos:1,min:60,minuto:60,minutos:60,h:3600,hr:3600,hrs:3600,hora:3600,horas:3600},
+ speed:{'m/s':1,'km/h':1/3.6,'cm/s':.01,'m/seg':1},
+ accel:{'m/s2':1,'cm/s2':.01,'m/seg2':1},
+ force:{n:1,newton:1,newtons:1,kn:1e3,dina:1e-5,dinas:1e-5},
+ energy:{j:1,joule:1,joules:1,julio:1,julios:1,kj:1e3,cal:4.184,kcal:4184},
+ power:{w:1,watt:1,watts:1,vatio:1,vatios:1,kw:1e3,hp:746},
+ press:{pa:1,kpa:1e3,atm:101325},
+ angle:{'°':1,grado:1,grados:1,deg:1},
+ temp:{'°c':1},
+ volt:{v:1,volt:1,volts:1,voltio:1,voltios:1,kv:1e3},
+ amp:{a:1,amp:1,amps:1,amperio:1,amperios:1,ampere:1,amperes:1,ma:1e-3},
+ ohm:{ohm:1,ohms:1,ohmio:1,ohmios:1,'ω':1,kohm:1e3},
+ freq:{hz:1,khz:1e3,mhz:1e6,rpm:1/60},
+ omega:{'rad/s':1},
+ charge:{c:1,uc:1e-6,nc:1e-9,mc:1e-3,culombio:1,culombios:1,coulomb:1,coulombs:1},
+ area:{m2:1,cm2:1e-4},
+ vol:{m3:1,cm3:1e-6,l:1e-3,lt:1e-3,litro:1e-3,litros:1e-3,ml:1e-6},
+ dens:{'kg/m3':1,'g/cm3':1e3},
+ spring:{'n/m':1},
+ spec:{'j/kg':1,'cal/g':4184}
+};
+const phf=v=>{if(v===0||v==null)return'0';if(!isFinite(v))return String(v);const a=Math.abs(v);if(a>=1e6||a<1e-3)return v.toExponential(3).replace(/e\+?(-?)(\d+)/,'×10^$1$2');return String(+v.toPrecision(4))};
+const phA=(title,datos,pasos,res,nota)=>'**🧮 '+title+'**\n\n**Datos:**\n'+datos.map(x=>'- '+x).join('\n')+'\n\n**Procedimiento:**\n'+pasos.map((x,i)=>(i+1)+'. '+x).join('\n')+'\n\n**✅ Respuesta:** '+res+(nota?'\n\n*'+nota+'*':'');
+const phD=v=>v*Math.PI/180;
+function phParse(t){
+ let s=' '+String(t).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')+' ';
+ s=s.replace(/²/g,'2').replace(/³/g,'3').replace(/[−–]/g,'-').replace(/(\d),(\d)/g,'$1.$2').replace(/×/g,'x').replace(/º/g,'°').replace(/·/g,'*');
+ let mu=null,g=null;
+ s=s.replace(/(?:coeficiente\s+(?:de\s+)?(?:friccion|rozamiento|roce)(?:\s+(?:cinetico|dinamico|estatico))?|\bmu\b|μ|µ)[^0-9.]{0,14}(\d*\.\d+|\d+)/,(m,a)=>{mu=+a;return' friccion '});
+ s=s.replace(/[µμ]/g,'u');
+ s=s.replace(/\b(?:g|gravedad|aceleracion de la gravedad)\s*(?:=|:|de|es|vale|igual a)\s*(\d+(?:\.\d+)?)(?:\s*(?:m\/s\^?2|m\/s2|m\/seg2))?/,(m,a)=>{g=+a;return' '});
+ s=s.replace(/m\/s\^2|m\/s\*\*2|m\/seg\^2/g,'m/s2')
+  .replace(/\b(?:metros?|m)\s*(?:por|\/)\s*(?:segundos?|seg|s)\s*(?:\^?2|al cuadrado|cuadrados?)/g,'m/s2')
+  .replace(/\b(?:metros?|m)\s*(?:por|\/)\s*(?:segundos?|seg)\b/g,'m/s')
+  .replace(/\b(kilometros?|km)\s*(?:por|sobre|\/)\s*(?:horas?|hr|h)\b/g,'km/h')
+  .replace(/(?:grados?\s+(?:celsius|centigrados?)|°\s*c\b)/g,'°c')
+  .replace(/kg\s*\/\s*m\^?3/g,'kg/m3').replace(/\bg\s*\/\s*cm\^?3/g,'g/cm3').replace(/\bm\^2\b/g,'m2').replace(/\bm\^3\b/g,'m3').replace(/cm\^2/g,'cm2').replace(/cm\^3/g,'cm3')
+  .replace(/radianes? por segundo/g,'rad/s').replace(/revoluciones por minuto/g,'rpm').replace(/metros cuadrados?/g,'m2').replace(/metros cubicos?/g,'m3')
+  .replace(/\bde\s+(-?\d+(?:\.\d+)?)\s*(m\/s|km\/h)?\s+(?:a|hasta)\s+(-?\d+(?:\.\d+)?)\s*(m\/s|km\/h)/g,'de $1 $4 hasta $3 $4')
+  .replace(/(\d+(?:\.\d+)?)\s*(?:x|\*)\s*10\s*\^?\s*(-?\d+)/g,(m,a,b)=>String(+a*Math.pow(10,+b)));
+ const all=[],Q={s,mu,g:g==null?9.8:g,gGiven:g!=null,all};
+ const elec=/voltaj|tension electrica|volt|bateria|circuito|resisten|corriente|pila|ohm|amper/.test(s),chg=/carga|coulomb|culombio/.test(s);
+ const re=/(-?\d+(?:\.\d+)?(?:e[+-]?\d+)?)\s*([a-z°ω]+(?:\/[a-z]+)?\d?)?/g;let m;
+ while((m=re.exec(s))){
+  if(m.index>0&&/[a-z]/.test(s[m.index-1]))continue;
+  const val=+m[1],u=m[2]||'';let kind=null,fac=1;
+  for(const k in PH_U){if(Object.prototype.hasOwnProperty.call(PH_U[k],u)){kind=k;fac=PH_U[k][u];break}}
+  if(kind=='volt'&&!elec)kind=null;if(kind=='amp'&&!elec)kind=null;if(kind=='charge'&&u=='c'&&!chg)kind=null;
+  const q={v:kind=='temp'?val:val*fac,raw:val,i:m.index,e:m.index+m[0].length,k:kind};
+  all.push(q);if(kind){(Q[kind]=Q[kind]||[]).push(q)}
+ }
+ if(!Q.angle){const a=s.match(/(?:angulo|inclinacion)\D{0,24}(\d+(?:\.\d+)?)/);if(a)Q.angle=[{v:+a[1],raw:+a[1],i:a.index,e:a.index+a[0].length,k:'angle'}]}
+ Q.one=k=>Q[k]&&Q[k].length?Q[k][0].v:null;
+ Q.list=k=>(Q[k]||[]).map(q=>q.v);
+ Q.has=rx=>rx.test(s);Q.kmh=/km\/h|kilometro|\bkm\b/.test(s);
+ Q.role=(k,rx)=>{for(const q of Q[k]||[]){const ix=all.indexOf(q),pv=all[ix-1],nx=all[ix+1];
+   const pre=s.slice(Math.max(pv?pv.e:0,q.i-40),q.i),post=s.slice(q.e,Math.min(nx?nx.i:s.length,q.e+22));
+   if(rx.test(pre)||rx.test(post))return q.v}return null};
+ Q.len=rx=>{const a=Q.role('length',rx);return a!=null?a:(Q.list('length').length==1?Q.one('length'):null)};
+ Q.rest=/(?:parte|parten|partiendo|sale|salen|inicia|comienza|empieza|arranca|arrancando|estaba|esta|se encuentra|desde|inicialmente)\s+(?:del |en |de |el |un )?\s*(?:reposo|quiet[oa])|desde el reposo|\barranca|velocidad inicial (?:es |de )?(?:nula|cero)/.test(s);
+ const sents=s.split(/[.?!]+/).filter(x=>/cual|cuanto|cuantos|cuantas|que |calcul|determin|hall|encuentr|obten|dime|averigu/.test(x));
+ Q.qs=sents.length?sents.join(' '):s;Q.hasQ=sents.length>0;
+ return Q}
+const phU=(v,u,S)=>phf(v)+' '+u+(S&&S.kmh&&u=='m/s'?' (= '+phf(v*3.6)+' km/h)':'')+(u=='s'&&v>=120?(v>=7200?' (= '+phf(v/3600)+' h)':' (= '+phf(v/60)+' min)'):'')+(u=='m'&&v>=1000?' (= '+phf(v/1000)+' km)':'');
+
+/* --- Plano inclinado / resbalar --- */
+function phIncline(S){
+ const s=S.s,inc=/rampa|inclinad|pendiente|cuesta|baja por|sube por|plano/.test(s),sl=/resbal|desliz/.test(s);if(!inc&&!sl)return null;
+ if(!inc&&(/horizontal|mesa|piso|suelo|empuj|jala|tira|arrastra/.test(s)||S.list('force').length>0))return null;
+ if(!(S.one('mass')!=null||S.one('angle')!=null||S.has(/fuerza|aceler|velocidad|rapidez/)))return null;
+ const m=S.one('mass'),g=S.g,qs=S.qs;
+ const fl=/sin (?:friccion|rozamiento|roce)|sin roce|superficie lisa|\bliso\b|\blisa\b|ideal|despreci\w+ (?:la |el )?(?:friccion|rozamiento|roce)/.test(s);
+ const mu=S.mu!=null?S.mu:(fl?0:null);let th=S.one('angle');
+ const h=S.role('length',/altura|alto|desnivel|desciende|baja|cae|elevad/),L=S.role('length',/longitud|largo|recorre|distancia|a lo largo/);
+ if(th==null&&h!=null&&L!=null&&h<=L&&L>0)th=Math.asin(h/L)*180/Math.PI;
+ const gs='g = '+phf(g)+' m/s²';
+ if(/(?:en|punto)\s*b\b[^.?]{0,45}horizontal|horizontal[^.?]{0,45}(?:en|punto)\s*b\b/.test(s)&&mu===0)
+  return phA('Fuerza resultante en un tramo horizontal sin fricción',[m!=null?'Masa: m = '+phf(m)+' kg':'Masa no necesaria','Superficie horizontal y sin fricción'],['El peso `m·g` se equilibra con la normal `N` (ambas verticales).','Sin fricción no hay fuerza horizontal que frene o acelere el cuerpo.','Por la primera ley de Newton, `ΣF = 0` y el cuerpo sigue con velocidad constante.'],'**F = 0 N**','La velocidad que traiga al llegar a ese tramo se mantiene.');
+ if(th==null&&h!=null&&mu===0&&/velocidad|rapidez|energia/.test(qs)){
+  const v=Math.sqrt(2*g*h);return phA('Conservación de la energía (sin fricción)',['Altura: h = '+phf(h)+' m',gs,'Parte del reposo'],['La energía potencial se convierte en cinética: `m·g·h = ½·m·v²`.','La masa se cancela: `v = √(2·g·h)`.','`v = √(2 × '+phf(g)+' × '+phf(h)+') = '+phf(v)+' m/s`'],'**v = '+phf(v)+' m/s** al llegar abajo','No depende del ángulo ni de la masa, solo de la altura.')}
+ if(th==null){
+  const sn=a=>Math.sin(phD(a)),Fm=m!=null?m:null;
+  const tab=[30,37,45,53,60].map(a=>a+'° → '+(Fm!=null?phf(Fm*g*sn(a))+' N':phf(g*sn(a))+'·m N')).join(' · ');
+  const dat=[m!=null?'Masa: m = '+phf(m)+' kg':'Masa: no la veo en el texto',mu===0?'Superficie sin fricción':(mu!=null?'Coeficiente de fricción: μ = '+phf(mu):'Fricción: no indicada'),S.rest?'Parte del reposo (no cambia la fuerza, solo la velocidad)':'',gs].filter(Boolean);
+  return{need:1,t:'**🧮 Ejercicio de dinámica: cuerpo que resbala por una superficie**\n\n**Datos que entendí:**\n'+dat.map(x=>'- '+x).join('\n')+
+   '\n\n**Cómo se resuelve:** '+(mu===0?'sin fricción solo actúan el peso `m·g` y la normal `N`. Como `N` es perpendicular a la superficie, la fuerza resultante es la componente del peso a lo largo de ella:\n`F = m·g·sen θ`'+(Fm!=null?'  →  `F = '+phf(Fm)+' × '+phf(g)+' × sen θ = '+phf(Fm*g)+'·sen θ  (N)`':''):'la fuerza resultante es `F = m·g·sen θ − μ·m·g·cos θ`.')+
+   '\n\n**Me falta un dato que seguramente está en la figura:** el ángulo θ de la superficie en el punto B (o la altura y la longitud de la rampa).\n\n**Valores rápidos** con '+gs+': '+tab+
+   '\n\n**Según dónde esté el punto B:**\n- Rampa recta: `F = m·g·sen θ`\n- Tramo horizontal sin fricción: `F = 0`\n- Caída vertical: `F = m·g'+(Fm!=null?' = '+phf(Fm*g)+' N':'')+'`\n- Pista curva: depende de la pendiente en B, que cambia en cada punto\n\nDime el ángulo (por ejemplo «30 grados») o la altura y la longitud, o escribe `g = 10` si tu libro usa 10 m/s², y te doy el valor exacto.'}}
+ if(/friccion|rozamiento|roce/.test(s)&&mu==null)return{need:1,t:'Entendí que es un plano inclinado de **'+phf(th)+'°**, pero me falta el **coeficiente de fricción μ**. Dímelo (por ejemplo «μ = 0.2») o aclara si no hay fricción.'};
+ const r=phD(th),mm=m,W=mm!=null?mm*g:null,sn=Math.abs(Math.sin(r))<1e-12?0:Math.sin(r),cs=Math.abs(Math.cos(r))<1e-12?0:Math.cos(r);
+ if(mm==null){const a=g*(sn-(mu||0)*cs);return{need:1,t:phA('Plano inclinado sin masa',['Ángulo: θ = '+phf(th)+'°',mu?'μ = '+phf(mu):'Sin fricción',gs],['Aceleración: `a = g·(sen θ − μ·cos θ) = '+phf(a)+' m/s²`','La fuerza resultante vale `F = m·a`, pero no veo la masa.'],'**a = '+phf(a)+' m/s²**; la fuerza es **F = '+phf(a)+'·m** (N).','Dime la masa (por ejemplo «masa 2 kg») y te doy la fuerza en newtons.')}}
+ const Wp=W*sn,N=W*cs,Ff=(mu||0)*N;let Fn=Wp-Ff,desl=true;if(Fn<=0){Fn=0;desl=false}
+ const a=Fn/mm,dat=['Masa: m = '+phf(mm)+' kg','Ángulo: θ = '+phf(th)+'°',mu?'Fricción: μ = '+phf(mu):'Sin fricción',gs];
+ const pa=['Peso: `W = m·g = '+phf(mm)+' × '+phf(g)+' = '+phf(W)+' N`','Componente paralela a la superficie: `W∥ = m·g·sen θ = '+phf(W)+' × sen '+phf(th)+'° = '+phf(Wp)+' N`','Normal (equilibra la componente perpendicular): `N = m·g·cos θ = '+phf(N)+' N`'];
+ if(mu>0){pa.push('Fricción: `f = μ·N = '+phf(mu)+' × '+phf(N)+' = '+phf(Ff)+' N`');pa.push(desl?'Fuerza resultante: `F = W∥ − f = '+phf(Wp)+' − '+phf(Ff)+' = '+phf(Fn)+' N`':'Como `W∥ ≤ f`, la fricción alcanza para sostenerlo: no se desliza y `F = 0`.')}
+ else pa.push('Sin fricción, la fuerza resultante es solo `W∥`: `F = '+phf(Fn)+' N`');
+ if(desl)pa.push('Aceleración: `a = F/m = '+phf(Fn)+' / '+phf(mm)+' = '+phf(a)+' m/s²`');
+ let nota='';
+ if(desl&&L!=null){const v=Math.sqrt(2*a*L),t=Math.sqrt(2*L/a);nota='Si parte del reposo y recorre '+phf(L)+' m: llega con v = '+phf(v)+' m/s en t = '+phf(t)+' s.'}
+ else if(desl&&h!=null&&mu===0){nota='Si baja desde una altura de '+phf(h)+' m, llega con v = '+phf(Math.sqrt(2*g*h))+' m/s.'}
+ return phA('Plano inclinado',dat,pa,'**F = '+phf(Fn)+' N**'+(desl?' a lo largo de la superficie, hacia abajo de la pendiente':''),nota)}
+
+/* --- Tiro parabólico / lanzamiento horizontal --- */
+function phProj(S){
+ const s=S.s,g=S.g,v=S.one('speed');if(v==null)return null;
+ if(/rampa|inclinad|resbal|desliz|hacia arriba verticalmente|verticalmente/.test(s))return null;
+ const hz=/horizontalmente|direccion horizontal|velocidad horizontal/.test(s)&&/lanz|dispar|sale|cae|rueda|arroj|patea|mesa|acantilado|edificio|azotea|rueda/.test(s);
+ if(hz){const h=S.len(/altura|alto|mesa|acantilado|edificio|azotea|desde/);if(h==null)return null;
+  const t=Math.sqrt(2*h/g),x=v*t,vy=g*t,vi=Math.hypot(v,vy),ang=Math.atan(vy/v)*180/Math.PI;
+  return phA('Lanzamiento horizontal',['Velocidad horizontal: vₓ = '+phU(v,'m/s',S),'Altura: h = '+phf(h)+' m','g = '+phf(g)+' m/s²'],['Tiempo de caída (vertical, `v₀ᵧ = 0`): `t = √(2·h/g) = √(2 × '+phf(h)+' / '+phf(g)+') = '+phf(t)+' s`','Alcance horizontal (MRU): `x = vₓ·t = '+phf(v)+' × '+phf(t)+' = '+phf(x)+' m`','Velocidad vertical al llegar: `vᵧ = g·t = '+phf(vy)+' m/s`','Rapidez de impacto: `v = √(vₓ² + vᵧ²) = '+phf(vi)+' m/s`, a '+phf(ang)+'° bajo la horizontal'],'**t = '+phf(t)+' s**, **alcance = '+phf(x)+' m**, rapidez de impacto = '+phf(vi)+' m/s')}
+ const th=S.one('angle');
+ if(th!=null&&/lanz|dispar|patea|golpea|arroj|proyectil|tira|tiro|bala|cañon|canon|pelota/.test(s)){
+  const h0=S.role('length',/altura|desde|alto/)||0,vx=v*Math.cos(phD(th)),vy=v*Math.sin(phD(th));
+  const t=(vy+Math.sqrt(vy*vy+2*g*h0))/g,R=vx*t,Hm=h0+vy*vy/(2*g),vyf=vy-g*t,vi=Math.hypot(vx,vyf);
+  const pa=['Componentes: `vₓ = v·cos θ = '+phf(vx)+' m/s`, `v₀ᵧ = v·sen θ = '+phf(vy)+' m/s`'];
+  if(h0>0)pa.push('Tiempo de vuelo (resuelvo `h₀ + v₀ᵧ·t − ½·g·t² = 0`): `t = '+phf(t)+' s`');else pa.push('Tiempo de vuelo: `t = 2·v₀ᵧ/g = '+phf(t)+' s`');
+  pa.push('Alcance: `R = vₓ·t = '+phf(R)+' m`');pa.push('Altura máxima: `H = h₀ + v₀ᵧ²/(2g) = '+phf(Hm)+' m`');if(h0>0)pa.push('Rapidez al llegar: `v = '+phf(vi)+' m/s`');
+  return phA('Tiro parabólico',['Velocidad inicial: v₀ = '+phU(v,'m/s',S),'Ángulo: θ = '+phf(th)+'°',h0>0?'Altura inicial: '+phf(h0)+' m':'Sale y llega al mismo nivel','g = '+phf(g)+' m/s²'],pa,'**alcance = '+phf(R)+' m**, **altura máxima = '+phf(Hm)+' m**, **tiempo de vuelo = '+phf(t)+' s**','Sin resistencia del aire.')}
+ return null}
+
+/* --- Movimiento uniformemente acelerado (motor genérico) --- */
+function phSolveMRUA(k){
+ let{v0,vf,a,t,d}=k;const st=[],has=x=>x!=null&&!isNaN(x),P=phf;
+ const n=[v0,vf,a,t,d].filter(has).length;if(n<3)return null;
+ const R=[
+  [()=>!has(a)&&has(v0)&&has(vf)&&has(t)&&t!==0,()=>{a=(vf-v0)/t;return'Aceleración: `a = (v − v₀)/t = ('+P(vf)+' − '+P(v0)+') / '+P(t)+' = '+P(a)+' m/s²`'}],
+  [()=>!has(vf)&&has(v0)&&has(a)&&has(t),()=>{vf=v0+a*t;return'Velocidad final: `v = v₀ + a·t = '+P(v0)+' + '+P(a)+' × '+P(t)+' = '+P(vf)+' m/s`'}],
+  [()=>!has(v0)&&has(vf)&&has(a)&&has(t),()=>{v0=vf-a*t;return'Velocidad inicial: `v₀ = v − a·t = '+P(v0)+' m/s`'}],
+  [()=>!has(a)&&has(v0)&&has(vf)&&has(d)&&d!==0,()=>{a=(vf*vf-v0*v0)/(2*d);return'Aceleración: `a = (v² − v₀²)/(2·d) = ('+P(vf)+'² − '+P(v0)+'²) / (2 × '+P(d)+') = '+P(a)+' m/s²`'}],
+  [()=>!has(vf)&&has(v0)&&has(a)&&has(d)&&v0*v0+2*a*d>=0,()=>{vf=Math.sqrt(v0*v0+2*a*d);if(v0<0)vf=-vf;return'Velocidad final: `v = √(v₀² + 2·a·d) = √('+P(v0)+'² + 2 × '+P(a)+' × '+P(d)+') = '+P(vf)+' m/s`'}],
+  [()=>!has(v0)&&has(vf)&&has(a)&&has(d)&&vf*vf-2*a*d>=0,()=>{v0=Math.sqrt(vf*vf-2*a*d);return'Velocidad inicial: `v₀ = √(v² − 2·a·d) = '+P(v0)+' m/s`'}],
+  [()=>!has(t)&&has(v0)&&has(vf)&&has(a)&&a!==0,()=>{t=(vf-v0)/a;return'Tiempo: `t = (v − v₀)/a = ('+P(vf)+' − '+P(v0)+') / '+P(a)+' = '+P(t)+' s`'}],
+  [()=>!has(t)&&has(v0)&&has(vf)&&has(d)&&v0+vf!==0,()=>{t=2*d/(v0+vf);return'Tiempo: `t = 2·d/(v₀ + v) = '+P(t)+' s`'}],
+  [()=>!has(d)&&has(v0)&&has(a)&&has(t),()=>{d=v0*t+.5*a*t*t;return'Distancia: `d = v₀·t + ½·a·t² = '+P(v0)+' × '+P(t)+' + ½ × '+P(a)+' × '+P(t)+'² = '+P(d)+' m`'}],
+  [()=>!has(d)&&has(v0)&&has(vf)&&has(t),()=>{d=(v0+vf)/2*t;return'Distancia: `d = (v₀ + v)/2 · t = '+P(d)+' m`'}],
+  [()=>!has(d)&&has(vf)&&has(a)&&has(t),()=>{d=vf*t-.5*a*t*t;return'Distancia: `d = v·t − ½·a·t² = '+P(d)+' m`'}],
+  [()=>!has(a)&&has(v0)&&has(d)&&has(t)&&t!==0,()=>{a=2*(d-v0*t)/(t*t);return'Aceleración: `a = 2·(d − v₀·t)/t² = '+P(a)+' m/s²`'}],
+  [()=>!has(a)&&has(vf)&&has(d)&&has(t)&&t!==0,()=>{a=2*(vf*t-d)/(t*t);return'Aceleración: `a = 2·(v·t − d)/t² = '+P(a)+' m/s²`'}],
+  [()=>!has(v0)&&has(a)&&has(t)&&has(d)&&t!==0,()=>{v0=(d-.5*a*t*t)/t;return'Velocidad inicial: `v₀ = (d − ½·a·t²)/t = '+P(v0)+' m/s`'}]
+ ];
+ for(let it=0;it<5;it++){let pr=false;for(const[c,f]of R){if(c()){st.push(f());pr=true}}if(!pr)break}
+ const ok=[v0,vf,a,t,d].every(has)&&t>=-1e-9;
+ return{k:{v0,vf,a,t,d},st,ok}}
+function phTargets(qs){const tg=[];
+ if(/distancia|recorre|desplaz|altura|cuanto (?:avanza|cae|baja|sube)|que altura|longitud|cuantos metros|a que altura/.test(qs))tg.push('d');
+ if(/tiempo|cuanto (?:tarda|demora|dura|tiempo)|en cuanto|cuantos segundos/.test(qs))tg.push('t');
+ if(/aceleracion|desaceleracion|frenado/.test(qs))tg.push('a');
+ if(/velocidad inicial|rapidez inicial|con que (?:velocidad|rapidez) (?:parte|sale|se lanzo|lanzo)/.test(qs))tg.push('v0');
+ else if(/velocidad|rapidez/.test(qs))tg.push('vf');
+ return tg}
+function phMRUAtxt(k,title,S,extra){
+ const r=phSolveMRUA(k);if(!r)return null;
+ if(!r.ok)return'Con esos datos el movimiento no es posible (sale un tiempo negativo o una raíz de un número negativo). Revisa los datos del problema.';
+ const q=r.k,N={v0:'Velocidad inicial v₀',vf:'Velocidad final v',a:'Aceleración a',t:'Tiempo t',d:'Distancia d'},U={v0:'m/s',vf:'m/s',a:'m/s²',t:'s',d:'m'};
+ const dat=['v0','vf','a','t','d'].filter(x=>k[x]!=null).map(x=>N[x]+' = '+phU(k[x],U[x],S)).concat(extra||[]);
+ let tg=S.hasQ?phTargets(S.qs):[];if(!tg.length)tg=['v0','vf','a','t','d'].filter(x=>k[x]==null);
+ if(!tg.length)tg=['d'];
+ const res=tg.map(x=>'**'+N[x].split(' ').pop()+' = '+phU(q[x],U[x],S)+'**').join(', ');
+ return phA(title,dat,r.st.length?r.st:['Con los datos ya están todas las magnitudes.'],res)}
+
+function phFall(S){
+ const s=S.s,g=S.g;
+ if(/horizontalmente|rampa|inclinad|resbal|desliz|proyectil|parabolic/.test(s))return null;
+ const v=S.one('speed'),t=S.one('time');
+ const up=/hacia arriba|asciende|altura maxima/.test(s)&&/lanz|arroj|tir[ao]|dispar|patea|sale/.test(s)&&S.one('angle')==null;
+ if(up&&v!=null){const hm=v*v/(2*g),tu=v/g;
+  return phA('Lanzamiento vertical hacia arriba',['Velocidad inicial: v₀ = '+phU(v,'m/s',S),'g = '+phf(g)+' m/s²'],['En el punto más alto `v = 0`, así que `t_subida = v₀/g = '+phf(v)+' / '+phf(g)+' = '+phf(tu)+' s`','Altura máxima: `H = v₀²/(2·g) = '+phf(v)+'² / (2 × '+phf(g)+') = '+phf(hm)+' m`','Tiempo total de vuelo (sube y baja): `t = 2·v₀/g = '+phf(2*tu)+' s`','Regresa al punto de partida con la misma rapidez: '+phf(v)+' m/s'],'**altura máxima = '+phf(hm)+' m**, **tiempo de subida = '+phf(tu)+' s**, **tiempo total = '+phf(2*tu)+' s**','Sin resistencia del aire.')}
+ if(!/deja caer|dejan caer|suelta|caida libre|\bcae\b|\bcayo\b|caiga|se deja|se desprende|hacia abajo/.test(s))return null;
+ const h=S.len(/altura|alto|edificio|torre|azotea|puente|acantilado|cae|suelta|desde|piso|pozo/);
+ const sp=v!=null?(S.role('speed',/llega|final|impact|choca|golpea|toca|alcanza|al suelo|antes de/)!=null?{f:v}:{i:v}):{};
+ const k={v0:sp.i!=null?sp.i:(sp.f!=null?null:0),vf:sp.f!=null?sp.f:null,a:g,t:t,d:h};
+ if(k.v0==null&&k.vf!=null)k.v0=0;
+ {const r=phMRUAtxt(k,'Caída libre',S);return typeof r=='string'?r.replace('- Aceleración a = ','- Aceleración de la gravedad: g = '):r}}
+
+/* --- Cinemática: MRU y MRUA --- */
+function phKinKnown(S){
+ const s=S.s;
+ if(!/recorre|viaja|se mueve|avanza|acelera|aceleracion|frena|desacelera|arranca|reposo|velocidad|rapidez|movil|auto|carro|tren|bicicleta|ciclista|corredor|avion|moto|camion|vehiculo|detiene|trota|camina|nada|lancha|barco|atleta|peaton|cohete/.test(s))return null;
+ const sp=S.list('speed'),ac=S.one('accel'),t=S.one('time'),rest=S.rest;
+ let d=S.role('length',/recorre|distancia|desplaz|avanza|a lo largo|separ|recorrido|frena en|tramo|hasta/);if(d==null&&S.list('length').length==1)d=S.one('length');
+ const stop=/se detiene|hasta detenerse|hasta parar|hasta pararse|hasta frenar|se detuvo|se para\b|hasta el reposo|hasta quedar en reposo|hasta quedar detenid/.test(s);
+ const finRx=/final|alcanza|llega a|llega con|adquiere|hasta (?:una |alcanzar )|logra|velocidad de \d+[^.]*(?:en|despues)/;
+ let v0=null,vf=null;
+ if(sp.length>=2){v0=sp[0];vf=sp[1];if(S.role('speed',finRx)===sp[0]&&S.role('speed',finRx)!==sp[1]){v0=sp[1];vf=sp[0]}}
+ else if(sp.length==1){
+  if(stop){v0=sp[0];vf=0}
+  else if(rest){v0=0;vf=sp[0]}
+  else if(ac!=null||/acelera|frena|desacelera/.test(s)){if(S.role('speed',finRx)!=null)vf=sp[0];else v0=sp[0]}}
+ if(rest&&v0==null)v0=0;if(stop&&vf==null)vf=0;
+ let a=null;if(ac!=null){a=ac;if(/frena|desacelera|desaceleracion|retarda|frenado|disminuye/.test(s)&&a>0)a=-a}
+ return{sp,v0,vf,a,t,d,rest,stop}}
+function phKin(S){
+ const K=phKinKnown(S);if(!K)return null;
+ let{sp,v0,vf,a,t,d}=K;
+ const mrua=a!=null||(v0!=null&&vf!=null&&v0!==vf)||(K.rest&&(vf!=null));
+ if(mrua){return phMRUAtxt({v0,vf,a,t,d},'Movimiento uniformemente acelerado',S)}
+ if(/acelera|frena|desacelera|reposo/.test(S.s))return null;
+ let v=sp.length==1?sp[0]:null;
+ const n=[v,t,d].filter(x=>x!=null).length;if(n<2)return null;
+ const pa=[];
+ if(v==null){v=d/t;pa.push('Velocidad: `v = d/t = '+phf(d)+' / '+phf(t)+' = '+phf(v)+' m/s`')}
+ else if(d==null){d=v*t;pa.push('Distancia: `d = v·t = '+phf(v)+' × '+phf(t)+' = '+phf(d)+' m`')}
+ else if(t==null){t=d/v;pa.push('Tiempo: `t = d/v = '+phf(d)+' / '+phf(v)+' = '+phf(t)+' s`')}
+ else return null;
+ const dat=[];if(sp.length==1)dat.push('Velocidad: v = '+phU(sp[0],'m/s',S));if(S.one('time')!=null)dat.push('Tiempo: t = '+phU(S.one('time'),'s',S));if(K.d!=null)dat.push('Distancia: d = '+phU(K.d,'m',S));
+ let res=(S.hasQ?phTargets(S.qs):[]).map(x=>x=='d'?'**d = '+phU(d,'m',S)+'**':x=='t'?'**t = '+phU(t,'s',S)+'**':x=='vf'?'**v = '+phU(v,'m/s',S)+'**':null).filter(Boolean).join(', ');
+ if(!res)res='**v = '+phU(v,'m/s',S)+'**, **d = '+phU(d,'m',S)+'**, **t = '+phU(t,'s',S)+'**';
+ return phA('Movimiento rectilíneo uniforme (MRU)',dat,pa,res,'Velocidad constante: no hay aceleración.')}
+
+/* --- Dinámica: segunda ley de Newton, peso, tensión, fricción --- */
+function phDyn(S){
+ let m=S.one('mass');const s=S.s,qs=S.qs,g=S.g,fl=S.list('force'),a0=S.one('accel'),gs='g = '+phf(g)+' m/s²';
+ if(/ascensor|elevador/.test(s)&&m!=null){
+  const up=/sube|subiendo|asciende/.test(s),acc=/acelera|aceleracion/.test(s),dec=/frena|desacelera|desaceleracion/.test(s);let au=0;
+  if(a0!=null){if((up&&acc)||(!up&&dec))au=a0;else if((!up&&acc)||(up&&dec))au=-a0}
+  const N=m*(g+au),tn=/tension|cable/.test(qs);return phA(tn?'Tensión del cable de un ascensor':'Peso aparente en un ascensor',['Masa: m = '+phf(m)+' kg',a0!=null?'Aceleración: a = '+phf(a0)+' m/s²':'Velocidad constante o reposo',gs],['Segunda ley de Newton (positivo hacia arriba): `'+(/tension|cable/.test(qs)?'T':'N')+' − m·g = m·a`','`'+(tn?'T':'N')+' = m·(g + a) = '+phf(m)+' × ('+phf(g)+' '+(au<0?'−':'+')+' '+phf(Math.abs(au))+') = '+phf(N)+' N`'],'**'+(tn?'T':'N')+' = '+phf(N)+' N**',tn?'Se supone el ascensor (o la carga) colgando del cable; su peso real es '+phf(m*g)+' N.':'Es la fuerza que el piso ejerce sobre la persona (lo que marcaría una báscula). Su peso real es '+phf(m*g)+' N.')}
+ if(/tension|cuerda|cable/.test(s)&&m!=null&&/cuelga|sostiene|suspendid|equilibrio|reposo|velocidad constante|sube|baja/.test(s)&&!/rampa|inclinad|plano/.test(s)&&fl.length==0){
+  let au=0;if(a0!=null){const up=/sube|subiendo|eleva|levanta/.test(s),dn=/baja|bajando|desciende/.test(s);au=dn&&!up?-a0:a0}
+  const T=m*(g+au);return phA('Tensión de una cuerda',['Masa: m = '+phf(m)+' kg',a0!=null?'Aceleración: '+phf(au)+' m/s² (+ hacia arriba)':'En equilibrio',gs],['`T − m·g = m·a`','`T = m·(g + a) = '+phf(m)+' × ('+phf(g)+' + '+phf(au)+') = '+phf(T)+' N`'],'**T = '+phf(T)+' N**')}
+ if(/\bpeso\b/.test(qs)&&m!=null&&fl.length==0&&a0==null)
+  return phA('Peso de un cuerpo',['Masa: m = '+phf(m)+' kg',gs],['`W = m·g = '+phf(m)+' × '+phf(g)+' = '+phf(m*g)+' N`'],'**W = '+phf(m*g)+' N**','Peso (fuerza) ≠ masa: la masa no cambia, el peso depende de la gravedad del lugar.');
+ if(/masa/.test(qs)&&/\bpeso\b/.test(s)&&fl.length==1&&m==null)
+  return phA('Masa a partir del peso',['Peso: W = '+phf(fl[0])+' N',gs],['`m = W/g = '+phf(fl[0])+' / '+phf(g)+' = '+phf(fl[0]/g)+' kg`'],'**m = '+phf(fl[0]/g)+' kg**');
+ if(fl.length>=2&&/fuerza|resultante|neta|aceler/.test(qs)&&!/rampa|inclinad/.test(s)){
+  const opp=/sentidos? (?:opuestos|contrarios)|direcciones? opuestas|en contra|contrari|se oponen|opuesta|derecha[^.]*izquierda|izquierda[^.]*derecha|este[^.]*oeste|norte[^.]*sur|arriba[^.]*abajo/.test(s),same=/mismo sentido|misma direccion|mismo lado|en el mismo/.test(s),th=S.one('angle');
+  const f1=fl[0],f2=fl[1];let Fn,how,dsc;
+  if(opp){Fn=Math.abs(f1-f2);how='Sentidos opuestos: `F = |F₁ − F₂| = |'+phf(f1)+' − '+phf(f2)+'| = '+phf(Fn)+' N`';dsc='Sentidos opuestos'}
+  else if(same){Fn=f1+f2;how='Mismo sentido: `F = F₁ + F₂ = '+phf(Fn)+' N`';dsc='Mismo sentido'}
+  else if(th!=null){Fn=Math.sqrt(f1*f1+f2*f2+2*f1*f2*Math.cos(phD(th)));how='Ley del coseno: `F = √(F₁² + F₂² + 2·F₁·F₂·cos θ) = '+phf(Fn)+' N`';dsc='Ángulo entre fuerzas: '+phf(th)+'°'}
+  else return{need:1,t:'Veo dos fuerzas (**'+phf(f1)+' N** y **'+phf(f2)+' N**) pero no sé cómo están orientadas. Dime si van en el mismo sentido, en sentidos opuestos o con qué ángulo, y calculo la fuerza resultante.'};
+  const pa=[how],res=['**F = '+phf(Fn)+' N**'];
+  if(m!=null){pa.push('Aceleración: `a = F/m = '+phf(Fn)+' / '+phf(m)+' = '+phf(Fn/m)+' m/s²`');res.push('**a = '+phf(Fn/m)+' m/s²**')}
+  return phA('Fuerza resultante de dos fuerzas',['F₁ = '+phf(f1)+' N','F₂ = '+phf(f2)+' N',dsc].concat(m!=null?['Masa: m = '+phf(m)+' kg']:[]),pa,res.join(', '))}
+ if(S.mu!=null&&S.one('speed')!=null&&/detiene|frena|hasta parar|se detuvo|hasta detenerse/.test(s)&&fl.length==0&&!/rampa|inclinad/.test(s)){
+  const a=-S.mu*g;return phMRUAtxt({v0:S.one('speed'),vf:0,a:a,t:S.one('time'),d:S.len(/recorre|distancia|desplaz/)},'Frenado por fricción',S,['Fricción: μ = '+phf(S.mu),gs,'Desaceleración por fricción: `a = −μ·g = '+phf(a)+' m/s²`'])}
+ if(m!=null&&fl.length==1&&S.mu!=null&&/friccion|rozamiento|roce/.test(s)&&!/rampa|inclinad|plano inclinado/.test(s)){
+  const F=fl[0],N=m*g,f=S.mu*N,Fn=F-f,a=Fn/m;
+  return phA('Fuerza aplicada con fricción (superficie horizontal)',['Masa: m = '+phf(m)+' kg','Fuerza aplicada: F = '+phf(F)+' N','Fricción: μ = '+phf(S.mu),gs],['Normal: `N = m·g = '+phf(N)+' N`','Fricción: `f = μ·N = '+phf(f)+' N`',Fn>0?'Fuerza resultante: `ΣF = F − f = '+phf(F)+' − '+phf(f)+' = '+phf(Fn)+' N`':'La fuerza aplicada no supera a la fricción: el cuerpo no se mueve y `ΣF = 0`.','Aceleración: `a = ΣF/m = '+phf(Math.max(a,0))+' m/s²`'],'**ΣF = '+phf(Math.max(Fn,0))+' N**, **a = '+phf(Math.max(a,0))+' m/s²**')}
+ let F=fl.length?fl[0]:null,a=a0,pre=[];
+ if(m!=null&&F==null&&a==null&&/fuerza|empuj|jala|tira|aplica|ejerce|necesit/.test(qs)){
+  const K=phKinKnown(S);if(K){const r=phSolveMRUA(K);if(r&&r.ok){a=r.k.a;pre=r.st.filter(x=>/^Aceleraci/.test(x))}}}
+ const n=[m,F,a].filter(x=>x!=null).length;if(n<2)return null;
+ if(!/fuerza|masa|aceler|empuj|jala|tira|aplica|ejerce|newton|resultante|neta/.test(s))return null;
+ const dat=[];if(m!=null)dat.push('Masa: m = '+phf(m)+' kg');if(F!=null)dat.push('Fuerza: F = '+phf(F)+' N');if(a!=null)dat.push('Aceleración: a = '+phf(a)+' m/s²');
+ if(F==null){F=m*a;return phA('Segunda ley de Newton',dat,pre.concat(['`F = m·a = '+phf(m)+' × '+phf(a)+' = '+phf(F)+' N`']),'**F = '+phf(F)+' N**')}
+ if(a==null){a=F/m;return phA('Segunda ley de Newton',dat,['`a = F/m = '+phf(F)+' / '+phf(m)+' = '+phf(a)+' m/s²`'],'**a = '+phf(a)+' m/s²**')}
+ if(m==null){m=F/a;return phA('Segunda ley de Newton',dat,['`m = F/a = '+phf(F)+' / '+phf(a)+' = '+phf(m)+' kg`'],'**m = '+phf(m)+' kg**')}
+ return null}
+
+/* --- Energía, trabajo y potencia --- */
+function phEnergy(S){
+ const s=S.s,qs=S.qs,g=S.g,m=S.one('mass'),v=S.one('speed'),F=S.one('force'),t=S.one('time'),P=S.one('power'),E=S.one('energy'),k=S.one('spring');
+ if(!/energia|trabajo|potencia|cinetic|potencial|vatio|watt|motor|conserv/.test(s))return null;
+ const h=S.len(/altura|alto|eleva|levanta|sube|nivel/),gs='g = '+phf(g)+' m/s²';
+ if(/cinetic/.test(s)){
+  if(m!=null&&v!=null){const e=.5*m*v*v;return phA('Energía cinética',['Masa: m = '+phf(m)+' kg','Velocidad: v = '+phU(v,'m/s',S)],['`Ec = ½·m·v² = ½ × '+phf(m)+' × '+phf(v)+'² = '+phf(e)+' J`'],'**Ec = '+phf(e)+' J**')}
+  if(E!=null&&m!=null){const vv=Math.sqrt(2*E/m);return phA('Velocidad a partir de la energía cinética',['Ec = '+phf(E)+' J','m = '+phf(m)+' kg'],['`v = √(2·Ec/m) = '+phf(vv)+' m/s`'],'**v = '+phf(vv)+' m/s**')}
+  if(E!=null&&v!=null){const mm=2*E/(v*v);return phA('Masa a partir de la energía cinética',['Ec = '+phf(E)+' J','v = '+phf(v)+' m/s'],['`m = 2·Ec/v² = '+phf(mm)+' kg`'],'**m = '+phf(mm)+' kg**')}}
+ if(/elastica/.test(s)&&k!=null){const x=S.len(/estira|comprime|elongacion|deform|alarga|desplaz/);if(x!=null){const e=.5*k*x*x;return phA('Energía potencial elástica',['k = '+phf(k)+' N/m','Deformación: x = '+phf(x)+' m'],['`Ep = ½·k·x² = ½ × '+phf(k)+' × '+phf(x)+'² = '+phf(e)+' J`'],'**Ep = '+phf(e)+' J**')}}
+ if(/potencial/.test(s)&&!/elastica/.test(s)){
+  if(m!=null&&h!=null){const e=m*g*h;return phA('Energía potencial gravitatoria',['Masa: m = '+phf(m)+' kg','Altura: h = '+phf(h)+' m',gs],['`Ep = m·g·h = '+phf(m)+' × '+phf(g)+' × '+phf(h)+' = '+phf(e)+' J`'],'**Ep = '+phf(e)+' J**')}
+  if(E!=null&&m!=null){const hh=E/(m*g);return phA('Altura a partir de la energía potencial',['Ep = '+phf(E)+' J','m = '+phf(m)+' kg',gs],['`h = Ep/(m·g) = '+phf(hh)+' m`'],'**h = '+phf(hh)+' m**')}}
+ if(/trabajo/.test(s)){
+  const d=S.role('length',/recorre|distancia|desplaz|empuja|arrastra|jala|mueve/)||(h==null?S.one('length'):null),th=S.one('angle')||0;
+  if(F!=null&&d!=null){const W=F*d*Math.cos(phD(th));return phA('Trabajo de una fuerza',['Fuerza: F = '+phf(F)+' N','Distancia: d = '+phf(d)+' m',th?'Ángulo entre F y el desplazamiento: '+phf(th)+'°':'Fuerza paralela al desplazamiento'],['`W = F·d·cos θ = '+phf(F)+' × '+phf(d)+' × cos '+phf(th)+'° = '+phf(W)+' J`'].concat(t!=null?['Potencia media: `P = W/t = '+phf(W)+' / '+phf(t)+' = '+phf(W/t)+' W`']:[]),'**W = '+phf(W)+' J**'+(t!=null?', **P = '+phf(W/t)+' W**':''))}
+  if(m!=null&&h!=null){const W=m*g*h;return phA('Trabajo para elevar un cuerpo',['Masa: m = '+phf(m)+' kg','Altura: h = '+phf(h)+' m',gs],['`W = m·g·h = '+phf(W)+' J`'].concat(t!=null?['Potencia media: `P = W/t = '+phf(W/t)+' W`']:[]),'**W = '+phf(W)+' J**'+(t!=null?', **P = '+phf(W/t)+' W**':''))}
+  if(E!=null&&F!=null){const dd=E/F;return phA('Distancia a partir del trabajo',['W = '+phf(E)+' J','F = '+phf(F)+' N'],['`d = W/F = '+phf(dd)+' m`'],'**d = '+phf(dd)+' m**')}}
+ if(/potencia|vatio|watt|motor/.test(s)){
+  if(P!=null&&m!=null&&h!=null&&/tiempo|cuanto tarda|cuanto demora/.test(qs)){const W=m*g*h,tt=W/P;return phA('Tiempo que tarda un motor en elevar una carga',['Potencia: P = '+phf(P)+' W','Masa: m = '+phf(m)+' kg','Altura: h = '+phf(h)+' m',gs],['Trabajo necesario: `W = m·g·h = '+phf(W)+' J`','`t = W/P = '+phf(W)+' / '+phf(P)+' = '+phf(tt)+' s`'],'**t = '+phf(tt)+' s**')}
+  if(E!=null&&t!=null&&P==null){return phA('Potencia media',['Energía o trabajo: '+phf(E)+' J','Tiempo: '+phf(t)+' s'],['`P = W/t = '+phf(E)+' / '+phf(t)+' = '+phf(E/t)+' W`'],'**P = '+phf(E/t)+' W**')}
+  if(F!=null&&v!=null&&P==null)return phA('Potencia de una fuerza',['F = '+phf(F)+' N','v = '+phf(v)+' m/s'],['`P = F·v = '+phf(F*v)+' W`'],'**P = '+phf(F*v)+' W**');
+  if(P!=null&&t!=null){const W=P*t;return phA('Trabajo realizado a partir de la potencia',['P = '+phf(P)+' W','t = '+phf(t)+' s'],['`W = P·t = '+phf(P)+' × '+phf(t)+' = '+phf(W)+' J`'],'**W = '+phf(W)+' J** (= '+phf(W/3.6e6)+' kWh)')}}
+ if(h!=null&&/velocidad|rapidez/.test(qs)&&/conserv|sin friccion|energia/.test(s)){const vv=Math.sqrt(2*g*h);return phA('Conservación de la energía',['Altura: h = '+phf(h)+' m',gs],['`m·g·h = ½·m·v²` → `v = √(2·g·h) = '+phf(vv)+' m/s`'],'**v = '+phf(vv)+' m/s**')}
+ return null}
+
+/* --- Cantidad de movimiento, impulso y choques --- */
+function phMom(S){
+ const s=S.s,qs=S.qs;
+ if(!/choc|colision|colisiona|se pegan|se adhier|inelastic|elastic|cantidad de movimiento|momento lineal|impulso/.test(s))return null;
+ const ms=S.list('mass'),vs=S.list('speed'),F=S.one('force'),t=S.one('time');
+ if(/impulso/.test(qs)&&F!=null&&t!=null){const J=F*t;return phA('Impulso',['Fuerza: F = '+phf(F)+' N','Tiempo: t = '+phf(t)+' s'],['`J = F·t = '+phf(J)+' N·s`','Por el teorema impulso-cantidad de movimiento, `J = Δp`.'].concat(ms.length==1?['Cambio de velocidad: `Δv = J/m = '+phf(J/ms[0])+' m/s`']:[]),'**J = '+phf(J)+' N·s**')}
+ if(/cantidad de movimiento|momento lineal/.test(qs)&&ms.length==1&&vs.length>=1&&!/choc|colision/.test(s)){const p=ms[0]*vs[0];return phA('Cantidad de movimiento',['Masa: m = '+phf(ms[0])+' kg','Velocidad: v = '+phU(vs[0],'m/s',S)],['`p = m·v = '+phf(ms[0])+' × '+phf(vs[0])+' = '+phf(p)+' kg·m/s`'],'**p = '+phf(p)+' kg·m/s**')}
+ if(ms.length==2&&vs.length>=1){
+  const m1=ms[0],m2=ms[1],v1=vs[0];let v2=vs.length>1?vs[1]:0;
+  if(vs.length>1&&/sentido contrario|sentidos opuestos|en contra|uno hacia el otro|se acercan|de frente|frontal/.test(s))v2=-Math.abs(v2);
+  const ine=/se pegan|se adhier|inelastic|quedan unid|quedan pegad|juntos|se acoplan|enganchan|incrust/.test(s),ela=/elastic/.test(s)&&!/inelastic/.test(s);
+  const p=m1*v1+m2*v2,dat=['m₁ = '+phf(m1)+' kg, v₁ = '+phf(v1)+' m/s','m₂ = '+phf(m2)+' kg, v₂ = '+phf(v2)+' m/s'],pa=['Cantidad de movimiento total: `p = m₁·v₁ + m₂·v₂ = '+phf(p)+' kg·m/s` (se conserva en todo choque)'],res=[];
+  if(ine||!ela){const vf=p/(m1+m2),dk=.5*m1*v1*v1+.5*m2*v2*v2-.5*(m1+m2)*vf*vf;pa.push('Choque perfectamente inelástico (quedan unidos): `v′ = p/(m₁ + m₂) = '+phf(vf)+' m/s`');pa.push('Energía cinética perdida: `ΔEc = '+phf(dk)+' J`');res.push('**inelástico: v′ = '+phf(vf)+' m/s**')}
+  if(ela||!ine){const u1=((m1-m2)*v1+2*m2*v2)/(m1+m2),u2=((m2-m1)*v2+2*m1*v1)/(m1+m2);pa.push('Choque elástico (se conserva también la energía): `v₁′ = '+phf(u1)+' m/s`, `v₂′ = '+phf(u2)+' m/s`');res.push('**elástico: v₁′ = '+phf(u1)+' m/s, v₂′ = '+phf(u2)+' m/s**')}
+  return phA('Choque entre dos cuerpos',dat,pa,res.join(' · '),!ine&&!ela?'No dijiste qué tipo de choque es, así que te doy ambos casos.':'Signo positivo = hacia la derecha.')}
+ return null}
+
+/* --- Movimiento circular --- */
+function phCirc(S){
+ const s=S.s;if(!/circular|gira|giro|vuelta|rpm|centripet|curva|carrusel|noria|rueda|orbita|revoluc/.test(s))return null;
+ const r=S.len(/radio|curva|circunferencia|centro/);let v=S.one('speed'),f=S.one('freq'),T=null,w=S.one('omega');const t=S.one('time'),m=S.one('mass');
+ const nm=s.match(/(\d+(?:\.\d+)?)\s*(?:vueltas|revoluciones|rev|ciclos|giros)/);
+ if(nm&&t!=null)f=+nm[1]/t;
+ else if(/periodo|cada vuelta|una vuelta/.test(s)&&t!=null&&f==null)T=t;
+ if(w!=null&&f==null)f=w/(2*Math.PI);
+ if(f!=null&&T==null)T=1/f;if(T!=null&&f==null)f=1/T;
+ if(v==null&&r!=null&&T!=null)v=2*Math.PI*r/T;
+ if(T==null&&v!=null&&r!=null){T=2*Math.PI*r/v;f=1/T}
+ if(r==null&&T==null)return null;
+ const pa=[],dat=[];if(r!=null)dat.push('Radio: r = '+phf(r)+' m');if(S.one('speed')!=null)dat.push('Rapidez: v = '+phU(S.one('speed'),'m/s',S));if(T!=null&&S.one('speed')==null)dat.push('Datos de giro: T = '+phf(T)+' s');if(m!=null)dat.push('Masa: m = '+phf(m)+' kg');
+ const res=[];
+ if(T!=null){pa.push('Periodo y frecuencia: `T = '+phf(T)+' s`, `f = 1/T = '+phf(f)+' Hz` ('+phf(f*60)+' rpm)');pa.push('Velocidad angular: `ω = 2π·f = '+phf(2*Math.PI*f)+' rad/s`');res.push('**T = '+phf(T)+' s**','**f = '+phf(f)+' Hz**')}
+ if(r!=null&&v!=null){const ac=v*v/r;pa.push('Rapidez lineal: `v = ω·r = '+phf(v)+' m/s`');pa.push('Aceleración centrípeta: `a_c = v²/r = '+phf(v)+'² / '+phf(r)+' = '+phf(ac)+' m/s²`');res.push('**a_c = '+phf(ac)+' m/s²**');if(m!=null){pa.push('Fuerza centrípeta: `F_c = m·a_c = '+phf(m*ac)+' N`');res.push('**F_c = '+phf(m*ac)+' N**')}}
+ if(!pa.length)return null;
+ return phA('Movimiento circular',dat,pa,res.join(', '))}
+
+/* --- Resortes, Hooke y péndulo --- */
+function phSpring(S){
+ const s=S.s,g=S.g;if(!/resorte|hooke|constante elastica|pendulo|oscil|elongacion|estira|comprime/.test(s))return null;
+ const k=S.one('spring'),F=S.one('force'),m=S.one('mass'),x=S.len(/estira|comprime|elongacion|deform|alarga|desplaz/);
+ if(/pendulo/.test(s)){const L=S.len(/longitud|largo|cuerda|hilo/);if(L!=null){const T=2*Math.PI*Math.sqrt(L/g);return phA('Péndulo simple',['Longitud: L = '+phf(L)+' m','g = '+phf(g)+' m/s²'],['`T = 2π·√(L/g) = '+phf(T)+' s`','Frecuencia: `f = 1/T = '+phf(1/T)+' Hz`'],'**T = '+phf(T)+' s**')}}
+ if(k!=null&&m!=null&&/periodo|frecuencia|oscil/.test(s)){const T=2*Math.PI*Math.sqrt(m/k);return phA('Oscilador masa-resorte',['k = '+phf(k)+' N/m','m = '+phf(m)+' kg'],['`T = 2π·√(m/k) = '+phf(T)+' s`','`f = 1/T = '+phf(1/T)+' Hz`'],'**T = '+phf(T)+' s**, **f = '+phf(1/T)+' Hz**')}
+ if(k!=null&&m!=null&&x==null&&/estira|elongacion|deform|alarga|comprime/.test(S.qs)){const xx=m*g/k;return phA('Resorte con una masa colgada',['k = '+phf(k)+' N/m','m = '+phf(m)+' kg','g = '+phf(g)+' m/s²'],['En equilibrio `k·x = m·g`','`x = m·g/k = '+phf(m)+' × '+phf(g)+' / '+phf(k)+' = '+phf(xx)+' m`'],'**x = '+phf(xx)+' m** ('+phf(xx*100)+' cm)')}
+ if(k!=null&&x!=null){const f=k*x;return phA('Ley de Hooke',['k = '+phf(k)+' N/m','x = '+phf(x)+' m'],['`F = k·x = '+phf(k)+' × '+phf(x)+' = '+phf(f)+' N`'],'**F = '+phf(f)+' N**')}
+ if(k!=null&&F!=null){const xx=F/k;return phA('Ley de Hooke',['k = '+phf(k)+' N/m','F = '+phf(F)+' N'],['`x = F/k = '+phf(xx)+' m`'],'**x = '+phf(xx)+' m** ('+phf(xx*100)+' cm)')}
+ if(F!=null&&x!=null){const kk=F/x;return phA('Constante del resorte',['F = '+phf(F)+' N','x = '+phf(x)+' m'],['`k = F/x = '+phf(kk)+' N/m`'],'**k = '+phf(kk)+' N/m**')}
+ if(m!=null&&x!=null&&/cuelga|pesa|peso/.test(s)){const kk=m*g/x;return phA('Constante del resorte con una masa colgada',['m = '+phf(m)+' kg','x = '+phf(x)+' m','g = '+phf(g)+' m/s²'],['En equilibrio `k·x = m·g` → `k = m·g/x = '+phf(kk)+' N/m`'],'**k = '+phf(kk)+' N/m**')}
+ return null}
+
+/* --- Fluidos: presión, densidad, empuje --- */
+function phFluid(S){
+ const s=S.s,g=S.g;if(!/presion|densidad|empuje|arquimedes|hidrostatica|flota|sumergid|profundidad/.test(s))return null;
+ const m=S.one('mass'),F0=S.one('force'),A=S.one('area'),V=S.one('vol'),qs=S.qs;let rho=S.one('dens');
+ const liq={agua:1000,piscina:1000,lago:1000,rio:1000,mar:1025,oceano:1025,aceite:920,mercurio:13600,alcohol:790};let nl=null;for(const k in liq)if(new RegExp('\\b'+k+'\\b').test(s)){nl=k;break}
+ if(rho==null&&nl)rho=liq[nl];
+ if(/presion/.test(qs)&&A!=null&&(F0!=null||m!=null)){const F=F0!=null?F0:m*g,P=F/A;return phA('Presión',[F0!=null?'Fuerza: F = '+phf(F0)+' N':'Masa: m = '+phf(m)+' kg (peso = '+phf(F)+' N)','Área: A = '+phf(A)+' m²'],['`P = F/A = '+phf(F)+' / '+phf(A)+' = '+phf(P)+' Pa`'],'**P = '+phf(P)+' Pa** (= '+phf(P/1000)+' kPa)')}
+ const h=S.len(/profundidad|altura|columna|sumerg|bajo|fondo/);
+ if(/presion/.test(qs)&&h!=null&&rho!=null){const P=rho*g*h;return phA('Presión hidrostática',['Densidad: ρ = '+phf(rho)+' kg/m³'+(nl?' ('+nl+')':''),'Profundidad: h = '+phf(h)+' m','g = '+phf(g)+' m/s²'],['`P = ρ·g·h = '+phf(rho)+' × '+phf(g)+' × '+phf(h)+' = '+phf(P)+' Pa`'],'**P = '+phf(P)+' Pa** (manométrica)','Si hace falta la presión absoluta, suma la atmosférica: 101 325 Pa.')}
+ if(/densidad/.test(qs)&&m!=null&&V!=null){const r=m/V;return phA('Densidad',['Masa: m = '+phf(m)+' kg','Volumen: V = '+phf(V)+' m³'],['`ρ = m/V = '+phf(m)+' / '+phf(V)+' = '+phf(r)+' kg/m³`'],'**ρ = '+phf(r)+' kg/m³** (= '+phf(r/1000)+' g/cm³)')}
+ if(/densidad/.test(qs)&&rho!=null&&V!=null&&m==null){const mm=rho*V;return phA('Masa a partir de la densidad',['ρ = '+phf(rho)+' kg/m³','V = '+phf(V)+' m³'],['`m = ρ·V = '+phf(mm)+' kg`'],'**m = '+phf(mm)+' kg**')}
+ if(/empuje|flota|arquimedes|sumerg/.test(s)&&V!=null&&rho!=null){const E=rho*g*V;return phA('Empuje (principio de Arquímedes)',['Densidad del fluido: ρ = '+phf(rho)+' kg/m³','Volumen sumergido: V = '+phf(V)+' m³','g = '+phf(g)+' m/s²'],['`E = ρ·g·V = '+phf(rho)+' × '+phf(g)+' × '+phf(V)+' = '+phf(E)+' N`'],'**E = '+phf(E)+' N**')}
+ return null}
+
+/* --- Calor y temperatura --- */
+function phHeat(S){
+ const s=S.s;if(!/calor|calorimetr|temperatura|calienta|enfria|calentar|enfriar|calorias/.test(s))return null;
+ const m=S.one('mass'),Q=S.one('energy'),T=S.list('temp');
+ const mat={agua:4186,hielo:2090,cobre:385,aluminio:900,hierro:450,acero:490,plomo:130,vidrio:840,oro:129,plata:235,mercurio:140,alcohol:2400};
+ const fm=Object.keys(mat).filter(k=>new RegExp('\\b'+k+'\\b').test(s));
+ let c=S.one('spec');if(c==null){const cm=s.match(/calor especifico\D{0,30}?(\d+(?:\.\d+)?)/);if(cm)c=+cm[1]}
+ if(c==null&&fm.length==1)c=mat[fm[0]];
+ let dT=T.length>=2?T[1]-T[0]:null;if(dT==null&&T.length==0&&/temperatura/.test(s)&&S.one('angle')!=null)dT=S.one('angle');
+ const dat=[];if(m!=null)dat.push('Masa: m = '+phf(m)+' kg');if(c!=null)dat.push('Calor específico: c = '+phf(c)+' J/(kg·°C)'+(fm.length==1&&S.one('spec')==null?' ('+fm[0]+')':''));if(dT!=null)dat.push('Cambio de temperatura: ΔT = '+phf(dT)+' °C');if(Q!=null)dat.push('Calor: Q = '+phf(Q)+' J');
+ if(m!=null&&c!=null&&dT!=null&&Q==null){const q=m*c*dT;return phA('Calor sensible',dat,['`Q = m·c·ΔT = '+phf(m)+' × '+phf(c)+' × '+phf(dT)+' = '+phf(q)+' J`','En calorías: `'+phf(q/4.184)+' cal` ('+phf(q/4184)+' kcal)'],'**Q = '+phf(q)+' J** ('+phf(q/1000)+' kJ)')}
+ if(Q!=null&&m!=null&&c!=null){const d=Q/(m*c);return phA('Cambio de temperatura por calor',dat,['`ΔT = Q/(m·c) = '+phf(Q)+' / ('+phf(m)+' × '+phf(c)+') = '+phf(d)+' °C`'].concat(T.length==1?['Temperatura final: `T = '+phf(T[0])+' + '+phf(d)+' = '+phf(T[0]+d)+' °C`']:[]),'**ΔT = '+phf(d)+' °C**')}
+ if(Q!=null&&m!=null&&dT!=null){const cc=Q/(m*dT);return phA('Calor específico',dat,['`c = Q/(m·ΔT) = '+phf(cc)+' J/(kg·°C)`'],'**c = '+phf(cc)+' J/(kg·°C)**')}
+ return null}
+
+/* --- Electricidad --- */
+function phElec(S){
+ const s=S.s;if(!/voltaj|tension electrica|corriente|resisten|ohm|circuito|bateria|pila|foco|bombilla|resistor|carga|coulomb|electric|amper|volt|electrostat/.test(s))return null;
+ const V=S.list('volt'),I=S.list('amp'),R=S.list('ohm'),P=S.one('power'),q=S.list('charge'),t=S.one('time');
+ if(q.length>=2){const r=S.len(/distancia|separad|entre|metros/);if(r!=null){const K=8.99e9,F=K*q[0]*q[1]/(r*r);return phA('Ley de Coulomb',['q₁ = '+phf(q[0])+' C','q₂ = '+phf(q[1])+' C','Distancia: r = '+phf(r)+' m'],['`F = k·|q₁·q₂|/r² = 8.99×10⁹ × '+phf(Math.abs(q[0]*q[1]))+' / '+phf(r)+'² = '+phf(Math.abs(F))+' N`'],'**F = '+phf(Math.abs(F))+' N** ('+(q[0]*q[1]>0?'repulsiva':'atractiva')+')')}}
+ if(R.length>=2&&/serie|paralelo/.test(s)){
+  const par=/paralelo/.test(s)&&!/serie/.test(s),Req=par?1/R.reduce((a,b)=>a+1/b,0):R.reduce((a,b)=>a+b,0);
+  const pa=[par?'En paralelo: `1/R_eq = Σ 1/Rᵢ` → `R_eq = '+phf(Req)+' Ω`':'En serie: `R_eq = R₁ + R₂ + … = '+phf(Req)+' Ω`'],res=['**R_eq = '+phf(Req)+' Ω**'];
+  if(V.length){const i=V[0]/Req;pa.push('Corriente total: `I = V/R_eq = '+phf(V[0])+' / '+phf(Req)+' = '+phf(i)+' A`');pa.push('Potencia: `P = V·I = '+phf(V[0]*i)+' W`');res.push('**I = '+phf(i)+' A**')}
+  return phA('Resistencias '+(par?'en paralelo':'en serie'),R.map((r,i)=>'R'+(i+1)+' = '+phf(r)+' Ω').concat(V.length?['Voltaje: V = '+phf(V[0])+' V']:[]),pa,res.join(', '))}
+ let v=V[0],i=I[0],r=R[0];
+ if(P!=null&&t!=null&&/energia|consum|kwh|cuanta/.test(s)&&v==null&&i==null){const e=P*t;return phA('Energía eléctrica consumida',['Potencia: P = '+phf(P)+' W','Tiempo: t = '+phf(t)+' s'],['`E = P·t = '+phf(e)+' J`','En kWh: `E = '+phf(e/3.6e6)+' kWh`'],'**E = '+phf(e)+' J** (= '+phf(e/3.6e6)+' kWh)')}
+ const pa=[],dat=[];if(v!=null)dat.push('Voltaje: V = '+phf(v)+' V');if(i!=null)dat.push('Corriente: I = '+phf(i)+' A');if(r!=null)dat.push('Resistencia: R = '+phf(r)+' Ω');if(P!=null)dat.push('Potencia: P = '+phf(P)+' W');
+ const res=[];
+ if(v!=null&&r!=null&&i==null){i=v/r;pa.push('Ley de Ohm: `I = V/R = '+phf(v)+' / '+phf(r)+' = '+phf(i)+' A`');res.push('**I = '+phf(i)+' A**')}
+ else if(v!=null&&i!=null&&r==null){r=v/i;pa.push('Ley de Ohm: `R = V/I = '+phf(v)+' / '+phf(i)+' = '+phf(r)+' Ω`');res.push('**R = '+phf(r)+' Ω**')}
+ else if(i!=null&&r!=null&&v==null){v=i*r;pa.push('Ley de Ohm: `V = I·R = '+phf(i)+' × '+phf(r)+' = '+phf(v)+' V`');res.push('**V = '+phf(v)+' V**')}
+ else if(P!=null&&v!=null&&i==null){i=P/v;r=v/i;pa.push('De `P = V·I`: `I = P/V = '+phf(i)+' A`');pa.push('`R = V/I = '+phf(r)+' Ω`');res.push('**I = '+phf(i)+' A**','**R = '+phf(r)+' Ω**')}
+ else if(P!=null&&i!=null&&v==null&&r==null){v=P/i;pa.push('De `P = V·I`: `V = P/I = '+phf(v)+' V`');res.push('**V = '+phf(v)+' V**')}
+ else return null;
+ if(P==null&&v!=null&&i!=null){pa.push('Potencia: `P = V·I = '+phf(v*i)+' W`');res.push('**P = '+phf(v*i)+' W**')}
+ return phA('Circuito eléctrico',dat,pa,res.join(', '))}
+
+/* --- Ondas --- */
+function phWave(S){
+ const s=S.s;if(!/onda|sonido|vibra/.test(s))return null;
+ const lam=S.role('length',/onda|lambda/),f=S.one('freq');let v=S.one('speed');const T=/periodo/.test(s)?S.one('time'):null;
+ let note='';if(v==null&&/sonido|sonora/.test(s)){v=343;note='Usé 343 m/s como rapidez del sonido en el aire a 20 °C.'}
+ const dat=[];if(lam!=null)dat.push('Longitud de onda: λ = '+phf(lam)+' m');if(f!=null)dat.push('Frecuencia: f = '+phf(f)+' Hz');if(T!=null)dat.push('Periodo: T = '+phf(T)+' s');if(S.one('speed')!=null)dat.push('Rapidez: v = '+phf(v)+' m/s');
+ const ff=f!=null?f:(T!=null?1/T:null);
+ if(lam!=null&&ff!=null&&(v==null||S.one('speed')==null)&&!/longitud de onda/.test(S.qs)){const vv=lam*ff;return phA('Rapidez de una onda',dat,['`v = λ·f = '+phf(lam)+' × '+phf(ff)+' = '+phf(vv)+' m/s`'],'**v = '+phf(vv)+' m/s**',note)}
+ if(v!=null&&ff!=null&&lam==null){const l=v/ff;return phA('Longitud de onda',dat.concat(note?['v = '+phf(v)+' m/s']:[]),['`λ = v/f = '+phf(v)+' / '+phf(ff)+' = '+phf(l)+' m`'],'**λ = '+phf(l)+' m**',note)}
+ if(v!=null&&lam!=null&&ff==null){const fr=v/lam;return phA('Frecuencia de una onda',dat,['`f = v/λ = '+phf(v)+' / '+phf(lam)+' = '+phf(fr)+' Hz`','Periodo: `T = 1/f = '+phf(1/fr)+' s`'],'**f = '+phf(fr)+' Hz**',note)}
+ return null}
+
+/* --- Gravitación universal --- */
+function phGrav(S){
+ const s=S.s;if(!/gravitacion|atraccion gravitacional|se atraen|atraen|satelite|planeta|orbita|tierra|luna|marte|jupiter|superficie/.test(s))return null;
+ const ms=S.list('mass'),r=S.len(/distancia|separad|entre|radio|centro/),G=6.674e-11;
+ if(ms.length>=2&&r!=null){const F=G*ms[0]*ms[1]/(r*r);return phA('Ley de la gravitación universal',['m₁ = '+phf(ms[0])+' kg','m₂ = '+phf(ms[1])+' kg','Distancia: r = '+phf(r)+' m','G = 6.674×10⁻¹¹ N·m²/kg²'],['`F = G·m₁·m₂/r² = '+phf(F)+' N`'],'**F = '+phf(F)+' N**')}
+ if(ms.length==1&&r!=null&&/gravedad|aceleracion/.test(S.qs)){const gg=G*ms[0]/(r*r);return phA('Gravedad en la superficie de un astro',['Masa: M = '+phf(ms[0])+' kg','Radio: R = '+phf(r)+' m'],['`g = G·M/R² = '+phf(gg)+' m/s²`'],'**g = '+phf(gg)+' m/s²**')}
+ return null}
+
+/* --- Punto de entrada --- */
+function phys(t){
+ const raw=String(t||'');if(raw.length<12||raw.length>1500)return null;
+ const S=phParse(raw),sn=S.s.trim();
+ const hasNum=/\d/.test(sn),scen=/resbal|desliz|se deja caer|cae desde|sin friccion/.test(sn);
+ if(/^(?:que|quien|define|explica|hablame|cuentame|dime que)\b/.test(sn)&&!hasNum)return null;
+ if(/convert|convierte|pasar a|transforma/.test(sn))return null;
+ if(!hasNum&&!scen)return null;
+ if(!/masa|fuerza|velocidad|rapidez|aceler|energia|trabajo|potencia|resbal|desliz|\bcae\b|caida|lanz|dispar|proyectil|altura|rampa|inclinad|friccion|rozamiento|resorte|presion|densidad|calor|temperatura|voltaj|corriente|resisten|carga|onda|frecuencia|periodo|radio|choque|colision|momento|impulso|\bpeso\b|gravedad|newton|esfera|bloque|cuerpo|\bauto\b|carro|vehiculo|\bbala\b|piedra|pelota|\btren\b|\bmoto\b|bicicleta|avion|motor|pendulo|circuito|ascensor|\bkg\b|empuje|sumerg|presion|profundidad|piscina|resorte|estira|hooke|tierra|luna|planeta|carga|ohm|onda/.test(sn))return null;
+ const qd=/fuerza|\bpeso\b|tension|empuje|resultante|newton/.test(S.qs);
+ const order=[phIncline,phProj,phFall,phCirc,phMom,phEnergy,phSpring,phFluid,phHeat,phElec,phWave,phGrav].concat(qd?[phDyn,phKin]:[phKin,phDyn]);
+ for(const f of order){let r=null;try{r=f(S)}catch(e){r=null}if(r)return typeof r=='string'?{t:r}:r}
+ return null}
+
+function physTry(t){
+ if(ctx.pend)return null;
+ if(/^\s*(\/|aprende|learn|ensena|teach)/i.test(t)||/\b(programa|codigo|script|python|javascript|html|css)\b/i.test(t))return null;
+ if(typeof hasTaughtQ=='function'&&hasTaughtQ(t))return null;
+ let r=null;
+ if(ctx.ph){const base=ctx.ph;ctx.ph=null;
+  if(t.length<=160&&/\d/.test(t)){r=phys(base+' '+t);if(r){ctx.ph=r.need?base+' '+t:null;return{t:r.t,m:'Física · ejercicio'}}}}
+ r=phys(t);if(r){ctx.ph=r.need?t:null;return{t:r.t,m:'Física · ejercicio'}}
+ return null}
 
 /* ============ Internet sin otra IA: Wikipedia y Open-Meteo ============ */
 async function J(u){const c=new AbortController(),t=setTimeout(()=>c.abort(),7000);try{const r=await fetch(u,{signal:c.signal});return r.ok?await r.json():null}catch(e){return null}finally{clearTimeout(t)}}
@@ -1703,6 +2127,7 @@ function nxPre(t){
  return nxCreator(t)||nxCode(t)||nxTalk(t)||nxChat(t)}
 
 async function brain(t,_sub){
+ {const pw=physTry(t);if(pw)return pw}
  {const pr=nxPre(t);if(pr)return pr}
  if(!_sub){const ps=splitQ(t);if(ps.length>1){const rs=[];for(const q of ps)rs.push(await brain(q,1));return{t:rs.map((r,i)=>'**'+(i+1)+'. '+ps[i].replace(/[¿?]/g,'')+'**\n'+r.t).join('\n\n'),m:'Razonamiento · '+ps.length+' partes'}}}
  const en=isEn(t),nm=mem.name?', '+mem.name:'',tm=Date.now();let m;
@@ -1738,7 +2163,7 @@ async function brain(t,_sub){
   if(k=='weather'){const w=await weather(t,en);if(w){ctx.pend=/¿De qué ciudad|Which city/.test(w.t)?'weather':null;ctx.last=ctx.pend?null:'weather';return w}return{t:en?'I couldn\'t find that place or reach the weather service.':'No encontré ese lugar o no pude contactar al servicio del clima.',m:src}}
   if(k=='more'||k=='why'){if(ctx.more.length)return{t:ctx.more.shift()+(ctx.more.length?'  ·  di «más» para seguir':''),m:'Conversación'};if(MAESTRO){const r=await maestro(t);if(r.t)return{t:r.t,m:'Maestro externo'}}if(ctx.q){const w=await wiki(ctx.q,en);if(w)return{t:w,m:'Conversación · Wikipedia'}}return{t:'¿Más sobre qué? Dime un tema y profundizamos.',m:'Conversación'}}
   const fx=x=>x.replace(/\{n\}/g,nm).replace(/\{H\}/g,H).replace(/\{ACC\}/g,ACC);
-  if(A[k]){ctx.q=null;ctx.more=[];return{t:fx(pick(A[k][en&&A[k][1]?1:0])),m:src,s:k=='help'?'Puedo calcular, resolver ecuaciones, buscar datos, ver el clima, conversar y aprender de ti.':undefined}}
+  if(A[k]){ctx.q=null;ctx.more=[];return{t:fx(pick(A[k][en&&A[k][1]?1:0])),m:src,s:k=='help'?'Puedo calcular, resolver ecuaciones y problemas de física escritos en oraciones, buscar datos, ver el clima, conversar y aprender de ti.':undefined}}
   if(TOP[k]){ctx.q=TOP[k][0].split('|')[0];ctx.more=[];ctx.topic=k;return{t:fx(TOP[k][1])+rel(k),m:src}}}
  const q=norm(t).replace(/^(que es|que son|quien es|quien fue|quien era|quienes fueron|hablame de|hablame sobre|dime sobre|cuentame sobre|explicame|que significa|what is|what are|who is|who was|tell me about|explain|define)\s+(el |la |los |las |un |una |a |an |the )?/,'');
  {const o=await askOpen(t,q,en);if(o)return o}
@@ -2292,6 +2717,7 @@ function ocrReport(tx){const lines=tx.split('\n').map(l=>l.trim()).filter(l=>l.l
  const out=['**Texto que leí:**\n```\n'+lines.join('\n')+'\n```'],sol=[];
  lines.forEach(l=>{if(l.length>80||!/\d|x/i.test(l)||!/[=+\-*/^]/.test(l)||/[a-z]{3,}/i.test(l.replace(/sqrt|raiz/gi,'')))return;const e=l.replace(/[×·]/g,'*').replace(/[−–]/g,'-');let r=null;try{r=algebra(e)||calc(e)}catch(x){}if(r&&typeof r=='string')sol.push('- `'+l+'` → '+r.replace(/\n/g,' ')) });
  if(sol.length)out.push('**Operaciones que pude resolver con mi núcleo de cálculo:**\n'+sol.join('\n'));
+ {let pw=null;try{pw=phys(lines.join(' '))}catch(e){}if(pw){ctx.ph=pw.need?lines.join(' '):null;out.push('**Resolución del ejercicio de física:**\n'+pw.t)}}
  const hit=CHEM.filter(c=>c[0].test(tx));
  if(hit.length){out.push('**Química orgánica (reglas de Noryx):**\n'+hit.map(c=>'- **'+c[1]+':** '+c[2]).join('\n'));
   const meta=(tx.match(/NO2|NO₂|\bCN\b|COOH|CHO\b|SO3H|CF3/g)||[]),op=(tx.match(/CH3|CH₃|\bOH\b|NH2|NH₂|OCH3/g)||[]);
@@ -2307,7 +2733,7 @@ async function imOcr(say){if(imCache.ocr!=null)return imCache.ocr;say('Cargando 
  return imCache.ocr=(r.data.text||'').trim()}
 async function localVision(q,wait){const n=norm(q),say=m=>{wait.textContent=m},st=imStats(),tone=st.L<70?'oscura':st.L>185?'muy clara':st.L>130?'clara':'equilibrada';
  const music=/music|cancion|playlist|escuchar|soundtrack/.test(n),cap=/titulo|redes|instagram|caption|pie de foto|publicar/.test(n),colr=!music&&/color|paleta|combin|decor/.test(n),
-  ocr=!music&&!cap&&!colr&&/transcrib|\blee\b|leer|texto|dice|ecuacion|ejercicio|resuelv|respuesta|esta bien|correg|tarea|problema|formula|reaccion|escrit/.test(n);
+  ocr=!music&&!cap&&!colr&&/transcrib|\blee\b|leer|texto|dice|ecuacion|ejercicio|resuelv|respuesta|esta bien|correg|tarea|problema|formula|reaccion|escrit|fisica|calcul|halla|determin|resultante|cuanto|cual es|fuerza|velocidad|aceleracion|energia|resuelve/.test(n);
  if(ocr)return ocrReport(await imOcr(say))+'\n\n*Lectura hecha en tu navegador; la letra manuscrita o muy pequeña puede salir con errores.*';
  let rec=[],note='';try{rec=await imRecog(say)}catch(e){note='\n\n*No pude cargar el reconocedor de imágenes ('+(e&&e.message||'error')+'); me guío solo por colores y luz.*'}
  const names=[...new Set(st.names)].slice(0,3),seen=rec.map(r=>r.n);
@@ -2408,7 +2834,6 @@ const JSITES={youtube:'https://www.youtube.com',google:'https://www.google.com',
 async function jvPlay(pv,q,hint){
  if(pv=='spotify'&&q&&spReady()){let note='';try{const r=await spPlayCmd(q,hint);if(r)return r}catch(e){note=spErrText(e)+' '}
   const w=jvPlayWeb(pv,q);w.say=note+w.say;w.show=note+(w.show||'');return w}
- if(pv=='spotify'&&q&&spCid()&&!spReady()){const w=jvPlayWeb(pv,q),nt='Tu sesión de Spotify no está activa, '+jvWho()+': escribe /spotify conectar para que suene aquí dentro. ';w.say=nt+w.say;w.show=nt+(w.show||'');return w}
  return jvPlayWeb(pv,q)}
 function jvPlayWeb(pv,q){const p=JMUS[pv]||JMUS.spotify,who=jvWho(),ch=[];let ok;
  if(p.app){jvUri(p.app(q));ok=true;ch.push({label:'♪ '+p.n+' (app)',href:p.app(q)},{label:'♪ '+p.n+' web',href:p.web(q)})}
@@ -2518,7 +2943,7 @@ async function jvCmd(raw,pm,ns){
  /* música */
  if(m=n.match(/^(reproduce|reproduceme|toca|tocame|quiero escuchar|quiero oir|play|escuchar|pon|ponme|pones)\s+(.+)$/)){let rest=m[2],pv=null;const pm2=rest.match(/\s+(?:en|on|por|con|desde)\s+(spotify|youtube music|yt music|youtube|apple music|deezer)$/);if(pm2){pv=pm2[1]=='yt music'?'youtube music':pm2[1];rest=rest.slice(0,pm2.index)}
   const soft=/^(?:pon|ponme|pones)$/.test(m[1]),musical=/\b(?:musica|cancion|canciones|playlist|album|disco|algo de|algo para|tema de|temazo|rola|rolas|lofi|jazz|rock|salsa|cumbia|reggaeton|clasica|pop|rap)\b/.test(rest);
-  if(!soft||pv||musical){const F=/^(?:algo de|algo para|un poco de|musica de|musica para|musica|la musica de|una cancion de|la cancion de|la cancion|cancion de|cancion|el album de|el album|la playlist de|la playlist|playlist de|playlist|mi musica|rolas de|un tema de|temazos de|de|del)\s+/;let s=rest.trim();s=s.replace(F,'').replace(F,'').replace(F,'').replace(/^(?:musica|cancion|canciones)$/,'').trim();return jvPlay(pv||JV.music,s,rest)}}
+  if(!soft||pv||musical){const F=/^(?:algo de|algo para|un poco de|musica de|musica para|musica|la musica de|una cancion de|la cancion|cancion de|cancion|el album|la playlist|playlist de|playlist|mi musica|rolas de|un tema de|temazos de)\s+/;let s=rest.trim();s=s.replace(F,'').replace(F,'').replace(/^(?:musica|cancion|canciones)$/,'').trim();return jvPlay(pv||JV.music,s,rest)}}
  /* mapas y búsqueda */
  if(q=X(/^(?:como llego a|como llegar a|ruta a|ruta hacia|llevame a|navega a|direcciones a|how do i get to)\s+(.+)$/))return jvWeb('https://www.google.com/maps/dir/?api=1&destination='+encodeURIComponent(q[1]),'la ruta a '+q[1],'Google Maps');
  if(q=X(/^(?:mapa de|muestrame el mapa de|muestrame en el mapa)\s+(.+)$/))return jvWeb('https://www.google.com/maps/search/'+encodeURIComponent(q[1]),'el mapa de '+q[1],'Google Maps');
@@ -2929,7 +3354,7 @@ async function spConnect(){const J='Noryx',cid=spCid();
  if(!w){location.href=url;return}
  sysMsg('Se abrió la ventana de Spotify: acepta los permisos y se cerrará sola. Si no la ves, permite las ventanas emergentes de esta página.',J)}
 function spDisconnect(){try{SP.player&&SP.player.disconnect()}catch(e){}SP.player=null;SP.dev=null;SP.initing=null;S.set('nx-sptok',null);S.set('nx-spv','');S.set('nx-spst','')}
-async function spTokenReq(params){const r=await fetch('https://accounts.spotify.com/api/token',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams(params)});let j={};try{j=await r.json()}catch(e){}if(!r.ok){const er=new Error(j.error_description||j.error||('HTTP '+r.status));er.status=r.status;er.spErr=j.error||'';throw er}return j}
+async function spTokenReq(params){const r=await fetch('https://accounts.spotify.com/api/token',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams(params)});let j={};try{j=await r.json()}catch(e){}if(!r.ok)throw new Error(j.error_description||j.error||('HTTP '+r.status));return j}
 async function spCallback(){
  let u;try{u=new URL(location.href)}catch(e){return}
  const code=u.searchParams.get('code'),st=u.searchParams.get('state'),err=u.searchParams.get('error');
@@ -2943,33 +3368,19 @@ async function spCallback(){
   sysMsg('✅ Spotify conectado. Abre `/noryx` y di «pon música de Soda Stereo». Necesitas Spotify Premium para que suene dentro de Noryx.','Noryx');spInitPlayer().catch(()=>{})}
  catch(e){sysMsg('No pude completar la conexión con Spotify: '+(e&&e.message||e)+'. Revisa que el Redirect URI en tu app de Spotify sea exactamente `'+SP.redir()+'`.','Noryx')}}
 addEventListener('storage',e=>{if(e.key=='nx-sptok'&&e.newValue&&e.newValue!='null'){sysMsg('✅ Spotify conectado. Abre `/noryx` y di «pon música de Soda Stereo». Necesitas Spotify Premium.','Noryx');spInitPlayer().catch(()=>{})}});
-let spRefreshing=null;
-async function spToken(force){let t=S.get('nx-sptok',null);if(!t)return null;if(!force&&Date.now()<t.exp-60000)return t.access;
- if(spRefreshing)return spRefreshing;
- spRefreshing=(async()=>{try{
-  const j=await spTokenReq({grant_type:'refresh_token',refresh_token:t.refresh,client_id:spCid()});
-  const n={access:j.access_token,refresh:j.refresh_token||t.refresh,exp:Date.now()+j.expires_in*1000};S.set('nx-sptok',n);return n.access}
- catch(e){
-  /* Solo se borra la sesión si Spotify DICE que el permiso ya no vale; un corte de red o un error 5xx no debe desconectarte */
-  if(e&&(e.spErr=='invalid_grant'||e.spErr=='invalid_client'||e.status==400&&/revoked|invalid/i.test(e.message||''))){
-   const cur=S.get('nx-sptok',null);
-   if(cur&&cur.refresh&&cur.refresh!==t.refresh&&Date.now()<cur.exp-60000)return cur.access; /* otra pestaña ya renovó */
-   S.set('nx-sptok',null);return null}
-  if(Date.now()<t.exp)return t.access;
-  throw {code:'net',message:'sin conexión con Spotify'}}
- finally{spRefreshing=null}})();
- return spRefreshing}
-async function spApi(method,path,body,retried){const tk=await spToken(!!retried);if(!tk)throw{code:'auth'};
+async function spToken(){let t=S.get('nx-sptok',null);if(!t)return null;if(Date.now()<t.exp-60000)return t.access;
+ try{const j=await spTokenReq({grant_type:'refresh_token',refresh_token:t.refresh,client_id:spCid()});
+  t={access:j.access_token,refresh:j.refresh_token||t.refresh,exp:Date.now()+j.expires_in*1000};S.set('nx-sptok',t);return t.access}
+ catch(e){S.set('nx-sptok',null);return null}}
+async function spApi(method,path,body){const tk=await spToken();if(!tk)throw{code:'auth'};
  const r=await fetch('https://api.spotify.com/v1'+path,{method,headers:Object.assign({Authorization:'Bearer '+tk},body?{'Content-Type':'application/json'}:{}),body:body?JSON.stringify(body):undefined});
  if(r.status==204||r.status==202)return{};
  let j=null;try{j=await r.json()}catch(e){}
- if(r.status==401){if(!retried)return spApi(method,path,body,true);throw{code:'auth'}}
+ if(r.status==401)throw{code:'auth'};
  if(r.status==429)throw{code:'rate'};
  if(!r.ok)throw{code:r.status,msg:j&&j.error&&j.error.message,reason:j&&j.error&&j.error.reason};
  return j||{}}
-let spSdkP=null;
-function spLoadSDK(){if(window.Spotify&&window.Spotify.Player)return Promise.resolve();if(spSdkP)return spSdkP;
- spSdkP=new Promise((ok,no)=>{window.onSpotifyWebPlaybackSDKReady=ok;const e=document.createElement('script');e.src='https://sdk.scdn.co/spotify-player.js';e.onerror=()=>{spSdkP=null;e.remove();no(new Error('No pude cargar el reproductor de Spotify'))};document.head.append(e)});return spSdkP}
+function spLoadSDK(){return new Promise((ok,no)=>{if(window.Spotify)return ok();window.onSpotifyWebPlaybackSDKReady=ok;const e=document.createElement('script');e.src='https://sdk.scdn.co/spotify-player.js';e.onerror=()=>no(new Error('No pude cargar el reproductor de Spotify'));document.head.append(e)})}
 function spInitPlayer(){if(SP.dev)return Promise.resolve(SP.dev);if(SP.initing)return SP.initing;
  SP.initing=(async()=>{await spLoadSDK();
   return new Promise(res=>{let done=false;const fin=v=>{if(done)return;done=true;if(!v){SP.initing=null;try{SP.player&&SP.player.disconnect()}catch(e){}SP.player=null}res(v)};
@@ -2988,7 +3399,6 @@ async function spStart(body){const id=await spDevice();if(!id)throw{code:404,rea
  return id}
 function spErrText(e){const who=jvWho(),c=e&&e.code;
  if(c=='auth')return'La conexión con Spotify caducó, '+who+'. Escribe /spotify conectar para entrar otra vez.';
- if(c=='net')return'No pude conectar con Spotify ahora mismo, '+who+'. Revisa tu conexión y vuelve a intentarlo; tu sesión sigue guardada.';
  if(c=='rate')return'Spotify me pide esperar un momento, '+who+'. Intente de nuevo en unos segundos.';
  if(e&&e.reason=='PREMIUM_REQUIRED'||(c==403&&/premium/i.test(e&&e.msg||'')))return'Spotify solo deja controlar la reproducción desde aquí con una cuenta Premium, '+who+'.';
  if(c==403)return'Spotify rechazó la orden'+(e.msg?' ('+e.msg+')':'')+'. Puede que tu cuenta no esté autorizada en la app de Spotify (el modo desarrollo solo admite 5 personas): el creador debe agregar tu correo en User Management.';
