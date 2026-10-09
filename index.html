@@ -170,6 +170,29 @@ textarea{flex:1;resize:none;border:0;outline:0;background:none;color:var(--ink);
 #mk .g button{background:color-mix(in srgb,var(--ink) 7%,transparent);border-radius:12px;padding:8px 4px;display:flex;flex-direction:column;align-items:center;gap:1px;color:var(--ink)}
 #mk .g button:hover{outline:1px solid var(--acc)}#mk .g b{font-size:19px;line-height:1.3}#mk .g small{font-size:11px;color:var(--mute)}
 #fx{font:600 18px Georgia,serif}
+
+#ex{position:fixed;inset:0;z-index:55;background:#000a;display:grid;place-items:center}#ex[hidden]{display:none}
+#ex .card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:18px;width:min(680px,96vw);max-height:92vh;overflow:auto;display:flex;flex-direction:column;gap:10px}
+#ex .sh{display:flex;align-items:center;gap:10px}#ex .sh b{font:800 20px 'Bricolage Grotesque',sans-serif}#ex .sh #exn{flex:1;color:var(--mute);font-size:13px}
+#ex small{color:var(--mute);font-size:13px}
+#ex input[type=text]{border:1px solid var(--line);background:none;color:var(--ink);border-radius:10px;padding:8px 12px;font:inherit;min-width:0;flex:1}#ex input:focus{outline:0;border-color:var(--acc)}
+#ex .row{display:flex;gap:8px;flex-wrap:wrap}
+#ex button{border:1px solid var(--line);border-radius:999px;padding:6px 14px;font-size:13.5px}#ex button:hover:not(:disabled){border-color:var(--acc)}#ex .pri{background:var(--acc);color:var(--bg);border-color:var(--acc);font-weight:600}
+#exl{display:flex;flex-direction:column;gap:10px}.exe{color:var(--mute);padding:14px;border:1px dashed var(--line);border-radius:12px}
+.exc{border:1px solid var(--line);border-left:4px solid var(--acc);border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:8px}
+.exc .ext{display:flex;justify-content:space-between;font:500 11.5px 'JetBrains Mono',monospace;color:var(--mute)}.exc .tag{color:var(--acc)}
+.exq{overflow-wrap:anywhere;font-size:14.5px;line-height:1.5}
+.exbt{display:flex;gap:6px;flex-wrap:wrap}.exbt button:last-child{margin-left:auto}
+.exa:empty{display:none}.exa{display:flex;flex-direction:column;gap:10px;border-top:1px solid var(--line);padding-top:10px}
+.exh{font:700 14px 'Bricolage Grotesque',sans-serif}
+.exv{display:flex;flex-direction:column;gap:8px;background:var(--code);border-radius:10px;padding:10px}
+.exr2{display:flex;gap:6px;flex-wrap:wrap}.exr2 input{flex:1;min-width:150px}
+.exfb{font-size:13.5px}.exfb:empty{display:none}
+.exsol{border-left:4px solid #2e9e5b;padding:8px 12px;border-radius:8px;background:var(--panel);font-size:14px;display:flex;flex-direction:column;gap:6px}.exsol[hidden],.exfull[hidden]{display:none}
+.exres{font-size:15px}.exres p,.exfull p{margin:4px 0}.exlk,.exsv{align-self:flex-start}
+.figbox{display:flex;flex-direction:column;gap:6px;border:1px dashed var(--line);border-radius:12px;padding:10px}
+.figh label{font-weight:600;font-size:14px}.figh small{font-weight:400}
+#studio .chk{display:flex;gap:8px;align-items:flex-start;font-size:13px;color:var(--mute);cursor:pointer}#studio .chk input{margin-top:4px;accent-color:var(--acc)}
 </style></head>
 <body>
 <div id="app">
@@ -179,7 +202,7 @@ textarea{flex:1;resize:none;border:0;outline:0;background:none;color:var(--ink);
   <div id="pro" hidden><button id="vlb"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>Voz en vivo</button><button id="imb"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="9" cy="10" r="1.8"/><path d="M21 16l-5-5-8 8"/></svg>Imágenes</button></div>
   <button id="jvb" hidden><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/></svg>Modo Noryx</button>
   <input id="q" placeholder="Buscar en conversaciones" aria-label="Buscar"><nav id="list"></nav>
-  <div class="foot"><button id="thm">Tema</button><button id="spk">Voz: no</button><button id="mdopen">Micrófono</button><button id="acc">Entrar</button><button id="exp">Exportar</button><button id="forget">Olvidar todo</button><button id="bk" title="Descargar una copia de tus conversaciones y memoria">Respaldo</button><button id="gxb" hidden>Accesos</button></div>
+  <div class="foot"><button id="thm">Tema</button><button id="spk">Voz: no</button><button id="mdopen">Micrófono</button><button id="acc">Entrar</button><button id="exb" title="Ejercicios resueltos: repasa o practica">Ejercicios</button><button id="exp">Exportar</button><button id="forget">Olvidar todo</button><button id="bk" title="Descargar una copia de tus conversaciones y memoria">Respaldo</button><button id="gxb" hidden>Accesos</button></div>
  </aside>
  <div id="scrim"></div>
  <main>
@@ -213,6 +236,10 @@ textarea{flex:1;resize:none;border:0;outline:0;background:none;color:var(--ink);
    <canvas id="imc"></canvas><div id="imi"></div><div id="pal"></div>
    <div class="qh" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">Pregúntale a Noryx sobre tus imágenes<button id="imeng" class="eng" title="Cambiar motor de visión"></button></div>
    <div id="imch" class="chips2"></div>
+   <div class="figbox"><div class="figh"><label for="imfig">Datos de la figura <small>(opcional, para ejercicios con dibujo)</small></label></div>
+   <div class="qrow"><input type="text" id="imfig" placeholder="Ej.: plano de 30°, altura 5 m, masa 2 kg · A: 3R, B: R" maxlength="300" autocomplete="off"><button id="imrd" title="Lee ángulos, alturas y rótulos con un modelo de visión (necesita conexión)">Leer figura</button></div>
+   <label class="chk"><input type="checkbox" id="imauto"><span>Leer la figura automáticamente cuando haya conexión (la imagen reducida sale a Pollinations)</span></label>
+   <small id="imfn">Noryx lee el texto del dibujo con OCR, pero no interpreta la figura. Escribe aquí lo que muestra (ángulos, alturas, rótulos) y lo sumo al ejercicio.</small></div>
    <div class="qrow"><input type="text" id="imq" placeholder="Escribe tu pregunta… ej. ¿qué música le queda a esta foto?" maxlength="400" autocomplete="off"><button class="pri" id="imd">Preguntar</button></div>
    <div id="imo" aria-live="polite"></div>
    <details class="ed"><summary>Editar imagen (filtros y descarga)</summary><div class="tb" id="imt"><button data-f="gray">Grises</button><button data-f="sepia">Sepia</button><button data-f="invert">Invertir</button><button data-f="bright">Más luz</button><button data-f="dark">Menos luz</button><button data-f="contrast">Contraste</button><button data-f="flip">Voltear</button><button data-f="rot">Girar</button><button data-f="reset">Restablecer</button><button id="imdl">Descargar</button></div></details>
@@ -267,6 +294,13 @@ textarea{flex:1;resize:none;border:0;outline:0;background:none;color:var(--ink);
  <div class="chips2" id="gxc"></div>
  <div class="qh">Accesos concedidos</div><div id="gxl" style="display:flex;flex-direction:column;gap:8px"></div>
  <details id="gxsq"><summary>SQL de las tablas de accesos (se ejecuta una sola vez)</summary><pre id="gxpre"></pre><button id="gxcp">Copiar SQL</button></details>
+</div></div>
+<div id="ex" hidden role="dialog" aria-label="Historial de ejercicios"><div class="card">
+ <div class="sh"><b>Ejercicios</b><span id="exn"></span><button id="exx" aria-label="Cerrar">✕</button></div>
+ <small>Noryx guarda aquí los ejercicios que resuelve (del chat y de tus imágenes), solo en este navegador. Practica con la respuesta oculta o pídele ejercicios parecidos con otros números.</small>
+ <div class="row"><input id="exq" type="text" placeholder="Buscar en tus ejercicios" aria-label="Buscar ejercicios" autocomplete="off"><button class="pri" id="exr">Practicar uno al azar</button></div>
+ <div id="exl"></div>
+ <div class="row"><button id="exc">Borrar historial</button></div>
 </div></div>
 <input type="file" id="bkf" accept="application/json,.json" hidden>
 <div id="toast"></div>
@@ -3811,6 +3845,203 @@ const rb=document.getElementById('mkr');rb.onclick=()=>{rd=!rd;rb.classList.togg
 const _b=brain;brain=async function(t,s){const r=NXM.solve(t);return r||_b(t,s)};
 /* la voz lee los símbolos matemáticos con palabras */
 const _s=say;say=function(t){_s(isEn(t)?t:NXM.speech(t))};
+})();
+</script>
+<script>
+/* ===== Noryx: datos de la figura (punto 7) + historial de ejercicios (punto 8) ===== */
+(()=>{
+const EXK='nx-ex',EXMAX=100,SUP={'⁰':0,'¹':1,'²':2,'³':3,'⁴':4,'⁵':5,'⁶':6,'⁷':7,'⁸':8,'⁹':9};
+const exAll=()=>{const v=S.get(EXK,[]);return Array.isArray(v)?v.filter(x=>x&&typeof x.q=='string'&&typeof x.a=='string'):[]};
+const exSave=v=>S.set(EXK,v.slice(0,EXMAX));
+/* el respaldo también guarda y restaura el historial */
+CFGOK[EXK]=v=>Array.isArray(v)&&v.length<=EXMAX&&v.every(x=>x&&typeof x.q=='string'&&typeof x.a=='string'&&x.q.length<2000&&x.a.length<8000);
+
+/* ---------- resolver un enunciado con los motores de Noryx (sin red) ---------- */
+function exSolve(t){
+ let r=null;
+ try{r=phys(t)}catch(e){r=null}
+ if(r&&!r.need&&/Respuesta/.test(r.t))return{t:r.t,m:'Física · ejercicio'};
+ try{r=NXM.solve(t)}catch(e){r=null}
+ if(r&&r.t)return{t:r.t,m:r.m||'Motor matemático'};
+ try{const x=calc(t);if(x)return{t:x,m:'Cálculo'}}catch(e){}
+ try{const x=algebra(t);if(x)return{t:x,m:'Álgebra'}}catch(e){}
+ try{const x=stats(t);if(x)return{t:x,m:'Estadística'}}catch(e){}
+ return null}
+const exKind=m=>/Física/.test(m)?'Física':/Álgebra/.test(m)?'Álgebra':/Estad/.test(m)?'Estadística':/Motor/.test(m)?'Matemáticas':'Cálculo';
+
+/* ---------- guardar ---------- */
+function exBadge(){const b=$('#exb');if(b){const n=exAll().length;b.textContent='Ejercicios'+(n?' ('+n+')':'')}}
+function exAdd(q,a,m,src){
+ q=String(q||'').replace(/\s+/g,' ').trim();
+ if(q.length<8||q.length>1200||!a)return false;
+ const k=norm(q),L=exAll();if(L.some(x=>norm(x.q)==k))return false;
+ L.unshift({id:Date.now().toString(36)+Math.random().toString(36).slice(2,5),q,a:String(a).slice(0,6000),m:exKind(String(m||'')),src:src||'chat',ts:Date.now()});
+ exSave(L);exBadge();return true}
+function exMaybe(q,a,m,src){
+ m=String(m||'');
+ if(!/^(Física · ejercicio|Álgebra|Cálculo|Estadística|Motor matemático)/.test(m))return;
+ if(/^Física/.test(m)&&!/Respuesta/.test(a))return;
+ if(/^Cálculo/.test(m)&&String(q).length<12)return;
+ if(!exSolve(q))return; /* solo enunciados completos que Noryx puede volver a resolver */
+ exAdd(q,a,m,src)}
+
+/* chat: tras cada respuesta de Noryx */
+const _reply=reply;
+reply=async function(t){const r=await _reply(t);try{const c=conv(),l=c&&c.msgs[c.msgs.length-1];if(l&&l.r=='a'&&l.q===t)exMaybe(l.q,l.t,l.m,'chat')}catch(e){}return r};
+/* imágenes: lo que Noryx resuelve a partir del texto leído (más los datos de la figura) */
+const _ocrReport=ocrReport;
+ocrReport=function(tx){const out=_ocrReport(tx);
+ try{const joined=String(tx||'').split('\n').map(l=>l.trim()).filter(l=>l.length>1).join(' ');
+  let pw=null;try{pw=phys(joined)}catch(e){}
+  if(pw&&!pw.need&&/Respuesta/.test(pw.t))exAdd(joined,pw.t,'Física · ejercicio','imagen');
+  let mm;const re=/^- `(.+?)` → (.+)$/gm;while((mm=re.exec(out)))exAdd(mm[1],'**Resultado:** '+mm[2],'Álgebra','imagen')}catch(e){}
+ return out};
+/* comando /ejercicios */
+const _send=send;
+send=async function(t){if(/^\s*\/ejercicios?\s*$/i.test(t||'')){$('#in').value='';fit();exOpen();return}return _send(t)};
+
+/* ---------- ejercicios parecidos: se cambian los números y se vuelve a resolver ---------- */
+function exVary(q){
+ return q.replace(/\d+(?:[.,]\d+)?/g,(m,off,all)=>{
+  const p=all[off-1]||'',nx=all.slice(off+m.length,off+m.length+9);
+  if(/[A-Za-zÀ-ÿ_^]/.test(p)||/^[²³⁰-⁹]/.test(nx))return m; /* exponentes, H2O, v1… no se tocan */
+  const n=parseFloat(m.replace(',','.'));if(!isFinite(n)||n===0)return m;
+  if(/^\s?(°|º|grados)/i.test(nx)){const A=[10,15,20,25,30,35,37,40,45,50,53,55,60,65,70,75,80].filter(a=>a!=n);return String(A[Math.floor(Math.random()*A.length)])}
+  const dec=(m.split(/[.,]/)[1]||'').length,f=.55+Math.random()*1.3;let v;
+  if(dec){v=+(n*f).toFixed(dec);if(v<=0)v=+(n+Math.pow(10,-dec)).toFixed(dec)}
+  else{v=Math.round(n*f);if(n>=20)v=Math.round(v/5)*5;if(v<1)v=1}
+  if(v==n)v=dec?+(n+Math.pow(10,-dec)*(1+Math.floor(Math.random()*5))).toFixed(dec):n+(n>=20?5:1);
+  let s=dec?v.toFixed(dec):String(v);if(/,/.test(m))s=s.replace('.',',');return s})}
+function exSimilar(x,n){
+ const out=[],seen=new Set([norm(x.q)]),base=exSolve(x.q);
+ for(let i=0;i<60&&out.length<n;i++){
+  const q=exVary(x.q),k=norm(q);if(seen.has(k))continue;seen.add(k);
+  const r=exSolve(q);if(!r||!r.t||(base&&r.t==base.t))continue;
+  out.push({q,a:r.t,m:r.m||x.m})}
+ return out}
+
+/* ---------- respuesta oculta y comprobación ---------- */
+function exRes(a){
+ let m=a.match(/✅\s*Respuesta:\*\*\s*([^\n]+)/);if(m)return m[1].trim();
+ m=a.match(/\*\*Resultado:\*\*\s*([^\n]+)/);if(m)return m[1].trim();
+ const ls=a.split('\n').map(s=>s.trim()).filter(Boolean),l=ls[ls.length-1];
+ if(l&&l.length<160&&!/^[-•]\s/.test(l)&&/=\s*\*\*|\*\*[^*]+\*\*/.test(l))return l; /* última línea con el resultado en negrita */
+ return null}
+function exNums(s,commaDec){
+ s=String(s).replace(/\*\*|`/g,'').replace(/[−–]/g,'-');
+ if(commaDec===false)s=s.replace(/(\d),(\d)/g,'$1 $2');else s=s.replace(/(\d),(\d)/g,'$1.$2');
+ s=s.replace(/(\d+(?:\.\d+)?)\s*[×x·*]\s*10\s*\^?\s*(\(?-?\d+\)?|[⁻⁰¹²³⁴⁵⁶⁷⁸⁹]+)/g,(m,b,e)=>{
+  let n;if(/[⁻⁰-⁹]/.test(e)){const neg=/⁻/.test(e);n=[...e.replace('⁻','')].reduce((z,c)=>z*10+(SUP[c]||0),0)*(neg?-1:1)}else n=parseInt(e.replace(/[()]/g,''),10);
+  return ' '+(parseFloat(b)*Math.pow(10,n))+' '});
+ return (s.match(/-?\d+(?:\.\d+)?(?:e[+-]?\d+)?/gi)||[]).map(Number).filter(isFinite)}
+function exCheck(v,a){
+ const r=exRes(a);if(!r)return null;
+ const cand=exNums(r,true);if(!cand.length)return null;
+ const hit=u=>cand.some(c=>Math.abs(u-c)<=Math.max(1e-6,Math.abs(c)*.01));
+ for(const mode of[true,false]){const us=exNums(v,mode);if(us.length&&us.every(hit))return true}
+ return exNums(v,true).length?false:null}
+function exQuiz(a){
+ const d=document.createElement('div');d.className='exz';
+ d.innerHTML='<div class="exr2"><input type="text" placeholder="Tu respuesta (un número o expresión)" autocomplete="off" aria-label="Tu respuesta"><button type="button" data-k="chk">Comprobar</button><button type="button" data-k="show">Mostrar respuesta</button></div><div class="exfb" aria-live="polite"></div><div class="exsol" hidden></div>';
+ const inp=d.querySelector('input'),fb=d.querySelector('.exfb'),so=d.querySelector('.exsol'),sh=d.querySelector('[data-k=show]'),ck=d.querySelector('[data-k=chk]');
+ sh.onclick=()=>{
+  if(!so.hidden){so.hidden=true;sh.textContent='Mostrar respuesta';return}
+  const res=exRes(a);
+  so.innerHTML=res?'<div class="exres">'+md('**Respuesta:** '+res)+'</div><button type="button" class="exlk">Ver procedimiento</button><div class="exfull" hidden>'+md(a)+'</div>':md(a);
+  so.hidden=false;sh.textContent='Ocultar respuesta';
+  const lk=so.querySelector('.exlk');if(lk)lk.onclick=()=>{const f=so.querySelector('.exfull');f.hidden=!f.hidden;lk.textContent=f.hidden?'Ver procedimiento':'Ocultar procedimiento'}};
+ ck.onclick=()=>{const v=inp.value.trim();if(!v){fb.textContent='Escribe tu respuesta primero.';return}
+  const ok=exCheck(v,a);
+  fb.textContent=ok===null?'No pude comparar tu respuesta automáticamente: pulsa «Mostrar respuesta» y compárala tú.':ok?'✅ ¡Coincide con la respuesta de Noryx!':'❌ No coincide. Revisa tus pasos o mira la respuesta.'};
+ inp.addEventListener('keydown',e=>{if(e.key=='Enter'){e.preventDefault();ck.click()}});
+ return d}
+
+/* ---------- ventana del historial ---------- */
+const ex=$('#ex'),fdt=ts=>{try{return new Date(ts).toLocaleDateString('es-MX',{day:'numeric',month:'short'})}catch(e){return''}};
+function exCard(x){
+ const el=document.createElement('div');el.className='exc';
+ el.innerHTML='<div class="ext"><span class="tag"></span><span class="dt"></span></div><div class="exq"></div><div class="exbt"><button type="button" data-k="p">Practicar</button><button type="button" data-k="s">Parecidos</button><button type="button" data-k="v">Ver solución</button><button type="button" data-k="d" aria-label="Borrar este ejercicio">🗑</button></div><div class="exa"></div>';
+ el.querySelector('.tag').textContent=(x.m||'Ejercicio')+(x.src=='imagen'?' · 📷 imagen':'');
+ el.querySelector('.dt').textContent=fdt(x.ts);
+ el.querySelector('.exq').textContent=x.q;
+ const ar=el.querySelector('.exa');
+ const practice=el.practice=()=>{ar.replaceChildren(exQuiz(x.a));const i=ar.querySelector('input');i&&i.focus({preventScroll:true})};
+ el.querySelector('[data-k=p]').onclick=practice;
+ el.querySelector('[data-k=v]').onclick=()=>{ar.innerHTML='<div class="exfull">'+md(x.a)+'</div>'};
+ el.querySelector('[data-k=s]').onclick=()=>{
+  const V=exSimilar(x,3);ar.replaceChildren();
+  if(!V.length){ar.textContent='No logré armar un ejercicio parecido que Noryx pueda resolver con seguridad. Prueba con otro.';return}
+  const h=document.createElement('div');h.className='exh';h.textContent='Ejercicios parecidos (la respuesta está oculta):';ar.append(h);
+  V.forEach((v,i)=>{const b=document.createElement('div');b.className='exv';
+   const q=document.createElement('div');q.className='exq';q.textContent=(i+1)+'. '+v.q;b.append(q,exQuiz(v.a));
+   const sv=document.createElement('button');sv.type='button';sv.className='exsv';sv.textContent='Guardar en mi historial';
+   sv.onclick=()=>{if(exAdd(v.q,v.a,v.m,'práctica')){sv.textContent='Guardado ✓';sv.disabled=true;exRender(true)}else toast('Ya lo tienes guardado')};
+   b.append(sv);ar.append(b)});
+  const more=document.createElement('button');more.type='button';more.className='exsv';more.textContent='Otros tres';more.onclick=()=>el.querySelector('[data-k=s]').click();ar.append(more)};
+ el.querySelector('[data-k=d]').onclick=()=>{exSave(exAll().filter(z=>z.id!=x.id));exBadge();exRender()};
+ return el}
+function exRender(keepOpen){
+ const L=exAll(),f=norm($('#exq').value||''),box=$('#exl');
+ if(keepOpen===true&&box.querySelector('.exa:not(:empty)')){exBadge();$('#exn').textContent=L.length+' guardados';return}
+ box.replaceChildren();$('#exn').textContent=L.length?L.length+' guardados':'';exBadge();
+ const V=L.filter(x=>!f||norm(x.q+' '+x.m).includes(f));
+ if(!V.length){const e=document.createElement('div');e.className='exe';e.textContent=L.length?'Nada coincide con tu búsqueda.':'Aún no hay ejercicios. Resuelve uno con Noryx (por ejemplo «Resuelve x^2 - 5x + 6 = 0») o sube la foto de un problema de física y aparecerá aquí.';box.append(e);return}
+ V.forEach(x=>box.append(exCard(x)))}
+function exOpen(){closeMenu();ex.hidden=false;$('#exq').value='';exRender()}
+const exClose=()=>{ex.hidden=true};
+$('#exb').onclick=exOpen;$('#exx').onclick=exClose;ex.addEventListener('click',e=>{if(e.target==ex)exClose()});
+addEventListener('keydown',e=>{if(e.key=='Escape'&&!ex.hidden)exClose()});
+$('#exq').addEventListener('input',()=>exRender());
+$('#exr').onclick=()=>{const L=exAll();if(!L.length){toast('Aún no tienes ejercicios guardados');return}
+ $('#exq').value='';exRender();const i=Math.floor(Math.random()*L.length),el=$('#exl').children[i];if(el){el.scrollIntoView({block:'center'});el.practice()}};
+$('#exc').onclick=()=>{if(exAll().length&&confirm('¿Borrar todo tu historial de ejercicios?')){exSave([]);exRender()}};
+exBadge();
+
+/* ================= Punto 7: datos de la figura ================= */
+const fi=$('#imfig'),fn=$('#imfn'),FIGNOTE=fn.textContent,
+ FIGSYS='Eres un lector de figuras de ejercicios de física y matemáticas. Mira la figura y devuelve SOLO los datos que se ven, en una sola línea separada por comas, cada uno con su rótulo y unidad: ángulos (p. ej. ángulo = 30°), alturas, longitudes, radios, masas, resistencias, fuerzas y rótulos como A: 3R, B: R. No resuelvas nada, no expliques y no inventes: si un dato no se ve con claridad, no lo pongas. Si no hay datos, responde exactamente SIN DATOS.';
+fi.addEventListener('input',()=>{if(imList[imSel])imList[imSel].fig=fi.value});
+/* cada imagen recuerda sus propios datos; al cambiar de imagen no se arrastran los de otra */
+const _imShow=imShow;
+imShow=function(i){_imShow(i);const it=imList[i];fi.value=(it&&it.fig)||''};
+$('#imauto').checked=!!S.get('nx-figauto',false);
+$('#imauto').onchange=function(){S.set('nx-figauto',this.checked);if(this.checked&&!pKey())toast('Si el servicio pide clave, pégala en «Conexión con Pollinations»',3200)};
+async function figRead(say,silent){
+ if(!orig||!imc.width||!imc.height)return false;
+ if(navigator.onLine===false){if(!silent)toast('Sin conexión: escribe los datos de la figura a mano');return false}
+ const btn=$('#imrd');btn.disabled=true;if(say)say('Leyendo la figura con visión en línea…');if(!silent)fn.textContent='Leyendo la figura…';
+ try{
+  const k=Math.min(1,1024/Math.max(imc.width,imc.height)),t=document.createElement('canvas');t.width=Math.round(imc.width*k);t.height=Math.round(imc.height*k);
+  const x=t.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,t.width,t.height);x.drawImage(imc,0,0,t.width,t.height);
+  const r=await pollChat([{role:'system',content:FIGSYS},{role:'user',content:[{type:'text',text:'Lee los datos de la figura.'},{type:'image_url',image_url:{url:t.toDataURL('image/jpeg',.85)}}]}],45000);
+  if(r.t){
+   let line=r.t.replace(/[*`#>]/g,'').replace(/\n+/g,', ').replace(/\s+/g,' ').replace(/^[-•,\s]+|[,\s]+$/g,'').slice(0,300);
+   if(!line||/^SIN DATOS/i.test(line)){fn.textContent='El modelo no encontró datos legibles en la figura. Escríbelos a mano.';return false}
+   fi.value=line;if(imList[imSel])imList[imSel].fig=line;
+   fn.textContent='Datos leídos por visión en línea (la imagen reducida se envió a Pollinations). Revísalos y corrígelos si hace falta.';return true}
+  fn.textContent=r.err==401||r.err==402||r.err==403?'Pollinations pide una clave gratuita: pégala en «Conexión con Pollinations» (abajo). Mientras tanto escribe los datos a mano.':r.err==429?'El servicio de visión está saturado. Espera unos segundos o escribe los datos a mano.':'No pude contactar al servicio de visión. Escribe los datos a mano.';
+  return false}
+ catch(e){fn.textContent='No pude leer la figura en línea. Escribe los datos a mano.';return false}
+ finally{btn.disabled=false}}
+$('#imrd').onclick=async()=>{if(!orig){toast('Primero sube una imagen');return}const ok=await figRead(null,false);if(ok)toast('Datos de la figura listos: ahora pregunta')};
+/* los datos de la figura se suman al texto que Noryx lee de la imagen */
+const _imOcr=imOcr;
+imOcr=async function(say){
+ const tx=await _imOcr(say);
+ if(!fi.value.trim()&&S.get('nx-figauto',false)&&navigator.onLine!==false)await figRead(say,true);
+ const fig=fi.value.trim();
+ return fig?(tx?tx+'\n':'')+'Datos de la figura: '+fig.replace(/\s*;\s*/g,', '):tx};
+/* con datos de figura escritos, una pregunta normal se trata como ejercicio */
+const _localVision=localVision;
+localVision=function(q,wait){
+ if(fi.value.trim()&&!/music|cancion|playlist|escuchar|soundtrack|titulo|redes|instagram|caption|pie de foto|publicar|color|paleta|combin|decor/.test(norm(q)))q=q+' resuelve el ejercicio';
+ return _localVision(q,wait)};
+/* con el motor en línea, el modelo de visión recibe también los datos que escribiste */
+const _imAsk=imAsk;
+imAsk=function(q){
+ q=(q||$('#imq').value||'').trim();const fig=fi.value.trim();
+ if(q&&fig&&S.get('nx-veng','local')!='local')q+=' [Datos de la figura: '+fig+']';
+ return _imAsk(q)};
 })();
 </script>
 </body>
