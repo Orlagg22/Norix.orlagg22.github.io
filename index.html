@@ -2408,6 +2408,7 @@ const JSITES={youtube:'https://www.youtube.com',google:'https://www.google.com',
 async function jvPlay(pv,q,hint){
  if(pv=='spotify'&&q&&spReady()){let note='';try{const r=await spPlayCmd(q,hint);if(r)return r}catch(e){note=spErrText(e)+' '}
   const w=jvPlayWeb(pv,q);w.say=note+w.say;w.show=note+(w.show||'');return w}
+ if(pv=='spotify'&&q&&spCid()&&!spReady()){const w=jvPlayWeb(pv,q),nt='Tu sesión de Spotify no está activa, '+jvWho()+': escribe /spotify conectar para que suene aquí dentro. ';w.say=nt+w.say;w.show=nt+(w.show||'');return w}
  return jvPlayWeb(pv,q)}
 function jvPlayWeb(pv,q){const p=JMUS[pv]||JMUS.spotify,who=jvWho(),ch=[];let ok;
  if(p.app){jvUri(p.app(q));ok=true;ch.push({label:'♪ '+p.n+' (app)',href:p.app(q)},{label:'♪ '+p.n+' web',href:p.web(q)})}
@@ -2517,7 +2518,7 @@ async function jvCmd(raw,pm,ns){
  /* música */
  if(m=n.match(/^(reproduce|reproduceme|toca|tocame|quiero escuchar|quiero oir|play|escuchar|pon|ponme|pones)\s+(.+)$/)){let rest=m[2],pv=null;const pm2=rest.match(/\s+(?:en|on|por|con|desde)\s+(spotify|youtube music|yt music|youtube|apple music|deezer)$/);if(pm2){pv=pm2[1]=='yt music'?'youtube music':pm2[1];rest=rest.slice(0,pm2.index)}
   const soft=/^(?:pon|ponme|pones)$/.test(m[1]),musical=/\b(?:musica|cancion|canciones|playlist|album|disco|algo de|algo para|tema de|temazo|rola|rolas|lofi|jazz|rock|salsa|cumbia|reggaeton|clasica|pop|rap)\b/.test(rest);
-  if(!soft||pv||musical){const F=/^(?:algo de|algo para|un poco de|musica de|musica para|musica|la musica de|una cancion de|la cancion|cancion de|cancion|el album|la playlist|playlist de|playlist|mi musica|rolas de|un tema de|temazos de)\s+/;let s=rest.trim();s=s.replace(F,'').replace(F,'').replace(/^(?:musica|cancion|canciones)$/,'').trim();return jvPlay(pv||JV.music,s,rest)}}
+  if(!soft||pv||musical){const F=/^(?:algo de|algo para|un poco de|musica de|musica para|musica|la musica de|una cancion de|la cancion de|la cancion|cancion de|cancion|el album de|el album|la playlist de|la playlist|playlist de|playlist|mi musica|rolas de|un tema de|temazos de|de|del)\s+/;let s=rest.trim();s=s.replace(F,'').replace(F,'').replace(F,'').replace(/^(?:musica|cancion|canciones)$/,'').trim();return jvPlay(pv||JV.music,s,rest)}}
  /* mapas y búsqueda */
  if(q=X(/^(?:como llego a|como llegar a|ruta a|ruta hacia|llevame a|navega a|direcciones a|how do i get to)\s+(.+)$/))return jvWeb('https://www.google.com/maps/dir/?api=1&destination='+encodeURIComponent(q[1]),'la ruta a '+q[1],'Google Maps');
  if(q=X(/^(?:mapa de|muestrame el mapa de|muestrame en el mapa)\s+(.+)$/))return jvWeb('https://www.google.com/maps/search/'+encodeURIComponent(q[1]),'el mapa de '+q[1],'Google Maps');
@@ -2928,7 +2929,7 @@ async function spConnect(){const J='Noryx',cid=spCid();
  if(!w){location.href=url;return}
  sysMsg('Se abrió la ventana de Spotify: acepta los permisos y se cerrará sola. Si no la ves, permite las ventanas emergentes de esta página.',J)}
 function spDisconnect(){try{SP.player&&SP.player.disconnect()}catch(e){}SP.player=null;SP.dev=null;SP.initing=null;S.set('nx-sptok',null);S.set('nx-spv','');S.set('nx-spst','')}
-async function spTokenReq(params){const r=await fetch('https://accounts.spotify.com/api/token',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams(params)});let j={};try{j=await r.json()}catch(e){}if(!r.ok)throw new Error(j.error_description||j.error||('HTTP '+r.status));return j}
+async function spTokenReq(params){const r=await fetch('https://accounts.spotify.com/api/token',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams(params)});let j={};try{j=await r.json()}catch(e){}if(!r.ok){const er=new Error(j.error_description||j.error||('HTTP '+r.status));er.status=r.status;er.spErr=j.error||'';throw er}return j}
 async function spCallback(){
  let u;try{u=new URL(location.href)}catch(e){return}
  const code=u.searchParams.get('code'),st=u.searchParams.get('state'),err=u.searchParams.get('error');
@@ -2942,19 +2943,33 @@ async function spCallback(){
   sysMsg('✅ Spotify conectado. Abre `/noryx` y di «pon música de Soda Stereo». Necesitas Spotify Premium para que suene dentro de Noryx.','Noryx');spInitPlayer().catch(()=>{})}
  catch(e){sysMsg('No pude completar la conexión con Spotify: '+(e&&e.message||e)+'. Revisa que el Redirect URI en tu app de Spotify sea exactamente `'+SP.redir()+'`.','Noryx')}}
 addEventListener('storage',e=>{if(e.key=='nx-sptok'&&e.newValue&&e.newValue!='null'){sysMsg('✅ Spotify conectado. Abre `/noryx` y di «pon música de Soda Stereo». Necesitas Spotify Premium.','Noryx');spInitPlayer().catch(()=>{})}});
-async function spToken(){let t=S.get('nx-sptok',null);if(!t)return null;if(Date.now()<t.exp-60000)return t.access;
- try{const j=await spTokenReq({grant_type:'refresh_token',refresh_token:t.refresh,client_id:spCid()});
-  t={access:j.access_token,refresh:j.refresh_token||t.refresh,exp:Date.now()+j.expires_in*1000};S.set('nx-sptok',t);return t.access}
- catch(e){S.set('nx-sptok',null);return null}}
-async function spApi(method,path,body){const tk=await spToken();if(!tk)throw{code:'auth'};
+let spRefreshing=null;
+async function spToken(force){let t=S.get('nx-sptok',null);if(!t)return null;if(!force&&Date.now()<t.exp-60000)return t.access;
+ if(spRefreshing)return spRefreshing;
+ spRefreshing=(async()=>{try{
+  const j=await spTokenReq({grant_type:'refresh_token',refresh_token:t.refresh,client_id:spCid()});
+  const n={access:j.access_token,refresh:j.refresh_token||t.refresh,exp:Date.now()+j.expires_in*1000};S.set('nx-sptok',n);return n.access}
+ catch(e){
+  /* Solo se borra la sesión si Spotify DICE que el permiso ya no vale; un corte de red o un error 5xx no debe desconectarte */
+  if(e&&(e.spErr=='invalid_grant'||e.spErr=='invalid_client'||e.status==400&&/revoked|invalid/i.test(e.message||''))){
+   const cur=S.get('nx-sptok',null);
+   if(cur&&cur.refresh&&cur.refresh!==t.refresh&&Date.now()<cur.exp-60000)return cur.access; /* otra pestaña ya renovó */
+   S.set('nx-sptok',null);return null}
+  if(Date.now()<t.exp)return t.access;
+  throw {code:'net',message:'sin conexión con Spotify'}}
+ finally{spRefreshing=null}})();
+ return spRefreshing}
+async function spApi(method,path,body,retried){const tk=await spToken(!!retried);if(!tk)throw{code:'auth'};
  const r=await fetch('https://api.spotify.com/v1'+path,{method,headers:Object.assign({Authorization:'Bearer '+tk},body?{'Content-Type':'application/json'}:{}),body:body?JSON.stringify(body):undefined});
  if(r.status==204||r.status==202)return{};
  let j=null;try{j=await r.json()}catch(e){}
- if(r.status==401)throw{code:'auth'};
+ if(r.status==401){if(!retried)return spApi(method,path,body,true);throw{code:'auth'}}
  if(r.status==429)throw{code:'rate'};
  if(!r.ok)throw{code:r.status,msg:j&&j.error&&j.error.message,reason:j&&j.error&&j.error.reason};
  return j||{}}
-function spLoadSDK(){return new Promise((ok,no)=>{if(window.Spotify)return ok();window.onSpotifyWebPlaybackSDKReady=ok;const e=document.createElement('script');e.src='https://sdk.scdn.co/spotify-player.js';e.onerror=()=>no(new Error('No pude cargar el reproductor de Spotify'));document.head.append(e)})}
+let spSdkP=null;
+function spLoadSDK(){if(window.Spotify&&window.Spotify.Player)return Promise.resolve();if(spSdkP)return spSdkP;
+ spSdkP=new Promise((ok,no)=>{window.onSpotifyWebPlaybackSDKReady=ok;const e=document.createElement('script');e.src='https://sdk.scdn.co/spotify-player.js';e.onerror=()=>{spSdkP=null;e.remove();no(new Error('No pude cargar el reproductor de Spotify'))};document.head.append(e)});return spSdkP}
 function spInitPlayer(){if(SP.dev)return Promise.resolve(SP.dev);if(SP.initing)return SP.initing;
  SP.initing=(async()=>{await spLoadSDK();
   return new Promise(res=>{let done=false;const fin=v=>{if(done)return;done=true;if(!v){SP.initing=null;try{SP.player&&SP.player.disconnect()}catch(e){}SP.player=null}res(v)};
@@ -2973,6 +2988,7 @@ async function spStart(body){const id=await spDevice();if(!id)throw{code:404,rea
  return id}
 function spErrText(e){const who=jvWho(),c=e&&e.code;
  if(c=='auth')return'La conexión con Spotify caducó, '+who+'. Escribe /spotify conectar para entrar otra vez.';
+ if(c=='net')return'No pude conectar con Spotify ahora mismo, '+who+'. Revisa tu conexión y vuelve a intentarlo; tu sesión sigue guardada.';
  if(c=='rate')return'Spotify me pide esperar un momento, '+who+'. Intente de nuevo en unos segundos.';
  if(e&&e.reason=='PREMIUM_REQUIRED'||(c==403&&/premium/i.test(e&&e.msg||'')))return'Spotify solo deja controlar la reproducción desde aquí con una cuenta Premium, '+who+'.';
  if(c==403)return'Spotify rechazó la orden'+(e.msg?' ('+e.msg+')':'')+'. Puede que tu cuenta no esté autorizada en la app de Spotify (el modo desarrollo solo admite 5 personas): el creador debe agregar tu correo en User Management.';
