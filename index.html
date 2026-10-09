@@ -2511,12 +2511,12 @@ async function jvCmd(raw,pm,ns){
  if(T(/^(?:(?:tira|lanza|echa|vuela|tirame)\s+(?:una\s+)?moneda|cara o cruz)$/))return R(Math.random()<.5?'Cara.':'Cruz.');
  if(m=n.match(/^(?:dame\s+)?(?:un\s+)?numero aleatorio(?:\s+entre\s+(\d+)\s+y\s+(\d+))?$/)){let a=+m[1]||1,b=+m[2]||100;if(a>b)[a,b]=[b,a];return R('El número es '+(a+Math.floor(Math.random()*(b-a+1)))+'.')}
  if(q=X(/^(?:copia|copiame)\s+(?:esto\s*|al portapapeles\s*)?(.+)$/)){const tx=q[1];let ok=false;try{await navigator.clipboard.writeText(tx);ok=true}catch(e){}return ok?R('Copiado al portapapeles.'):R('El navegador no me deja copiar sin un toque suyo. Use el botón.',{chips:[{label:'📋 Copiar',fn:()=>navigator.clipboard.writeText(tx).then(()=>toast('Copiado'),()=>toast('No se pudo copiar'))}]})}
- if(T(/^(?:pausa|pausar|pausa la musica|reanuda|reanuda la musica|continua la musica|siguiente cancion|cancion siguiente|cancion anterior|salta (?:la )?cancion|sube el volumen|baja el volumen|sube volumen|baja volumen|mutea|silencia la musica|(?:pon |ponle |sube |baja )?(?:el )?volumen (?:al|a|en) \d{1,3}(?: por ciento)?|que suena|que cancion es esta|que estoy escuchando|que esta sonando)$/)){
+ if(T(/^(?:dale me gusta(?: a esta)?(?: cancion)?|guarda esta cancion|me gusta esta cancion|pausa|pausar|pausa la musica|reanuda|reanuda la musica|continua la musica|siguiente cancion|cancion siguiente|cancion anterior|salta (?:la )?cancion|sube el volumen|baja el volumen|sube volumen|baja volumen|mutea|silencia la musica|(?:pon |ponle |sube |baja )?(?:el )?volumen (?:al|a|en) \d{1,3}(?: por ciento)?|que suena|que cancion es esta|que estoy escuchando|que esta sonando)$/)){
   if(spReady()){const r=await spControl(n);if(r)return r}
   else return R('Para controlar la música (pausa, siguiente, volumen) necesito que conectes tu cuenta de Spotify con /spotify, '+who+'. Sin eso no puedo tocar otras aplicaciones desde el navegador.',{m:'Noryx · límite honesto'})}
  /* música */
  if(m=n.match(/^(reproduce|reproduceme|toca|tocame|quiero escuchar|quiero oir|play|escuchar|pon|ponme|pones)\s+(.+)$/)){let rest=m[2],pv=null;const pm2=rest.match(/\s+(?:en|on|por|con|desde)\s+(spotify|youtube music|yt music|youtube|apple music|deezer)$/);if(pm2){pv=pm2[1]=='yt music'?'youtube music':pm2[1];rest=rest.slice(0,pm2.index)}
-  const soft=/^(?:pon|ponme|pones)$/.test(m[1]),musical=/\b(?:musica|cancion|canciones|playlist|album|disco|algo de|algo para|tema de|temazo|rola|rolas|lofi|jazz|rock|salsa|cumbia|reggaeton|clasica|pop|rap)\b/.test(rest);
+  const soft=/^(?:pon|ponme|pones)$/.test(m[1]),musical=/\b(?:musica|cancion|canciones|playlist|album|disco|algo de|algo para|tema de|temazo|rola|rolas|me gusta|me gustan|favorit|liked|aleatori|lofi|jazz|rock|salsa|cumbia|reggaeton|clasica|pop|rap)\b/.test(rest);
   if(!soft||pv||musical){const F=/^(?:algo de|algo para|un poco de|musica de|musica para|musica|la musica de|una cancion de|la cancion|cancion de|cancion|el album|la playlist|playlist de|playlist|mi musica|rolas de|un tema de|temazos de)\s+/;let s=rest.trim();s=s.replace(F,'').replace(F,'').replace(/^(?:musica|cancion|canciones)$/,'').trim();return jvPlay(pv||JV.music,s,rest)}}
  /* mapas y búsqueda */
  if(q=X(/^(?:como llego a|como llegar a|ruta a|ruta hacia|llevame a|navega a|direcciones a|how do i get to)\s+(.+)$/))return jvWeb('https://www.google.com/maps/dir/?api=1&destination='+encodeURIComponent(q[1]),'la ruta a '+q[1],'Google Maps');
@@ -2914,7 +2914,7 @@ const SP_CLIENT_ID='923a1c8bee7e47e292f7c0450eb72a84';
 const spCid=()=>S.get('nx-spcid','')||(/^[0-9a-f]{32}$/i.test(SP_CLIENT_ID)?SP_CLIENT_ID.toLowerCase():'');
 const SP={player:null,dev:null,initing:null,err:''};
 SP.redir=()=>location.origin+location.pathname;
-SP.scopes='streaming user-read-email user-read-private user-read-playback-state user-modify-playback-state';
+SP.scopes='streaming user-read-email user-read-private user-read-playback-state user-modify-playback-state user-library-read user-library-modify playlist-read-private';
 const spReady=()=>!!spCid()&&!!S.get('nx-sptok',null);
 const spB64=b=>btoa(String.fromCharCode(...new Uint8Array(b))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
 const spRand=n=>spB64(crypto.getRandomValues(new Uint8Array(n)));
@@ -2975,11 +2975,25 @@ function spErrText(e){const who=jvWho(),c=e&&e.code;
  if(c=='auth')return'La conexión con Spotify caducó, '+who+'. Escribe /spotify conectar para entrar otra vez.';
  if(c=='rate')return'Spotify me pide esperar un momento, '+who+'. Intente de nuevo en unos segundos.';
  if(e&&e.reason=='PREMIUM_REQUIRED'||(c==403&&/premium/i.test(e&&e.msg||'')))return'Spotify solo deja controlar la reproducción desde aquí con una cuenta Premium, '+who+'.';
+ if(c==403&&/scope/i.test(e&&e.msg||''))return'Falta un permiso nuevo de Spotify, '+who+'. Escribe /spotify desconectar y luego /spotify conectar.';
  if(c==403)return'Spotify rechazó la orden'+(e.msg?' ('+e.msg+')':'')+'. Puede que tu cuenta no esté autorizada en la app de Spotify (el modo desarrollo solo admite 5 personas): el creador debe agregar tu correo en User Management.';
  if(c==404||(e&&e.reason=='NO_ACTIVE_DEVICE'))return'No encontré ningún reproductor de Spotify disponible, '+who+'. Abre Spotify en algún dispositivo y vuelve a pedirlo.';
  return'No pude hablar con Spotify'+(e&&(e.msg||e.message)?' ('+(e.msg||e.message)+')':'')+', '+who+'.'}
 const spItems=j=>x=>((j&&j[x]&&j[x].items)||[]).filter(Boolean);
+async function spLiked(shuffle){const who=jvWho(),M={m:'Noryx · Spotify'};
+ const t=await spApi('GET','/me/tracks?limit=1'),total=t.total||0;
+ if(!total)return jvR('Todavía no tienes canciones guardadas en Tus me gusta, '+who+'.',M);
+ let uris=[];const grab=async o=>{const j=await spApi('GET','/me/tracks?limit=50&offset='+o);uris.push(...(j.items||[]).map(i=>i.track&&i.track.uri).filter(Boolean))};
+ if(shuffle&&total>50){const maxO=total-50;await grab(Math.floor(Math.random()*(maxO+1)));await grab(Math.floor(Math.random()*(maxO+1)));uris=[...new Set(uris)].sort(()=>Math.random()-.5).slice(0,100)}
+ else{await grab(0);if(total>50)await grab(50);if(shuffle)uris.sort(()=>Math.random()-.5)}
+ await spStart({uris});
+ await spApi('PUT','/me/player/shuffle?state='+(shuffle?'true':'false')).catch(()=>{});
+ return jvR((shuffle?'Tus me gusta en aleatorio':'Tus canciones favoritas')+', '+who+'. Son '+total+' guardadas.',{log:'♪ Spotify · Tus me gusta',m:'Noryx · Spotify',show:'Reproduciendo Tus me gusta ('+total+' canciones'+(shuffle?', aleatorio':'')+').'})}
+async function spMyPlaylist(name){const j=await spApi('GET','/me/playlists?limit=50'),n=norm(name),p=(j.items||[]).filter(Boolean).find(x=>norm(x.name).includes(n));
+ if(!p)return null;await spStart({context_uri:p.uri});return jvR('Reproduciendo tu playlist '+p.name+', '+jvWho()+'.',{m:'Noryx · Spotify',log:'♪ Spotify · '+p.name})}
 async function spPlayCmd(q,hint){const who=jvWho(),h=norm(hint||q);
+ if(/\b(?:mis me gusta|tus me gusta|me gustan|me gusta|favorit[oa]s?|liked songs|canciones guardadas|mi biblioteca)\b/.test(h))return spLiked(/aleatori|shuffle|mezcla|revuelt/.test(h));
+ {const mp=h.match(/\b(?:mi|mis)\s+(?:playlist|lista)\s+(?:de\s+)?(.+)$/);if(mp){const r=await spMyPlaylist(mp[1]);if(r)return r}}
  const want=/\b(?:playlist|lista)\b/.test(h)?'playlist':/\b(?:album|disco)\b/.test(h)?'album':/\b(?:cancion|tema|rola)\b/.test(h)?'track':'';
  const j=await spApi('GET','/search?type='+(want||'track,artist,playlist,album')+'&limit=5&q='+encodeURIComponent(q)),I=spItems(j),
   tr=I('tracks'),ar=I('artists'),pl=I('playlists'),al=I('albums'),nq=norm(q),nm=x=>norm(x.name),inq=x=>nm(x).length>2&&(' '+nq+' ').includes(' '+nm(x)+' ');
@@ -3004,6 +3018,7 @@ async function spControl(n){const who=jvWho(),R=jvR,M={m:'Noryx · Spotify'};let
   if(/^(?:mutea|silencia la musica)$/.test(n)){await spApi('PUT','/me/player/volume?volume_percent=0');return R('Música en silencio, '+who+'.',M)}
   if(m=n.match(/^(?:pon |ponle |sube |baja )?(?:el )?volumen (?:al|a|en) (\d{1,3})(?: por ciento)?$/)){const v=Math.min(100,+m[1]);await spApi('PUT','/me/player/volume?volume_percent='+v);return R('Volumen al '+v+' por ciento.',M)}
   if(m=n.match(/^(sube|baja)(?: el)? volumen$/)){const c=await spApi('GET','/me/player'),cur=c.device&&typeof c.device.volume_percent=='number'?c.device.volume_percent:50,v=Math.max(0,Math.min(100,cur+(m[1]=='sube'?15:-15)));await spApi('PUT','/me/player/volume?volume_percent='+v);return R('Volumen al '+v+' por ciento.',M)}
+  if(/^(?:dale me gusta(?: a esta)?(?: cancion)?|guarda esta cancion|me gusta esta cancion)$/.test(n)){const c=await spApi('GET','/me/player/currently-playing'),id=c.item&&c.item.id;if(!id)return R('No hay nada sonando, '+who+'.',M);await spApi('PUT','/me/tracks?ids='+id);return R('Guardada en Tus me gusta: '+c.item.name+'.',M)}
   if(/^(?:que suena|que cancion es esta|que estoy escuchando|que esta sonando)$/.test(n)){const c=await spApi('GET','/me/player/currently-playing'),it=c.item;return it?R('Suena '+it.name+(it.artists?', de '+it.artists.map(a=>a.name).join(' y '):'')+', '+who+'.',M):R('No hay nada sonando en Spotify ahora, '+who+'.',M)}
  }catch(e){return R(spErrText(e),{m:'Noryx · error'})}
  return null}
@@ -3020,7 +3035,7 @@ function spCmd(a){const J='Noryx',cid=spCid(),shared=!S.get('nx-spcid','')&&!!ci
   +'2. En **Redirect URIs** agrega exactamente: `'+SP.redir()+'` (debe ser https, o http://127.0.0.1 en local).\n'
   +'3. En «APIs used» marca **Web API** y **Web Playback SDK**. Si la app está en modo desarrollo, agrega tu cuenta en User Management.\n'
   +'4. Aquí: `/spotify id TU_CLIENT_ID` y luego `/spotify conectar`.\n\n'
-  +'Hace falta Spotify Premium. Después, en `/noryx` di «pon música de Soda Stereo», «pausa», «siguiente canción», «sube el volumen» o «qué suena». `/spotify desconectar` borra todo.',J)}
+  +'Hace falta Spotify Premium. Después, en `/noryx` di «pon música de Soda Stereo», «pon mis me gusta», «mis me gusta en aleatorio», «dale me gusta a esta canción», «pausa», «siguiente canción», «sube el volumen» o «qué suena». Si ya estabas conectado, haz `/spotify desconectar` y `/spotify conectar` una vez para dar el permiso de tu biblioteca. `/spotify desconectar` borra todo.',J)}
 
 spCallback();
 loadCT();
