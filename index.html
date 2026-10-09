@@ -2986,8 +2986,8 @@ async function spLiked(shuffle){const who=jvWho(),M={m:'Noryx · Spotify'};
  let uris=[];const grab=async o=>{const j=await spApi('GET','/me/tracks?limit=50&offset='+o);uris.push(...(j.items||[]).map(i=>i.track&&i.track.uri).filter(Boolean))};
  if(shuffle&&total>50){const maxO=total-50;await grab(Math.floor(Math.random()*(maxO+1)));await grab(Math.floor(Math.random()*(maxO+1)));uris=[...new Set(uris)].sort(()=>Math.random()-.5).slice(0,100)}
  else{await grab(0);if(total>50)await grab(50);if(shuffle)uris.sort(()=>Math.random()-.5)}
- await spStart({uris});
- await spApi('PUT','/me/player/shuffle?state='+(shuffle?'true':'false')).catch(()=>{});
+ const dv=await spStart({uris});
+ await spApi('PUT','/me/player/shuffle?state='+(shuffle?'true':'false')+'&device_id='+encodeURIComponent(dv)).catch(()=>{});
  return jvR((shuffle?'Tus me gusta en aleatorio':'Tus canciones favoritas')+', '+who+'. Son '+total+' guardadas.',{log:'♪ Spotify · Tus me gusta',m:'Noryx · Spotify',show:'Reproduciendo Tus me gusta ('+total+' canciones'+(shuffle?', aleatorio':'')+').'})}
 async function spMyPlaylist(name){const j=await spApi('GET','/me/playlists?limit=50'),n=norm(name),p=(j.items||[]).filter(Boolean).find(x=>norm(x.name).includes(n));
  if(!p)return null;await spStart({context_uri:p.uri});return jvR('Reproduciendo tu playlist '+p.name+', '+jvWho()+'.',{m:'Noryx · Spotify',log:'♪ Spotify · '+p.name})}
