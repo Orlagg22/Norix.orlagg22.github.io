@@ -162,7 +162,15 @@ textarea{flex:1;resize:none;border:0;outline:0;background:none;color:var(--ink);
 #slash button{border:1px solid var(--line);border-radius:999px;padding:4px 12px;font-size:13px;color:var(--mute)}#slash button:hover{border-color:var(--acc);color:var(--ink)}#slash button b{color:var(--ink);font-weight:600}
 .jvq{margin-top:-2px}.jvq button{font-size:13px;padding:5px 12px}
 </style>
-</head>
+<style>
+#mk{border:1px solid var(--line);background:var(--panel);border-radius:16px;padding:10px;margin-bottom:8px;max-height:40vh;overflow:auto}#mk[hidden]{display:none}
+#mk .h{display:flex;justify-content:space-between;align-items:center;gap:8px;font-weight:600;font-size:13.5px;margin-bottom:8px}#mk .h span{display:flex;gap:6px}
+#mk .h button{font-size:12.5px;color:var(--mute);border:1px solid var(--line);border-radius:999px;padding:3px 10px}#mk .h button.on,#mk .h button:hover{color:var(--ink);border-color:var(--acc)}
+#mk .g{display:grid;grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:8px}
+#mk .g button{background:color-mix(in srgb,var(--ink) 7%,transparent);border-radius:12px;padding:8px 4px;display:flex;flex-direction:column;align-items:center;gap:1px;color:var(--ink)}
+#mk .g button:hover{outline:1px solid var(--acc)}#mk .g b{font-size:19px;line-height:1.3}#mk .g small{font-size:11px;color:var(--mute)}
+#fx{font:600 18px Georgia,serif}
+</style></head>
 <body>
 <div id="app">
  <aside id="side" aria-label="Conversaciones">
@@ -178,9 +186,10 @@ textarea{flex:1;resize:none;border:0;outline:0;background:none;color:var(--ink);
   <header><button id="menu" aria-label="Menú">☰</button><div id="ttl">Noryx</div><div id="chip" title="Núcleo neuronal propio de Noryx"><b></b><span id="cs">entrenando…</span></div></header>
   <section id="feed" aria-live="polite"></section>
   <div id="comp">
-   <div id="slash" hidden></div><div class="box">
+   <div id="mk" hidden><div class="h"><span>Teclado matemático</span><span><button type="button" id="mkr">🔊 Leer símbolos: no</button><button type="button" id="mkx" aria-label="Cerrar">✕</button></span></div><div class="g"></div></div><div id="slash" hidden></div><div class="box">
     <textarea id="in" rows="1" placeholder="Escribe a Noryx… (/ayuda para ver comandos)" aria-label="Mensaje"></textarea>
     <input id="pw" type="password" autocomplete="off" hidden aria-label="Contraseña de creador">
+    <button class="ib" id="fx" type="button" aria-label="Teclado matemático" title="Teclado matemático">∑</button>
     <button class="ib" id="mic" aria-label="Hablar"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button>
     <button class="ib" id="go" aria-label="Enviar"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>
    </div>
@@ -1293,7 +1302,7 @@ function renderList(){$('#list').innerHTML='';const f=norm($('#q').value||'');co
 function renderAll(){renderList();const c=conv();$('#ttl').textContent=c?c.title:'Noryx';feed.innerHTML='';cancelAnimationFrame(raf);
  if(!c||!c.msgs.length){hero();return}c.msgs.forEach((m,i)=>feed.append(msgEl(m,i)));feed.scrollTop=feed.scrollHeight}
 function hero(){const h=document.createElement('div');h.className='hero';h.innerHTML='<canvas></canvas><h1>Noryx</h1><p>'+greet()+'Una IA con red neuronal propia que calcula, investiga, conversa y aprende de ti.</p><div class="chips"></div>';
- ['¿Cuánto es 15% de 2480?','Resuelve x^2 - 5x + 6 = 0','¿Quién fue Nikola Tesla?','Clima en Ciudad de México','Media de 4, 8, 15, 16','Población de Perú','10 millas a km','PIB per cápita de Chile','Compara el PIB de Japón y Corea del Sur','Dame un dato curioso','¿Qué es una red neuronal?','Recomiéndame una serie','Explícame la relatividad como si tuviera 10 años','Ayúdame a planear un fin de semana','aprende: mi color favorito = azul'].sort(()=>Math.random()-.5).slice(0,5).forEach(q=>{const b=document.createElement('button');b.textContent=q;b.onclick=()=>send(q);h.querySelector('.chips').append(b)});feed.append(h);neural(h.querySelector('canvas'))}
+ ['¿Cuánto es 15% de 2480?','Resuelve x^2 - 5x + 6 = 0','Derivada de 2x al cuadrado','Límite cuando x tiende a 2 de (x^2-4)/(x-2)','Integral de 3x^2 + 2x','¿Quién fue Nikola Tesla?','Clima en Ciudad de México','Media de 4, 8, 15, 16','Población de Perú','10 millas a km','PIB per cápita de Chile','Compara el PIB de Japón y Corea del Sur','Dame un dato curioso','¿Qué es una red neuronal?','Recomiéndame una serie','Explícame la relatividad como si tuviera 10 años','Ayúdame a planear un fin de semana','aprende: mi color favorito = azul'].sort(()=>Math.random()-.5).slice(0,5).forEach(q=>{const b=document.createElement('button');b.textContent=q;b.onclick=()=>send(q);h.querySelector('.chips').append(b)});feed.append(h);neural(h.querySelector('canvas'))}
 function msgEl(m,i){const d=document.createElement('div');d.className='msg '+m.r;
  if(m.r=='u'){d.innerHTML='<div class="body"></div>';d.firstChild.textContent=m.t;d.firstChild.title='Clic para editar';d.firstChild.style.cursor='pointer';d.firstChild.onclick=()=>{if(busy)return;const c=conv();c.msgs=c.msgs.slice(0,i);save();renderAll();inp.value=m.t;fit();inp.focus()};return d}
  d.innerHTML='<div class="av"></div><div><div class="body">'+md(m.t)+'</div><div class="meta"><span>'+esc(String(m.m||'').split(' · ').pop())+'</span><button data-a="c">copiar</button>'+(m.sys?'':'<button data-a="r">repetir</button>')+'<button data-a="s">leer</button>'+(/aprendid/.test(m.m||'')?'<button data-a="x">no es correcto</button>':'')+'</div></div>';
@@ -2560,6 +2569,278 @@ function spCmd(a){const J='Noryx',cid=spCid(),shared=!S.get('nx-spcid','')&&!!ci
 spCallback();
 loadCT();
 renderAll();
+</script>
+<script>
+/* ===== Motor matemático Noryx: procedimiento explicado + voz matemática ===== */
+const NXM=(()=>{
+const N=v=>({k:'n',v}),S=v=>({k:'s',v}),X={k:'x'},J=JSON.stringify;let V='x',ENV={};
+const dep=t=>t.k=='x'||!!(Array.isArray(t.a)?t.a.some(dep):t.a&&dep(t.a))||!!(t.b&&dep(t.b));
+const FN={sin:Math.sin,cos:Math.cos,tan:Math.tan,asin:Math.asin,acos:Math.acos,atan:Math.atan,sinh:Math.sinh,cosh:Math.cosh,tanh:Math.tanh,ln:Math.log,exp:Math.exp,abs:Math.abs};
+const ev=(t,x)=>{switch(t.k){case'n':return t.v;case'x':return x;case's':return t.v in ENV?ENV[t.v]:t.v=='π'?Math.PI:t.v=='e'?Math.E:NaN;case'+':return t.a.reduce((s,u)=>s+ev(u,x),0);case'*':return t.a.reduce((s,u)=>s*ev(u,x),1);case'^':return Math.pow(ev(t.a,x),ev(t.b,x));default:return FN[t.n](ev(t.a,x))}};
+const fn=(n,a)=>{if(!dep(a)){const z=ev(a);if(isFinite(z)){const r=FN[n](z);for(const c of[-1,0,1])if(Math.abs(r-c)<1e-12)return N(c)}}return{k:'f',n,a}};
+const pw=(b,e)=>{if(b.k=='s'&&b.v=='e')return fn('exp',e);if(e.k=='n'){if(e.v==0)return N(1);if(e.v==1)return b;if(b.k=='n'){const r=Math.pow(b.v,e.v);if(isFinite(r)&&(Number.isInteger(e.v)||Number.isInteger(r)))return N(r)}if(b.k=='*'&&Number.isInteger(e.v))return mul(...b.a.map(u=>pw(u,e)));if(b.k=='^'&&b.b.k=='n'&&Number.isInteger(e.v))return pw(b.a,N(b.b.v*e.v))}if(b.k=='n'&&b.v==1)return N(1);return{k:'^',a:b,b:e}};
+const mul=(...l)=>{let c=1,o=[];const f=t=>t.k=='*'?t.a.forEach(f):t.k=='n'?c*=t.v:o.push(t);l.forEach(f);if(c==0)return N(0);
+ const m=new Map();o.forEach(t=>{const b=t.k=='^'?t.a:t,e=t.k=='^'?t.b:N(1),k=J(b),q=m.get(k);q?q[1]=add(q[1],e):m.set(k,[b,e])});
+ o=[];m.forEach(([b,e])=>{const p=pw(b,e);p.k=='n'?c*=p.v:o.push(p)});
+ if(!o.length)return N(c);if(c==1&&o.length==1)return o[0];return{k:'*',a:c==1?o:[N(c),...o]}};
+const dg=t=>t.k=='x'?1:t.k=='^'&&t.a.k=='x'&&t.b.k=='n'?t.b.v:t.k=='*'?t.a.reduce((s,u)=>s+(u.k=='n'?0:dg(u)),0):0;
+const add=(...l)=>{let c=0,o=[];const f=t=>t.k=='+'?t.a.forEach(f):t.k=='n'?c+=t.v:o.push(t);l.forEach(f);
+ const m=new Map();o.forEach(t=>{const[q,b]=t.k=='*'&&t.a[0].k=='n'?[t.a[0].v,t.a.length==2?t.a[1]:{k:'*',a:t.a.slice(1)}]:[1,t],k=J(b),z=m.get(k);z?z[0]+=q:m.set(k,[q,b])});
+ o=[];m.forEach(([q,b])=>{if(q!=0)o.push(mul(N(q),b))});o.sort((p,q)=>dg(q)-dg(p));if(c!=0)o.push(N(c));
+ return!o.length?N(0):o.length==1?o[0]:{k:'+',a:o}};
+/* ---- presentación ---- */
+const SUP='⁰¹²³⁴⁵⁶⁷⁸⁹',sup=n=>String(n).split('').map(c=>SUP[c]||'⁻').join('');
+const nm=v=>{if(Number.isInteger(v))return String(v);for(let q=2;q<=24;q++){const p=Math.round(v*q);if(Math.abs(v-p/q)<1e-9)return p+'/'+q}return String(+v.toPrecision(6))};
+const fr=v=>{for(let q=1;q<=24;q++){const p=Math.round(v*q);if(Math.abs(v-p/q)<1e-9)return[p,q]}return[v,1]};
+const par=(s,c)=>c?'('+s+')':s;
+function show(t,pr=0){switch(t.k){
+ case'n':return par(t.v<0?'−'+nm(-t.v):nm(t.v),(pr>1&&t.v<0)||(pr>2&&!Number.isInteger(t.v)));
+ case'x':return V;case's':return t.v;
+ case'+':return par(t.a.map((u,i)=>{const q=show(u,1);return i?(q[0]=='−'?' − '+q.slice(1):' + '+q):q}).join(''),pr>1);
+ case'*':{let c=1;const P=[],Q=[];t.a.forEach(u=>{if(u.k=='n')c*=u.v;else if(u.k=='^'&&u.b.k=='n'&&u.b.v<0)Q.push(pw(u.a,N(-u.b.v)));else P.push(u)});
+  const[p,q]=fr(Math.abs(c));if(q>1)Q.unshift(N(q));
+  const ps=P.map(u=>show(u,2));let n=ps.join('·');if(p!=1||!ps.length)n=p+(ps.length?(/^[a-zπθe√(]/.test(ps[0])?'':'·')+n:'');
+  const d=Q.map(u=>show(u,3)).join('·'),r=(c<0?'−':'')+(d?n+'/'+(Q.length>1?'('+d+')':d):n);return par(r,pr>2||(c<0&&pr>1))}
+ case'^':{const e=t.b;if(e.k=='n'){if(e.v==.5)return'√('+show(t.a)+')';if(e.v<0)return par('1/'+show(pw(t.a,N(-e.v)),3),pr>2);if(Number.isInteger(e.v)&&e.v<=99)return show(t.a,4)+sup(e.v)}return par(show(t.a,4)+'^'+show(e,4),pr>3)}
+ default:if(t.n=='exp'){const q=show(t.a,4);return'e^'+(/^([\w.π]+|\(.*\))$/.test(q)?q:'('+q+')')}return t.n=='abs'?'|'+show(t.a)+'|':t.n+'('+show(t.a)+')'}}
+const rv=v=>{if(v===Infinity)return'∞';if(v===-Infinity)return'−∞';if(!isFinite(v))return'no existe';if(!Number.isInteger(+v.toFixed(9))&&Math.abs(v)>1e-9){const w=Math.abs(v)/Math.PI;for(let q=1;q<=12;q++){const p=Math.round(w*q);if(p&&Math.abs(w-p/q)<1e-9)return(v<0?'−':'')+(p==1?'':p)+'π'+(q>1?'/'+q:'')}}return nm(+v.toFixed(9))};
+/* ---- parser (acepta 2x, 3(x+1), sin x, √x, π, ², etc.) ---- */
+const FR='asin|acos|atan|sinh|cosh|tanh|sin|cos|tan|sec|csc|cot|ln|log|exp|sqrt|abs',FRX=new RegExp('^('+FR+')$');
+function parse(s){const tk=s.match(new RegExp('\\d+\\.?\\d*|\\.\\d+|'+FR+'|inf|pi|theta|[a-zπθ]|[-+*/^()]','g'))||[];if(tk.join('')!==s.replace(/\s+/g,''))throw 0;
+ let i=0;const pk=()=>tk[i],st=t=>t!==undefined&&/^[\d.a-zπθ(]/.test(t),
+ E=()=>{let v=T();while(pk()=='+'||pk()=='-'){const o=tk[i++],r=T();v=add(v,o=='+'?r:mul(N(-1),r))}return v},
+ T=()=>{let v=U();for(;;){const p=pk();if(p=='*'||p=='/'){i++;const r=U();v=p=='*'?mul(v,r):mul(v,pw(r,N(-1)))}else if(st(p))v=mul(v,U());else return v}},
+ U=()=>pk()=='-'?(i++,mul(N(-1),U())):pk()=='+'?(i++,U()):W(),
+ W=()=>{const b=A();if(pk()=='^'){i++;return pw(b,pk()=='-'?(i++,mul(N(-1),W())):W())}return b},
+ A=()=>{const t=tk[i++];if(t===undefined)throw 0;
+  if(/^[\d.]/.test(t))return N(parseFloat(t));
+  if(t=='('){const v=E();if(tk[i++]!=')')throw 0;return v}
+  if(FRX.test(t)){let a;if(pk()=='('){i++;a=E();if(tk[i++]!=')')throw 0}else{a=W();while(st(pk())&&!FRX.test(pk()))a=mul(a,W())}
+   return t=='sqrt'?pw(a,N(.5)):t=='sec'?pw(fn('cos',a),N(-1)):t=='csc'?pw(fn('sin',a),N(-1)):t=='cot'?mul(fn('cos',a),pw(fn('sin',a),N(-1))):t=='log'?mul(fn('ln',a),pw(fn('ln',N(10)),N(-1))):fn(t,a)}
+  if(t=='inf')return N(Infinity);const id=t=='theta'?'θ':t=='pi'?'π':t;return id==V?X:S(id)};
+ const v=E();if(i<tk.length)throw 0;return v}
+const pre=s=>s.replace(/[Σ∑]/g,' @sum ').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/^[¿\s]*(?:por favor|oye|noryx)[,\s]*/,'')
+ .replace(/[−–]/g,'-').replace(/[×·]/g,'*').replace(/÷/g,'/').replace(/²/g,'^2').replace(/³/g,'^3').replace(/⁴/g,'^4').replace(/∞|infinito/g,'inf')
+ .replace(/->|=>|tiende a(?:l)?|tiende hacia|tends to/g,'→').replace(/raiz cuadrada de|raiz cuadrada|raiz de|raiz|√/g,'sqrt ').replace(/al cuadrado/g,'^2').replace(/al cubo/g,'^3')
+ .replace(/elevado a la|elevado al|elevado a|a la potencia/g,'^').replace(/\bseno\b|\bsen\b/g,'sin').replace(/\bcoseno\b/g,'cos').replace(/\btangente\b/g,'tan')
+ .replace(/logaritmo natural|logaritmo neperiano/g,'ln').replace(/logaritmo/g,'log').replace(/\b(sin|cos|tan|ln|log|sqrt)\s+de\s+/g,'$1 ')
+ .replace(/\bmultiplicado por\b|\bpor\b/g,'*').replace(/\bdividido (?:entre|por)\b|\bentre\b|\bsobre\b/g,'/').replace(/\bmas\b/g,'+').replace(/\bmenos\b/g,'-')
+ .replace(/(\d),(\d)/g,'$1.$2').replace(/[{[]/g,'(').replace(/[}\]]/g,')').replace(/\s+/g,' ').trim();
+const P=s=>parse(pre(s)),FNR=/asin|acos|atan|sinh|cosh|tanh|sin|cos|tan|sec|csc|cot|ln|log|exp|sqrt|abs|inf|pi|theta/g;
+const words=e=>/[a-z]{2,}/.test(e.replace(FNR,'')),pickV=e=>{const r=e.replace(FNR,'');return/x/.test(r)?'x':(r.match(/[a-df-z]/)||['x'])[0]};
+const out=(ti,St,res)=>({t:'**'+ti+'**\n\n**Procedimiento**\n'+St.map((p,i)=>(i+1)+'. '+p[0]).join('\n')+'\n\n**Resultado:** '+res,m:'Motor matemático',s:(ti+'. '+St.map((p,i)=>'Paso '+(i+1)+'. '+p[1]).join('. ')+'. Resultado. '+res).replace(/\*\*/g,'')});
+/* ---- ajuste polinomial (para ecuaciones, sumas y productos) ---- */
+function poly(g,d){const A=[],y=[];for(let j=0;j<=d;j++){A.push(Array.from({length:d+1},(_,c)=>Math.pow(j,c)));y.push(g(j))}if(y.some(v=>!isFinite(v)))return null;
+ for(let c=0;c<=d;c++){let p=c;for(let r=c+1;r<=d;r++)if(Math.abs(A[r][c])>Math.abs(A[p][c]))p=r;[A[c],A[p]]=[A[p],A[c]];[y[c],y[p]]=[y[p],y[c]];
+  for(let r=0;r<=d;r++)if(r!=c){const f=A[r][c]/A[c][c];for(let k=c;k<=d;k++)A[r][k]-=f*A[c][k];y[r]-=f*y[c]}}
+ const co=y.map((v,i)=>{v/=A[i][i];const q=Math.round(v*1e6)/1e6;return Math.abs(v-q)<1e-9?q:v});
+ for(const x of[d+.5,-1.7,d+3.1]){const v=co.reduce((s,c,i)=>s+c*Math.pow(x,i),0),w=g(x);if(!isFinite(w)||Math.abs(v-w)>1e-6*(1+Math.abs(w)))return null}
+ while(co.length>1&&Math.abs(co[co.length-1])<1e-9)co.pop();return co}
+/* ---- derivadas con reglas ---- */
+const FD={sin:u=>fn('cos',u),cos:u=>mul(N(-1),fn('sin',u)),tan:u=>pw(fn('cos',u),N(-2)),ln:u=>pw(u,N(-1)),exp:u=>fn('exp',u),asin:u=>pw(add(N(1),mul(N(-1),pw(u,N(2)))),N(-.5)),acos:u=>mul(N(-1),pw(add(N(1),mul(N(-1),pw(u,N(2)))),N(-.5))),atan:u=>pw(add(N(1),pw(u,N(2))),N(-1)),sinh:u=>fn('cosh',u),cosh:u=>fn('sinh',u),tanh:u=>pw(fn('cosh',u),N(-2))};
+function D(t,L){const i=L?L.length:0;L&&L.push(0);let r,ru;
+ if(t.k=='n'||t.k=='s')r=N(0);else if(t.k=='x')r=N(1);
+ else if(t.k=='+'){r=add(...t.a.map(u=>D(u,L)));ru=['Regla de la suma','(f + g)′ = f′ + g′']}
+ else if(t.k=='*'){const c=t.a.filter(u=>!dep(u)),d=t.a.filter(dep);
+  if(c.length){r=mul(...c,D(mul(...d),L));ru=['Constante por función','(c·f)′ = c·f′']}
+  else{r=add(...d.map((u,j)=>mul(D(u,L),...d.filter((_,m)=>m!=j))));ru=['Regla del producto','(f·g)′ = f′·g + f·g′']}}
+ else if(t.k=='^'){const{a,b}=t;
+  if(!dep(b)){r=mul(b,pw(a,add(b,N(-1))),D(a,L));ru=a.k=='x'?['Regla de la potencia','(xⁿ)′ = n·xⁿ⁻¹']:['Potencia con regla de la cadena','(uⁿ)′ = n·uⁿ⁻¹·u′']}
+  else if(!dep(a)){r=mul(t,fn('ln',a),D(b,L));ru=['Función exponencial','(aᵘ)′ = aᵘ·ln(a)·u′']}
+  else{r=mul(t,add(mul(D(b,L),fn('ln',a)),mul(b,D(a,L),pw(a,N(-1)))));ru=['Derivada logarítmica','(uᵛ)′ = uᵛ·(v′·ln u + v·u′/u)']}}
+ else{const u=t.a;r=mul(FD[t.n](u),D(u,L));ru=[u.k=='x'?'Derivada de '+t.n:'Regla de la cadena',u.k=='x'?'derivada directa de '+t.n+'(x)':'(f(u))′ = f′(u)·u′']}
+ if(L)L[i]=ru?[ru[0],ru[1],t,r]:0;return r}
+/* ---- integrales ---- */
+const lin=u=>{if(!dep(u))return null;const a=ev(u,1)-ev(u,0),b=ev(u,0);if(!isFinite(a)||!isFinite(b)||Math.abs(a)<1e-12||Math.abs(ev(u,3)-(3*a+b))>1e-9)return null;return[a,b]};
+const IT={sin:u=>mul(N(-1),fn('cos',u)),cos:u=>fn('sin',u),exp:u=>fn('exp',u),sinh:u=>fn('cosh',u),cosh:u=>fn('sinh',u),tan:u=>mul(N(-1),fn('ln',fn('abs',fn('cos',u)))),ln:u=>add(mul(u,fn('ln',u)),mul(N(-1),u)),atan:u=>add(mul(u,fn('atan',u)),mul(N(-.5),fn('ln',add(N(1),pw(u,N(2))))))};
+const subs=(t,u)=>t.k=='x'?u:t.k=='+'?add(...t.a.map(v=>subs(v,u))):t.k=='*'?mul(...t.a.map(v=>subs(v,u))):t.k=='^'?pw(subs(t.a,u),subs(t.b,u)):t.k=='f'?fn(t.n,subs(t.a,u)):t;
+function usub(t){for(const f of t.a){const cs=[];
+  if(f.k=='f'&&dep(f.a)&&!lin(f.a))cs.push([f.a,fn(f.n,X)]);
+  if(f.k=='^'&&dep(f.a)&&!dep(f.b)&&!lin(f.a))cs.push([f.a,pw(X,f.b)]);
+  if(f.k=='f')cs.push([f,X]);
+  for(const[u,o]of cs){const du=D(u),q=mul(...t.a.filter(g=>g!==f),pw(du,N(-1)));if(dep(q))continue;const G=I(o);if(!G)continue;
+   const v0=V;V='u';const so=show(o);V=v0;return[mul(q,subs(G,u)),['Sustitución','u = '+show(u)+', du = '+show(du)+' dx; la integral queda ∫ '+so+' du']]}}return null}
+function parts(t){const fs=t.a;if(fs.length!=2)return null;
+ for(const[p,g]of[[fs[0],fs[1]],[fs[1],fs[0]]]){
+  if(!(p.k=='x'||(p.k=='^'&&p.a.k=='x'&&p.b.k=='n'&&p.b.v!=-1))||g.k!='f'||!lin(g.a))continue;let u,dv;
+  if(['sin','cos','exp','sinh','cosh'].includes(g.n)&&(p.k=='x'||(Number.isInteger(p.b.v)&&p.b.v>0))){u=p;dv=g}else if(g.n=='ln'||g.n=='atan'){u=g;dv=p}else continue;
+  const v=I(dv);if(!v)continue;const R=I(mul(v,D(u)));if(!R)continue;
+  return[add(mul(u,v),mul(N(-1),R)),['Integración por partes','∫u dv = u·v − ∫v du, con u = '+show(u)+' y dv = '+show(dv)+' dx']]}return null}
+function I(t,L){const i=L?L.length:0;L&&L.push(0);let r,ru;
+ if(!dep(t)){r=mul(t,X);ru=['Integral de una constante','∫c dx = c·x']}
+ else if(t.k=='x'){r=mul(N(.5),pw(X,N(2)));ru=['Regla de la potencia','∫xⁿ dx = xⁿ⁺¹/(n+1)']}
+ else if(t.k=='+'){const p=t.a.map(u=>I(u,L));if(p.includes(null))return null;r=add(...p);ru=['Linealidad','∫(f + g) dx = ∫f dx + ∫g dx']}
+ else if(t.k=='*'){const c=t.a.filter(u=>!dep(u)),d=t.a.filter(dep);
+  if(c.length){const G=I(mul(...d),L);if(!G)return null;r=mul(...c,G);ru=['Constante por función','∫c·f dx = c·∫f dx']}
+  else{const Pc=poly(x=>ev(t,x),6),q=Pc&&add(...Pc.map((c,j)=>mul(N(c),pw(X,N(j)))));
+   if(q&&J(q)!=J(t)){const G=I(q,L);if(!G)return null;r=G;ru=['Se expande el producto',show(t)+' = '+show(q)]}
+   else{const w=usub(t)||parts(t);if(!w)return null;r=w[0];ru=w[1]}}}
+ else if(t.k=='^'){const{a,b}=t,l=lin(a),l2=lin(b);
+  if(b.k=='n'&&l){const n=b.v;if(n==-1){r=mul(N(1/l[0]),fn('ln',fn('abs',a)));ru=['Integral de 1/x','∫dx/x = ln|x|']}else{r=mul(N(1/(l[0]*(n+1))),pw(a,N(n+1)));ru=a.k=='x'?['Regla de la potencia','∫xⁿ dx = xⁿ⁺¹/(n+1)']:['Potencia de una expresión lineal','∫(ax+b)ⁿ dx = (ax+b)ⁿ⁺¹/(a·(n+1))']}}
+  else if(!dep(a)&&l2){r=mul(N(1/l2[0]),pw(fn('ln',a),N(-1)),t);ru=['Exponencial aˣ','∫aᵘ du = aᵘ/ln(a)']}
+  else if(b.k=='n'&&b.v==-1&&a.k=='+'){const Pc=poly(x=>ev(a,x),2);if(Pc&&Pc.length==3&&Pc[1]==0&&Pc[2]==1&&Pc[0]>0){const s=Math.sqrt(Pc[0]);r=mul(N(1/s),fn('atan',mul(N(1/s),X)));ru=['Arcotangente','∫dx/(x²+a²) = (1/a)·arctan(x/a)']}else return null}
+  else if(a.k=='f'&&(a.n=='sin'||a.n=='cos')&&b.k=='n'&&b.v==2&&lin(a.a)){const u=a.a;r=mul(N(1/lin(u)[0]),add(mul(N(.5),u),mul(N(a.n=='sin'?-.25:.25),fn('sin',mul(N(2),u)))));ru=['Identidad del ángulo doble','sin²u = (1 − cos 2u)/2 y cos²u = (1 + cos 2u)/2']}
+  else if(b.k=='n'&&b.v>1&&Number.isInteger(b.v)){const Pc=poly(x=>ev(t,x),8);if(!Pc)return null;const q=add(...Pc.map((c,j)=>mul(N(c),pw(X,N(j)))));const G=I(q,L);if(!G)return null;r=G;ru=['Se expande la potencia',show(t)+' = '+show(q)]}
+  else return null}
+ else{const l=lin(t.a);if(!l||!IT[t.n])return null;r=mul(N(1/l[0]),IT[t.n](t.a));ru=['Integral de '+t.n+(t.a.k=='x'?'':' (con u = '+show(t.a)+')'),'se integra '+t.n+' y se divide entre '+nm(l[0])]}
+ if(L)L[i]=[ru[0],ru[1],t,r];return r}
+/* ---- salidas por tipo de problema ---- */
+function derOut(T){const o=/segunda|\bd\^2/.test(T)?2:/tercera/.test(T)?3:1;
+ let e=T.replace(/^.*?(?:derivad[ao]s?|deriv\w*\b|d\^?\d?\/d[a-z](?:\^\d)?)\s*(?:segunda|tercera)?\s*(?:de la funcion|del|de)?\s*(?:[a-z]\s*\(\s*[a-z]\s*\)\s*=)?\s*/,'').trim(),pt=null;
+ const q=e.match(/^(.*?)[,\s]+(?:en|cuando|para|at)\s+([a-z])\s*=\s*(-?[\w.\/]+)$/);if(q){e=q[1];pt=q[3]}
+ if(!e||words(e))return null;V=pickV(e);const f=P(e),St=[];let g=f;
+ for(let j=0;j<o;j++){const L=[];if(j)St.push(['**Se deriva otra vez** (orden '+(j+1)+')','Se deriva otra vez']);const pr=g;g=D(g,L);const ls=L.filter(Boolean);
+  if(!ls.length)ls.push(['Derivada básica','regla elemental',pr,g]);
+  ls.forEach(r=>St.push(['**'+r[0]+'** ('+r[1]+'): d/d'+V+'('+show(r[2])+') = '+show(r[3]),r[0]+'. d/d'+V+'('+show(r[2])+') = '+show(r[3])]))}
+ let res='d'+(o>1?sup(o):'')+'/d'+V+(o>1?sup(o):'')+'('+show(f)+') = **'+show(g)+'**';
+ if(pt!==null){const a=ev(P(pt)),val=ev(g,a);St.push(['Se evalúa en '+V+' = '+rv(a)+': '+rv(val),'Se evalúa en '+V+' igual a '+rv(a)+', y da '+rv(val)]);res+='; en '+V+' = '+rv(a)+' vale **'+rv(val)+'**'}
+ return out('Derivada de '+show(f)+(o>1?' (orden '+o+')':''),St,res)}
+function intOut(T){let a,b,ex,m;
+ if((m=T.match(/∫\s*_?\(?\s*(-?[\w.]+)\s*\)?\s*\^\s*\(?\s*(-?[\w.]+)\s*\)?\s*(.+)$/)))[a,b,ex]=[m[1],m[2],m[3]];
+ else if((m=T.match(/(?:integra\w*\b|∫)\s*(?:definida\s*)?(?:de\s+)?(.+?)\s*(?:desde|entre|de)\s+(-?[\w.]+)\s*(?:hasta|a|y)\s+(-?[\w.]+)$/)))[ex,a,b]=[m[1],m[2],m[3]];
+ else if((m=T.match(/(?:integra\w*\b|∫)\s*(?:de\s+)?(.+)$/)))ex=m[1];else return null;
+ ex=ex.replace(/(^|[\s)\d])d([a-z])\s*$/,'$1').trim();if(!ex||words(ex))return null;V=pickV(ex);
+ const f=P(ex),L=[],F=I(f,L);
+ const miss=()=>({t:'Todavía no encuentro la antiderivada de **'+show(f)+'** con las reglas que conozco (potencias, sumas, sustitución, integración por partes y funciones básicas; aún no resuelvo las que requieren fracciones parciales o integrales cíclicas).',m:'Motor matemático',s:'Todavía no encuentro la antiderivada de esa expresión.'});
+ if(!F)return miss();
+ const St=L.filter(Boolean).map(r=>['**'+r[0]+'** ('+r[1]+'): ∫ '+show(r[2])+' d'+V+' = '+show(r[3]),r[0]+'. ∫ '+show(r[2])+' d'+V+' = '+show(r[3])]);
+ if(a===undefined)return out('Integral indefinida de '+show(f),St,'∫ '+show(f)+' d'+V+' = **'+show(F)+' + C**');
+ const A=ev(P(a)),B=ev(P(b)),Fb=ev(F,B),Fa=ev(F,A);if(!isFinite(Fb)||!isFinite(Fa))return miss();
+ St.push(['Teorema fundamental del cálculo: ∫ₐᵇ f dx = F(b) − F(a), con F(x) = '+show(F),'Teorema fundamental del cálculo. Se evalúa la antiderivada en el límite superior y se resta su valor en el inferior']);
+ St.push(['F('+rv(B)+') = '+rv(Fb)+' y F('+rv(A)+') = '+rv(Fa)+', por lo tanto F(b) − F(a) = '+rv(Fb-Fa),'F de '+rv(B)+' vale '+rv(Fb)+', y F de '+rv(A)+' vale '+rv(Fa)+'. La resta da '+rv(Fb-Fa)]);
+ const v=Fb-Fa;return out('Integral definida de '+show(f)+' de '+rv(A)+' a '+rv(B),St,'∫_'+rv(A)+'^'+rv(B)+' '+show(f)+' d'+V+' = **'+rv(v)+'**'+(Number.isInteger(v)||nm(v).includes('/')?'':''))}
+function limOut(f,a){const St=[],big=Math.abs(a)==Infinity,x0=big?a*1e9:a,as=rv(a),num=[],den=[];
+ (f.k=='*'?f.a:[f]).forEach(u=>u.k=='^'&&u.b.k=='n'&&u.b.v<0?den.push(pw(u.a,N(-u.b.v))):num.push(u));
+ let n=mul(...num),d=mul(...den),cur=den.length?mul(n,pw(d,N(-1))):f,lh=0;const inf=v=>v>0?Infinity:-Infinity;
+ for(let it=0;den.length&&it<4;it++){if(it&&!dep(cur))break;const nv=ev(n,x0),dv=ev(d,x0),z=Math.abs(nv)<1e-9&&Math.abs(dv)<1e-9,w=big&&Math.abs(nv)>1e6&&Math.abs(dv)>1e6;if(!z&&!w)break;
+  const s1='Se sustituye '+V+' = '+as+' en '+(it?'el nuevo cociente':'la función')+': el numerador tiende a '+rv(big?inf(nv):nv)+' y el denominador a '+rv(big?inf(dv):dv)+'. Es la forma indeterminada '+(z?'0/0':'∞/∞')+'.';
+  St.push([s1,s1.replace(/\. Es la forma indeterminada.*$/,'. Es la forma indeterminada '+(z?'cero sobre cero':'infinito sobre infinito')+'.')]);n=D(n);d=D(d);cur=mul(n,pw(d,N(-1)));lh=1;
+  const s2='Regla de L\'Hôpital: lim f/g = lim f′/g′. Derivando numerador y denominador queda lim('+V+'→'+as+') '+show(cur,2);St.push([s2,'Regla de L\'Hôpital. Se deriva el numerador y el denominador por separado, y queda lim('+V+'→'+as+') '+show(cur,2)])}
+ let val,l,r;
+ if(big){const a1=ev(cur,a*1e6),a2=ev(cur,a*1e9);val=Math.abs(a1-a2)<1e-4*(1+Math.abs(a2))?a2:Math.abs(a2)>1e6&&Math.abs(a2)>Math.abs(a1)?inf(a2):NaN;
+  const s=lh?'Se evalúa el nuevo límite cuando '+V+' crece sin límite: '+rv(val)+'.':'Se analiza qué pasa cuando '+V+' se hace muy '+(a>0?'grande':'negativo')+': la expresión se acerca a '+rv(val)+'.';St.push([s,s])}
+ else{val=ev(cur,a);
+  if(!isFinite(val)){l=ev(cur,a-1e-7);r=ev(cur,a+1e-7);
+   if(isFinite(l)&&isFinite(r)&&Math.abs(l-r)<1e-4*(1+Math.abs(l)))val=(l+r)/2;else if(Math.abs(l)>1e5&&Math.abs(r)>1e5)val=l*r>0?inf(l):NaN;else val=NaN;
+   const s='La sustitución directa da una división entre cero, así que se comparan los límites laterales: por la izquierda '+rv(Math.abs(l)>1e5?inf(l):l)+' y por la derecha '+rv(Math.abs(r)>1e5?inf(r):r)+'.';St.push([s,s])}
+  else{const s=lh?'Se evalúa el nuevo límite en '+V+' = '+as+': '+rv(val)+'.':'Se sustituye '+V+' = '+as+' directamente: no hay indeterminación y da '+rv(val)+'.';St.push([s,s])}}
+ return out('Límite cuando '+V+' tiende a '+as+' de '+show(f),St,'lim('+V+'→'+as+') '+show(f,2)+' = **'+rv(val)+'**')}
+function sumOut(k,a,b,ex){V=k;const f=P(ex),St=[];a=+a;const g=j=>ev(f,j);
+ if(/^-?\d+$/.test(b)){b=+b;if(b<a||b-a>1e6)return null;const ts=[];let tot=0;for(let j=a;j<=b;j++){const v=g(j);tot+=v;if(ts.length<5)ts.push(rv(v))}
+  const s1='Se reemplaza '+k+' por cada entero de '+a+' a '+b+' y se suman los términos: '+ts.join(' + ')+(b-a>4?' + … + '+rv(g(b)):'')+'.';St.push([s1,s1]);
+  if(poly(g,3)&&b-a>3){const s='Como es un polinomio, también sirven las fórmulas Σk = n(n+1)/2, Σk² = n(n+1)(2n+1)/6 y Σk³ = [n(n+1)/2]².';St.push([s,'Como es un polinomio, también sirven las fórmulas conocidas para la suma de los primeros n números, de sus cuadrados y de sus cubos.'])}
+  const s3='Sumando todo se obtiene '+rv(tot)+'.';St.push([s3,s3]);return out('Sumatoria de '+show(f)+' desde '+k+' = '+a+' hasta '+b,St,'Σ_{'+k+'='+a+'}^{'+b+'} '+show(f)+' = **'+rv(tot)+'**')}
+ const c=poly(g,3);if(!c||a!=1)return null;V=b;const n=X,n1=add(n,N(1)),Sn=add(mul(N(c[0]),n),mul(N((c[1]||0)/2),n,n1),mul(N((c[2]||0)/6),n,n1,add(mul(N(2),n),N(1))),mul(N((c[3]||0)/4),pw(n,N(2)),pw(n1,N(2))));
+ const s1='La expresión es un polinomio en '+k+', así que se usan Σ1 = n, Σk = n(n+1)/2, Σk² = n(n+1)(2n+1)/6 y Σk³ = [n(n+1)/2]².';St.push([s1,'La expresión es un polinomio, así que se usan las fórmulas conocidas para la suma de 1, de k, de k al cuadrado y de k al cubo.']);
+ const s2='Se combinan los términos según los coeficientes de '+show((V=k,f))+'.';St.push([s2,s2]);V=b;
+ return out('Sumatoria de '+(V=k,show(f))+' desde '+k+' = 1 hasta '+b,St,'Σ_{'+k+'=1}^{'+b+'} '+(V=k,show(f))+' = **'+(V=b,show(Sn))+'**')}
+const SB='₁₂₃₄₅₆',pv=(c,x)=>c.reduce((s,a,i)=>s+a*Math.pow(x,i),0),cof=c=>add(...c.map((v,j)=>mul(N(v),pw(X,N(j)))));
+function quad(C,B,A,St,pre0){const Z=x=>[x,x],pn=v=>v<0?'('+nm(v)+')':nm(v),rr=v=>nm(+v.toFixed(9)),Dl=B*B-4*A*C;
+ St.push(Z((pre0||'')+'Es una ecuación cuadrática ax² + bx + c = 0, con a = '+nm(A)+', b = '+nm(B)+' y c = '+nm(C)+'.'));
+ St.push(Z('Discriminante: Δ = b² − 4ac = '+pn(B)+'² − 4·'+pn(A)+'·'+pn(C)+' = '+rr(Dl)+'.'));
+ if(Dl<-1e-12){St.push(Z('Como Δ < 0 no hay soluciones reales; en los complejos: '+V+' = '+rr(-B/(2*A))+' ± '+rr(Math.sqrt(-Dl)/(2*Math.abs(A)))+'i.'));return{r:[],cx:1}}
+ const s=Math.sqrt(Math.max(Dl,0)),[x1,x2]=[(-B+s)/(2*A),(-B-s)/(2*A)].sort((p,q)=>p-q);
+ St.push(Z('Se aplica la fórmula general: '+V+' = (−b ± √Δ)/(2a) = (−'+pn(B)+' ± √'+rr(Dl)+')/(2·'+pn(A)+').'));
+ if(Dl<1e-12){St.push(Z('Como Δ = 0 hay una solución doble: '+V+' = '+rr(x1)+'.'));return{r:[x1,x1]}}
+ St.push(Z(V+'₁ = '+rr(x1)+' y '+V+'₂ = '+rr(x2)+'.'));
+ if(!pre0&&Number.isInteger(+x1.toFixed(9))&&Number.isInteger(+x2.toFixed(9)))St.push(Z('Comprobación factorizando: '+(A==1?'':nm(A))+'('+V+(x1<0?' + '+rr(-x1):' − '+rr(x1))+')('+V+(x2<0?' + '+rr(-x2):' − '+rr(x2))+') = 0.'));
+ return{r:[x1,x2]}}
+function fmtRoots(rs,cx){rs=rs.map(v=>+v.toFixed(9)).sort((a,b)=>a-b);const g=[];rs.forEach(v=>{const h=g.find(q=>Math.abs(q[0]-v)<1e-7);h?h[1]++:g.push([v,1])});
+ const s=g.map((q,i)=>V+(g.length>1?SB[i]:'')+' = **'+nm(q[0])+'**'+(q[1]>1?' (multiplicidad '+q[1]+')':'')).join(', ');return s?s+(cx?'; más un par de raíces complejas':''):cx?'**solo raíces complejas**':'**sin soluciones reales**'}
+function eqOut(L,R){const c0=poly(x=>ev(L,x)-ev(R,x),5);if(!c0||c0.length<2)return null;let c=c0.slice();const St=[],Z=x=>[x,x],rr=v=>nm(+v.toFixed(9)),roots=[];let cx=0,first=1;
+ St.push(Z('Se pasa todo al lado izquierdo y se ordena: '+show(cof(c))+' = 0.'));
+ if(c.length==2){const[k0,b]=c;St.push(Z('Se despeja el término con '+V+': '+show(mul(N(b),X))+' = '+nm(-k0)+'.'));St.push(Z('Se divide entre '+nm(b)+': '+V+' = '+rr(-k0/b)+'.'));return out('Ecuación: '+show(L)+' = '+show(R),St,V+' = **'+rr(-k0/b)+'**')}
+ if(c.length>3)St.push(Z('Es una ecuación polinomial de grado '+(c.length-1)+'.'));
+ while(c.length>3){let r=null;
+  if(Math.abs(c[0])<1e-12)r=0;
+  else{let m=0;for(let k=1;k<=120&&!m;k++)if(c.every(v=>Math.abs(v*k-Math.round(v*k))<1e-6))m=k;
+   if(m){const ic=c.map(v=>Math.round(v*m)),a=Math.abs(ic[0]),b=Math.abs(ic[ic.length-1]);
+    if(a<=1e5){const dv=n=>{const o=[];for(let i=1;i<=n;i++)if(n%i==0)o.push(i);return o};
+     found:for(const p of dv(a))for(const q of dv(b))for(const sg of[1,-1]){const x=sg*p/q;if(Math.abs(pv(ic,x))<1e-6){r=x;break found}}}}}
+  if(r===null)break;
+  const n=c.length-1,b=new Array(n);b[n-1]=c[n];for(let i=n-2;i>=0;i--)b[i]=c[i+1]+r*b[i+1];const fc=r==0?V:'('+V+(r<0?' + '+rr(-r):' − '+rr(r))+')';
+  roots.push(r);St.push(Z((first?'Se buscan raíces racionales (divisores del término independiente entre divisores del coeficiente principal). ':'')+'Con '+V+' = '+rr(r)+' el polinomio vale 0, así que '+fc+' es un factor.'));first=0;
+  c=b.map(v=>Math.round(v*1e9)/1e9);St.push(Z('División sintética entre '+fc+': el cociente es '+show(cof(c))+'.'))}
+ if(c.length>3){const f=x=>pv(c,x),found=[];let fa=f(-50);for(let x=-49.99;x<=50;x+=.01){const fx=f(x);if(fa*fx<0){let lo=x-.01,hi=x;for(let i=0;i<60;i++){const mid=(lo+hi)/2;f(lo)*f(mid)<=0?hi=mid:lo=mid}found.push((lo+hi)/2)}fa=fx}
+  St.push(Z('No quedan raíces racionales sencillas; se aproximan las raíces reales restantes por bisección (cambios de signo): '+(found.length?found.map(rr).join(', '):'ninguna real')+'.'));roots.push(...found)}
+ else if(c.length==3){const q=quad(c[0],c[1],c[2],St,roots.length?'Queda un polinomio de grado 2. ':'');roots.push(...q.r);cx=q.cx}
+ else{const x=-c[0]/c[1];St.push(Z('Queda una ecuación lineal: '+V+' = '+rr(x)+'.'));roots.push(x)}
+ return out('Ecuación: '+show(L)+' = '+show(R),St,fmtRoots(roots,cx))}
+function sysOut(ps){const vs=[...new Set(ps.join(' ').replace(FNR,'').match(/[a-df-z]/g)||[])].sort(),n=vs.length;if(n<2||n>3||ps.length!=n)return null;
+ V='\0';const rows=[],cs=[],fs=[];
+ for(const p of ps){const q=p.split('=');if(q.length!=2||!q[0].trim()||!q[1].trim()||words(p))return null;const L=P(q[0]),R=P(q[1]);fs.push(env=>{ENV=env;const v=ev(L)-ev(R);ENV={};return v})}
+ const z=Object.fromEntries(vs.map(v=>[v,0]));
+ for(const f of fs){const f0=f(z),a=vs.map(v=>f({...z,[v]:1})-f0),t=Object.fromEntries(vs.map((v,i)=>[v,i+2.5]));
+  if(!isFinite(f0)||a.some(v=>!isFinite(v))||Math.abs(f(t)-(f0+a.reduce((s,v,i)=>s+v*(i+2.5),0)))>1e-6)return null;rows.push(a.map(v=>+v.toFixed(9)));cs.push(+(-f0).toFixed(9))}
+ const es=(a,c)=>{let s='';a.forEach((v,i)=>{if(!v)return;s+=(s?(v<0?' − ':' + '):(v<0?'−':''))+(Math.abs(v)==1?'':nm(Math.abs(v)))+vs[i]});return(s||'0')+' = '+nm(c)};
+ const det=M=>M.length==1?M[0][0]:M[0].reduce((s,a,j)=>s+(j%2?-1:1)*a*det(M.slice(1).map(r=>r.filter((_,k)=>k!=j))),0);
+ const St=[],Z=x=>[x,x],rr=v=>nm(+v.toFixed(9)),Dt=det(rows),ti='Sistema: '+rows.map((a,i)=>es(a,cs[i])).join(' ; ');
+ St.push(Z('Se escribe el sistema en forma estándar: '+rows.map((a,i)=>es(a,cs[i])).join('; ')+'.'));
+ if(Math.abs(Dt)<1e-9){const rk=M=>{M=M.map(r=>r.slice());let k=0;for(let c=0;c<M[0].length&&k<M.length;c++){let p=k;for(let r=k;r<M.length;r++)if(Math.abs(M[r][c])>Math.abs(M[p][c]))p=r;if(Math.abs(M[p][c])<1e-9)continue;[M[k],M[p]]=[M[p],M[k]];for(let r=k+1;r<M.length;r++){const f=M[r][c]/M[k][c];for(let j=c;j<M[0].length;j++)M[r][j]-=f*M[k][j]}k++}return k};
+  const same=rk(rows)==rk(rows.map((r,i)=>[...r,cs[i]]));St.push(Z('El determinante principal es Δ = 0, así que no hay una solución única.'));
+  St.push(Z(same?'Los rangos de la matriz y de la ampliada coinciden: el sistema tiene infinitas soluciones.':'Los rangos no coinciden: el sistema no tiene solución.'));return out(ti,St,same?'**infinitas soluciones**':'**sin solución**')}
+ St.push(Z('Se usa la regla de Cramer. Determinante principal: Δ = '+rr(Dt)+'.'));
+ const sol=vs.map((v,i)=>{const d=det(rows.map((r,k)=>r.map((x,j)=>j==i?cs[k]:x)));St.push(Z('Δ'+v+' = '+rr(d)+', entonces '+v+' = Δ'+v+'/Δ = '+rr(d)+'/'+rr(Dt)+' = '+rr(d/Dt)+'.'));return d/Dt});
+ St.push(Z('Comprobación en la primera ecuación: '+rr(rows[0].reduce((s,a,i)=>s+a*sol[i],0))+' = '+nm(cs[0])+'.'));
+ return out(ti,St,vs.map((v,i)=>v+' = **'+rr(sol[i])+'**').join(', '))}
+function solve(t){try{
+ if((typeof ctx!='undefined'&&ctx.pend)||/^\s*(\/|aprende|learn|ensena|teach)/i.test(t))return null;
+ const T=pre(t).replace(/[¿?!]/g,'').trim();let m;
+ if((m=T.match(/\blim(?:ite)?\s*(?:cuando|when)?\s*[_(]*\s*([a-z]|theta)\s*→\s*(-?\s*[\w.]+)\s*\)?\s*(?:de|of|:)?\s*(.+)$/))){V=m[1]=='theta'?'θ':m[1];if(words(m[3]))return null;const a=ev(P(m[2].replace(/\s/g,'')));return limOut(P(m[3]),a)}
+ if(/deriv|\bd\^?2?\/d[a-z]/.test(T))return derOut(T);
+ if(/integra|∫/.test(T))return intOut(T);
+ if((m=T.match(/@sum\s*_?\s*\(?\s*([a-z])\s*=\s*(-?\d+)\s*\)?\s*\^\s*\(?\s*(\d+|[a-z])\s*\)?\s*(.+)$/)))return words(m[4])?null:sumOut(m[1],m[2],m[3],m[4]);
+ if((m=T.match(/(?:sumatoria|suma)\s*(?:de|del)?\s*(.+?)\s*desde\s*(?:([a-z])\s*=\s*)?(-?\d+)\s*hasta\s*(\d+|[a-z])$/)))return words(m[1])?null:sumOut(m[2]||'k',m[3],m[4],m[1]);
+ if(T.includes('=')){let ps=t.split(/[;\n]|,(?=[^,=]*=)/).filter(x=>x.trim());
+  if(ps.length<2)for(const g of[...T.matchAll(/\s+y\s+(?=[^=]*=)/g)]){const l=T.slice(0,g.index),rt=T.slice(g.index+g[0].length);if((l.match(/=/g)||[]).length==1&&(rt.match(/=/g)||[]).length==1){ps=[l,rt];break}}
+  if(ps.length>=2){const so=sysOut(ps.map(x=>pre(x).replace(/[¿?!]/g,'').replace(/^\s*(?:(?:resuelve|resolver|resuelva|halla|hallar|encuentra|calcula|el|la|un|sistema|de|ecuaciones|lineales)\b[\s:]*)+/,'').trim()));if(so)return so}}
+ if(T.includes('=')&&!/[<>]/.test(T)){const q=T.replace(/^(?:resuelve|resolver|resuelva|halla|hallar|encuentra|calcula|despeja|soluciona)\s*(?:la ecuacion)?\s*:?\s*/,'').split('=');
+  if(q.length!=2||!q[0].trim()||!q[1].trim()||words(q.join('=')))return null;V=pickV(q.join(' '));const L=P(q[0]),R=P(q[1]);if(!dep(L)&&!dep(R))return null;return eqOut(L,R)}
+ return null}catch(e){return null}}
+/* ---- lectura en voz alta de símbolos matemáticos ---- */
+const GR={α:'alfa',β:'beta',γ:'gamma',δ:'delta',Δ:'delta',λ:'lambda',μ:'mu',σ:'sigma',φ:'fi',ω:'omega',Ω:'omega',θ:'theta',π:'pi'},
+FW={sin:'seno',cos:'coseno',tan:'tangente',cot:'cotangente',sec:'secante',csc:'cosecante',ln:'logaritmo natural',log:'logaritmo',asin:'arcoseno',acos:'arcocoseno',atan:'arcotangente',abs:'valor absoluto',exp:'exponencial'},
+LN={x:'equis',z:'zeta',f:'efe',g:'ge',h:'hache',k:'ka'};
+function speech(s){
+ if(!/[∫Σ∑√∛→∞≤≥≠≈±∂′²³⁴⁵⁶⁷⁸⁹ⁿ₁₂πθΔαβγλμφω∈ℝ^]|\blim\b|\bd\/d[a-zθ]|\b(?:sin|cos|tan|ln|log|exp)\s*\(/.test(s))return s;
+ const W=x=>x.replace(/^-?(?:∞|inf)$/,m=>(m[0]=='-'?'menos ':'')+'infinito');
+ s=s.replace(/y\/o/g,'y o').replace(/km\/h/g,'kilómetros por hora').replace(/\bm\/s²?/g,'metros por segundo').replace(/[−–]/g,'-');
+ s=s.replace(/\blim(?:ite)?\s*[_({]*\s*([a-zθ])\s*(?:→|->)\s*(-?\s*(?:∞|inf|[\w.π]+))\s*[)}]*/gi,(m,v,a)=>' el límite cuando '+v+' tiende a '+W(a.replace(/\s/g,''))+' de ');
+ s=s.replace(/\bd([²2]?)\/d([a-zθ])[²2]?/g,(m,p,v)=>(p?' la segunda derivada':' la derivada')+' con respecto a '+v+' de ').replace(/\b([fgh])(′{1,2}|'{1,2})\(/g,(m,f,p)=>f+(p.length>1?' segunda':' prima')+' de (');
+ s=s.replace(/∫\s*_?\{?\(?\s*(-?[\w.π∞]+)\s*\)?\}?\s*\^\{?\(?\s*(-?[\w.π∞]+)\s*\)?\}?/g,(m,a,b)=>' la integral definida de '+a+' a '+b+' de ').replace(/∫/g,' la integral de ');
+ if(/la integral/.test(s))s=s.replace(/(^|[\s)\d])d([a-zθ])(?=\s*(?:[=.,;)]|$))/g,'$1 diferencial de $2');
+ s=s.replace(/[Σ∑]\s*_?\{?\(?\s*([a-z])\s*=\s*(-?[\w.]+)\s*\)?\}?\s*\^\{?\(?\s*([\w.∞]+)\s*\)?\}?/g,(m,k,a,b)=>' la sumatoria desde '+k+' igual a '+a+' hasta '+b+' de ').replace(/[Σ∑]/g,' la sumatoria de ');
+ s=s.replace(/(\w|\)|²|³|π)\s*\/\s*(\w|\(|√|π)/g,'$1 entre $2').replace(/÷/g,' entre ').replace(/\s*[*·×]\s*/g,' por ').replace(/\s*\+\s*/g,' más ')
+  .replace(/(\d|\b[a-zπθ]|\)|²|³)\s*-\s*(?=\d|[a-zπθ]\b|\(|√)/g,'$1 menos ').replace(/\s*=\s*/g,' igual a ');
+ s=s.replace(/∛/g,' raíz cúbica de ').replace(/√/g,' raíz cuadrada de ').replace(/\be\^/g,'e elevada a la ')
+  .replace(/\)\s*(?:\^2|²)/g,') todo al cuadrado').replace(/\)\s*(?:\^3|³)/g,') todo al cubo').replace(/(?:\^2\b|²)/g,' al cuadrado ').replace(/(?:\^3\b|³)/g,' al cubo ')
+  .replace(/\^\(?\s*(-?[\w.]+)\s*\)?/g,' elevado a la $1 ').replace(/[⁴⁵⁶⁷⁸⁹]/g,c=>' elevado a la '+('⁴⁵⁶⁷⁸⁹'.indexOf(c)+4)+' ').replace(/ⁿ/g,' elevado a la ene ').replace(/[₁₂]/g,c=>c=='₁'?' uno ':' dos ');
+ s=s.replace(/\b(asin|acos|atan|sin|cos|tan|cot|sec|csc|ln|log|abs|exp)\b\s*(?=\(|\s*[a-zπθ]\b|\s*\d)/g,(m,f)=>FW[f]+' de ');
+ s=s.replace(/∞/g,' infinito ').replace(/→|->/g,' tiende a ').replace(/≤/g,' menor o igual que ').replace(/≥/g,' mayor o igual que ').replace(/≠/g,' distinto de ').replace(/≈/g,' aproximadamente ').replace(/±/g,' más menos ').replace(/∂/g,' derivada parcial de ').replace(/∈/g,' pertenece a ').replace(/ℝ/g,' los números reales ').replace(/′/g,' prima ')
+  .replace(/[αβγδΔλμσφωΩθπ]/g,c=>' '+GR[c]+' ').replace(/[()]/g,', ').replace(/(^|[^a-záéíóúñôü_])([xzfghk])(?![a-záéíóúñôü])/gi,(m,p,c)=>p+' '+LN[c.toLowerCase()]+' ');
+ return s.replace(/(^|[^a-záéíóúñ_])y(?=\s*igual a)/g,'$1 ye ').replace(/\s+/g,' ').replace(/\s+,/g,',')}
+return{solve,speech}})();
+
+/* ===== Teclado matemático + conexión con el chat y la voz ===== */
+(()=>{
+const KB=[['∫','Integrales','∫| dx','la integral'],['a/b','Fracciones','(|)/()','fracción'],['x²','Potencias','²|','al cuadrado'],['√','Raíces','√(|)','raíz cuadrada de'],
+['lim','Límites','lim(x→|) ','el límite cuando x tiende a'],['Σ','Sumatorias','Σ_{k=1}^{n} |','la sumatoria'],['π','Pi','π|','pi'],['θ','Theta','θ|','theta'],
+['∞','Infinito','∞|','infinito'],['sin','Seno','sin(|)','seno de'],['cos','Coseno','cos(|)','coseno de'],['eˣ','Exponenciales','e^(|)','e elevada a la'],
+['d/dx','Derivada','d/dx(|)','la derivada con respecto a equis de'],['ln','Logaritmo','ln(|)','logaritmo natural de'],['tan','Tangente','tan(|)','tangente de'],
+['≤','Menor o igual','≤|','menor o igual que'],['≥','Mayor o igual','≥|','mayor o igual que'],['≠','Distinto','≠|','distinto de'],['→','Tiende a','→|','tiende a'],['Δ','Delta','Δ|','delta']];
+const mk=document.getElementById('mk'),g=mk.querySelector('.g'),inp=document.getElementById('in');let rd=false;
+KB.forEach(([l,n,ins,sp])=>{const b=document.createElement('button');b.type='button';b.innerHTML='<b>'+l+'</b><small>'+n+'</small>';
+ b.onclick=()=>{const i=ins.indexOf('|'),txt=ins.replace('|',''),s=inp.selectionStart,e=inp.selectionEnd;
+  inp.value=inp.value.slice(0,s)+txt+inp.value.slice(e);const p=s+(i<0?txt.length:i);inp.focus();inp.setSelectionRange(p,p);fit();
+  if(rd&&window.speechSynthesis)say(sp)};g.append(b)});
+document.getElementById('fx').onclick=()=>{mk.hidden=!mk.hidden};
+document.getElementById('mkx').onclick=()=>{mk.hidden=true};
+const rb=document.getElementById('mkr');rb.onclick=()=>{rd=!rd;rb.classList.toggle('on',rd);rb.textContent='🔊 Leer símbolos: '+(rd?'sí':'no')};
+/* el motor responde primero a los problemas de matemáticas */
+const _b=brain;brain=async function(t,s){const r=NXM.solve(t);return r||_b(t,s)};
+/* la voz lee los símbolos matemáticos con palabras */
+const _s=say;say=function(t){_s(isEn(t)?t:NXM.speech(t))};
+})();
 </script>
 </body>
 </html>
