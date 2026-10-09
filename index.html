@@ -1302,7 +1302,7 @@ function renderList(){$('#list').innerHTML='';const f=norm($('#q').value||'');co
 function renderAll(){renderList();const c=conv();$('#ttl').textContent=c?c.title:'Noryx';feed.innerHTML='';cancelAnimationFrame(raf);
  if(!c||!c.msgs.length){hero();return}c.msgs.forEach((m,i)=>feed.append(msgEl(m,i)));feed.scrollTop=feed.scrollHeight}
 function hero(){const h=document.createElement('div');h.className='hero';h.innerHTML='<canvas></canvas><h1>Noryx</h1><p>'+greet()+'Una IA con red neuronal propia que calcula, investiga, conversa y aprende de ti.</p><div class="chips"></div>';
- ['¿Cuánto es 15% de 2480?','Resuelve x^2 - 5x + 6 = 0','Derivada de 2x al cuadrado','Límite cuando x tiende a 2 de (x^2-4)/(x-2)','Integral de 3x^2 + 2x','¿Quién fue Nikola Tesla?','Clima en Ciudad de México','Media de 4, 8, 15, 16','Población de Perú','10 millas a km','PIB per cápita de Chile','Compara el PIB de Japón y Corea del Sur','Dame un dato curioso','¿Qué es una red neuronal?','Recomiéndame una serie','Explícame la relatividad como si tuviera 10 años','Ayúdame a planear un fin de semana','aprende: mi color favorito = azul'].sort(()=>Math.random()-.5).slice(0,5).forEach(q=>{const b=document.createElement('button');b.textContent=q;b.onclick=()=>send(q);h.querySelector('.chips').append(b)});feed.append(h);neural(h.querySelector('canvas'))}
+ ['¿Cuánto es 15% de 2480?','Resuelve x^2 - 5x + 6 = 0','Derivada de 2x al cuadrado','Límite cuando x tiende a 2 de (x^2-4)/(x-2)','Integral de 3x^2 + 2x','Integral de x^2/sqrt(4-x^2)','Integral de x*e^x','¿Quién fue Nikola Tesla?','Clima en Ciudad de México','Media de 4, 8, 15, 16','Población de Perú','10 millas a km','PIB per cápita de Chile','Compara el PIB de Japón y Corea del Sur','Dame un dato curioso','¿Qué es una red neuronal?','Recomiéndame una serie','Explícame la relatividad como si tuviera 10 años','Ayúdame a planear un fin de semana','aprende: mi color favorito = azul'].sort(()=>Math.random()-.5).slice(0,5).forEach(q=>{const b=document.createElement('button');b.textContent=q;b.onclick=()=>send(q);h.querySelector('.chips').append(b)});feed.append(h);neural(h.querySelector('canvas'))}
 function msgEl(m,i){const d=document.createElement('div');d.className='msg '+m.r;
  if(m.r=='u'){d.innerHTML='<div class="body"></div>';d.firstChild.textContent=m.t;d.firstChild.title='Clic para editar';d.firstChild.style.cursor='pointer';d.firstChild.onclick=()=>{if(busy)return;const c=conv();c.msgs=c.msgs.slice(0,i);save();renderAll();inp.value=m.t;fit();inp.focus()};return d}
  d.innerHTML='<div class="av"></div><div><div class="body">'+md(m.t)+'</div><div class="meta"><span>'+esc(String(m.m||'').split(' · ').pop())+'</span><button data-a="c">copiar</button>'+(m.sys?'':'<button data-a="r">repetir</button>')+'<button data-a="s">leer</button>'+(/aprendid/.test(m.m||'')?'<button data-a="x">no es correcto</button>':'')+'</div></div>';
@@ -2628,7 +2628,7 @@ const pre=s=>s.replace(/[Σ∑]/g,' @sum ').toLowerCase().normalize('NFD').repla
  .replace(/(\d),(\d)/g,'$1.$2').replace(/[{[]/g,'(').replace(/[}\]]/g,')').replace(/\s+/g,' ').trim();
 const P=s=>parse(pre(s)),FNR=/asin|acos|atan|sinh|cosh|tanh|sin|cos|tan|sec|csc|cot|ln|log|exp|sqrt|abs|inf|pi|theta/g;
 const words=e=>/[a-z]{2,}/.test(e.replace(FNR,'')),pickV=e=>{const r=e.replace(FNR,'');return/x/.test(r)?'x':(r.match(/[a-df-z]/)||['x'])[0]};
-const out=(ti,St,res)=>({t:'**'+ti+'**\n\n**Procedimiento**\n'+St.map((p,i)=>(i+1)+'. '+p[0]).join('\n')+'\n\n**Resultado:** '+res,m:'Motor matemático',s:(ti+'. '+St.map((p,i)=>'Paso '+(i+1)+'. '+p[1]).join('. ')+'. Resultado. '+res).replace(/\*\*/g,'')});
+const out=(ti,St,res)=>({t:'**'+ti+'**\n\n'+St.map((p,i)=>'**Paso '+(i+1)+'.** '+p[0]).join('\n\n')+'\n\n**Resultado:** '+res,m:'Motor matemático',s:(ti+'. '+St.map((p,i)=>'Paso '+(i+1)+'. '+p[1]).join('. ')+'. Resultado. '+res).replace(/\*\*/g,'')});
 /* ---- ajuste polinomial (para ecuaciones, sumas y productos) ---- */
 function poly(g,d){const A=[],y=[];for(let j=0;j<=d;j++){A.push(Array.from({length:d+1},(_,c)=>Math.pow(j,c)));y.push(g(j))}if(y.some(v=>!isFinite(v)))return null;
  for(let c=0;c<=d;c++){let p=c;for(let r=c+1;r<=d;r++)if(Math.abs(A[r][c])>Math.abs(A[p][c]))p=r;[A[c],A[p]]=[A[p],A[c]];[y[c],y[p]]=[y[p],y[c]];
@@ -2700,15 +2700,18 @@ function intOut(T){let a,b,ex,m;
  else if((m=T.match(/(?:integra\w*\b|∫)\s*(?:definida\s*)?(?:de\s+)?(.+?)\s*(?:desde|entre|de)\s+(-?[\w.]+)\s*(?:hasta|a|y)\s+(-?[\w.]+)$/)))[ex,a,b]=[m[1],m[2],m[3]];
  else if((m=T.match(/(?:integra\w*\b|∫)\s*(?:de\s+)?(.+)$/)))ex=m[1];else return null;
  ex=ex.replace(/(^|[\s)\d])d([a-z])\s*$/,'$1').trim();if(!ex||words(ex))return null;V=pickV(ex);
- const f=P(ex),L=[],F=I(f,L);
- const miss=()=>({t:'Todavía no encuentro la antiderivada de **'+show(f)+'** con las reglas que conozco (potencias, sumas, sustitución, integración por partes y funciones básicas; aún no resuelvo las que requieren fracciones parciales o integrales cíclicas).',m:'Motor matemático',s:'Todavía no encuentro la antiderivada de esa expresión.'});
+ const f=P(ex),L=[];let X2=null;try{X2=xi(f)}catch(e){}const F=X2?X2.F:I(f,L);
+ const miss=()=>({t:'Todavía no encuentro la antiderivada de **'+show(f)+'** con las reglas que conozco (potencias, sumas, sustitución, sustitución trigonométrica, partes, fracciones parciales y potencias de seno/coseno; esta forma todavía se me escapa: prueba a simplificarla o dividirla).',m:'Motor matemático',s:'Todavía no encuentro la antiderivada de esa expresión.'});
  if(!F)return miss();
- const St=L.filter(Boolean).map(r=>['**'+r[0]+'** ('+r[1]+'): ∫ '+show(r[2])+' d'+V+' = '+show(r[3]),r[0]+'. ∫ '+show(r[2])+' d'+V+' = '+show(r[3])]);
- if(a===undefined)return out('Integral indefinida de '+show(f),St,'∫ '+show(f)+' d'+V+' = **'+show(F)+' + C**');
- const A=ev(P(a)),B=ev(P(b)),Fb=ev(F,B),Fa=ev(F,A);if(!isFinite(Fb)||!isFinite(Fa))return miss();
- St.push(['Teorema fundamental del cálculo: ∫ₐᵇ f dx = F(b) − F(a), con F(x) = '+show(F),'Teorema fundamental del cálculo. Se evalúa la antiderivada en el límite superior y se resta su valor en el inferior']);
- St.push(['F('+rv(B)+') = '+rv(Fb)+' y F('+rv(A)+') = '+rv(Fa)+', por lo tanto F(b) − F(a) = '+rv(Fb-Fa),'F de '+rv(B)+' vale '+rv(Fb)+', y F de '+rv(A)+' vale '+rv(Fa)+'. La resta da '+rv(Fb-Fa)]);
- const v=Fb-Fa;return out('Integral definida de '+show(f)+' de '+rv(A)+' a '+rv(B),St,'∫_'+rv(A)+'^'+rv(B)+' '+show(f)+' d'+V+' = **'+rv(v)+'**'+(Number.isInteger(v)||nm(v).includes('/')?'':''))}
+ const BL=X2?X2.St:L.filter(Boolean).map(r=>[r[0],['Regla: '+r[1],'Aquí: ∫ '+show(r[2])+' d'+V+' = '+show(r[3])]]);
+  if(!F)return miss();
+  const mt=X2?X2.title:'Método: '+(BL.length>1?'reglas básicas combinadas ('+[...new Set(BL.map(b=>b[0]))].join(', ')+')':BL[0]?BL[0][0]:'regla directa');
+  let dF=null;try{dF=show(D(F))}catch(e){}const ck=vf(F,f);
+  const VR=['Se deriva el resultado'+(dF?': d/d'+V+'('+show(F)+') = '+dF:'.'),ck===true?'Al derivar se recupera el integrando original ✔ (comprobado numéricamente).':'La comprobación numérica no fue concluyente en los puntos de prueba.'];
+  if(a===undefined){BL.push(['Comprobar el resultado',VR]);return out2('Integral indefinida de '+show(f),mt,BL,'∫ '+show(f)+' d'+V+' = **'+show(F)+' + C**')}
+  const A=ev(P(a)),B=ev(P(b)),Fb=ev(F,B),Fa=ev(F,A);if(!isFinite(Fb)||!isFinite(Fa))return miss();
+  BL.push(['Teorema fundamental del cálculo',['∫ₐᵇ f d'+V+' = F(b) − F(a), con F('+V+') = '+show(F),'F('+rv(B)+') = '+rv(Fb)+' y F('+rv(A)+') = '+rv(Fa),'F(b) − F(a) = '+rv(Fb)+' − ('+rv(Fa)+') = '+rv(Fb-Fa)]]);
+  const v=Fb-Fa;return out2('Integral definida de '+show(f)+' de '+rv(A)+' a '+rv(B),mt,BL,'∫_'+rv(A)+'^'+rv(B)+' '+show(f)+' d'+V+' = **'+rv(v)+'**')}
 function limOut(f,a){const St=[],big=Math.abs(a)==Infinity,x0=big?a*1e9:a,as=rv(a),num=[],den=[];
  (f.k=='*'?f.a:[f]).forEach(u=>u.k=='^'&&u.b.k=='n'&&u.b.v<0?den.push(pw(u.a,N(-u.b.v))):num.push(u));
  let n=mul(...num),d=mul(...den),cur=den.length?mul(n,pw(d,N(-1))):f,lh=0;const inf=v=>v>0?Infinity:-Infinity;
@@ -2797,6 +2800,75 @@ function solve(t){try{
  if(T.includes('=')&&!/[<>]/.test(T)){const q=T.replace(/^(?:resuelve|resolver|resuelva|halla|hallar|encuentra|calcula|despeja|soluciona)\s*(?:la ecuacion)?\s*:?\s*/,'').split('=');
   if(q.length!=2||!q[0].trim()||!q[1].trim()||words(q.join('=')))return null;V=pickV(q.join(' '));const L=P(q[0]),R=P(q[1]);if(!dep(L)&&!dep(R))return null;return eqOut(L,R)}
  return null}catch(e){return null}}
+/* ---- Integrales avanzadas: trigonométrica, partes (LIATE/cíclica), fracciones parciales, potencias trig. ---- */
+const cn=t=>t.k=='*'?t.a:[t],sw=(t,v)=>{const v0=V;V=v;const s=show(t);V=v0;return s};
+const vf=(F,f)=>{const o=[.37,1.21,2.4,-.6,3.3].filter(x=>isFinite(ev(f,x))&&isFinite(ev(F,x))).slice(0,3);if(!o.length)return null;return o.every(x=>{const h=1e-5,d=(ev(F,x+h)-ev(F,x-h))/(2*h),y=ev(f,x);return Math.abs(d-y)<1e-4*(1+Math.abs(y))})};
+const out2=(ti,me,BL,res)=>({t:'**'+ti+'**\n'+me+'\n\n'+BL.map((b,i)=>'**Paso '+(i+1)+' · '+b[0]+'**\n'+b[1].map(l=>'- '+l).join('\n')).join('\n\n')+'\n\n**Resultado:** '+res,m:'Motor matemático',s:(ti+'. '+me+'. '+BL.map((b,i)=>'Paso '+(i+1)+'. '+b[0]+'. '+b[1].join('. ')).join('. ')+'. Resultado. '+res).replace(/\*\*/g,'')});
+const LG='ln|sec θ + tan θ|',TS={S:['w = §a·sen θ','dw = §a·cos θ dθ','√(§a² − w²) = §a·cos θ, porque 1 − sen²θ = cos²θ','sen θ = w/§a, cos θ = √(§a² − w²)/§a y θ = arcsen(w/§a)','a² − w²'],
+ T:['w = §a·tan θ','dw = §a·sec²θ dθ','√(w² + §a²) = §a·sec θ, porque 1 + tan²θ = sec²θ','tan θ = w/§a, sec θ = √(w² + §a²)/§a y θ = arctan(w/§a)','w² + a²'],
+ Sc:['w = §a·sec θ','dw = §a·sec θ·tan θ dθ','√(w² − §a²) = §a·tan θ, porque sec²θ − 1 = tan²θ','sec θ = w/§a, tan θ = √(w² − §a²)/§a','w² − a²']},
+TH={S:{'0.5,0':['∫ §a²·cos²θ dθ','(§a²/2)(θ + sen θ·cos θ)'],'-0.5,0':['∫ 1 dθ','θ'],'-0.5,2':['∫ §a²·sen²θ dθ','(§a²/2)(θ − sen θ·cos θ)'],'-1.5,0':['(1/§a²)∫ sec²θ dθ','tan θ/§a²']},
+ T:{'0.5,0':['∫ §a²·sec³θ dθ','(§a²/2)(sec θ·tan θ + '+LG+')'],'-0.5,0':['∫ sec θ dθ',LG],'-0.5,2':['∫ §a²·tan²θ·sec θ dθ','(§a²/2)(sec θ·tan θ − '+LG+')'],'-1.5,0':['(1/§a²)∫ cos θ dθ','sen θ/§a²']},
+ Sc:{'0.5,0':['∫ §a²·tan²θ·sec θ dθ','(§a²/2)(sec θ·tan θ − '+LG+')'],'-0.5,0':['∫ sec θ dθ',LG],'-0.5,2':['∫ §a²·sec³θ dθ','(§a²/2)(sec θ·tan θ + '+LG+')'],'-1.5,0':['(1/§a²)∫ cos θ/sen²θ dθ','−1/(§a²·sen θ)']}};
+function xTrig(f){const fs=cn(f),g=fs.find(u=>u.k=='^'&&u.b.k=='n'&&Number.isInteger(u.b.v*2)&&!Number.isInteger(u.b.v)&&dep(u.a));if(!g)return null;
+ const q=poly(x=>ev(g.a,x),2);if(!q||q.length<3)return null;const Pr=poly(x=>ev(mul(...fs.filter(u=>u!==g)),x),3);if(!Pr)return null;
+ const p=g.b.v,C=q[2],h=q[1]/(2*C),k=q[0]-C*h*h;let m,c;
+ if(Pr.length==1){m=0;c=Pr[0]}else if(Pr.length==3&&!Pr[0]&&!Pr[1]&&Math.abs(h)<1e-12){m=2;c=Pr[2]}else return null;
+ const ty=C<0?(k>0?'S':null):(k>0?'T':'Sc');if(!ty)return null;const key=p+','+m,th=TH[ty][key];if(!th)return null;
+ const a2=Math.abs(k/C),a=Math.sqrt(a2),W=add(X,N(h)),W2=pw(W,N(2)),Q=ty=='S'?add(N(a2),mul(N(-1),W2)):ty=='T'?add(W2,N(a2)):add(W2,N(-a2)),R=pw(Q,N(.5)),
+ wR=mul(N(.5),W,R),Lg=fn('ln',fn('abs',add(W,R))),As=fn('asin',mul(N(1/a),W)),Pw=mul(N(1/a2),W,pw(R,N(-1)));
+ const RS={S:{'0.5,0':add(wR,mul(N(a2/2),As)),'-0.5,0':As,'-0.5,2':add(mul(N(a2/2),As),mul(N(-1),wR)),'-1.5,0':Pw},
+  T:{'0.5,0':add(wR,mul(N(a2/2),Lg)),'-0.5,0':Lg,'-0.5,2':add(wR,mul(N(-a2/2),Lg)),'-1.5,0':Pw},
+  Sc:{'0.5,0':add(wR,mul(N(-a2/2),Lg)),'-0.5,0':Lg,'-0.5,2':add(wR,mul(N(a2/2),Lg)),'-1.5,0':mul(N(-1),Pw)}}[ty][key];
+ const K=c*Math.pow(Math.abs(C),p),F=mul(N(K),RS),ws=show(W),aS=(na=>/^\d+(\/\d+)?$/.test(na)?na:'√('+nm(+a2.toFixed(9))+')')(nm(+a.toFixed(9))),rp=s=>s.replace(/§a²/g,nm(+a2.toFixed(9))).replace(/§a/g,aS).replace(/§w/g,ws),T=TS[ty];
+ const St=[['Reconocer la forma del radical',['El integrando contiene √('+show(g.a)+')'+(Math.abs(C)!=1||h?', que se ordena como '+nm(Math.abs(C))+'·('+show(Q)+')'+(h?' con w = '+ws:''):''),'Es del tipo '+T[4]+' con a² = '+nm(+a2.toFixed(9))+' (a = '+aS+') y w = '+ws+', así que conviene una sustitución trigonométrica.',(K!=1?'Las constantes que salen del radical y del numerador se acumulan en el factor '+nm(+K.toFixed(9))+'.':'No hay constantes extra que acumular.')]],
+ ['Elegir la sustitución',[rp(T[0]),rp(T[1]),rp(T[2])]],
+ ['Reescribir la integral en θ',['Se sustituye todo en la integral y el radical desaparece: '+rp(th[0])]],
+ ['Integrar en θ',['Con las identidades trigonométricas y las integrales básicas: '+rp(th[1])]],
+ ['Regresar a '+V,['Con el triángulo rectángulo: '+rp(T[3]),'Se reemplazan senθ, cosθ, tanθ y secθ en el resultado y se multiplica por '+nm(+K.toFixed(9))+'.']]];
+ return{F,St,title:'Método: sustitución trigonométrica ('+T[0].replace('§a','a')+')'}}
+function xTP(f){const fs=cn(f);let m=0,n=0,arg=null,c=1;
+ for(const u of fs){if(!dep(u)){c*=ev(u);continue}const b=u.k=='^'?u.a:u,e=u.k=='^'?(u.b.k=='n'?u.b.v:NaN):1;
+  if(b.k!='f'||!(b.n=='sin'||b.n=='cos')||!Number.isInteger(e)||e<1)return null;if(arg&&J(arg)!=J(b.a))return null;arg=b.a;b.n=='sin'?m+=e:n+=e}
+ const l=arg&&lin(arg);if(!l||(m%2==0&&n%2==0)||m+n<3)return null;
+ const oS=m%2==1,k=((oS?m:n)-1)/2,e0=oS?n:m,w=fn(oS?'cos':'sin',arg),sg=oS?-1:1,co=[];
+ for(let j=0,b=1;j<=k;j++){co.push([(j%2?-1:1)*b,2*j+e0]);b=b*(k-j)/(j+1)}
+ const F=add(...co.map(([cf,e])=>mul(N(cf*sg*c/(l[0]*(e+1))),pw(w,N(e+1))))),pol=sw(add(...co.map(([cf,e])=>mul(N(cf),pw(X,N(e))))),'w'),A=show(arg),A2=(oS?'cos':'sen'),A1=(oS?'sen':'cos');
+ return{F,title:'Método: potencias de seno y coseno (una potencia impar)',St:[
+ ['Reconocer el tipo',['Producto '+(m?'sen^'+m+'('+A+')':'')+(m&&n?'·':'')+(n?'cos^'+n+'('+A+')':'')+': el '+(oS?'seno':'coseno')+' tiene potencia impar ('+(oS?m:n)+').','Estrategia: separar un factor '+A1+' para formar la diferencial y pasar el resto a '+A2+' con sen²+cos²=1.']],
+ ['Preparar el integrando',[A1+'^'+(oS?m:n)+'('+A+') = (1 − '+A2+'²('+A+'))^'+k+'·'+A1+'('+A+')','Todo queda en función de '+A2+'('+A+') salvo un '+A1+'('+A+') que sirve para dw.']],
+ ['Sustitución',['w = '+A2+'('+A+'), dw = '+(oS?'−':'')+(l[0]==1?'':nm(l[0])+'·')+A1+'('+A+') d'+V,'La integral queda '+(k0=>k0==1?'':k0==-1?'−':nm(+k0.toFixed(9)).replace('-','−')+'·')(sg*c/l[0])+'∫ ('+pol+') dw']],
+ ['Integrar y volver a '+V,['Se integra cada potencia de w con ∫wⁿ dw = wⁿ⁺¹/(n+1).','Se reemplaza w = '+A2+'('+A+') y se obtiene la antiderivada.']]]}}
+function cyc(ds,St,t){const e=ds.find(u=>u.k=='f'&&u.n=='exp'),g=ds.find(u=>u.k=='f'&&(u.n=='sin'||u.n=='cos'));if(!e||!g)return null;const A=lin(e.a),B=lin(g.a);if(!A||!B)return null;
+ const a=A[0],b=B[0],s=g.n=='sin',ve=I(e),r=nm(+(b*b/(a*a)).toFixed(9));
+ St.push(['Partes (primera vez)',['Sea I = ∫ '+show(t)+' d'+V,'u = '+show(g)+', dv = '+show(e)+' d'+V+', luego du = '+show(D(g))+' d'+V+' y v = '+show(ve),'I = '+show(mul(g,ve))+' − ∫ '+show(mul(ve,D(g)))+' d'+V]]);
+ St.push(['Partes (segunda vez)',['En la integral que quedó se vuelve a tomar dv = '+show(e)+' d'+V,'Reaparece la integral original I: es una integral cíclica, con coeficiente −'+r+'·I']]);
+ St.push(['Despejar I',['Se pasa el término con I al lado izquierdo: (1 + '+r+')·I = parte ya integrada','Se divide entre '+nm(+(1+b*b/(a*a)).toFixed(9))+' y se simplifica']]);
+ return mul(N(1/(a*a+b*b)),e,s?add(mul(N(a),g),mul(N(-b),fn('cos',g.a))):add(mul(N(a),g),mul(N(b),fn('sin',g.a))))}
+function PP(t,St,d){if(d>6)return null;const fs=cn(t),c=fs.filter(u=>!dep(u)),ds=fs.filter(dep);if(!ds.length)return null;
+ if(c.length){const G=PP(mul(...ds),St,d);return G&&mul(...c,G)}
+ let u,dv;if(ds.length==1&&ds[0].k=='f'&&['ln','atan','asin'].includes(ds[0].n)&&lin(ds[0].a)){u=ds[0];dv=N(1)}
+ else if(ds.length==2){const cy=cyc(ds,St,t);if(cy)return cy;
+  for(const[p,g]of[[ds[0],ds[1]],[ds[1],ds[0]]]){if(!(p.k=='x'||(p.k=='^'&&p.a.k=='x'&&p.b.k=='n'&&Number.isInteger(p.b.v)&&p.b.v>0))||g.k!='f'||!lin(g.a))continue;
+   if(['sin','cos','exp','sinh','cosh'].includes(g.n)){u=p;dv=g;break}if(['ln','atan','asin'].includes(g.n)){u=g;dv=p;break}}}
+ if(!u)return null;const v=dv.k=='n'?X:I(dv);if(!v)return null;const du=D(u),R=mul(v,du);
+ St.push(['Integración por partes'+(d?' (otra vez)':''),['Regla LIATE: u = '+show(u)+' (la que se simplifica al derivar) y dv = '+show(dv)+' d'+V,'Se calcula du = '+show(du)+' d'+V+' y v = ∫dv = '+show(v),'Fórmula ∫u dv = u·v − ∫v du: queda '+show(mul(u,v))+' − ∫ '+show(R)+' d'+V]]);
+ let H=PP(R,St,d+1);if(!H){const L2=[];H=I(R,L2);if(!H)return null;St.push(['Integral restante',[...L2.filter(Boolean).map(r=>r[0]+': ∫ '+show(r[2])+' d'+V+' = '+show(r[3])),'∫ '+show(R)+' d'+V+' = '+show(H)]])}
+ return add(mul(u,v),mul(N(-1),H))}
+function xParts(f){const St=[],F=PP(f,St,0);return F&&St.length?{F,St,title:'Método: integración por partes'}:null}
+function xPF(f){const fs=cn(f),ro=[],rest=[];let K=1;
+ for(const u of fs){if(u.k=='^'&&u.b.k=='n'&&u.b.v==-1&&dep(u.a)){const q=poly(x=>ev(u.a,x),2);if(!q)return null;
+  if(q.length==2){ro.push(-q[0]/q[1]);K/=q[1]}else{const Dl=q[1]*q[1]-4*q[0]*q[2];if(Dl<=1e-9)return null;const s=Math.sqrt(Dl);ro.push((-q[1]-s)/(2*q[2]),(-q[1]+s)/(2*q[2]));K/=q[2]}}else rest.push(u)}
+ if(ro.length<2||ro.length>4||ro.some((r,i)=>ro.some((s,j)=>j>i&&Math.abs(r-s)<1e-9)))return null;
+ const Pn=poly(x=>ev(mul(...rest),x),4);if(!Pn||Pn.length>ro.length)return null;
+ const rr=v=>nm(+v.toFixed(9)).replace('-','−'),cf=v=>v==1?'':v==-1?'−':rr(v)+'·',fc=r=>'('+V+(r<0?' + '+rr(-r):' − '+rr(r))+')',A=ro.map((r,i)=>K*pv(Pn,r)/ro.reduce((s,q,j)=>j==i?s:s*(r-q),1)),L=String.fromCharCode;
+ const F=add(...ro.map((r,i)=>mul(N(A[i]),fn('ln',fn('abs',add(X,N(-r)))))));
+ return{F,title:'Método: fracciones parciales',St:[
+ ['Factorizar el denominador',['El denominador se factoriza en '+ro.map(fc).join('')+(K!=1?' (y la constante '+rr(K)+' se reparte entre los coeficientes)':'')+'.','Es una fracción propia con factores lineales distintos, así que se puede descomponer.']],
+ ['Plantear la descomposición',['Se busca '+ro.map((r,i)=>L(65+i)+'/'+fc(r)).join(' + ')+' igual al integrando.','Multiplicando por el denominador, cada constante se halla evaluando en la raíz de su factor (método del cubrimiento).']],
+ ['Calcular los coeficientes',ro.map((r,i)=>'En '+V+' = '+rr(r)+': '+L(65+i)+' = '+rr(A[i]))],
+ ['Integrar cada fracción',[...ro.map((r,i)=>Math.abs(A[i])<1e-9?null:'∫ '+rr(A[i])+'/'+fc(r)+' d'+V+' = '+cf(A[i])+'ln|'+V+(r<0?' + '+rr(-r):' − '+rr(r))+'|').filter(Boolean),'Se suman los logaritmos (y luego puede simplificarse con propiedades de ln).']]]}}
+function xi(f){for(const g of[xPF,xTrig,xTP,xParts]){try{const r=g(f);if(r&&r.F&&vf(r.F,f)!==false)return r}catch(e){}}return null}
 /* ---- lectura en voz alta de símbolos matemáticos ---- */
 const GR={α:'alfa',β:'beta',γ:'gamma',δ:'delta',Δ:'delta',λ:'lambda',μ:'mu',σ:'sigma',φ:'fi',ω:'omega',Ω:'omega',θ:'theta',π:'pi'},
 FW={sin:'seno',cos:'coseno',tan:'tangente',cot:'cotangente',sec:'secante',csc:'cosecante',ln:'logaritmo natural',log:'logaritmo',asin:'arcoseno',acos:'arcocoseno',atan:'arcotangente',abs:'valor absoluto',exp:'exponencial'},
