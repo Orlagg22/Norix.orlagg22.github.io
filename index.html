@@ -1259,6 +1259,23 @@ function phParse(t){
  return Q}
 const phU=(v,u,S)=>phf(v)+' '+u+(S&&S.kmh&&u=='m/s'?' (= '+phf(v*3.6)+' km/h)':'')+(u=='s'&&v>=120?(v>=7200?' (= '+phf(v/3600)+' h)':' (= '+phf(v/60)+' min)'):'')+(u=='m'&&v>=1000?' (= '+phf(v/1000)+' km)':'');
 
+/* --- Pista con lazo: A a k·R de altura, B en el costado del lazo (altura R) --- */
+function phLoop(S){
+ const s=S.s,g=S.g;
+ if(!/resbal|desliz|esfera|bloque|carrito|bola/.test(s)||!/(?:en|punto)\s*b\b/.test(s)||!/fuerza|normal|resultante/.test(S.qs))return null;
+ const ks=[...s.matchAll(/(?:^|[^a-z0-9.])(\d+(?:\.\d+)?)\s*r\b/g)].map(x=>+x[1]).filter(x=>x>1);
+ if(!ks.length)return null;
+ const k=Math.max(...ks),m=S.one('mass');
+ const f=Math.sqrt(1+4*(k-1)*(k-1)),ang=Math.atan(1/(2*(k-1)))*180/Math.PI;
+ const v2='4·g·R'.replace('4',phf(2*(k-1)));
+ const pa=['Sin fricción se conserva la energía entre A (altura `'+phf(k)+'R`) y B (altura `R`): `m·g·'+phf(k)+'R = m·g·R + ½·m·v²`','Despejo: `v² = '+phf(2*(k-1))+'·g·R` (la masa y R se cancelan más adelante)','En B, que está en el costado del lazo, el peso `W = m·g` va vertical hacia abajo y la normal `N` va horizontal hacia el centro. Por eso `N` es la fuerza centrípeta: `N = m·v²/R = '+phf(2*(k-1))+'·m·g`'];
+ let res;
+ if(m!=null){const W=m*g,N=2*(k-1)*W,F=W*f,F10=m*10*f;
+  pa.push('Peso: `W = m·g = '+phf(m)+' × '+phf(g)+' = '+phf(W)+' N`','Normal: `N = '+phf(2*(k-1))+' × '+phf(W)+' = '+phf(N)+' N`','Fuerza resultante (suma vectorial de dos fuerzas perpendiculares): `F = √(W² + N²) = m·g·√'+phf(1+4*(k-1)*(k-1))+' = '+phf(F)+' N`','Dirección: `tan α = W/N` → α ≈ '+phf(ang)+'° por debajo de la horizontal, apuntando hacia el centro del lazo');
+  res='**F ≈ '+phf(F)+' N**';
+  return phA('Esfera en una pista con lazo (energía y fuerza)',['Masa: m = '+phf(m)+' kg','Sin fricción, parte del reposo en A','De la figura: A está a una altura de '+phf(k)+'R; B está en el costado del lazo, a la altura R','g = '+phf(g)+' m/s²'],pa,res,'Si tu libro usa g = 10 m/s², la resultante es '+phf(F10)+' N. Si la figura es otra, dime dónde está B y lo recalculo.')}
+ return{need:1,t:'Entendí la pista (A a '+phf(k)+'R, B en el costado del lazo) pero no veo la masa. Dime «masa 2 kg» y te doy la fuerza en newtons. En general `F = m·g·√'+phf(1+4*(k-1)*(k-1))+'`.'}}
+
 /* --- Plano inclinado / resbalar --- */
 function phIncline(S){
  const s=S.s,inc=/rampa|inclinad|pendiente|cuesta|baja por|sube por|plano/.test(s),sl=/resbal|desliz/.test(s);if(!inc&&!sl)return null;
@@ -1600,7 +1617,7 @@ function phys(t){
  if(!hasNum&&!scen)return null;
  if(!/masa|fuerza|velocidad|rapidez|aceler|energia|trabajo|potencia|resbal|desliz|\bcae\b|caida|lanz|dispar|proyectil|altura|rampa|inclinad|friccion|rozamiento|resorte|presion|densidad|calor|temperatura|voltaj|corriente|resisten|carga|onda|frecuencia|periodo|radio|choque|colision|momento|impulso|\bpeso\b|gravedad|newton|esfera|bloque|cuerpo|\bauto\b|carro|vehiculo|\bbala\b|piedra|pelota|\btren\b|\bmoto\b|bicicleta|avion|motor|pendulo|circuito|ascensor|\bkg\b|empuje|sumerg|presion|profundidad|piscina|resorte|estira|hooke|tierra|luna|planeta|carga|ohm|onda/.test(sn))return null;
  const qd=/fuerza|\bpeso\b|tension|empuje|resultante|newton/.test(S.qs);
- const order=[phIncline,phProj,phFall,phCirc,phMom,phEnergy,phSpring,phFluid,phHeat,phElec,phWave,phGrav].concat(qd?[phDyn,phKin]:[phKin,phDyn]);
+ const order=[phLoop,phIncline,phProj,phFall,phCirc,phMom,phEnergy,phSpring,phFluid,phHeat,phElec,phWave,phGrav].concat(qd?[phDyn,phKin]:[phKin,phDyn]);
  for(const f of order){let r=null;try{r=f(S)}catch(e){r=null}if(r)return typeof r=='string'?{t:r}:r}
  return null}
 
@@ -2733,7 +2750,7 @@ async function imOcr(say){if(imCache.ocr!=null)return imCache.ocr;say('Cargando 
  return imCache.ocr=(r.data.text||'').trim()}
 async function localVision(q,wait){const n=norm(q),say=m=>{wait.textContent=m},st=imStats(),tone=st.L<70?'oscura':st.L>185?'muy clara':st.L>130?'clara':'equilibrada';
  const music=/music|cancion|playlist|escuchar|soundtrack/.test(n),cap=/titulo|redes|instagram|caption|pie de foto|publicar/.test(n),colr=!music&&/color|paleta|combin|decor/.test(n),
-  ocr=!music&&!cap&&!colr&&/transcrib|\blee\b|leer|texto|dice|ecuacion|ejercicio|resuelv|respuesta|esta bien|correg|tarea|problema|formula|reaccion|escrit|fisica|calcul|halla|determin|resultante|cuanto|cual es|fuerza|velocidad|aceleracion|energia|resuelve/.test(n);
+  ocr=!music&&!cap&&!colr&&/transcrib|\blee\b|leer|texto|dice|ecuacion|ejercicio|resuelv|respuesta|esta bien|correg|tarea|problema|formula|reaccion|escrit|fisica|calcul|halla|determin|resultante|cuanto|cual es|fuerza|velocidad|aceleracion|energia|resuelve|explic|facil|paso a paso|ayud|entend|como se/.test(n);
  if(ocr)return ocrReport(await imOcr(say))+'\n\n*Lectura hecha en tu navegador; la letra manuscrita o muy pequeña puede salir con errores.*';
  let rec=[],note='';try{rec=await imRecog(say)}catch(e){note='\n\n*No pude cargar el reconocedor de imágenes ('+(e&&e.message||'error')+'); me guío solo por colores y luz.*'}
  const names=[...new Set(st.names)].slice(0,3),seen=rec.map(r=>r.n);
