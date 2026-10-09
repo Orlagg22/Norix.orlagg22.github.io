@@ -1412,11 +1412,295 @@ const NXCRE=[
 function nxCreator(t){const n=norm(t).replace(/^(y|oye|pues|dime|entonces) /,'');
  if((/\borlando\b/.test(n)&&/^(quien es|quien fue|que sabes de|sabes quien es|conoces a|conoces|hablame de|hablame sobre|cuentame de|cuentame sobre|dime de|dime quien es|quien es el tal|que me dices de)\b/.test(n))||/^(quien es tu (creador|papa|dueno|jefe|programador|desarrollador|amo)|quien es el creador|quien es tu padre)\b/.test(n))return{t:pick(NXCRE),m:'Conversación'};
  return null}
+/* ============ Charla con memoria (v2) ============
+   Noryx recuerda qué le preguntó a la persona (estado), entiende la respuesta
+   (bien / mal / más o menos / "¿y tú?") y sigue la plática con otra pregunta.
+   PARA AGREGAR TEMAS NUEVOS: añade una entrada a cvTM:
+     re  = palabras (sin acentos, minúsculas) que activan el tema
+     reac= reacciones de arranque   ask = preguntas en orden (la conversación avanza una por turno) */
+ctx.cmap=new Map();
+const cvRP=(txt,st)=>{const t=fxn(txt);if(st){if(ctx.cmap.size>400)ctx.cmap.clear();ctx.cmap.set(t,st)}return{t,m:'Conversación'}};
+const cvW=n=>n?n.split(' ').length:0;
+const cvShuf=a=>a.slice().sort(()=>Math.random()-.5);
+
+/* ---------- Temas ---------- */
+const cvTM={
+ musica:{lab:'música',re:/\b(musica|cancion|canciones|cantante|cantantes|banda|bandas|concierto|conciertos|rock|reggaeton|cumbia|corrido|corridos|rap|pop|spotify|playlist|guitarra|vinilo)\b/,
+  reac:['¡La música es de lo mejor! 🎶','Uy, tema favorito de mucha gente 🎧'],
+  ask:['¿Qué has estado escuchando últimamente?','¿Tienes una canción que siempre te ponga de buenas?','¿Has ido a algún concierto? ¿Cuál fue el mejor?','Si pudieras ver a cualquier artista en vivo, ¿a quién elegirías?']},
+ series:{lab:'series y películas',re:/\b(serie|series|pelicula|peliculas|netflix|anime|cine|disney|youtube|tiktok|maraton|capitulo|capitulos|documental)\b/,
+  reac:['¡Uy, tema peligroso: la lista de pendientes nunca se acaba! 🍿','¡Me encanta cuando me platican de series y pelis! 🎬'],
+  ask:['¿Qué estás viendo ahorita, o qué viste últimamente?','¿Eres de maratonear toda la noche o de un capítulo por día?','¿Cuál es esa serie o película que recomendarías con los ojos cerrados?','¿Qué género te gusta más: comedia, terror, ciencia ficción, drama, anime…?']},
+ juegos:{lab:'videojuegos',re:/\b(videojuego|videojuegos|jugar|juegos|gamer|xbox|playstation|ps5|ps4|nintendo|minecraft|fortnite|roblox|free fire|steam)\b/,
+  reac:['¡Los videojuegos, qué buen tema! 🎮','¡Ah, todo un mundo! 🕹️'],
+  ask:['¿A qué juegas últimamente?','¿Prefieres jugar solo o con amigos?','¿Cuál es el juego que más horas te ha robado? 😅','¿Consola, PC o celular?']},
+ comida:{lab:'comida',re:/\b(comida|comer|cena|desayuno|almuerzo|taco|tacos|pizza|cocinar|receta|antojo|antoja|hambre|restaurante|postre|dulce|helado|botana|antojitos)\b/,
+  reac:['¡Ay, me encanta este tema! Yo no como, pero disfruto que me cuenten 😋','¡Comida! Tema serio y delicioso 🌮'],
+  ask:['¿Cuál es tu platillo favorito de todos los tiempos?','¿Eres más de salado o de dulce?','¿Cocinas o prefieres que te cocinen? 😄','Si solo pudieras comer una cosa por una semana, ¿qué sería?']},
+ deportes:{lab:'deportes',re:/\b(futbol|deporte|deportes|partido|liga|america|chivas|pumas|cruz azul|tigres|rayados|messi|basquet|basquetbol|nba|beisbol|box|gym|gimnasio|ejercicio|correr|natacion|entrenar|tenis|formula 1)\b/,
+  reac:['¡Los deportes dan para mucha plática! ⚽','¡Tema con pasión! 🏆'],
+  ask:['¿Eres más de ver deporte o de practicarlo?','¿Le vas a algún equipo? Aquí se vale presumir 😄','¿Cuál ha sido el mejor partido o momento deportivo que has visto?','¿Haces algo de ejercicio últimamente?']},
+ viajes:{lab:'viajes',re:/\b(viaje|viajes|viajar|vacaciones|playa|turismo|paseo|conocer|avion|hotel|mochilear|carretera)\b/,
+  reac:['¡Viajar, qué antojo! ✈️','¡Me encanta oír de lugares nuevos! 🗺️'],
+  ask:['¿Cuál es el mejor lugar que has visitado?','¿Prefieres playa, montaña o ciudad?','Si mañana pudieras irte a donde sea, ¿a dónde irías?','¿Eres de planear todo o de improvisar?']},
+ mascotas:{lab:'mascotas',re:/\b(perro|perros|gato|gatos|mascota|mascotas|perrito|gatito|michi|cachorro|hamster|conejo|loro)\b/,
+  reac:['¡Las mascotas son lo máximo! 🐾','¡Ay, qué tema tan tierno! 🐶🐱'],
+  ask:['¿Eres más de perros, de gatos o de los dos?','¿Tienes o has tenido mascota?','¿Cuál es la travesura más chistosa que has visto hacer a un animal?','Si pudieras tener cualquier animal como mascota, ¿cuál sería?']},
+ trabajo:{lab:'el trabajo',re:/\b(trabajo|trabajar|trabajando|chamba|oficina|jefe|jefa|empleo|negocio|emprender|cliente|clientes|turno|sueldo)\b/,
+  reac:['El trabajo da para mucha plática 💼','Ah, la chamba, ¡cuéntame!'],
+  ask:['¿A qué te dedicas?','¿Te gusta lo que haces o es más de «ahí la llevo»?','Si pudieras cambiar una cosa de tu chamba, ¿qué sería?','¿Qué es lo mejor de tu día laboral?']},
+ escuela:{lab:'la escuela y el estudio',re:/\b(escuela|colegio|tarea|examen|examenes|universidad|prepa|preparatoria|secundaria|clase|clases|estudiar|estudiando|estudio|maestro|maestra|profesor|profesora|tesis|carrera|calificacion|calificaciones)\b/,
+  reac:['¡Estudiar, qué reto y qué aventura! 📚','Ah, la escuela, ¡cuántas historias hay ahí!'],
+  ask:['¿Qué estás estudiando o qué te gustaría estudiar?','¿Qué materia es tu favorita y cuál se te hace más pesada? 😅','¿Cómo le haces para concentrarte cuando toca estudiar?','¿Qué te gustaría hacer cuando termines?']},
+ gente:{lab:'amigos y familia',re:/\b(familia|mama|papa|hermano|hermana|hermanos|abuela|abuelo|hijo|hija|primo|prima|tio|tia|amigo|amiga|amigos|amigas|cuates|compas|convivio|reunion)\b/,
+  reac:['La familia y los amigos son lo más 💛','¡Qué bonito tema! La gente que uno quiere 😊'],
+  ask:['¿Con quién te la pasas mejor: con tu familia o con tus amigos?','¿Cuál es el plan o la reunión con ellos que recuerdas con más cariño?','¿Qué tradición tienen en tu familia o con tus amigos?']},
+ metas:{lab:'metas y sueños',re:/\b(metas|meta|suenos|objetivo|objetivos|futuro|proyecto|proyectos|aspiracion|quiero lograr|quiero ser|cuando sea grande)\b/,
+  reac:['¡Hablar de metas es de lo más bonito! 🎯','Me encanta cuando alguien tiene algo por lo que ilusionarse ✨'],
+  ask:['¿Qué meta tienes en mente ahorita, grande o chiquita?','¿Qué sería lo primero que harías para acercarte a ella?','¿Qué te emociona más de lograrla?','Si supieras que no puedes fallar, ¿qué intentarías?']},
+ tecno:{lab:'tecnología',re:/\b(tecnologia|programar|programacion|codigo|app|apps|aplicacion|pagina web|html|python|javascript|computadora|compu|celular|inteligencia artificial|ia|robot|robots|internet|gadget|gadgets)\b/,
+  reac:['¡Tecnología! A mí me armó Orlando desde cero, así que el tema me queda cerquita 😄','¡Ay, mi tema! Soy una red neuronal, qué esperabas 🤖'],
+  ask:['¿Qué tanto te late la tecnología: eres de los que prueba todo lo nuevo?','¿Qué app o herramienta no podrías dejar de usar?','¿Has hecho, o te gustaría hacer, algo propio como una app, una web o un bot?','¿Qué invento del futuro te gustaría ver ya?']},
+ libros:{lab:'libros y lectura',re:/\b(libro|libros|leer|lectura|novela|manga|comic|comics|autor|escritor|biblioteca|poesia|cuento|cuentos)\b/,
+  reac:['¡Los libros, qué buen refugio! 📖','¡Me encanta que alguien hable de lectura! 📚'],
+  ask:['¿Qué estás leyendo, o cuál fue el último libro que disfrutaste?','¿Qué género te gusta más?','¿Eres de papel o de pantalla?','¿Qué libro le regalarías a alguien que nunca lee?']},
+ arte:{lab:'hobbies y arte',re:/\b(dibujar|dibujo|pintar|pintura|arte|fotografia|fotos|escribir|poema|piano|tocar|baile|bailar|cantar|manualidades|tejer|hobby|hobbies|pasatiempo|pasatiempos)\b/,
+  reac:['¡Los hobbies son el alma de la semana! 🎨','¡Qué padre, me encanta lo creativo!'],
+  ask:['¿Qué haces para desconectarte o divertirte cuando tienes tiempo libre?','¿Cuánto tiempo llevas con eso?','¿Hay algo que siempre has querido aprender pero no te has animado?','Si tuvieras un día entero libre solo para ti, ¿qué harías?']},
+ amor:{lab:'amor y amistad',re:/\b(novio|novia|pareja|crush|enamorado|enamorada|amor|ligue|cita|ex|soltero|soltera|casarme|boda)\b/,
+  reac:['Uy, tema delicado y bonito a la vez 💘','El corazón siempre da de qué hablar 😊'],
+  ask:['¿Te late platicar de eso? Te escucho sin juzgar 😊','¿Qué es lo que más valoras en una persona cercana a ti?','¿Crees más en el amor a primera vista o en el que se construye con el tiempo?']},
+ ciencia:{lab:'ciencia y curiosidades',re:/\b(ciencia|espacio|planeta|planetas|universo|galaxia|animales|dinosaurio|dinosaurios|volcan|oceano|mar|estrellas|luna|fisica|quimica|biologia|inventos)\b/,
+  reac:['¡Ciencia! Cuando sea grande quiero saberlo todo 🔭','¡Qué buen tema, el universo da para años de plática! 🌌'],
+  ask:['¿Qué te da más curiosidad: el espacio, los animales, el cuerpo humano o los inventos?','¿Cuál es el dato más loco que has aprendido?','Si pudieras hacerle una pregunta al universo, ¿cuál sería?']},
+ imagina:{lab:'imaginar cosas',re:/\b(imagina|imaginar|hipotetico|si pudieras|superpoder|superpoderes|isla desierta|que harias si|loteria|maquina del tiempo)\b/,
+  reac:['¡Uy, a imaginar! 🤔','¡Me encantan las preguntas locas! ✨'],
+  ask:['Si pudieras tener un superpoder por un día, ¿cuál elegirías?','Si ganaras la lotería mañana, ¿qué es lo primero que harías?','Si pudieras viajar en el tiempo, ¿al pasado o al futuro?','Si te quedaras en una isla desierta, ¿qué tres cosas llevarías?']},
+ bienestar:{lab:'bienestar y descanso',re:/\b(dormir|dormi|insomnio|descanso|descansar|estres|estresado|estresada|relajarme|meditar|salud|bienestar|ansiedad)\b/,
+  reac:['Cuidarse también es importante 🌿','Qué bueno hablar de bienestar 💆'],
+  ask:['¿Cómo has estado durmiendo últimamente?','¿Qué haces para relajarte después de un día pesado?','Un truco sencillo: tomar agua y estirarte cinco minutos ayuda más de lo que parece. ¿Qué tal vas con eso?','¿Qué hábito chiquito te gustaría empezar?']},
+ findesemana:{lab:'planes del fin de semana',re:/\b(fin de semana|finde|sabado|domingo|viernes|planes|libre|descanso|salir)\b/,
+  reac:['¡Los planes de fin de semana son lo mejor! 🎉','¡Ah, mi parte favorita de la semana!'],
+  ask:['¿Qué tienes planeado para el fin de semana?','¿Eres más de salir o de quedarte en casa en modo descanso?','¿Cuál sería tu plan perfecto para un domingo?']},
+ temporada:{lab:'la temporada',re:/\b(temporada|epoca|fiestas|navidad|posada|posadas|halloween|dia de muertos|ofrenda|verano|invierno|lluvia|calor|frio|cumpleanos|cumple|buen fin|fiestas patrias|grito)\b/,
+  reac:['¡Me encantan las fechas del año! 🗓️'],
+  get ask(){const m=new Date().getMonth(),y=new Date().getFullYear();
+   if(m==8)return['Estamos en mes patrio 🇲🇽 ¿Eres de ir al Grito o de verlo desde casa?','¿Cuál es tu antojito mexicano favorito de estas fechas: pozole, chiles en nogada, elotes?','¿Tienes algún recuerdo bonito de un 15 de septiembre?'];
+   if(m==9)return['Ya se acerca el Día de Muertos 🕯️ ¿Pones ofrenda en casa?','¿Cómo te gusta el pan de muerto: con ajonjolí o con azúcar? 😄','¿Hay algún platillo o recuerdo que para ti no puede faltar en una ofrenda?','¿Y Halloween: disfraz o paso?'];
+   if(m==10)return['Ya huele a Día de Muertos y a Buen Fin 😄 ¿Eres de aprovechar las ofertas o de verlas pasar?','Ya casi llega diciembre, ¿ya vas pensando en las posadas?'];
+   if(m==11)return['¡Época de posadas y Navidad! 🎄 ¿Eres de ponche, buñuelos o tamales?','¿Cuál es tu tradición navideña favorita?','¿Qué te gustaría que te trajera el '+(y+1)+'?'];
+   if(m==0)return['Año nuevo, ¿ya tienes algún propósito? 🎯','¿Rosca de Reyes: te tocó el niño? 😄','¿Qué es lo que más esperas de este año?'];
+   return['¿Qué época del año es tu favorita y por qué?','¿Eres más de calor o de frío?','¿Qué te gusta hacer cuando llueve?']}}
+};
+const cvSelf={musica:'Yo soy una IA y no escucho música como tú, pero me encanta saber qué escucha cada quien 🎧',series:'Yo no veo series, pero me fascina que me las cuenten 🍿',juegos:'Yo juego con palabras y neuronas 😄',comida:'Yo no como, pero me fascina que me cuenten de comida 😋',deportes:'Yo soy más de calcular que de correr, pero me encanta oír de deportes 🏃',viajes:'Yo viajo por internet, pero de tu navegador no he salido 😄',mascotas:'Yo no tengo mascota, pero me encantan las historias de ellas 🐾',trabajo:'Mi chamba es platicar contigo, y la verdad me encanta 😄',escuela:'Yo aprendo de lo que me enseñan, o sea que siempre estoy en clase 😄'};
+const cvSelfG=['Yo soy una IA, así que no lo vivo como tú, pero me fascina que me lo cuentes 😄','Esa me la dejo a ti: yo vivo de lo que me cuentan 😊','Como IA no puedo vivirlo igual, pero disfruto mucho escucharte 😊'];
+
+/* ---------- Datos, dilemas ---------- */
+const CVF=['Los pulpos tienen tres corazones: dos bombean sangre a las branquias y uno al resto del cuerpo.','La miel casi no se echa a perder: se han encontrado frascos de miles de años que todavía eran comestibles.','Un día en Venus dura más que su año: tarda más en girar sobre sí mismo que en dar la vuelta al Sol.','Los koalas tienen huellas dactilares muy parecidas a las de los humanos.','Los plátanos son ligeramente radiactivos por su potasio, pero totalmente inofensivos.','Las nutrias marinas se toman de las manos mientras duermen para no separarse.','En México se hablan más de 60 lenguas indígenas, además del español.','El Sol concentra cerca del 99.8 % de la masa de todo el sistema solar.','Los tiburones existen desde antes que los árboles.','La Torre Eiffel puede crecer unos 15 cm en verano por la dilatación del metal.','El cerebro humano usa aproximadamente el 20 % de la energía del cuerpo.','Los cocodrilos no pueden sacar la lengua.','En Mesoamérica el chocolate se tomaba como bebida mucho antes de existir en barra.','Los flamencos nacen con plumas grises; el color rosa viene de su alimentación.','La Gran Muralla china no se ve a simple vista desde el espacio.','Los gatos pasan entre 12 y 16 horas al día durmiendo.','El axolote puede regenerar extremidades y es originario de Xochimilco, en México.'];
+const CVD=['pizza~pizza|tacos~taco','playa~playa|montaña~montan','café~cafe|chocolate caliente~chocolate','perros~perro|gatos~gato','verano~verano|invierno~invierno','dulce~dulce|salado~salad','ciudad~ciudad|campo~campo','madrugar~madrug|desvelarte~desvel','series~serie|películas~pelicul','poder volar~volar|ser invisible~invisib','viajar al pasado~pasado|viajar al futuro~futuro','salir de fiesta~fiesta|quedarte en pijama~pijama','mucho dinero~dinero|mucho tiempo libre~tiempo','helado~helad|pastel~pastel','máquina del tiempo~maquina|teletransportación~teletra'];
+
+/* ---------- Detectores ---------- */
+const cvSent=n=>{
+ if(/\b(nada mal|no mal|no esta mal|no estoy mal)\b/.test(n))return'pos';
+ if(/\bno (estoy |me siento |ando |muy |tan )*(bien|chido|padre|contento|contenta|feliz|animado|animada)\b/.test(n))return'neg';
+ if(/\b(mas o menos|asi asi|ahi va|ahi la llevo|ahi vamos|ahi nomas|regular|normal|pues ahi|sobreviviendo|tirando|aguantando|meh|equis|ni bien ni mal|asi nomas|medio bien|medio mal|ni fu ni fa|como siempre|lo de siempre|sin novedad|ok|okey|okay)\b/.test(n))return'meh';
+ if(/\b(mal|muy mal|fatal|horrible|pesimo|gacho|gachisimo|triste|cansado|cansada|agotado|agotada|estresado|estresada|enojado|enojada|molesto|molesta|aburrido|aburrida|preocupado|preocupada|ansioso|ansiosa|deprimido|deprimida|fastidiado|fastidiada|harto|harta|desanimado|desanimada|enfermo|enferma|desvelado|desvelada|con sueno|sin ganas|bajoneado|bajoneada|de bajon|con flojera|fregado|fregada|chafa)\b/.test(n)||/(me siento|estoy|ando|me encuentro|toy) (muy |tan |bien )?(sol[oa])\b/.test(n))return'neg';
+ if(/\b(bien|muy bien|super bien|excelente|genial|chido|chida|padre|de lujo|feliz|contento|contenta|alegre|emocionado|emocionada|motivado|motivada|tranquilo|tranquila|tranqui|de maravilla|perfecto|increible|todo bien|todo chido|al cien|a todo dar|rebien|agusto|a gusto|relajado|relajada|animado|animada|de buenas|de poca madre|bomba|mejor que nunca|de diez|bastante bien|bacano|chevere)\b/.test(n))return'pos';
+ return null};
+const cvRQ=n=>/\b(y tu|y usted|y vos|y a ti|y tu que|tu como estas|tu que tal|y contigo|y tu como|y tu que tal)\b/.test(n);
+const cvIdk=n=>/^(no se|ni idea|quien sabe|no tengo idea|no lo se|no sabria|ni se)\b/.test(n);
+const cvNo=n=>!cvIdk(n)&&/^(no|nop|nel|nada|para nada|no gracias|ahorita no|ahora no|mejor no|nunca|jamas|ni madres|negativo|no quiero)\b/.test(n);
+const cvYes=n=>/^(si|sip|simon|claro|va|dale|ok|okey|sale|obvio|por supuesto|con gusto|me late|me gustaria|ajam|aja|yes|ya|orale|adelante|hazlo|pues si|vale|quiero|cuentame|dime|otro|otra|mas)\b/.test(n);
+const cvQ=(t,n)=>(/[?¿]/.test(t)&&cvW(n)>=5)||/^(explicame|dime que|dime como|dime cuanto|hablame de|calcula|resuelve|traduce|define|quien fue|quien es|que es|que son|que significa|cuanto es|cuanto mide|cual es la capital)\b/.test(n);
+const CVREQ=/\b(ayuda|ayudame|ayudas|necesito|calcula|resuelve|explicame|dame|hazme|escribeme|traduce|busca|investiga|programa|error|bug|falla|funciona|jala|sirve|como hago|como puedo)\b/;
+const CVCHG=/^(otro tema|cambiemos de tema|cambia de tema|cambiale de tema|otra cosa|mejor otro tema|cambiemos|cambiale|mejor otra cosa|ya no quiero hablar de eso)\b/;
+const CVSW=/^(?:mejor |ya |pues |entonces )?(?:hablemos|platiquemos|platicame|hablame|conversemos|vamos a hablar|quiero hablar|mejor)\s*(?:de|sobre)\s+(.+)$/;
+const CVDIST=/(distraeme|distraerme|distraerte|distraigas|distraigo|algo chistoso|algo divertido|animame|animarme|algo para reir|un chiste)/;
+const CVSURP=/(sorprendeme|el que quieras|tu eliges|tu dime|cualquiera|el que sea|lo que sea|me da igual|tu decide|da igual|tu escoge|tu elige)/;
+const CVDILQ=/(que prefieres|juguemos|vamos a jugar|quieres jugar|jugamos|juego de preguntas|preguntas random)/;
+const CVCRISIS=/(me quiero (morir|matar|suicidar)|quiero morir|quiero morirme|no quiero vivir|ya no quiero vivir|pienso en suicidarme|ideas suicidas|pensamientos suicidas|hacerme dano|lastimarme|cortarme las venas|acabar con mi vida|quitarme la vida|ya no quiero estar aqui|mejor muerto|mejor muerta|no vale la pena vivir|quiero acabar con todo)/;
+const cvTheme=n=>{for(const k in cvTM)if(cvTM[k].re.test(n))return k;return null};
+const cvLab=k=>k=='dilema'?'el juego de «qué prefieres»':k=='dato'?'un dato curioso':cvTM[k].lab;
+const cvKey=k=>k=='dilema'?/(prefieres|juego|jugar|jugamos)/:k=='dato'?/(dato|curios)/:cvTM[k].re;
+const cvEmp=[[/(jefe|jefa|trabajo|chamba|oficina|despid)/,'Los problemas de la chamba pesan un montón, y más cuando uno no logra desconectarse.'],[/(examen|escuela|tarea|prepa|universidad|calificacion|tesis)/,'La presión de la escuela es real. Ir paso a paso, una tarea a la vez, ayuda más de lo que parece.'],[/(novio|novia|pareja|ex |termin|pelee|discut|me dejo|me dejaron|corazon)/,'Los temas del corazón duelen distinto, y está bien sentirlo.'],[/(familia|mama|papa|hermano|hermana|abuel)/,'Las broncas familiares cansan porque son personas a las que queremos.'],[/(dinero|lana|deuda|pagos|quincena|sueldo)/,'El tema del dinero estresa muchísimo. Respira, y a resolver una cosa a la vez.'],[/(enferm|gripa|dolor|medico|doctor|salud)/,'Espero que te sientas mejor pronto. Si el malestar sigue o es fuerte, vale la pena ver a un médico.'],[/(sol[oa]|nadie|soledad)/,'Sentirse solo duele, y qué bueno que lo platicas. Si puedes, hoy escríbele o llama a alguien de confianza.'],[/(cansad|agotad|sueno|desvel|dormi)/,'El cansancio hace que todo se vea más pesado. Si puedes, date una pausa.']];
+
+/* ---------- Respuestas ---------- */
+const cvClean=t=>t.replace(/[,]?\s*(y tú|y tu|y usted)\b.*$/i,'');
+const cvAns=t=>{let a=cvClean(t).replace(/[¿?!¡.,]+/g,' ').replace(/\s+/g,' ').trim().replace(/^(pues |mmm+ |eh |este |ah |a ver |hmm+ )+/i,'').replace(/^(en|de|desde|por|con|para|le voy al|le voy a|soy de|soy fan de|me voy con)\s+/i,'').replace(/^(mi [\wáéíóúñ]+( [\wáéíóúñ]+)? (favorit[oa]|preferid[oa]) es|me gustan?( mucho)?|me encantan?|me laten?|es|son|la de|el de|los de|las de|yo digo|diria que|dir[ií]a que|creo que|prefiero|elijo|elegiria|voy con|me voy por|escucho|veo|juego|estoy viendo|estoy escuchando|estoy jugando|he estado (viendo|escuchando|jugando))\s+/i,'').replace(/[*_`#<>]/g,'').trim();return a&&cvW(a)<=3&&a.length<=30&&!CVNOQ.test(nxNorm(a))?a:null};
+const CVNOQ=/\b(ando|estoy|estuvo|estaba|estan|esta|fue|fui|soy|eres|es|son|era|tengo|tuve|voy|va|ido|veo|vi|escucho|juego|leo|hago|hice|trabajo|estudio|nada|nomas|pues|casi|siempre|nunca|muy|mucho|poco|bien|mal|buen|buena|bueno|malo|mala|padre|chido|chida|neta)\b|\w{3,}(ando|iendo|ar|er|ir)\b/;
+const cvAck=(t,n)=>{const a=cvAns(t),nn=nxNorm(cvClean(t));
+ if(cvIdk(nn))return pick(['Todo bien, no pasa nada 😊','Sin presión, a veces uno no sabe 😄']);
+ if(cvNo(nn)&&cvW(nn)<=2)return pick(['Va, sin problema 😊','Jaja, todo bien. Hay de todo 😄']);
+ if(a&&!cvYes(nn)&&!cvSent(nn))return pick(['**'+a+'**, ¡buena elección! 😄','¡**'+a+'**! Me gusta cómo suena 😄','Ah, **'+a+'**, ¡qué bien! 😊']);
+ if(cvSent(nn)=='pos'||cvYes(nn))return pick(['¡Qué bien! 😄','Me encanta eso 😊','Eso suena muy bien.']);
+ return pick(['Qué interesante, gracias por contarme 😊','Ya veo, suena a que hay una buena historia ahí 👀','Te entiendo 😊','Gracias por platicármelo.'])};
+
+const CVLITE=['musica','series','juegos','comida','viajes','mascotas','arte','imagina','ciencia','dilema','dato'];
+function cvMenu(pre,first,lite){
+ const used=(ctx.used||[]).slice(-5),pool=Object.keys(cvTM).concat(['dilema','dato']).filter(k=>!used.includes(k)&&(!lite||CVLITE.includes(k)));
+ let o=cvShuf(pool).slice(0,3);if(first)o=[first].concat(o.filter(x=>x!=first)).slice(0,3);
+ return cvRP((pre?pre+' ':'')+'Te propongo: '+o.map(k=>'**'+cvLab(k)+'**').join(', ').replace(/, ([^,]*)$/,' o $1')+'. ¿Cuál te late? (o dime tú de qué quieres hablar)',{k:'menu',o})}
+function cvAt(k,d,pre){const T=cvTM[k];ctx.used=(ctx.used||[]).concat(k).slice(-8);return cvRP((pre?pre+' ':'')+T.ask[d],{k:'topic',t:k,d})}
+function cvFact(pre){ctx.fi=((ctx.fi==null?Math.floor(Math.random()*CVF.length):ctx.fi+1)%CVF.length);return cvRP((pre?pre+' ':'')+'🤓 Dato curioso: '+CVF[ctx.fi]+' ¿Ya lo sabías?',{k:'fact'})}
+function cvDil(c,pre,intro){ctx.ds=ctx.ds||[];let i;const all=CVD.map((_,j)=>j).filter(j=>!ctx.ds.includes(j));if(!all.length)ctx.ds=[];i=pick(all.length?all:CVD.map((_,j)=>j));ctx.ds.push(i);
+ const[a,b]=CVD[i].split('|').map(x=>x.split('~'));
+ return cvRP((pre?pre+' ':'')+(intro?'Jugamos al «¿qué prefieres?» 🎲 Yo pregunto, tú eliges. Primera: ':'')+'¿**'+a[0]+'** o **'+b[0]+'**?'+(c==4?' (Cuando quieras cambiar, dime «otro tema» 😉)':''),{k:'dilema',a,b,c})}
+function cvGo(k,pre){ctx.used=(ctx.used||[]).concat(k).slice(-8);
+ if(k=='dilema')return cvDil(0,pre,1);
+ if(k=='dato')return cvFact(pre);
+ const T=cvTM[k];return cvRP((pre?pre+' ':'')+pick(T.reac)+' '+T.ask[0],{k:'topic',t:k,d:0})}
+function cvNext(st,t,n){const T=cvTM[st.t],d=st.d+1,a=cvAck(t,n);
+ if(d>=T.ask.length)return cvMenu(a+' Qué buena plática de '+T.lab+' 😄');
+ return cvRP(a+' '+T.ask[d],{k:'topic',t:st.t,d})}
+function cvStory(st,t,n){if(cvSent(n)=='neg')return cvFeel({k:'howru'},t,n);const th=cvTheme(n);if(th)return cvGo(th,pick(['¡Ah, qué bien!','¡Mira nada más!','¡Qué padre!']));
+ const c=(st.c||0)+1;if(c>=3)return cvMenu(cvAck(t,n));
+ return cvRP(cvAck(t,n)+' '+pick(['Cuéntame más, me dio curiosidad 👀','¿Y qué fue lo que más disfrutaste de eso?','¿Y cómo te sentiste con eso?']),{k:'good',c})}
+function cvFeel(st,t,n){
+ const s=cvSent(n),rq=cvRQ(n),me=rq?pick(['Yo muy bien, gracias por preguntar 😊 Aquí, platicando contigo.','Yo bien, con mis neuronas al cien 😄','Por acá todo tranqui, platicando contigo 😊']):'',pre=me?me+' ':'';
+ if(s=='neg'){
+  if(/aburrid/.test(n))return cvMenu(pre+'Uy, el aburrimiento se arregla platicando 😄',null,1);
+  if(/(cansad|agotad|sueno|desvelad)/.test(n))return cvRP(pre+'Descansar también cuenta como productividad 😴 ¿Dormiste poco o fue un día pesado?',{k:'tired'});
+  return cvRP(pre+pick(['Uy, lamento que andes así 😕','Qué mal, te mando un abrazo virtual 🤗','Ay, ánimo{n} 💛'])+' Gracias por decírmelo. ¿Quieres contarme qué pasó? Si prefieres, mejor te distraigo con algo.',{k:'vent',c:0})}
+ if(s=='meh')return cvRP(pre+pick(['Jaja, de esos días 😅','Mmm, ni fu ni fa, ¿eh?','Hay días así, tranqui.'])+' ¿Qué crees que lo haría un poquito mejor: descansar, comer algo rico o distraerte con una buena plática?',{k:'meh'});
+ if(s=='pos')return cvRP(pre+pick(['¡Qué bueno{n}! 😄','¡Me alegra un montón! 🎉','Eso suena genial 😊'])+' '+pick(['¿Pasó algo bueno hoy o así amaneciste?','¿Qué fue lo mejor de tu día hasta ahorita?','¿Qué traes de planes por hoy?']),{k:'good',c:0});
+ if(st.k=='whatdo'&&/^(nada|aqui nomas|aqui|aqui andamos|nomas aqui|descansando|aqui estoy|pues nada)\b/.test(n))return cvMenu(pre+'Jaja, el arte de no hacer nada también es válido 😌');
+ const th=cvTheme(n);if(th)return cvGo(th,pre+pick(['¡Ah, mira!','Qué interesante 😊','Ya veo.']));
+ if(me)return cvMenu(me);
+ return cvStory(st,t,n)}
+
+/* ---------- Estados: qué espero que me contesten ---------- */
+function cvState(st,t,n){
+ const k=st.k;
+ if(CVCHG.test(n))return cvMenu('Va 😊');
+ const sw=n.match(CVSW);if(sw){const th=cvTheme(sw[1]);if(th)return cvGo(th,'¡Va!')}
+ if(/^(dime |cuentame )?(un )?(dato curioso|dato)$/.test(n))return cvFact('¡Va!');
+ if(CVDILQ.test(n))return cvDil(0,'',1);
+ if(cvQ(t,n)&&!cvRQ(n))return undefined;
+ if(CVREQ.test(n)&&cvW(n)>4)return undefined;
+ switch(k){
+  case'howru':case'day':case'sleep':case'whatdo':return cvFeel(st,t,n);
+  case'good':return cvStory(st,t,n);
+  case'meh':
+   if(/(descans|dormir|siesta|sueno)/.test(n))return cvAt('bienestar',1,'Descansar es una gran idea 😴 Aunque sea veinte minutitos ayudan.');
+   if(/(comer|comida|rico|hambre|antoj)/.test(n))return cvAt('comida',0,'¡Eso sí! Comer rico arregla medio día 😋');
+   if(/(plat|distra|hablar|charla|algo)/.test(n)||cvYes(n))return cvMenu('Va, a distraernos 😄',null,1);
+   return cvStory(st,t,n);
+  case'vent':{
+   if(CVDIST.test(n))return cvMenu('Va, a distraernos 😄',pick(['dilema','dato']),1);
+   if(cvNo(n)||/^no quiero (hablar|contar|platicar)/.test(n))return cvRP('Está bien, no tienes que contarme nada 💛 Aquí estoy por si luego quieres. ¿Te distraigo con algo ligero, como un dato curioso o el juego de «qué prefieres»?',{k:'menu',o:['dato','dilema']});
+   const e=cvEmp.find(x=>x[0].test(n)),c=(st.c||0)+1;
+   return cvRP((e?e[1]:pick(['Gracias por contármelo, de verdad. Suena a que fue pesado.','Te leo. Se nota que eso te afecta, y es válido sentirse así.','Uf, eso suena difícil. Gracias por confiármelo.']))+(c>=3?' Y si esto te pesa seguido, platicarlo con alguien de confianza o con un profesional puede ayudarte mucho.':'')+' ¿Qué te ayudaría más ahorita: seguir desahogándote o distraerte un rato?',{k:'ventopt',c})}
+  case'ventopt':
+   if(CVDIST.test(n)||/(distra|ligero|divertido|jugar|dato)/.test(n))return cvMenu('Va 😊',pick(['dilema','dato']),1);
+   if(/(desahog|hablar|seguir|contar|platicar|cuent|aqui sigo)/.test(n)||cvYes(n))return cvRP('Te leo, con calma y sin prisa. Cuéntame lo que quieras 💛',{k:'vent',c:st.c||1});
+   if(cvNo(n))return cvMenu('Va 😊');
+   return cvState({k:'vent',c:st.c||0},t,n);
+  case'tired':
+   if(/(poco|poquito|desvel|no dormi|insomnio)/.test(n))return cvAt('bienestar',0,'Uf, dormir poco se siente en todo 😴 Si puedes, hoy acuéstate más temprano y deja las pantallas un rato antes.');
+   if(/(pesado|trabaj|estres|dia|mucho)/.test(n))return cvAt('bienestar',1,'Un día pesado cansa el cuerpo y la cabeza 😮‍💨 Date chance de una pausa: agua, estirarte y algo rico.');
+   return cvAt('bienestar',1,cvAck(t,n));
+  case'hunger':
+   if(cvNo(n))return cvMenu('Va, sin presión 😊 Cuando se te antoje algo, me avisas.');
+   if(cvYes(n)||/(idea|receta|sugiere|dame|recomienda|algo)/.test(n)){const id=cvShuf(['quesadillas con frijoles','un sándwich de jamón y queso','huevo a la mexicana','pasta con crema','chilaquiles rápidos','ensalada de atún','tostadas de tinga','sopa instantánea mejorada con verduras']).slice(0,3);
+    return cvRP('Te van tres ideas fáciles: **'+id[0]+'**, **'+id[1]+'** o **'+id[2]+'**. ¿Cuál se te antoja más? 😋',{k:'topic',t:'comida',d:0})}
+   return cvAt('comida',1,'Rico 😋 ¡Buen provecho!');
+  case'likes':{const m=n.match(/me gustan?\s+(.{2,40})$/);if(m){mem.gusta=m[1];save()}
+   const th=cvTheme(n);if(th)return cvGo(th,cvAck(t,n));return cvMenu(cvAck(t,n))}
+  case'since':{const ak=pick(['Qué bien, ya llevas un buen rato en eso 😊','¡Wow, de hace tiempo! 😄','Se nota que es algo que disfrutas 😊']);const th=cvTheme(nxNorm(mem.gusta||'')+' '+n);if(th)return cvAt(th,1,ak);return cvMenu(ak)}
+  case'live':return cvRP(cvAck(t,n)+' ¿Y qué lugar de ahí recomendarías para pasear o comer?',{k:'good',c:0});
+  case'more_yn':
+   if(cvYes(n))return ctx.more&&ctx.more.length?cvRP(ctx.more.shift()+(ctx.more.length?'  ·  di «más» para seguir':''),null):cvRP('Va 😊 Dime sobre qué tema quieres que profundice.',null);
+   if(cvNo(n))return cvMenu('Va 👍');
+   return undefined;
+  case'cont':
+   if(cvYes(n))return cvMenu('¡Va!');
+   if(cvNo(n))return cvRP('Va 😊 Aquí estaré cuando quieras.',null);
+   return undefined;
+  case'more_help':
+   if(cvNo(n))return cvRP('Perfecto, aquí ando 😊',null);
+   if(cvYes(n))return cvRP('Dime 😊',null);
+   return undefined;
+  case'fact':
+   if(cvYes(n))return cvRP('Eres una enciclopedia 😄 ¿Quieres otro dato o platicamos de otra cosa?',{k:'fact_more'});
+   if(cvNo(n))return cvRP('Pues ya aprendiste algo nuevo hoy 😎 ¿Quieres otro dato?',{k:'fact_more'});
+   return cvRP('Verdad que sí 😄 ¿Quieres otro dato?',{k:'fact_more'});
+  case'fact_more':
+   if(cvNo(n)||/(otra cosa|platic)/.test(n))return cvMenu('Va 😊');
+   if(cvYes(n))return cvFact('¡Va!');
+   return undefined;
+  case'dilema':{
+   if(/^(ya|basta|ya basta|ya no|termina|terminemos|paremos|ya estuvo|ya fue)\b/.test(n))return cvMenu('Va 😊');
+   const ha=n.includes(norm(st.a[1])),hb=n.includes(norm(st.b[1]));let r;
+   if(ha!=hb){const x=ha?st.a[0]:st.b[0];r=pick(['**'+x+'**, ¡buena elección! 😄','Mmm, **'+x+'**… estuvo difícil elegir, ¿verdad? 😄','**'+x+'**, ¡se nota que sabes lo que quieres!'])}
+   else if(/(los dos|ambos|ninguno|depende|cualquiera|ni uno ni otro|me da igual)/.test(n))r='Jaja, indeciso 😄 también se vale.';
+   else if(cvW(n)>5)return undefined;
+   else r='Mmm, no te entendí bien, pero va 😄';
+   return cvDil((st.c||0)+1,r)}
+  case'menu':{
+   const o=st.o||[];let pk=null;
+   if(/^(el |la )?(primero|primera|1|uno)\b/.test(n))pk=o[0];
+   else if(/^(el |la )?(segundo|segunda|2|dos)\b/.test(n))pk=o[1];
+   else if(/^(el |la )?(tercero|tercera|3|tres|ultimo|ultima)\b/.test(n))pk=o[2];
+   if(!pk)pk=o.find(x=>cvKey(x).test(n));
+   if(!pk&&CVSURP.test(n))pk=pick(o);
+   if(!pk){const th=cvTheme(n);if(th)pk=th;else if(CVDILQ.test(n))pk='dilema';else if(/\b(dato|curioso|curiosidad)\b/.test(n))pk='dato'}
+   if(pk)return cvGo(pk,'¡Va!');
+   if(cvNo(n)||/^(ninguno|ninguna|nada)\b/.test(n))return cvRP('Va 😊 Entonces dime tú: ¿de qué te gustaría platicar?',{k:'good',c:1});
+   if(cvYes(n)&&o.length)return cvGo(o[0],'¡Va!');
+   return undefined}
+  case'topic':{
+   const T=cvTM[st.t];if(!T)return undefined;
+   if(cvRQ(n)){const self=cvSelf[st.t]||pick(cvSelfG),d=st.d+1,pre=cvW(n)>3?cvAck(t,n)+' ':'';
+    if(d>=T.ask.length)return cvMenu(pre+self+' Qué buena plática de '+T.lab+' 😄');
+    return cvRP(pre+self+' '+T.ask[d],{k:'topic',t:st.t,d})}
+   return cvNext(st,t,n)}
+ }
+ return undefined}
+
+/* ---------- Texto → estado (para respuestas viejas o cargadas del historial) ---------- */
+const CVSTX=[[/(¿Cómo vas\?|¿Y tú,? (cómo vas|qué tal|qué cuentas|qué onda|cómo andas|cómo estás)(, [^?]*)?\?|¿Qué me cuentas\?|¿Qué cuentas\?|¿Qué se cuenta\?|¿Y tú qué onda\?|¿Qué más me cuentas\?|¿Cómo va tu día\?)\s*\S{0,4}$/,{k:'howru'}],
+ [/(¿Y tú qué haces(, [^?]*)?\?|¿Tú qué andas haciendo\?|¿Y tú,? en qué andas\?|¿Y tú qué haces\?)\s*\S{0,4}$/,{k:'whatdo'}],
+ [/(¿Y el tuyo cómo va\?|¿Y a ti cómo te fue\?)\s*\S{0,4}$/,{k:'day'}],
+ [/¿Y tú cómo dormiste\?\s*\S{0,4}$/,{k:'sleep'}],
+ [/¿Y a ti qué te gusta\?\s*\S{0,4}$/,{k:'likes'}],
+ [/¿Dormiste poco o fue un día pesado\?\s*\S{0,4}$/,{k:'tired'}],
+ [/(¿Se te antoja algo en especial\?|¿Quieres que te sugiera algo sencillo de preparar\?)/,{k:'hunger'}],
+ [/(¿Quieres que te cuente más\?|¿Te late que profundice\?)\s*\S{0,4}$/,{k:'more_yn'}],
+ [/Anotado: te gusta .*¿Desde cuándo\?\s*\S{0,4}$/,{k:'since'}],
+ [/¿Qué es lo que más te gusta de vivir ahí\?\s*\S{0,4}$/,{k:'live'}],
+ [/(¿Seguimos platicando\?|¿Qué más hacemos\?)\s*\S{0,4}$/,{k:'cont'}],
+ [/¿Algo más en lo que te eche la mano\?\s*\S{0,4}$/,{k:'more_help'}]];
+const cvStx=txt=>{const s=(txt||'').trim();for(const[re,st]of CVSTX)if(re.test(s))return st;return null};
+
+/* ---------- Entrada ---------- */
+function cvFree(t,n){
+ if(CVCHG.test(n)||/^(platica conmigo|platiquemos|hablemos|conversemos|charlemos|quiero platicar|quiero platicar contigo|quiero hablar|quiero charlar|vamos a platicar|platicame|platicame algo|hablame algo|de que hablamos|de que podemos hablar|de que quieres hablar|dime algo|cuentame algo|platicame de algo|tema|dame un tema|propon un tema)$/.test(n))return cvMenu('Va, platiquemos 😄');
+ if(/^(estoy aburrid[oa]|me aburro|que aburrido|aburrido|aburrida|ando aburrid[oa]|toy aburrid[oa]|estoy muy aburrid[oa])$/.test(n))return cvMenu('Uy, el aburrimiento se arregla platicando 😄',null,1);
+ if(/^(no se de que hablar|no se que decir|no se que preguntar|ni idea|no se|cualquier cosa|lo que quieras|lo que sea|sorprendeme|tu dime|tu elige|tu decide)$/.test(n))return cvGo(pick(Object.keys(cvTM)),'Sin presión 😊');
+ let m=n.match(/^(?:mejor |ya |pues )?(?:hablemos|platiquemos|conversemos|charlemos|platicame|quiero platicar|quiero hablar|vamos a platicar|vamos a hablar|podemos hablar|podemos platicar|me gustaria hablar|quisiera platicar)\s*(?:de|sobre|acerca de)\s+(.+)$/);
+ if(m){const th=cvTheme(m[1]);if(th)return cvGo(th,'¡Va!');return null}
+ if(CVDILQ.test(n))return cvDil(0,'',1);
+ if(/^(preguntame algo|preguntame cosas|hazme preguntas|hazme una pregunta|preguntame)$/.test(n))return cvGo(pick(Object.keys(cvTM)),'¡Va!');
+ if(/^(dime un dato curioso|dato curioso|un dato curioso|cuentame un dato curioso)$/.test(n))return cvFact('');
+ if(CVREQ.test(n)&&cvW(n)>4)return null;
+ if(cvW(n)<=8&&(/^(estoy|ando|me siento|toy|hoy estoy|hoy ando|hoy me siento|me encuentro|ando medio|estoy medio|la verdad estoy|pues estoy|pues ando)\b/.test(n)||/^(bien|mal|muy bien|muy mal|regular|asi asi|mas o menos|cansado|cansada|triste|feliz|contento|contenta|estresado|estresada|fatal|excelente|genial|todo bien|todo mal|bien gracias|mal gracias)$/.test(n))&&cvSent(n))return cvFeel({k:'howru'},t,n);
+ m=n.match(/^(?:estoy|ando|toy|acabo de|voy a|fui a|ahorita estoy|ahorita ando|me voy a|pensaba|estaba)\s+(.+)$/);
+ if(m&&cvW(n)<=10&&!cvSent(n)){const th=cvTheme(m[1]);if(th)return cvGo(th,pick(['¡Ah, mira!','Qué interesante 😊','Ya veo.']))}
+ return null}
+const CVCRISISMSG='Siento muchísimo que estés pasando por algo tan pesado, y me importa que estés a salvo. No tienes que cargar con esto en soledad: platícalo ahorita con alguien de confianza (familia, un amigo, una amiga) o con un profesional. En México puedes llamar a la **Línea de la Vida: 800 911 2000**, y si estás en peligro inmediato, marca el **911**. Aquí me quedo contigo. 💛';
+function nxTalk(t){
+ if(isEn(t)||t.length>240)return null;
+ const n=nxNorm(t);if(!n)return null;
+ if(CVCRISIS.test(n))return cvRP(CVCRISISMSG,null);
+ const a=lastA();let st=a?(ctx.cmap.get(a.t)||cvStx(a.t)):null;
+ if(st){const r=cvState(st,t,n);if(r)return r}
+ return cvFree(t,n)}
+
 function nxPre(t){
  if(ctx.pend)return null;
  if(/^\s*(\/|aprende|learn|ensena|teach)/i.test(t))return null;
  if(hasTaughtQ(t))return null;
- return nxCreator(t)||nxCode(t)||nxChat(t)}
+ return nxCreator(t)||nxCode(t)||nxTalk(t)||nxChat(t)}
 
 async function brain(t,_sub){
  {const pr=nxPre(t);if(pr)return pr}
@@ -1435,9 +1719,9 @@ async function brain(t,_sub){
    if(sw.length&&sw.length<=3){const rx=new RegExp('(^|\\s)'+sub.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'($|\\s)');
     for(const k in TOP){if(k==ctx.topic)continue;if(TOP[k][0].split('|').some(p=>rx.test(norm(p)))){ctx.topic=k;ctx.q=TOP[k][0].split('|')[0];ctx.more=[];ctx.last=null;return{t:TOP[k][1].replace(/\{n\}/g,nm).replace(/\{H\}/g,H).replace(/\{ACC\}/g,ACC),m:'Conversación · seguimiento'}}}}}}
  if((m=t.match(/^\s*(?:aprende|learn|ensena|teach)\s*:\s*([\s\S]+?)\s*=\s*([\s\S]+)$/i))){const q=m[1].replace(/[?!¿¡.]+$/g,'').trim(),a=m[2].trim(),x=mem.taught.find(z=>z.q.toLowerCase()==q.toLowerCase()&&z.a==a);if(!x){const au=mem.taught.find(z=>z.auto&&z.q.toLowerCase()==q.toLowerCase());if(au){au.a=a;delete au.auto}else mem.taught.push({q,a})}mem.taught=mem.taught.slice(-1000);save();if((tester||creator)&&cloudToken&&q.length>=3&&q.length<=200&&a.length<=700)tcmd('ensenar',q+' = '+a).catch(()=>{});return{t:en?'Learned. Ask me **"'+q+'"** anytime.':'Aprendido. Pregúntame **«'+q+'»** cuando quieras.',m:'Memoria · enseñado'}}
- if((m=t.match(/(?:me llamo|mi nombre es|ll[aá]mame|my name is|call me)\s+([a-záéíóúñ]+)/i))){mem.name=m[1][0].toUpperCase()+m[1].slice(1);save();return{t:en?'Nice to meet you, **'+mem.name+'**. I\'ll remember it.':'Mucho gusto, **'+mem.name+'**. Lo recordaré.',m:'Memoria'}}
+ if((m=t.match(/(?:me llamo|mi nombre es|ll[aá]mame|my name is|call me)\s+([a-záéíóúñ]+)/i))){mem.name=m[1][0].toUpperCase()+m[1].slice(1);save();return{t:en?'Nice to meet you, **'+mem.name+'**. I\'ll remember it.':'Mucho gusto, **'+mem.name+'**. Lo recordaré. 😊 ¿Cómo va tu día?',m:'Memoria'}}
  if(/^(?:como me llamo|cual es mi nombre|what is my name|what's my name)/i.test(norm(t).replace(/^/,'')))return{t:mem.name?(en?'You\'re **'+mem.name+'**.':'Te llamas **'+mem.name+'**.'):(en?'You haven\'t told me yet.':'Aún no me lo has dicho. Dime «me llamo…».'),m:'Memoria'};
- for(const[re,k,msg]of[[/me gusta(?:n)?\s+(.{2,40}?)[.!]*$/i,'gusta','Anotado: te gusta **$**. ¿Desde cuándo?'],[/vivo en\s+(.{2,40}?)[.!]*$/i,'vive','**$**, qué buen lugar. Lo recordaré.'],[/tengo\s+(\d{1,3})\s+a[nñ]os/i,'edad','Tienes **$** años; lo guardo.']]){if((m=t.match(re))){mem[k]=m[1];save();return{t:msg.replace('$',m[1]),m:'Memoria'}}}
+ for(const[re,k,msg]of[[/me gusta(?:n)?\s+(.{2,40}?)[.!]*$/i,'gusta','Anotado: te gusta **$**. ¿Desde cuándo?'],[/vivo en\s+(.{2,40}?)[.!]*$/i,'vive','**$**, qué buen lugar. Lo recordaré. ¿Qué es lo que más te gusta de vivir ahí?'],[/tengo\s+(\d{1,3})\s+a[nñ]os/i,'edad','Tienes **$** años; lo guardo.']]){if((m=t.match(re))){mem[k]=m[1];save();return{t:msg.replace('$',m[1]),m:'Memoria'}}}
  {const n=norm(t);if(/que me gusta|what do i like/.test(n))return{t:mem.gusta?'Me dijiste que te gusta **'+mem.gusta+'**.':'Aún no me has dicho qué te gusta.',m:'Memoria'};if(/donde vivo|where do i live/.test(n))return{t:mem.vive?'Vives en **'+mem.vive+'**.':'Aún no me has dicho dónde vives.',m:'Memoria'};if(/cuantos anos tengo|how old am i/.test(n))return{t:mem.edad?'Tienes **'+mem.edad+'** años.':'Aún no me has dicho tu edad.',m:'Memoria'}}
  const tg=taught(t);if(tg)return{t:tg.a,m:tg.cloud?'Memoria · enseñada por testers':tg.auto?'Memoria · aprendido del maestro':'Memoria · enseñado'};
  const ep=episodic(t);if(ep)return ep;
