@@ -6,13 +6,13 @@
 <meta name="theme-color" content="#07090d">
 <title>Noryx Chat</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;800&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;800&family=Instrument+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Lexend:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#f4f1ea;--panel:#ebe7de;--line:#d6d0c2;--ink:#14181d;--mute:#5d6672;--acc:#00727e;--acc2:#b36b00;--u:#d4e9e6;--code:#e3ded2;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#07090d;--panel:#0b0f15;--line:#1a2230;--ink:#e8eef6;--mute:#8693a6;--acc:#00f0ff;--acc2:#ffaa00;--u:#0e2b32;--code:#0f151d}}
 :root[data-theme="dark"]{--bg:#07090d;--panel:#0b0f15;--line:#1a2230;--ink:#e8eef6;--mute:#8693a6;--acc:#00f0ff;--acc2:#ffaa00;--u:#0e2b32;--code:#0f151d}
 *{box-sizing:border-box}html,body{height:100%;margin:0}
-body{background:var(--bg);color:var(--ink);font:15.5px/1.65 'Instrument Sans',system-ui,-apple-system,'Segoe UI',sans-serif;-webkit-font-smoothing:antialiased;overflow:hidden}
+body{background:var(--bg);color:var(--ink);font:var(--fs,15.5px)/1.65 var(--ff,'Instrument Sans',system-ui,-apple-system,'Segoe UI',sans-serif);-webkit-font-smoothing:antialiased;overflow:hidden}
 button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
 :focus-visible{outline:2px solid var(--acc);outline-offset:2px}
 #app{display:grid;grid-template-columns:272px 1fr;height:100%}
@@ -193,7 +193,142 @@ textarea{flex:1;resize:none;border:0;outline:0;background:none;color:var(--ink);
 .figbox{display:flex;flex-direction:column;gap:6px;border:1px dashed var(--line);border-radius:12px;padding:10px}
 .figh label{font-weight:600;font-size:14px}.figh small{font-weight:400}
 #studio .chk{display:flex;gap:8px;align-items:flex-start;font-size:13px;color:var(--mute);cursor:pointer}#studio .chk input{margin-top:4px;accent-color:var(--acc)}
-</style></head>
+</style>
+<style>
+/* ===== Apariencia elegida en Ajustes (fuente, tamaño, acento) ===== */
+:root[data-font="system"]{--ff:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}
+:root[data-font="lexend"]{--ff:'Lexend',system-ui,sans-serif}
+:root[data-font="serif"]{--ff:Georgia,'Iowan Old Style','Times New Roman',serif}
+:root[data-font="mono"]{--ff:'JetBrains Mono',ui-monospace,Menlo,Consolas,monospace}
+:root[data-font="serif"] body{line-height:1.72}
+:root[data-fs="s"]{--fs:14px}
+:root[data-fs="l"]{--fs:17px}
+:root[data-fs="xl"]{--fs:19px}
+:root[data-acc="amber"]{--acc:#9a5700;--acc2:#00727e}
+:root[data-acc="green"]{--acc:#1f7a3d}
+:root[data-acc="violet"]{--acc:#6b3fc9}
+:root[data-acc="rose"]{--acc:#c2185b}
+@media (prefers-color-scheme:dark){
+ :root[data-acc="amber"]:not([data-theme="light"]){--acc:#ffb020;--acc2:#00f0ff}
+ :root[data-acc="green"]:not([data-theme="light"]){--acc:#3ddc84}
+ :root[data-acc="violet"]:not([data-theme="light"]){--acc:#a98bff}
+ :root[data-acc="rose"]:not([data-theme="light"]){--acc:#ff6fa8}
+}
+:root[data-theme="dark"][data-acc="amber"]{--acc:#ffb020;--acc2:#00f0ff}
+:root[data-theme="dark"][data-acc="green"]{--acc:#3ddc84}
+:root[data-theme="dark"][data-acc="violet"]{--acc:#a98bff}
+:root[data-theme="dark"][data-acc="rose"]{--acc:#ff6fa8}
+
+/* ===== Barra lateral: mensajes y perfil ===== */
+#mgb{border:1px solid var(--line);border-radius:12px;padding:10px 14px;text-align:left;font-weight:600;display:flex;gap:10px;align-items:center}
+#mgb:hover{border-color:var(--acc)}
+#mgn{margin-left:auto;background:var(--acc);color:var(--bg);border-radius:999px;font:600 12px 'JetBrains Mono',monospace;padding:1px 8px}
+#prof{display:flex;align-items:center;gap:10px;border-radius:12px;padding:6px 8px;text-align:left;width:100%}
+#prof:hover{background:color-mix(in srgb,var(--acc) 10%,transparent)}
+#prof .pav{width:34px;height:34px;font-size:15px}
+#prof span{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.25}
+#prof b{font-size:14px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#prof small{font-size:12px;color:var(--mute);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#prof svg{flex:none;color:var(--mute)}
+
+/* ===== Ventanas de Ajustes y Mensajes ===== */
+#set,#mg{position:fixed;inset:0;background:#000a;display:grid;place-items:center}
+#set{z-index:56}#mg{z-index:54}
+#set[hidden],#mg[hidden]{display:none}
+#set [hidden],#mg [hidden]{display:none!important}
+#set .card,#mg .card{background:var(--panel);border:1px solid var(--line);border-radius:18px;display:flex;flex-direction:column;overflow:hidden}
+#set .card{width:min(820px,96vw);height:min(92vh,640px)}
+#mg .card{width:min(640px,96vw);max-height:92vh}
+.dh{display:flex;align-items:center;gap:10px;padding:14px 18px;border-bottom:1px solid var(--line)}
+.dh b{font:800 20px 'Bricolage Grotesque',sans-serif;letter-spacing:-.02em;flex:1}
+.dh button{width:32px;height:32px;border:1px solid var(--line);border-radius:50%;display:grid;place-items:center;color:var(--mute)}
+.dh button:hover{border-color:var(--acc);color:var(--ink)}
+
+/* Ajustes */
+#set .sbody{flex:1;min-height:0;display:grid;grid-template-columns:200px 1fr}
+#set .snav{border-right:1px solid var(--line);padding:10px;display:flex;flex-direction:column;gap:2px;overflow:auto}
+#set .snav button{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:10px;color:var(--mute);text-align:left;font-size:14.5px}
+#set .snav button:hover{background:color-mix(in srgb,var(--acc) 8%,transparent)}
+#set .snav button.on{background:color-mix(in srgb,var(--acc) 14%,transparent);color:var(--ink)}
+#set .spanes{overflow:auto;padding:4px 22px 22px;min-height:0}
+.srow{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 0;border-bottom:1px solid var(--line)}
+.srow:last-child{border-bottom:0}
+.sl{min-width:0}
+.sl b{display:block;font-weight:600;font-size:14.5px}
+.sl small{display:block;color:var(--mute);font-size:13px;line-height:1.4;margin-top:1px}
+.sc{display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+.sst{font:400 12.5px 'JetBrains Mono',monospace;color:var(--mute)}
+.spv{border:1px solid var(--line);border-radius:14px;background:var(--bg);padding:6px 0;margin:16px 0 2px}
+.spv .msg{padding:7px 16px;max-width:none}
+
+/* Controles */
+.seg{display:inline-flex;flex-wrap:wrap;gap:2px;border:1px solid var(--line);border-radius:999px;padding:2px}
+.seg button{padding:5px 13px;border-radius:999px;font-size:13.5px;color:var(--mute)}
+.seg button:hover{color:var(--ink)}
+.seg button.on{background:color-mix(in srgb,var(--acc) 16%,transparent);color:var(--ink)}
+.swr{display:flex;gap:10px}
+.swc{width:26px;height:26px;border-radius:50%;background:var(--c);border:0;box-shadow:0 0 0 2px var(--panel)}
+.swc[aria-pressed="true"]{box-shadow:0 0 0 2px var(--panel),0 0 0 4px var(--c)}
+.ssel{border:1px solid var(--line);background:var(--panel);color:var(--ink);border-radius:10px;padding:7px 10px;font:inherit;font-size:14px;max-width:230px}
+.tg{position:relative;flex:none;width:42px;height:24px;border-radius:999px;border:1px solid var(--line);background:var(--code);transition:background .2s}
+.tg::after{content:"";position:absolute;top:2px;left:2px;width:18px;height:18px;border-radius:50%;background:var(--mute);transition:transform .2s,background .2s}
+.tg[aria-checked="true"]{background:var(--acc);border-color:var(--acc)}
+.tg[aria-checked="true"]::after{transform:translateX(18px);background:var(--bg)}
+.sbt{border:1px solid var(--line);border-radius:999px;padding:6px 14px;font-size:13.5px;white-space:nowrap}
+.sbt:hover:not(:disabled){border-color:var(--acc)}
+.sbt:disabled{opacity:.5;cursor:wait}
+.sbt.pri{background:var(--acc);color:var(--bg);border-color:var(--acc);font-weight:600}
+.sbt.dng{color:#d33;border-color:color-mix(in srgb,#d33 45%,var(--line))}
+.sbt.dng:hover:not(:disabled){border-color:#d33}
+.sin{width:100%;border:1px solid var(--line);background:none;color:var(--ink);border-radius:10px;padding:8px 12px;font:inherit;font-size:14px;min-width:0}
+.sin:focus{outline:0;border-color:var(--acc)}
+
+/* Cuenta */
+.sacc{display:flex;gap:14px;align-items:center;padding:16px 0;border-bottom:1px solid var(--line)}
+.pav{flex:none;width:46px;height:46px;border-radius:50%;display:grid;place-items:center;background:var(--acc);color:var(--bg);font:800 19px 'Bricolage Grotesque',sans-serif;font-style:normal}
+.sai{min-width:0;display:flex;flex-direction:column;gap:2px}
+.sai b{font-size:16px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sai small{color:var(--mute);font-size:13.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pills{display:flex;gap:6px;flex-wrap:wrap;margin-top:5px}
+.pill{display:inline-flex;align-items:center;gap:6px;font:500 12px 'JetBrains Mono',monospace;border:1px solid var(--line);border-radius:999px;padding:2px 10px;color:var(--mute)}
+.pill i{width:7px;height:7px;border-radius:50%;background:var(--line)}
+.pill.ok{color:var(--ink)}
+.pill.ok i{background:var(--acc)}
+
+/* Mensajes */
+#mg .mgbd{padding:16px 18px 18px;overflow:auto;min-height:0;display:flex;flex-direction:column;gap:12px}
+#mgC,#mgU{display:flex;flex-direction:column;gap:12px}
+#mg textarea.sin{resize:vertical;min-height:112px;max-height:none;flex:none;padding:9px 12px}
+.hint{color:var(--mute);font-size:13.5px;line-height:1.5}
+.row2{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.cnt{font:400 12px 'JetBrains Mono',monospace;color:var(--mute)}
+.qh2{font:700 15px 'Bricolage Grotesque',sans-serif;margin-top:6px}
+.mgl{display:flex;flex-direction:column;gap:8px}
+.mgi{border:1px solid var(--line);border-left-width:4px;border-radius:12px;padding:10px 14px;display:flex;flex-direction:column;gap:3px}
+.mgi.new,.mgi.a-todos{border-left-color:var(--acc)}
+.mgi.a-testers{border-left-color:var(--acc2)}
+.mgi.a-uno{border-left-color:#2e9e5b}
+.mgi .t{font-weight:600}
+.mgi .m{font:400 12px 'JetBrains Mono',monospace;color:var(--mute);display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.mgi .x{white-space:pre-wrap;overflow-wrap:anywhere}
+.mgi .bs{display:flex;justify-content:flex-end;margin-top:4px}
+.mgempty{border:1px dashed var(--line);border-radius:12px;padding:22px;text-align:center;color:var(--mute)}
+#mg .mgwarn{border-left:4px solid var(--acc2);padding:9px 12px;border-radius:8px;background:var(--code);font-size:14px;line-height:1.5}
+#mg details summary{cursor:pointer;color:var(--mute);font-size:14px}
+#mg pre{background:var(--code);border:1px solid var(--line);border-radius:10px;padding:10px;font:400 12px/1.5 'JetBrains Mono',monospace;white-space:pre-wrap;max-height:240px;overflow:auto;margin:8px 0}
+
+@media (max-width:760px){
+ #set .card,#mg .card{width:100vw;height:100dvh;max-height:none;border-radius:0;border:0}
+ .dh{padding-top:calc(14px + env(safe-area-inset-top,0px))}
+ #set .sbody{grid-template-columns:1fr;grid-template-rows:auto 1fr}
+ #set .snav{flex-direction:row;border-right:0;border-bottom:1px solid var(--line);overflow-x:auto;padding:8px 10px}
+ #set .snav button{white-space:nowrap;padding:7px 12px}
+ #set .spanes{padding:2px 16px 24px}
+ .srow{flex-wrap:wrap}
+ .sc{justify-content:flex-start}
+}
+</style>
+<script>try{var r=document.documentElement,g=function(k){try{return JSON.parse(localStorage.getItem(k)||'null')}catch(e){return null}};['font','fs','acc'].forEach(function(n){var v=g('nx-'+n);if(typeof v=='string'&&/^[a-z]{1,8}$/.test(v))r.dataset[n]=v});var t=g('nx-theme');if(t=='dark'||t=='light')r.dataset.theme=t}catch(e){}</script></head>
 <body>
 <div id="app">
  <aside id="side" aria-label="Conversaciones">
@@ -201,8 +336,10 @@ textarea{flex:1;resize:none;border:0;outline:0;background:none;color:var(--ink);
   <button id="new">Nueva conversación <span>+</span></button>
   <div id="pro" hidden><button id="vlb"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg>Voz en vivo</button><button id="imb"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="9" cy="10" r="1.8"/><path d="M21 16l-5-5-8 8"/></svg>Imágenes</button></div>
   <button id="jvb" hidden><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/></svg>Modo Noryx</button>
+  <button id="mgb" aria-label="Mensajes"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>Mensajes<b id="mgn" hidden>0</b></button>
   <input id="q" placeholder="Buscar en conversaciones" aria-label="Buscar"><nav id="list"></nav>
   <div class="foot"><button id="thm">Tema</button><button id="spk">Voz: no</button><button id="mdopen">Micrófono</button><button id="acc">Entrar</button><button id="exb" title="Ejercicios resueltos: repasa o practica">Ejercicios</button><button id="exp">Exportar</button><button id="forget">Olvidar todo</button><button id="bk" title="Descargar una copia de tus conversaciones y memoria">Respaldo</button><button id="gxb" hidden>Accesos</button></div>
+  <button id="prof" aria-label="Ajustes y cuenta"><i class="pav" id="profa">N</i><span><b id="profn">Invitado</b><small id="profs">Sin sesión</small></span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button>
  </aside>
  <div id="scrim"></div>
  <main>
@@ -234,12 +371,12 @@ textarea{flex:1;resize:none;border:0;outline:0;background:none;color:var(--ink);
   <div id="imtb" class="imtb"></div>
   <div id="imw" class="pn" hidden>
    <canvas id="imc"></canvas><div id="imi"></div><div id="pal"></div>
-   <div class="qh" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">Pregúntale a Noryx sobre tus imágenes<button id="imeng" class="eng" hidden style="display:none"></button></div>
+   <div class="qh" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">Pregúntale a Noryx sobre tus imágenes</div>
    <div id="imch" class="chips2"></div>
    <div class="figbox"><div class="figh"><label for="imfig">Datos de la figura <small>(opcional, para ejercicios con dibujo)</small></label></div>
-   <div class="qrow"><input type="text" id="imfig" placeholder="Ej.: plano de 30°, altura 5 m, masa 2 kg · A: 3R, B: R" maxlength="300" autocomplete="off"><button id="imrd" title="Lee ángulos, alturas y rótulos con un modelo de visión que corre en tu navegador">Leer figura</button></div>
-   <label class="chk"><input type="checkbox" id="imauto"><span>Leer la figura automáticamente con el modelo de visión del navegador (la imagen no sale de tu equipo)</span></label>
-   <small id="imfn">Noryx lee el texto del dibujo con OCR, pero no interpreta la figura. Escribe aquí lo que muestra (ángulos, alturas, rótulos) y lo sumo al ejercicio.</small></div>
+   <div class="qrow"><input type="text" id="imfig" placeholder="Ej.: plano de 30°, altura 5 m, masa 2 kg · A: 3R, B: R" maxlength="300" autocomplete="off"><button id="imrd" title="Noryx analiza las rectas, los ángulos y los rótulos de la figura por su cuenta">Leer figura</button></div>
+   <label class="chk"><input type="checkbox" id="imauto"><span>Que Noryx lea la figura sola cuando resuelva un ejercicio con imagen</span></label>
+   <canvas id="imov" style="display:none;max-height:30vh;border:1px solid var(--line);border-radius:10px;align-self:center" aria-label="Lo que Noryx detectó en la figura"></canvas><small id="imfn">Noryx lee la figura por su cuenta (rectas, ángulos y rótulos) y llena este campo. Funciona mejor con dibujos limpios: plano inclinado, triángulos, bloques. Corrige lo que haga falta: aprende de tus correcciones.</small></div>
    <div class="qrow"><input type="text" id="imq" placeholder="Escribe tu pregunta… ej. ¿qué música le queda a esta foto?" maxlength="400" autocomplete="off"><button class="pri" id="imd">Preguntar</button></div>
    <div id="imo" aria-live="polite"></div>
    <details class="ed"><summary>Editar imagen (filtros y descarga)</summary><div class="tb" id="imt"><button data-f="gray">Grises</button><button data-f="sepia">Sepia</button><button data-f="invert">Invertir</button><button data-f="bright">Más luz</button><button data-f="dark">Menos luz</button><button data-f="contrast">Contraste</button><button data-f="flip">Voltear</button><button data-f="rot">Girar</button><button data-f="reset">Restablecer</button><button id="imdl">Descargar</button></div></details>
@@ -254,11 +391,11 @@ textarea{flex:1;resize:none;border:0;outline:0;background:none;color:var(--ink);
   <div id="mkh"></div><div id="mkst"></div><div id="mko"></div>
   <div class="row" id="mka" hidden><button id="mkv">Otra variante</button><button id="mkd">Descargar</button></div>
   <small>La imagen la genera un servicio externo (Pollinations) a partir de tu descripción; funciona mejor si la escribes con detalle. Si no responde, Noryx dibuja arte generativo local como respaldo.</small>
- </div>
  <details class="ed" id="pkd"><summary>Clave de Pollinations (solo para crear imágenes)</summary>
   <div class="qrow" style="margin-top:8px"><input type="password" id="pkey" placeholder="pk_…" autocomplete="off" spellcheck="false"><button id="pks">Guardar</button></div>
-  <small>Si la creación de imágenes falla, el servicio ahora pide una clave. El análisis de imágenes ya no la necesita. Créala gratis en <a href="https://enter.pollinations.ai" target="_blank" rel="noopener">enter.pollinations.ai</a> (elige tipo «publishable», pk_). Se guarda solo en este navegador y se envía únicamente a Pollinations. Usa una clave pk_, nunca una sk_.</small>
+  <small>Si la creación de imágenes falla, el servicio ahora pide una clave. Créala gratis en <a href="https://enter.pollinations.ai" target="_blank" rel="noopener">enter.pollinations.ai</a> (elige tipo «publishable», pk_). Se guarda solo en este navegador y se envía únicamente a Pollinations. Usa una clave pk_, nunca una sk_.</small>
  </details>
+ </div>
 </div></div>
 <div id="jv" hidden role="dialog" aria-label="Modo Noryx">
  <div class="jvtop"><span><b>Noryx</b> · asistente de voz</span><span id="jvclk"></span></div>
@@ -301,6 +438,65 @@ textarea{flex:1;resize:none;border:0;outline:0;background:none;color:var(--ink);
  <div class="row"><input id="exq" type="text" placeholder="Buscar en tus ejercicios" aria-label="Buscar ejercicios" autocomplete="off"><button class="pri" id="exr">Practicar uno al azar</button></div>
  <div id="exl"></div>
  <div class="row"><button id="exc">Borrar historial</button></div>
+</div></div>
+<div id="set" hidden role="dialog" aria-modal="true" aria-labelledby="sett"><div class="card">
+ <div class="dh"><b id="sett">Ajustes</b><button id="setx" aria-label="Cerrar ajustes">✕</button></div>
+ <div class="sbody">
+  <nav class="snav" aria-label="Secciones de ajustes">
+   <button data-p="gen" class="on"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></svg>General</button>
+   <button data-p="cta"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>Cuenta</button>
+   <button data-p="dat"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><ellipse cx="12" cy="5" rx="8" ry="3"/><path d="M4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></svg>Datos</button>
+   <button data-p="ace"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.01"/></svg>Acerca de</button>
+  </nav>
+  <div class="spanes">
+   <section class="spn" data-p="gen">
+    <div class="spv" aria-hidden="true">
+     <div class="msg u"><div class="body">¿Cómo aprende una red neuronal?</div></div>
+     <div class="msg a"><i class="av"></i><div class="body">Ajusta miles de conexiones hasta acertar más. Así se verá tu chat con este tema, color, fuente y tamaño.</div></div>
+    </div>
+    <div class="srow"><div class="sl"><b>Tema</b><small>Sistema sigue el modo de tu dispositivo.</small></div><div class="seg" id="s-th" role="group" aria-label="Tema"></div></div>
+    <div class="srow"><div class="sl"><b>Color de acento</b></div><div class="swr" id="s-ac" role="group" aria-label="Color de acento"></div></div>
+    <div class="srow"><div class="sl"><b>Fuente</b></div><select class="ssel" id="s-ff" aria-label="Fuente"></select></div>
+    <div class="srow"><div class="sl"><b>Tamaño del texto</b></div><div class="seg" id="s-fs" role="group" aria-label="Tamaño del texto"></div></div>
+    <div class="srow"><div class="sl"><b>Respuestas en voz alta</b><small>Noryx lee lo que responde.</small></div><button class="tg" id="s-sp" role="switch" aria-checked="false" aria-label="Respuestas en voz alta"></button></div>
+    <div class="srow"><div class="sl"><b>Restablecer apariencia</b><small>Vuelve al tema, color, fuente y tamaño originales.</small></div><button class="sbt" id="s-rs">Restablecer</button></div>
+   </section>
+   <section class="spn" data-p="cta" hidden><div id="s-ca"></div></section>
+   <section class="spn" data-p="dat" hidden>
+    <div class="srow"><div class="sl"><b>Exportar conversación</b><small>Descarga la conversación actual.</small></div><button class="sbt" id="s-ex">Exportar</button></div>
+    <div class="srow"><div class="sl"><b>Ejercicios</b><small>Repasa o practica los ejercicios que Noryx resolvió.</small></div><button class="sbt" id="s-exb">Abrir</button></div>
+    <div class="srow"><div class="sl"><b>Respaldo</b><small>Copia de tus conversaciones y tu memoria, sin contraseñas.</small></div><div class="sc"><button class="sbt" id="s-bk">Descargar</button><button class="sbt" id="s-rt">Restaurar</button></div></div>
+    <div class="srow"><div class="sl"><b>Micrófono</b><small>Comprueba que Noryx te escuche.</small></div><button class="sbt" id="s-mic">Detector</button></div>
+    <div class="srow"><div class="sl"><b>Olvidar todo</b><small>Borra las conversaciones y lo que Noryx aprendió de ti en este navegador.</small></div><button class="sbt dng" id="s-fg">Borrar todo</button></div>
+   </section>
+   <section class="spn" data-p="ace" hidden>
+    <div class="srow"><div class="sl"><b>Noryx Chat</b><small>Piensa en tu navegador con su propia red neuronal de unos 6.5 millones de parámetros y aprende de ti.</small></div></div>
+    <div class="srow"><div class="sl"><b>Comandos</b><small>Escribe /ayuda en el chat para ver lo que Noryx sabe hacer.</small></div><button class="sbt" id="s-hp">Ver comandos</button></div>
+    <div class="srow"><div class="sl"><b>Atajo</b><small>Ctrl o ⌘ + coma abre y cierra los ajustes.</small></div></div>
+   </section>
+  </div>
+ </div>
+</div></div>
+<div id="mg" hidden role="dialog" aria-modal="true" aria-labelledby="mgt"><div class="card">
+ <div class="dh"><b id="mgt">Mensajes</b><button id="mgr" title="Actualizar" aria-label="Actualizar">↻</button><button id="mgx" aria-label="Cerrar mensajes">✕</button></div>
+ <div class="mgbd">
+  <div id="mgw" class="mgwarn" hidden></div>
+  <div id="mgC" hidden>
+   <small class="hint">Escribe un mensaje para tus testers o para cualquier persona en Noryx. Lo verá en su bandeja de Mensajes.</small>
+   <div class="seg" id="mgto" role="group" aria-label="Destinatarios"></div>
+   <div id="mgp" hidden><input class="sin" id="mge" type="email" list="mgdl" placeholder="Correo de la persona (su cuenta de Noryx)" autocomplete="off" aria-label="Correo del destinatario"><datalist id="mgdl"></datalist></div>
+   <input class="sin" id="mgti" maxlength="80" placeholder="Asunto (opcional)" autocomplete="off" aria-label="Asunto">
+   <textarea class="sin" id="mgtx" maxlength="1000" placeholder="Escribe tu mensaje…" aria-label="Mensaje"></textarea>
+   <div class="chips2" id="mgch"></div>
+   <div class="row2"><span id="mgc" class="cnt">0 / 1000</span><button class="sbt pri" id="mgsd">Enviar mensaje</button></div>
+   <div class="qh2">Enviados</div><div id="mgs" class="mgl"></div>
+  </div>
+  <div id="mgU" hidden>
+   <div id="mgl" class="mgl"></div>
+   <small id="mgh" class="hint"></small>
+  </div>
+  <details id="mgsq" hidden><summary>SQL de mensajes (se ejecuta una sola vez)</summary><pre id="mgpre"></pre><button class="sbt" id="mgcp">Copiar SQL</button></details>
+ </div>
 </div></div>
 <input type="file" id="bkf" accept="application/json,.json" hidden>
 <div id="toast"></div>
@@ -2657,8 +2853,6 @@ function stOpen(t){if(!sess)return openDlg();closeMenu();st.hidden=false;stTab(t
 function stTab(t){$('#pUp').hidden=t!='up';$('#pMk').hidden=t!='mk';$('#tbUp').classList.toggle('on',t=='up');$('#tbMk').classList.toggle('on',t=='mk')}
 $('#imb').onclick=()=>stOpen('up');
 $('#pkey').value=S.get('nx-pkey','');
-const paintEng=()=>{const loc=S.get('nx-veng','local')=='local';$('#imeng').textContent='Motor: '+(loc?'Noryx local':'Pollinations');$('#imnote').textContent=loc?'Modo local: la imagen no sale de tu navegador. Noryx lee texto (Tesseract), reconoce objetos (MobileNet) y razona con sus propias reglas; la primera vez descarga unos 10–25 MB de modelos. No entiende dibujos complejos ni resuelve problemas nuevos como una IA grande: para eso cambia el motor a Pollinations (envía la imagen reducida a ese servicio y necesita clave).':'Motor Pollinations: se envía una versión reducida de la imagen y tu pregunta a un servicio externo (no subas fotos privadas). Puede fallar si pide clave. Revisa sus respuestas.'};paintEng();
-$('#imeng').onclick=()=>{S.set('nx-veng',S.get('nx-veng','local')=='local'?'poll':'local');paintEng()};
 $('#pks').onclick=()=>{const k=$('#pkey').value.trim();if(k&&!/^pk_/.test(k)){toast(/^sk_/.test(k)?'Esa es una clave secreta (sk_): no la pongas aquí. Usa una pk_':'La clave debe empezar por pk_');return}S.set('nx-pkey',k);toast(k?'Clave guardada en este navegador':'Clave borrada')};$('#stX').onclick=()=>st.hidden=true;$('#tbUp').onclick=()=>stTab('up');$('#tbMk').onclick=()=>stTab('mk');
 st.addEventListener('click',e=>{if(e.target==st)st.hidden=true});
 addEventListener('keydown',e=>{if(e.key!='Escape')return;if(!st.hidden)st.hidden=true;else if(VL.on)vlStop()});
@@ -2726,15 +2920,6 @@ const SYSI='Eres Noryx, una IA amable con trato femenino, creada por Orlando. El
 const IMQ=['¿Qué ves en la imagen?','Resuelve este ejercicio paso a paso','¿Está bien mi respuesta?','Transcribe el texto','¿Qué música le queda?','Ponle un título y un texto para redes','¿Qué colores combinan con esto?','Explícamelo fácil'];
 IMQ.forEach(q=>{const b=document.createElement('button');b.textContent=q;b.onclick=()=>imAsk(q);$('#imch').append(b)});
 const pKey=()=>(S.get('nx-pkey','')||'').trim();
-async function pollChat(msgs,ms){let last=0;const key=pKey(),eps=[];
- if(key)eps.push(['https://gen.pollinations.ai/v1/chat/completions',key]);eps.push(['https://gen.pollinations.ai/v1/chat/completions','']);eps.push(['https://text.pollinations.ai/openai','']);
- for(const[u,k]of eps){for(const m of['openai','gemini']){const ctl=new AbortController(),to=setTimeout(()=>ctl.abort(),ms);
-  try{const h={'Content-Type':'application/json'};if(k)h.Authorization='Bearer '+k;
-   const r=await fetch(u,{method:'POST',headers:h,body:JSON.stringify({model:m,messages:msgs,private:true}),signal:ctl.signal});
-   if(!r.ok){last=last&&last!=404?last:r.status;if(r.status==429||r.status==401||r.status==402||r.status==403)break;continue}
-   const j=await r.json(),x=j.choices&&j.choices[0]&&j.choices[0].message&&j.choices[0].message.content;if(x&&x.trim())return{t:x.trim()}}
-  catch(e){last=last||'red'}finally{clearTimeout(to)}}}
- return{err:last||'red'}}
 /* --- Visión local de Noryx: sin enviar la imagen a nadie --- */
 const LS={},loadJS=u=>LS[u]||(LS[u]=new Promise((ok,no)=>{const e=document.createElement('script');e.src=u;e.onload=ok;e.onerror=()=>{delete LS[u];no(new Error('no pude descargar '+u.split('/').slice(2,5).join('/')))};document.head.append(e)}));
 const TESS='https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js',TFJS='https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js',MNET='https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet@2.1.1/dist/mobilenet.min.js';
@@ -2781,7 +2966,7 @@ async function imRecog(say){if(imCache.rec)return imCache.rec;say('Cargando el r
 async function imOcr(say){if(imCache.ocr!=null)return imCache.ocr;say('Cargando el lector de texto… (la primera vez baja unos 10 MB)');await loadJS(TESS);
  const k=Math.min(3,Math.max(1,1800/Math.max(imc.width,imc.height))),t=document.createElement('canvas');t.width=Math.round(imc.width*k);t.height=Math.round(imc.height*k);const x=t.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,t.width,t.height);x.drawImage(imc,0,0,t.width,t.height);
  const r=await Tesseract.recognize(t,'spa+eng',{logger:m=>{say(m.status=='recognizing text'?'Leyendo el texto… '+Math.round(m.progress*100)+' %':'Preparando el lector de texto…')}});
- return imCache.ocr=(r.data.text||'').trim()}
+ imCache.ow={k,w:(r.data.words||[]).filter(q=>q&&q.text&&q.bbox).map(q=>({t:q.text,x0:q.bbox.x0,y0:q.bbox.y0,x1:q.bbox.x1,y1:q.bbox.y1}))};return imCache.ocr=(r.data.text||'').trim()}
 async function localVision(q,wait){const n=norm(q),say=m=>{wait.textContent=m},st=imStats(),tone=st.L<70?'oscura':st.L>185?'muy clara':st.L>130?'clara':'equilibrada';
  const music=/music|cancion|playlist|escuchar|soundtrack/.test(n),cap=/titulo|redes|instagram|caption|pie de foto|publicar/.test(n),colr=!music&&/color|paleta|combin|decor/.test(n),
   ocr=!music&&!cap&&!colr&&/transcrib|\blee\b|leer|texto|dice|ecuacion|ejercicio|resuelv|respuesta|esta bien|correg|tarea|problema|formula|reaccion|escrit|fisica|calcul|halla|determin|resultante|cuanto|cual es|fuerza|velocidad|aceleracion|energia|resuelve|explic|facil|paso a paso|ayud|entend|como se/.test(n);
@@ -2808,9 +2993,9 @@ async function imAsk(q){q=(q||$('#imq').value).trim();if(!orig||!q||imBusy)retur
   msgs=[{role:'system',content:SYSI+(imSnaps.length>1?' El usuario envió '+imSnaps.length+' imágenes, numeradas en el orden en que llegan (imagen 1, imagen 2…). Respóndelas todas y cita el número de cada una.':'')},...imHist.slice(-8).map(m=>m.role=='user'&&m===first?{role:'user',content:[{type:'text',text:m.text},...imgPart()]}:{role:m.role,content:m.text})];
  /* las imágenes siempre van en el primer mensaje del hilo enviado */
  while(msgs.length>1&&msgs[1].role!='user')msgs.splice(1,1);const fi=msgs.findIndex(m=>m.role=='user');if(fi>0&&!Array.isArray(msgs[fi].content))msgs[fi]={role:'user',content:[{type:'text',text:msgs[fi].content},...imgPart()]};
- let r;if(S.get('nx-veng','local')=='local'){try{r={t:await imLocalAll(q,wait)}}catch(e){r={err:'local',msg:e&&e.message}}}else r=await pollChat(msgs,60000);const ans=r.t||'';
+ let r;try{r={t:await imLocalAll(q,wait)}}catch(e){r={err:'local',msg:e&&e.message}}const ans=r.t||'';
  if(ans){imHist.push({role:'assistant',text:ans});wait.innerHTML=md(ans)}
- else{imHist.pop();wait.textContent=r.err=='local'?('No pude cargar el motor local de Noryx'+(r.msg?' ('+r.msg+')':'')+'. La primera vez descarga modelos pequeños: revisa tu conexión y vuelve a intentar.'):r.err==401||r.err==402||r.err==403?'Pollinations ahora pide una clave gratuita para analizar imágenes. Pega tu clave pk_ abajo, en «Conexión con Pollinations» (se consigue gratis en enter.pollinations.ai) y vuelve a preguntar.':r.err==429?'El servicio de visión está saturado ahora mismo. Espera unos segundos y vuelve a preguntar.':'No pude contactar al servicio de visión'+(r.err?' (error '+r.err+')':'')+'. Revisa tu conexión o pega tu clave en «Conexión con Pollinations» e inténtalo de nuevo.'}
+ else{imHist.pop();wait.textContent='No pude analizar la imagen'+(r.msg?' ('+r.msg+')':'')+'. La primera vez Noryx descarga sus modelos de visión: revisa tu conexión y vuelve a intentar.'}
  wait.scrollIntoView({block:'nearest',behavior:'smooth'});imBusy=false;$('#imd').disabled=false}
 $('#imd').onclick=()=>imAsk();$('#imq').addEventListener('keydown',e=>{if(e.key=='Enter'){e.preventDefault();imAsk()}});
 
@@ -3848,6 +4033,186 @@ const _s=say;say=function(t){_s(isEn(t)?t:NXM.speech(t))};
 })();
 </script>
 <script>
+/* ---------- Ojo de Noryx: lector de figuras propio (sin modelos externos) ----------
+   1) umbral adaptativo -> tinta   2) quita texto y manchas (componentes pequeños)
+   3) Hough -> rectas -> segmentos ajustados por mínimos cuadrados
+   4) vértices y ángulos -> triángulo / plano inclinado / rectángulo
+   5) une cada número que lee el OCR con la parte de la figura que tiene más cerca
+   6) aprende de tus correcciones (palabras para cada rol y ángulos que sueles usar) */
+const FG=(()=>{
+const D=Math.PI/180,dist=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
+const SNAP=[15,20,25,30,35,37,40,45,50,53,55,60,65,70,75];
+
+function ink(d,w,h){
+ const g=new Uint8Array(w*h);let sum=0;
+ for(let i=0,j=0;i<g.length;i++,j+=4){g[i]=(d[j]*.299+d[j+1]*.587+d[j+2]*.114+.5)|0;sum+=g[i]}
+ const dark=sum/g.length<100,I=new Float64Array((w+1)*(h+1));
+ for(let y=0;y<h;y++){let r=0;for(let x=0;x<w;x++){r+=g[y*w+x];I[(y+1)*(w+1)+x+1]=I[y*(w+1)+x+1]+r}}
+ const R=Math.max(6,Math.round(Math.max(w,h)/18)),m=new Uint8Array(w*h);
+ for(let y=0;y<h;y++){const y0=Math.max(0,y-R),y1=Math.min(h,y+R+1);
+  for(let x=0;x<w;x++){const x0=Math.max(0,x-R),x1=Math.min(w,x+R+1),
+   s=I[y1*(w+1)+x1]-I[y0*(w+1)+x1]-I[y1*(w+1)+x0]+I[y0*(w+1)+x0],mean=s/((x1-x0)*(y1-y0)),v=g[y*w+x];
+   if(dark?v>mean+22:v<mean-22)m[y*w+x]=1}}
+ return m}
+
+/* conserva solo los trazos largos: letras, números y puntitos desaparecen */
+function strokes(m,w,h){
+ const lab=new Uint8Array(w*h),pts=[],st=[],big=.12*Math.max(w,h);
+ for(let i=0;i<w*h;i++){
+  if(!m[i]||lab[i])continue;
+  let x0=w,y0=h,x1=0,y1=0;const mem=[];st.length=0;st.push(i);lab[i]=1;
+  while(st.length){const p=st.pop(),x=p%w,y=(p/w)|0;mem.push(p);
+   if(x<x0)x0=x;if(x>x1)x1=x;if(y<y0)y0=y;if(y>y1)y1=y;
+   for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){const nx=x+dx,ny=y+dy;if(nx<0||ny<0||nx>=w||ny>=h)continue;const q=ny*w+nx;if(m[q]&&!lab[q]){lab[q]=1;st.push(q)}}}
+  if(Math.max(x1-x0,y1-y0)>=big)for(const p of mem)pts.push([p%w,(p/w)|0])}
+ return pts}
+
+function fit(P){ /* recta por mínimos cuadrados (PCA) y extremos proyectados */
+ let mx=0,my=0;P.forEach(p=>{mx+=p[0];my+=p[1]});mx/=P.length;my/=P.length;
+ let sxx=0,syy=0,sxy=0;P.forEach(p=>{const a=p[0]-mx,b=p[1]-my;sxx+=a*a;syy+=b*b;sxy+=a*b});
+ const th=.5*Math.atan2(2*sxy,sxx-syy),c=Math.cos(th),s=Math.sin(th);let u0=1e9,u1=-1e9;
+ P.forEach(p=>{const u=(p[0]-mx)*c+(p[1]-my)*s;if(u<u0)u0=u;if(u>u1)u1=u});
+ const seg={x0:mx+u0*c,y0:my+u0*s,x1:mx+u1*c,y1:my+u1*s};seg.len=u1-u0;
+ let a=Math.atan2(seg.y1-seg.y0,seg.x1-seg.x0)/D;a=((a%180)+180)%180;seg.ang=a;return seg}
+
+function lines(pts,w,h){
+ const dg=Math.ceil(Math.hypot(w,h)),RH=2*dg+1,acc=new Int32Array(180*RH),cs=[],sn=[],minLen=.14*Math.max(w,h),out=[];
+ for(let t=0;t<180;t++){cs[t]=Math.cos(t*D);sn[t]=Math.sin(t*D)}
+ for(const p of pts)for(let t=0;t<180;t++)acc[t*RH+Math.round(p[0]*cs[t]+p[1]*sn[t])+dg]++;
+ for(let it=0;it<16;it++){
+  let best=0,bi=-1;for(let i=0;i<acc.length;i++)if(acc[i]>best){best=acc[i];bi=i}
+  if(best<minLen*.8)break;
+  const t=(bi/RH)|0,rho=bi%RH-dg,c=cs[t],s=sn[t],band=[];
+  for(const p of pts){const d=p[0]*c+p[1]*s-rho;if(Math.abs(d)<=2.6)band.push([p[0],p[1],-p[0]*s+p[1]*c])}
+  band.sort((a,b)=>a[2]-b[2]);
+  let run=[];const flush=()=>{if(run.length>=6){const sg=fit(run);if(sg.len>=minLen)out.push(sg)}run=[]};
+  const gap=Math.max(5,.014*Math.max(w,h));
+  for(let i=0;i<band.length;i++){if(run.length&&band[i][2]-run[run.length-1][2]>gap)flush();run.push(band[i])}
+  flush();
+  for(let k=-5;k<=5;k++){let tt=t+k,rr=rho;if(tt<0){tt+=180;rr=-rr}if(tt>=180){tt-=180;rr=-rr}
+   for(let q=-7;q<=7;q++){const ri=rr+q+dg;if(ri>=0&&ri<RH)acc[tt*RH+ri]=0}}}
+ /* quita duplicados (misma recta contada dos veces) */
+ out.sort((a,b)=>b.len-a.len);const keep=[];
+ const dl=(P,s)=>{const dx=s.x1-s.x0,dy=s.y1-s.y0;return Math.abs((P.x-s.x0)*dy-(P.y-s.y0)*dx)/s.len};
+ for(const s of out){const dup=keep.some(k=>{const da=Math.abs(k.ang-s.ang),dA=Math.min(da,180-da);return dA<5&&dl({x:s.x0,y:s.y0},k)<5&&dl({x:s.x1,y:s.y1},k)<5});if(!dup)keep.push(s)}
+ return keep.slice(0,10)}
+
+/* vértice donde se tocan dos segmentos y el ángulo interior que forman */
+function joint(a,b,tol){
+ const d1x=a.x1-a.x0,d1y=a.y1-a.y0,d2x=b.x1-b.x0,d2y=b.y1-b.y0,den=d1x*d2y-d1y*d2x;
+ if(Math.abs(den)<.05*a.len*b.len)return null;
+ const t=((b.x0-a.x0)*d2y-(b.y0-a.y0)*d2x)/den,P={x:a.x0+t*d1x,y:a.y0+t*d1y};
+ const ends=s=>[{x:s.x0,y:s.y0},{x:s.x1,y:s.y1}],near=s=>{const e=ends(s);return dist(P,e[0])<=tol?1:dist(P,e[1])<=tol?0:-1};
+ const na=near(a),nb=near(b);if(na<0||nb<0)return null;
+ const fa=ends(a)[na],fb=ends(b)[nb],ux=fa.x-P.x,uy=fa.y-P.y,vx=fb.x-P.x,vy=fb.y-P.y,
+  ang=Math.acos(Math.max(-1,Math.min(1,(ux*vx+uy*vy)/(Math.hypot(ux,uy)*Math.hypot(vx,vy)||1))))/D;
+ return{P,ang,a,b}}
+const horiz=s=>s.ang<=7||s.ang>=173,vert=s=>Math.abs(s.ang-90)<=7;
+const pd=(P,s)=>{const dx=s.x1-s.x0,dy=s.y1-s.y0,t=Math.max(0,Math.min(1,((P.x-s.x0)*dx+(P.y-s.y0)*dy)/(s.len*s.len)));return Math.hypot(P.x-(s.x0+t*dx),P.y-(s.y0+t*dy))};
+
+function shape(segs,w,h){
+ const tol=.07*Math.max(w,h)+3,S=segs.slice(0,8);let best=null;
+ for(let i=0;i<S.length;i++)for(let j=i+1;j<S.length;j++)for(let k=j+1;k<S.length;k++){
+  const ab=joint(S[i],S[j],tol),bc=joint(S[j],S[k],tol),ca=joint(S[k],S[i],tol);if(!ab||!bc||!ca)continue;
+  const sum=ab.ang+bc.ang+ca.ang;if(Math.abs(sum-180)>14)continue;
+  const sc=S[i].len+S[j].len+S[k].len;if(!best||sc>best.sc)best={sc,J:[ab,bc,ca],S:[S[i],S[j],S[k]]}}
+ if(best){
+  const R=best.J.find(j=>Math.abs(j.ang-90)<=8);
+  if(R){const H=[R.a,R.b].find(horiz),V=[R.a,R.b].find(s=>s!==H),hyp=best.S.find(s=>s!==R.a&&s!==R.b);
+   if(H&&V&&hyp&&vert(V)){const T=best.J.find(j=>j!==R&&(j.a===H||j.b===H)&&(j.a===hyp||j.b===hyp));
+    if(T)return{kind:'plano inclinado',theta:T.ang,tv:T.P,H,V,hyp,R,J:best.J,S:best.S}}
+   const ac=best.J.filter(j=>j!==R).map(j=>j.ang);
+   return{kind:'triángulo rectángulo',acute:ac,J:best.J,S:best.S}}
+  return{kind:'triángulo',angs:best.J.map(j=>j.ang),J:best.J,S:best.S}}
+ /* rectángulo / bloque: dos pares de rectas paralelas, perpendiculares entre sí */
+ const T=segs.slice(0,8),grp=[];
+ T.forEach(s=>{const g=grp.find(g=>{const d=Math.abs(g.a-s.ang);return Math.min(d,180-d)<6});g?g.s.push(s):grp.push({a:s.ang,s:[s]})});
+ const pr=grp.filter(g=>g.s.length>=2);
+ for(let i=0;i<pr.length;i++)for(let j=i+1;j<pr.length;j++){const d=Math.abs(pr[i].a-pr[j].a);
+  if(Math.abs(Math.min(d,180-d)-90)<8){const l1=pr[i].s.slice(0,2).reduce((a,s)=>a+s.len,0)/2,l2=pr[j].s.slice(0,2).reduce((a,s)=>a+s.len,0)/2;
+   return{kind:'rectángulo',dims:[l1,l2],S:[...pr[i].s.slice(0,2),...pr[j].s.slice(0,2)],J:[]}}}
+ /* sin figura cerrada: ángulos entre rectas que se tocan */
+ const J=[];for(let i=0;i<S.length;i++)for(let j=i+1;j<S.length;j++){const q=joint(S[i],S[j],tol);if(q)J.push(q)}
+ return J.length?{kind:'figura',J,S:segs.slice(0,6)}:null}
+
+/* palabras del OCR -> rótulos con valor y posición */
+function tokens(words){
+ const W=words.filter(x=>x&&x.t&&String(x.t).trim()).map(x=>({t:String(x.t).trim().replace(/^[(\[{]+|[)\]}:;,]+$/g,''),cx:(x.x0+x.x1)/2,cy:(x.y0+x.y1)/2,x0:x.x0,x1:x.x1,y0:x.y0,y1:x.y1}))
+  .filter(x=>x.t).sort((a,b)=>a.cy-b.cy||a.x0-b.x0);
+ const M=[];
+ for(let i=0;i<W.length;i++){const a=W[i],b=W[i+1];
+  if(b&&/^\d+(?:[.,]\d+)?$/.test(a.t)&&/^(m|cm|mm|km|kg|g|N)$/.test(b.t)&&Math.abs(a.cy-b.cy)<(a.y1-a.y0)*.8&&b.x0-a.x1<(a.y1-a.y0)*2){
+   M.push({t:a.t+' '+b.t,cx:(a.x0+b.x1)/2,cy:(a.cy+b.cy)/2});i++}else M.push(a)}
+ const T=[];
+ M.forEach(x=>{let m;const t=x.t.replace(',','.');
+  if((m=t.match(/^(\d{1,3}(?:\.\d+)?)\s*[°º˚*oO]$/)))T.push({kind:'ang',num:m[1],cx:x.cx,cy:x.cy});
+  else if((m=t.match(/^(\d+(?:\.\d+)?)\s*(m|cm|mm|km)$/)))T.push({kind:'len',num:m[1],unit:m[2],cx:x.cx,cy:x.cy});
+  else if((m=t.match(/^(\d+(?:\.\d+)?)\s*(kg|g)$/)))T.push({kind:'mass',num:m[1],unit:m[2],cx:x.cx,cy:x.cy});
+  else if((m=t.match(/^(\d+(?:\.\d+)?)\s*N$/)))T.push({kind:'force',num:m[1],unit:'N',cx:x.cx,cy:x.cy});
+  else if((m=t.match(/^(\d*)R$/i)))T.push({kind:'R',num:m[1]||'1',cx:x.cx,cy:x.cy,raw:(m[1]||'')+'R'});
+  else if(/^[A-Z]$/.test(x.t))T.push({kind:'let',num:x.t,cx:x.cx,cy:x.cy})});
+ return T}
+
+const snapAng=(v,L)=>{
+ const learned=Object.keys((L&&L.snaps)||{}).map(Number).filter(a=>L.snaps[a]>=1);
+ let b=null,bd=9;learned.forEach(a=>{const d=Math.abs(a-v);if(d<=4&&d<bd){b=a;bd=d}});
+ if(b!=null)return b;
+ bd=9;SNAP.forEach(a=>{const d=Math.abs(a-v);if(d<=2.5&&d<bd){b=a;bd=d}});
+ return b!=null?b:Math.round(v)};
+const wordFor=(L,key,def)=>{const r=L&&L.roles&&L.roles[key];if(!r)return def;let b=def,n=0;for(const k in r)if(r[k]>n){n=r[k];b=k}return b};
+const rejected=(L,key)=>{if(!L||!L.rej||!L.rej[key])return false;const r=L.roles&&L.roles[key]||{},ok=Object.values(r).reduce((a,b)=>a+b,0);return L.rej[key]>=2&&L.rej[key]>ok};
+
+function read(data,w,h,words,L){
+ const pts=strokes(ink(data,w,h),w,h),res={segs:[],text:'',auto:null,notes:[],shape:null,toks:[],w,h};
+ const mx=Math.max(w,h),segs=pts.length>40?lines(pts,w,h):[];res.segs=segs;
+ const sh=segs.length>=2?shape(segs,w,h):null;res.shape=sh;
+ const T=tokens(words||[]);res.toks=T;
+ const parts=[],auto={shape:sh?sh.kind:'sin figura',toks:[],measured:null,measuredSnapped:null};
+ if(sh)parts.push(sh.kind);
+ /* ángulos */
+ const vertices=sh?sh.J.map(j=>({P:j.P,ang:j.ang,theta:sh.tv&&j.P===sh.tv})):[];
+ const angTok=T.filter(t=>t.kind=='ang');
+ let thetaTxt=null;
+ if(sh&&sh.kind=='plano inclinado'){
+  const m=sh.theta,sn=snapAng(m,L);auto.measured=m;auto.measuredSnapped=sn;thetaTxt=sn;
+  const near=angTok.map(t=>({t,d:dist({x:t.cx,y:t.cy},sh.tv)})).filter(o=>o.d<=.2*mx).sort((a,b)=>a.d-b.d)[0];
+  if(near){const pv=parseFloat(near.t.num);thetaTxt=pv;if(Math.abs(pv-m)>6)res.notes.push('En el dibujo mido ≈ '+Math.round(m)+'° pero el rótulo dice '+pv+'°: uso el rótulo.')}
+  parts.push('ángulo = '+thetaTxt+'°');
+ }else if(sh&&sh.kind=='triángulo rectángulo'){parts.push('ángulos agudos = '+sh.acute.map(a=>snapAng(a,L)+'°').join(' y '))}
+ else if(sh&&sh.kind=='triángulo'){parts.push('ángulos = '+sh.angs.map(a=>snapAng(a,L)+'°').join(', '))}
+ else if(sh&&sh.kind=='figura'){sh.J.slice(0,3).forEach(j=>parts.push('ángulo = '+snapAng(j.ang,L)+'°'))}
+ else if(sh&&sh.kind=='rectángulo'){const d=sh.dims.slice().sort((a,b)=>b-a);parts.push('proporción lados ≈ '+(d[0]/d[1]).toFixed(1)+' a 1')}
+ if(!(sh&&sh.kind=='plano inclinado'))angTok.forEach(t=>parts.push('ángulo = '+t.num+'°'));
+ else angTok.forEach(t=>{const used=Math.abs(parseFloat(t.num)-thetaTxt)<.01;if(!used&&!vertices.some(v=>!v.theta&&dist({x:t.cx,y:t.cy},v.P)<=.2*mx&&false))parts.push('ángulo = '+t.num+'°')});
+ /* longitudes, masas, fuerzas */
+ const role=s=>{if(!sh||sh.kind!='plano inclinado')return'lado';return s===sh.V?'vertical':s===sh.H?'horizontal':s===sh.hyp?'inclinada':'lado'};
+ const DEF={vertical:'altura',horizontal:'base',inclinada:'longitud',lado:'longitud'};
+ T.filter(t=>t.kind=='len').forEach(t=>{
+  let geo='suelto';
+  if(sh){const n=sh.S.map(s=>({s,d:pd({x:t.cx,y:t.cy},s)})).sort((a,b)=>a.d-b.d)[0];if(n&&n.d<=.14*mx)geo=role(n.s)}
+  const key=auto.shape+'|'+geo;if(rejected(L,key))return;
+  const word=wordFor(L,key,DEF[geo]||'longitud');
+  parts.push(word+' = '+t.num+' '+t.unit);auto.toks.push({kind:'len',num:t.num,geo,word})});
+ T.filter(t=>t.kind=='mass').forEach(t=>parts.push('masa = '+t.num+' '+t.unit));
+ T.filter(t=>t.kind=='force').forEach(t=>parts.push('fuerza = '+t.num+' N'));
+ /* A: 3R, B: R */
+ const lets=T.filter(t=>t.kind=='let');
+ T.filter(t=>t.kind=='R').forEach(t=>{
+  const l=lets.map(x=>({x,d:dist({x:x.cx,y:x.cy},{x:t.cx,y:t.cy})})).filter(o=>o.d<=.25*mx).sort((a,b)=>a.d-b.d)[0];
+  parts.push(l?l.x.num+': '+t.raw:'radio = '+t.raw);if(l)lets.splice(lets.indexOf(l.x),1)});
+ res.auto=auto;res.text=parts.join(', ');return res}
+
+/* dibuja lo que Noryx detectó, para que lo verifiques */
+function draw(cv,data,w,h,res){
+ cv.width=w;cv.height=h;const c=cv.getContext('2d'),im=c.createImageData(w,h);
+ for(let i=0;i<data.length;i+=4){const g=(data[i]+data[i+1]+data[i+2])/3;const v=255-(255-g)*.35;im.data[i]=im.data[i+1]=im.data[i+2]=v;im.data[i+3]=255}
+ c.putImageData(im,0,0);c.lineWidth=3;c.font='bold 13px sans-serif';
+ const sh=res.shape;
+ res.segs.forEach(s=>{c.strokeStyle=sh&&sh.H===s?'#2a7fff':sh&&sh.V===s?'#1fa35c':sh&&sh.hyp===s?'#e8890c':'#999';c.beginPath();c.moveTo(s.x0,s.y0);c.lineTo(s.x1,s.y1);c.stroke()});
+ if(sh)sh.J.forEach(j=>{c.fillStyle='#d33';c.beginPath();c.arc(j.P.x,j.P.y,4,0,7);c.fill();c.fillStyle='#d33';c.fillText(Math.round(j.ang)+'°',j.P.x+6,j.P.y-6)});
+ res.toks.forEach(t=>{c.strokeStyle='#b0b';c.lineWidth=1.5;c.strokeRect(t.cx-12,t.cy-8,24,16)})}
+return{read,draw,ink,strokes,lines,shape,tokens,snapAng}})();
+
 /* ===== Noryx: datos de la figura (punto 7) + historial de ejercicios (punto 8) ===== */
 (()=>{
 const EXK='nx-ex',EXMAX=100,SUP={'⁰':0,'¹':1,'²':2,'³':3,'⁴':4,'⁵':5,'⁶':6,'⁷':7,'⁸':8,'⁹':9};
@@ -3998,13 +4363,12 @@ $('#exc').onclick=()=>{if(exAll().length&&confirm('¿Borrar todo tu historial de
 exBadge();
 
 /* ================= Punto 7: datos de la figura ================= */
-const fi=$('#imfig'),fn=$('#imfn'),FIGNOTE=fn.textContent,
- FIGQ='List only the measurements and labels visible in this diagram: angles in degrees, heights, lengths, radii, masses, forces, distances, and letter labels. Write them as short items separated by commas, for example: angle = 30°, height = 5 m, A = 3R, B = R. Do not explain and do not solve anything. If nothing is visible, answer NONE.';
+const fi=$('#imfig'),fn=$('#imfn'),FIGNOTE=fn.textContent;
 fi.addEventListener('input',()=>{if(imList[imSel])imList[imSel].fig=fi.value});
 /* cada imagen recuerda sus propios datos; al cambiar de imagen no se arrastran los de otra */
 const _imShow=imShow;
-imShow=function(i){_imShow(i);const it=imList[i];fi.value=(it&&it.fig)||''};
-$('#imauto').checked=!!S.get('nx-figauto',false);
+imShow=function(i){_imShow(i);const it=imList[i];fi.value=(it&&it.fig)||'';const o=$('#imov');if(o)o.style.display='none'};
+$('#imauto').checked=!!S.get('nx-figauto',true);
 $('#imauto').onchange=function(){S.set('nx-figauto',this.checked)};
 /* --- modelo de visión dentro del navegador (SmolVLM vía transformers.js): sin Pollinations, la imagen no sale del equipo --- */
 let vlmP=null;
@@ -4036,25 +4400,47 @@ async function vlmAsk(canvas,prompt,say,maxTok){
   ids=await model.generate({...inputs,max_new_tokens:maxTok||160,do_sample:false}),
   out=processor.batch_decode(ids.slice(null,[inputs.input_ids.dims.at(-1),null]),{skip_special_tokens:true});
  return String(out[0]||'').trim()}
-const FIGES=[[/\bangles?\b/gi,'ángulo'],[/\bheights?\b/gi,'altura'],[/\blengths?\b/gi,'longitud'],[/\bradius\b|\bradii\b/gi,'radio'],[/\bmass(?:es)?\b/gi,'masa'],[/\bforces?\b/gi,'fuerza'],[/\bdistances?\b/gi,'distancia'],[/\bweights?\b/gi,'peso'],[/\bdegrees?\b/gi,'°']];
+/* ---- Noryx aprende de tus correcciones (palabras por rol y ángulos que sueles usar) ---- */
+const getL=()=>{let v=S.get('nx-fig',null);if(!v||typeof v!='object')v={};v.roles=v.roles||{};v.rej=v.rej||{};v.snaps=v.snaps||{};v.n=v.n||0;return v};
+CFGOK['nx-fig']=v=>v&&typeof v=='object'&&['roles','rej','snaps'].every(k=>v[k]==null||typeof v[k]=='object');
+function figLearn(txt){
+ const it=imList[imSel],a=it&&it.figAuto;if(!a||!String(txt||'').trim())return;it.figAuto=null;
+ const T=String(txt).toLowerCase(),L=getL();
+ a.toks.forEach(tk=>{
+  const key=a.shape+'|'+tk.geo,m=T.match(new RegExp('([a-záéíóúñ]{3,})\\s*[=:]?\\s*'+tk.num.replace('.','[.,]')+'(?![\\d])','i'));
+  if(m){(L.roles[key]=L.roles[key]||{})[m[1]]=((L.roles[key]||{})[m[1]]||0)+1;L.n++}
+  else L.rej[key]=(L.rej[key]||0)+1});
+ if(a.measured!=null){
+  [...T.matchAll(/(\d{1,3}(?:[.,]\d+)?)\s*°/g)].map(x=>parseFloat(x[1].replace(',','.'))).forEach(v=>{
+   if(Math.abs(v-a.measured)<=6&&Math.abs(v-a.measuredSnapped)>.01){L.snaps[v]=(L.snaps[v]||0)+1;L.n++}})}
+ S.set('nx-fig',L)}
+const _imAskL=imAsk;
+imAsk=function(q){try{figLearn(fi.value)}catch(e){}return _imAskL(q)};
+/* ---- lector de figuras propio de Noryx ---- */
 async function figRead(say,silent){
  if(!orig||!imc.width||!imc.height)return false;
  const btn=$('#imrd');btn.disabled=true;const tell=m=>{if(say)say(m);if(!silent)fn.textContent=m};
  try{
-  let line=await vlmAsk(imc,FIGQ,tell,120);
-  line=line.replace(/[*`#>]/g,'').replace(/\n+/g,', ').replace(/\s+/g,' ').replace(/^[-•,.\s]+|[,.\s]+$/g,'');
-  FIGES.forEach(([re,s])=>{line=line.replace(re,s)});line=line.slice(0,300);
-  if(!line||/^(none|nothing|no )/i.test(line)){fn.textContent='El modelo no encontró datos legibles en la figura. Escríbelos a mano.';return false}
-  fi.value=line;if(imList[imSel])imList[imSel].fig=line;
-  fn.textContent='Datos leídos por el modelo de visión de tu navegador. Es un modelo pequeño: revisa los números y corrígelos si hace falta.';return true}
- catch(e){fn.textContent='No pude cargar el modelo de visión'+(e&&e.message?' ('+String(e.message).slice(0,80)+')':'')+'. La primera vez necesita conexión para descargarlo (~250 MB); mientras tanto escribe los datos a mano.';return false}
+  tell('Noryx está mirando la figura…');
+  try{await _imOcr(say)}catch(e){}
+  const s=Math.min(1,420/Math.max(imc.width,imc.height)),w=Math.max(1,Math.round(imc.width*s)),h=Math.max(1,Math.round(imc.height*s)),
+   cv=document.createElement('canvas');cv.width=w;cv.height=h;
+  const x=cv.getContext('2d',{willReadFrequently:true});x.fillStyle='#fff';x.fillRect(0,0,w,h);x.drawImage(imc,0,0,w,h);
+  const ow=imCache.ow,words=ow?ow.w.map(q=>({t:q.t,x0:q.x0/ow.k*s,x1:q.x1/ow.k*s,y0:q.y0/ow.k*s,y1:q.y1/ow.k*s})):[],
+   d=x.getImageData(0,0,w,h),L=getL(),r=FG.read(d.data,w,h,words,L),ov=$('#imov');
+  if(ov){FG.draw(ov,d.data,w,h,r);ov.style.display=r.segs.length?'block':'none'}
+  if(!r.text){if(!silent)fn.textContent='No encontré rectas ni rótulos que pueda interpretar (¿es un dibujo a mano muy suave o una foto con mucha sombra?). Escribe los datos a mano: la próxima vez Noryx aprende de eso.';return false}
+  fi.value=r.text;const it=imList[imSel];if(it){it.fig=r.text;it.figAuto=r.auto}
+  fn.textContent='Noryx leyó la figura por su cuenta'+(r.shape?' ('+r.shape.kind+')':'')+'. En el dibujo: azul = horizontal, verde = vertical, naranja = inclinada, rojo = vértices. '+r.notes.join(' ')+' Corrige lo que no sea cierto: Noryx aprende de tus correcciones'+(L.n?' (ya aprendió de '+L.n+')':'')+'.';
+  return true}
+ catch(e){fn.textContent='No pude analizar la figura'+(e&&e.message?' ('+String(e.message).slice(0,60)+')':'')+'. Escribe los datos a mano.';return false}
  finally{btn.disabled=false}}
 $('#imrd').onclick=async()=>{if(!orig){toast('Primero sube una imagen');return}const ok=await figRead(null,false);if(ok)toast('Datos de la figura listos: ahora pregunta')};
 /* los datos de la figura se suman al texto que Noryx lee de la imagen */
 const _imOcr=imOcr;
 imOcr=async function(say){
  const tx=await _imOcr(say);
- if(!fi.value.trim()&&S.get('nx-figauto',false))await figRead(say,true);
+ if(!fi.value.trim()&&S.get('nx-figauto',true))await figRead(say,true);
  const fig=fi.value.trim();
  return fig?(tx?tx+'\n':'')+'Datos de la figura: '+fig.replace(/\s*;\s*/g,', '):tx};
 /* con datos de figura escritos, una pregunta normal se trata como ejercicio */
@@ -4068,8 +4454,256 @@ localVision=function(q,wait){
   return r})};
 /* con el motor en línea, el modelo de visión recibe también los datos que escribiste */
 /* el análisis de imágenes es siempre local: se fuerza el motor y se actualiza la nota */
-S.set('nx-veng','local');
 $('#imnote').textContent='Todo corre en tu navegador y la imagen no sale de tu equipo. Noryx lee texto (Tesseract), reconoce objetos (MobileNet) y, para leer figuras y describir imágenes, usa un modelo de visión pequeño (SmolVLM): la primera vez descarga unos 250 MB y luego queda guardado. No es una IA grande: revisa sus resultados.';
+})();
+</script>
+<script>
+/* ===== Ajustes (tema, fuente, cuenta) y Mensajes del creador ===== */
+(()=>{
+const R=document.documentElement,E=(t,c,x)=>{const e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e};
+const FONTS=[['base','Instrument Sans'],['system','Sistema'],['lexend','Lexend (lectura cómoda)'],['serif','Serif clásica'],['mono','Monoespaciada']];
+const SIZES=[['s','Pequeño'],['m','Normal'],['l','Grande'],['xl','Enorme']];
+const ACCS=[['cyan','Cian','#00a3b3'],['amber','Ámbar','#e08a00'],['green','Verde','#2bb55d'],['violet','Violeta','#8b66f0'],['rose','Rosa','#e8438a']];
+const THEMES=[['system','Sistema'],['light','Claro'],['dark','Oscuro']];
+const DEF={font:'base',fs:'m',acc:'cyan'},LIST={font:FONTS,fs:SIZES,acc:ACCS};
+const rm=k=>{try{localStorage.removeItem(k)}catch(e){}};
+const getPref=n=>R.dataset[n]||DEF[n];
+function setPref(n,v){if(!v||v===DEF[n]){delete R.dataset[n];rm('nx-'+n)}else{R.dataset[n]=v;S.set('nx-'+n,v)}}
+function setTheme(v){if(v=='system'){delete R.dataset.theme;rm('nx-theme')}else{R.dataset.theme=v;S.set('nx-theme',v)}}
+function applyStored(){['font','fs','acc'].forEach(n=>{const v=S.get('nx-'+n,null);if(v&&v!==DEF[n]&&LIST[n].some(x=>x[0]==v))R.dataset[n]=v;else delete R.dataset[n]});const t=S.get('nx-theme',null);if(t=='dark'||t=='light')R.dataset.theme=t;else delete R.dataset.theme}
+if(typeof CFGOK=='object'){CFGOK['nx-font']=v=>FONTS.some(x=>x[0]==v);CFGOK['nx-fs']=v=>SIZES.some(x=>x[0]==v);CFGOK['nx-acc']=v=>ACCS.some(x=>x[0]==v)}
+
+const setEl=$('#set'),mgEl=$('#mg');
+let lastF=null,lastMF=null,pane='gen';
+function seg(el,items,cur,fn){el.replaceChildren();items.forEach(([v,l])=>{const b=E('button',v==cur?'on':'',l);b.type='button';b.setAttribute('aria-pressed',String(v==cur));b.onclick=()=>fn(v);el.append(b)})}
+const row=(l,d,c)=>{const r=E('div','srow'),s=E('div','sl');s.append(E('b','',l));if(d)s.append(E('small','',d));r.append(s);if(c)r.append(c);return r};
+const btn=(l,fn,cls)=>{const b=E('button','sbt'+(cls?' '+cls:''),l);b.type='button';b.onclick=fn;return b};
+
+/* ---------- Perfil en la barra lateral ---------- */
+let pk='';
+function setProf(){
+ const email=sess?sess.email:'',name=(mem&&mem.name)||(sess&&sess.name)||(email?email.split('@')[0]:creator?'Creador':'Invitado');
+ const sub=creator?'Creador':tester?'Tester':sess?'Cuenta Noryx':'Sin sesión',k=name+'|'+sub;
+ if(k==pk)return;pk=k;
+ $('#profn').textContent=name;$('#profs').textContent=sub;$('#profa').textContent=(name.trim()[0]||'N').toUpperCase()}
+
+/* ---------- Ajustes ---------- */
+function paintGeneral(){
+ seg($('#s-th'),THEMES,R.dataset.theme||'system',v=>{setTheme(v);paintGeneral()});
+ const ac=$('#s-ac');ac.replaceChildren();
+ ACCS.forEach(([v,l,c])=>{const b=E('button','swc');b.type='button';b.style.setProperty('--c',c);b.title=l;b.setAttribute('aria-label','Acento '+l);b.setAttribute('aria-pressed',String(v==getPref('acc')));b.onclick=()=>{setPref('acc',v);paintGeneral()};ac.append(b)});
+ const ff=$('#s-ff');if(!ff.options.length)FONTS.forEach(([v,l])=>ff.add(new Option(l,v)));ff.value=getPref('font');
+ seg($('#s-fs'),SIZES,getPref('fs'),v=>{setPref('fs',v);paintGeneral()});
+ $('#s-sp').setAttribute('aria-checked',String(!!speak))}
+
+function paintAccount(){
+ const box=$('#s-ca');box.replaceChildren();
+ const linked=!!sess,email=sess?sess.email:((creator||tester)&&privMail)||'';
+ const role=creator?'Creador':tester?'Tester':linked?'Usuario':'Invitado';
+ const name=(mem&&mem.name)||(sess&&sess.name)||(email?email.split('@')[0]:'Invitado');
+ const card=E('div','sacc'),inf=E('div','sai'),pills=E('div','pills');
+ inf.append(E('b','',name),E('small','',email||'Sin cuenta enlazada'));
+ const p1=E('span','pill'+(creator||tester||linked?' ok':''));p1.append(E('i'),document.createTextNode(role));
+ const p2=E('span','pill'+(linked?' ok':''));p2.append(E('i'),document.createTextNode(linked?'Cuenta enlazada':(creator||tester)?'Sesión por contraseña':'Sin enlazar'));
+ pills.append(p1,p2);inf.append(pills);card.append(E('i','pav',(name.trim()[0]||'N').toUpperCase()),inf);box.append(card);
+
+ const ni=E('input','sin');ni.maxLength=40;ni.value=(mem&&mem.name)||'';ni.placeholder='Cómo te llamo';ni.setAttribute('aria-label','Nombre en el chat');ni.style.maxWidth='220px';
+ ni.onchange=()=>{const v=ni.value.trim().slice(0,40);if(v===(mem.name||''))return;mem.name=v;save();setProf();toast(v?'Hola, '+v:'Nombre borrado')};
+ ni.addEventListener('keydown',e=>{if(e.key=='Enter'){e.preventDefault();ni.blur()}});
+ box.append(row('Nombre en el chat','Así te llama Noryx en la conversación.',ni));
+
+ if(creator){
+  const c=E('div','sc');c.append(btn('Accesos',()=>{setClose(true);gxOpen()}),btn('Mensajes',()=>{setClose(true);mgOpen()}));
+  box.append(row('Panel de creador','Acceso total y permanente a Noryx.',c))
+ }else if(linked){
+  [['noryx','Modo Noryx','Voz en vivo y órdenes.'],['ensenar','Enseñar a Noryx','Modo tester.']].forEach(([f,l,d])=>{
+   const on=grantActive(f);let txt;
+   if(on){const left=grantLeft(f);txt=left=='permanente'?'Permanente':left?'Activo · quedan '+left:'Activo'}
+   else{const g=(GR||[]).find(x=>x.feature==f);txt=g?gxStatus(g)[1]:'Sin acceso'}
+   const c=E('div','sc');c.append(E('span','sst',txt));
+   if(!on)c.append(btn('Solicitar',()=>{setClose(true);requestAccess(f=='ensenar'?'ensenar':'')}));
+   box.append(row(l,d,c))})
+ }
+ if(linked||creator||tester){
+  box.append(row('Sesión',linked?'Cerrar sesión no borra tus conversaciones de este dispositivo.':'Termina la sesión de '+(creator?'creador':'tester')+'.',
+   btn('Cerrar sesión',()=>{if(!confirm('¿Cerrar la sesión'+(email?' de '+email:'')+'?'))return;if(linked)logout();else lock(true);setProf();paintAccount()},'dng')))
+ }else{
+  box.append(row('Cuenta de Noryx','Entra para usar la voz en vivo y el estudio de imágenes.',btn('Entrar',()=>{setClose(true);openDlg()},'pri')))
+ }}
+
+function setPane(p){
+ pane=p;
+ document.querySelectorAll('#set .snav button').forEach(b=>{const on=b.dataset.p==p;b.classList.toggle('on',on);b.setAttribute('aria-current',on?'true':'false')});
+ document.querySelectorAll('#set .spn').forEach(s=>s.hidden=s.dataset.p!=p);
+ if(p=='cta'){paintAccount();if(sess&&!creator)loadGrants().then(()=>{if(!setEl.hidden&&pane=='cta')paintAccount()}).catch(()=>{})}
+ $('#set .spanes').scrollTop=0}
+function setOpen(p){
+ lastF=document.activeElement;closeMenu();if(!mgEl.hidden)mgClose(true);
+ setEl.hidden=false;paintGeneral();setPane(p||'gen');
+ const b=$('#set .snav button.on');b&&b.focus()}
+function setClose(quiet){setEl.hidden=true;if(!quiet&&lastF&&lastF.focus)lastF.focus()}
+
+/* ---------- Mensajes del creador ---------- */
+let MG=[],mgSeen=new Set(S.get('nx-mgseen',[])),mgNote=new Set(),mgNew=new Set(),mgTo='todos';
+const AUD={todos:'Todos en Noryx',testers:'Todos los testers'},audOf=p=>AUD[p]||p;
+const mgSQL=()=>`-- Mensajes del creador de Noryx. Pégalo una sola vez en Supabase → SQL Editor → Run.
+-- Requiere haber ejecutado antes el SQL de accesos (botón Accesos del creador).
+create table if not exists public.avisos (
+  id bigint generated always as identity primary key,
+  ts timestamptz not null default now(),
+  de text not null,
+  para text not null,                       -- 'todos' | 'testers' | correo en minúsculas
+  titulo text,
+  texto text not null check (char_length(texto) between 1 and 1000)
+);
+create index if not exists avisos_ts_idx on public.avisos (ts desc);
+alter table public.avisos enable row level security;
+
+create or replace function public.es_creador() returns boolean
+language sql stable as $$ select lower(coalesce(auth.jwt()->>'email',''))='${CREATOR_EMAIL.toLowerCase()}' $$;
+
+drop policy if exists "creador gestiona avisos" on public.avisos;
+create policy "creador gestiona avisos" on public.avisos for all to authenticated
+  using (public.es_creador()) with check (public.es_creador());
+
+drop policy if exists "ver avisos dirigidos" on public.avisos;
+create policy "ver avisos dirigidos" on public.avisos for select to authenticated
+  using (
+    para='todos'
+    or lower(para)=lower(coalesce(auth.jwt()->>'email',''))
+    or (para='testers' and (
+         public.tiene_acceso('ensenar')
+         or lower(coalesce(auth.jwt()->>'email','')) in (${TESTER_EMAILS.map(e=>"'"+e.toLowerCase()+"'").concat("''").join(', ')})))
+  );
+
+drop policy if exists "ver avisos generales" on public.avisos;
+create policy "ver avisos generales" on public.avisos for select to anon
+  using (para='todos');`;
+
+async function mgFetch(){
+ if(creator)return cloudWrite('GET','avisos?select=*&order=ts.desc&limit=200');
+ if(sess)await refreshSess();
+ const go=tok=>{const h={apikey:SUPA_KEY,'Content-Type':'application/json'};if(tok)h.Authorization='Bearer '+tok;return fetch(cloudBase()+'/rest/v1/avisos?select=id,ts,de,para,titulo,texto&order=ts.desc&limit=60',{headers:h})};
+ let r=await go(sess&&sess.access);if(r.status==401&&sess)r=await go(null);
+ if(r.status==404)return[];
+ if(!r.ok)throw new Error('HTTP '+r.status);
+ return r.json()}
+function mgBadge(){
+ const n=creator?0:MG.filter(m=>!mgSeen.has(m.id)).length,b=$('#mgn');
+ b.hidden=!n;b.textContent=n>9?'9+':String(n);
+ $('#mgb').setAttribute('aria-label',n?'Mensajes, '+n+' sin leer':'Mensajes')}
+function mgViewed(){
+ MG.forEach(m=>{if(!mgSeen.has(m.id))mgNew.add(m.id);mgSeen.add(m.id)});
+ S.set('nx-mgseen',[...mgSeen].slice(-300));mgBadge()}
+async function mgPoll(){
+ if(creator){mgBadge();return}
+ try{
+  MG=await mgFetch();
+  const fresh=MG.filter(m=>!mgSeen.has(m.id)&&!mgNote.has(m.id));fresh.forEach(m=>mgNote.add(m.id));
+  mgBadge();
+  if(!mgEl.hidden)mgPaint();
+  else if(fresh.length)toast('📨 '+(fresh.length>1?fresh.length+' mensajes nuevos':'Mensaje nuevo')+' del creador',3500)
+ }catch(e){}}
+function mgMissing(){
+ const w=$('#mgw');w.hidden=false;w.textContent='Faltan las tablas de mensajes en Supabase. Abre Supabase → SQL Editor, pega el SQL de abajo (botón «Copiar SQL»), ejecútalo y pulsa ↻.';
+ $('#mgpre').textContent=mgSQL();const d=$('#mgsq');d.hidden=false;d.open=true}
+function mgErr(e){
+ if(e&&e.expired){mgClose(true);sysMsg(cErr(e));return}
+ if(e&&/404|sin permiso/.test(e.message||'')){mgMissing();return}
+ toast(cErr(e),3000)}
+const mgItem=(m,mine)=>{
+ const kind=m.para=='todos'?'todos':m.para=='testers'?'testers':'uno',d=E('div','mgi '+(mine?'a-'+kind:(mgNew.has(m.id)?'new':''))),h=E('div','m');
+ h.append(E('span','',(mine?audOf(m.para):(m.para=='todos'?'Para todos':m.para=='testers'?'Para testers':'Para ti'))+' · '+fdate(Date.parse(m.ts)||0)));
+ if(!mine&&mgNew.has(m.id)){const p=E('span','pill ok');p.append(E('i'),document.createTextNode('Nuevo'));h.append(p)}
+ d.append(h);
+ d.append(E('div','t',m.titulo||(mine?'Sin asunto':'Mensaje del creador')),E('div','x',m.texto));
+ return d};
+function mgPaint(){
+ const c=!!creator;$('#mgC').hidden=!c;$('#mgU').hidden=c;
+ $('#mgt').textContent=c?'Enviar mensajes':'Mensajes del creador';
+ if(c){
+  const l=$('#mgs');l.replaceChildren();
+  if(!MG.length)l.append(E('div','mgempty','Todavía no has enviado mensajes.'));
+  MG.forEach(m=>{const d=mgItem(m,true),b=E('div','bs');
+   b.append(btn('Borrar',async()=>{if(!confirm('¿Borrar este mensaje? Dejará de verlo quien lo recibió.'))return;try{await cloudWrite('DELETE','avisos?id=eq.'+m.id);await mgLoad()}catch(e){mgErr(e)}}));
+   d.append(b);l.append(d)})
+ }else{
+  mgViewed();
+  const l=$('#mgl');l.replaceChildren();
+  if(!MG.length)l.append(E('div','mgempty','Todavía no tienes mensajes. Cuando el creador te escriba, aparecerán aquí.'));
+  MG.forEach(m=>l.append(mgItem(m,false)));
+  $('#mgh').textContent=sess?'':'Entra con tu cuenta para ver también los mensajes dirigidos a ti.'}}
+async function mgLoad(){
+ $('#mgw').hidden=true;
+ try{MG=await mgFetch()}catch(e){if(creator){mgErr(e);return}MG=[]}
+ if(creator)$('#mgsq').hidden=true;
+ mgPaint();mgBadge()}
+async function mgPeople(){
+ const s=new Set(TESTER_EMAILS.map(x=>x.toLowerCase()));
+ try{(await cloudWrite('GET','accesos?select=email&limit=300')).forEach(r=>s.add(String(r.email).toLowerCase()))}catch(e){}
+ const dl=$('#mgdl');dl.replaceChildren();s.forEach(m=>{const o=document.createElement('option');o.value=m;dl.append(o)})}
+function paintTo(){
+ seg($('#mgto'),[['todos','Todos en Noryx'],['testers','Testers'],['uno','Una persona']],mgTo,v=>{mgTo=v;paintTo();if(v=='uno')$('#mge').focus()});
+ $('#mgp').hidden=mgTo!='uno'}
+function mgOpen(){
+ lastMF=document.activeElement;closeMenu();if(!setEl.hidden)setClose(true);
+ mgEl.hidden=false;mgPaint();mgLoad();
+ if(creator){paintTo();mgPeople();$('#mgtx').focus()}else $('#mgx').focus()}
+function mgClose(quiet){mgEl.hidden=true;mgNew.clear();if(!quiet&&lastMF&&lastMF.focus)lastMF.focus()}
+
+const cnt=()=>{$('#mgc').textContent=$('#mgtx').value.length+' / 1000'};
+$('#mgtx').addEventListener('input',cnt);
+[['Nueva versión','Nueva versión de Noryx','Ya está disponible una versión nueva de Noryx. Recarga la página para verla.'],
+ ['Algo para probar','Hay algo nuevo para probar','Entra a Noryx y prueba la función nueva. Mientras más la uses, mejor podré afinarla.'],
+ ['Gracias','Gracias por probar Noryx','Gracias por tu tiempo y tus pruebas. Tu ayuda hace mejor a Noryx cada día.']
+].forEach(([l,t,x])=>{const b=E('button','',l);b.type='button';b.onclick=()=>{$('#mgti').value=t;$('#mgtx').value=x;cnt();$('#mgtx').focus()};$('#mgch').append(b)});
+$('#mgsd').onclick=async function(){
+ const tx=$('#mgtx').value.trim(),ti=$('#mgti').value.trim().slice(0,80);let para=mgTo;
+ if(mgTo=='uno'){para=$('#mge').value.trim().toLowerCase();if(!/^\S+@\S+\.\S+$/.test(para)){toast('Escribe un correo válido');$('#mge').focus();return}}
+ if(!tx){toast('Escribe el mensaje');$('#mgtx').focus();return}
+ this.disabled=true;
+ try{
+  await cloudWrite('POST','avisos',{de:CREATOR_EMAIL.toLowerCase(),para,titulo:ti||null,texto:tx.slice(0,1000)});
+  toast('Mensaje enviado · '+audOf(para));$('#mgtx').value='';$('#mgti').value='';cnt();await mgLoad()
+ }catch(e){mgErr(e)}
+ this.disabled=false};
+$('#mgcp').onclick=()=>navigator.clipboard&&navigator.clipboard.writeText(mgSQL()).then(()=>toast('SQL copiado'),()=>toast('No pude copiar: selecciónalo a mano'));
+
+/* ---------- Conexiones ---------- */
+$('#prof').onclick=()=>setOpen('cta');
+$('#mgb').onclick=()=>mgOpen();
+$('#setx').onclick=()=>setClose();
+$('#mgx').onclick=()=>mgClose();
+$('#mgr').onclick=()=>mgLoad();
+document.querySelectorAll('#set .snav button').forEach(b=>b.onclick=()=>setPane(b.dataset.p));
+$('#s-ff').onchange=e=>setPref('font',e.target.value);
+$('#s-sp').onclick=()=>{$('#spk').click();paintGeneral()};
+$('#s-rs').onclick=()=>{setTheme('system');['font','fs','acc'].forEach(n=>setPref(n,DEF[n]));paintGeneral();toast('Apariencia restablecida')};
+$('#s-ex').onclick=()=>$('#exp').click();
+$('#s-bk').onclick=()=>$('#bk').click();
+$('#s-rt').onclick=()=>$('#bkf').click();
+$('#s-mic').onclick=()=>{setClose(true);$('#mdopen').click()};
+$('#s-fg').onclick=()=>$('#forget').click();
+$('#s-exb').onclick=()=>{setClose(true);$('#exb').click()};
+$('#s-hp').onclick=()=>{setClose(true);send('/ayuda')};
+$('#bkf').addEventListener('change',()=>setTimeout(()=>{applyStored();if(!setEl.hidden)paintGeneral()},900));
+[setEl,mgEl].forEach(el=>{
+ el.addEventListener('click',e=>{if(e.target==el)el==setEl?setClose():mgClose()});
+ el.addEventListener('keydown',e=>{
+  if(e.key!='Tab')return;
+  const f=[...el.querySelectorAll('button,input,select,textarea,summary')].filter(x=>!x.disabled&&x.offsetParent!==null);
+  if(!f.length)return;const a=f[0],z=f[f.length-1];
+  if(e.shiftKey&&document.activeElement==a){e.preventDefault();z.focus()}
+  else if(!e.shiftKey&&document.activeElement==z){e.preventDefault();a.focus()}})});
+addEventListener('keydown',e=>{
+ if(e.key=='Escape'){if(!mgEl.hidden){e.stopImmediatePropagation();mgClose()}else if(!setEl.hidden){e.stopImmediatePropagation();setClose()}}
+ else if((e.ctrlKey||e.metaKey)&&e.key==','){e.preventDefault();setEl.hidden?setOpen('gen'):setClose()}},true);
+
+/* ---------- Arranque ---------- */
+applyStored();setProf();mgBadge();
+let key='';
+setInterval(()=>{setProf();const k=(sess?sess.email:'')+'|'+creator+'|'+tester;if(k!=key){key=k;mgPoll()}},1500);
+setInterval(mgPoll,60000);
 })();
 </script>
 </body>
