@@ -518,7 +518,7 @@ html,body{overscroll-behavior:none}#feed{overscroll-behavior:contain}
     <button class="ib" id="mic" aria-label="Hablar"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></button>
     <button class="ib" id="go" aria-label="Enviar"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>
    </div>
-   <div class="note">Noryx piensa en tu navegador con su propia red neuronal de ~6.5 millones de parámetros. Aprende de ti: aprende: pregunta = respuesta.</div>
+   <div class="note" id="nxnote"></div>
   </div>
  </main>
 </div>
@@ -635,7 +635,7 @@ html,body{overscroll-behavior:none}#feed{overscroll-behavior:contain}
     <div class="srow"><div class="sl"><b>Olvidar todo</b><small>Borra las conversaciones y lo que Noryx aprendió de ti en este navegador.</small></div><button class="sbt dng" id="s-fg">Borrar todo</button></div>
    </section>
    <section class="spn" data-p="ace" hidden>
-    <div class="srow"><div class="sl"><b>Noryx Chat</b><small>Piensa en tu navegador con su propia red neuronal de unos 6.5 millones de parámetros y aprende de ti.</small></div></div>
+    <div class="srow"><div class="sl"><b>Noryx Chat</b><small id="nxabout">Piensa en tu navegador con su propia red neuronal y aprende de ti.</small></div></div>
     <div class="srow"><div class="sl"><b>Comandos</b><small>Escribe /ayuda en el chat para ver lo que Noryx sabe hacer.</small></div><button class="sbt" id="s-hp">Ver comandos</button></div>
     <div class="srow"><div class="sl"><b>Atajo</b><small>Ctrl o ⌘ + coma abre y cierra los ajustes.</small></div></div>
    </section>
@@ -682,7 +682,7 @@ thanks:'gracias|muchas gracias|te lo agradezco|genial gracias|thanks|thank you|t
 bye:'adios|hasta luego|nos vemos|chao|me voy|bye|see you|goodbye',
 who:'quien eres|que eres|como te llamas|presentate|eres una ia|eres chatgpt|que modelo eres|como funcionas|who are you|what are you|what is your name|how do you work',
 maker:'quien te creo|quien te hizo|quien es tu creador|quien te programo|who made you|who created you|who is your creator',
-help:'que puedes hacer|ayuda|en que me ayudas|que sabes hacer|como te uso|help|what can you do|commands',
+help:'que puedes hacer|ayuda|en que me ayudas|que sabes hacer|que sabes|que mas sabes|que cosas sabes|de que puedes hablar|que temas sabes|para que sirves|de que eres capaz|what do you know|como te uso|help|what can you do|commands',
 time:'que hora es|dime la hora|hora actual|what time is it|current time',
 date:'que dia es hoy|fecha de hoy|que fecha es|what day is it|todays date|what is the date',
 joke:'cuentame un chiste|dime un chiste|chiste|hazme reir|tell me a joke|joke|make me laugh',
@@ -694,7 +694,7 @@ const TOP_RAW=[
 'bored@@estoy aburrido|me aburro|no tengo nada que hacer|im bored@@Probemos algo: pídeme un acertijo, un dato curioso o un reto de cálculo.',
 'yes@@si|claro|por supuesto|dale|yes|sure@@Perfecto. ¿Por dónde seguimos?',
 'no@@no|nada|no gracias|nope|para nada@@Entendido. Aquí sigo por si cambias de idea.',
-'more@@cuentame mas|sigue|continua|dime mas|tell me more|go on|mas detalles@@.',
+'more@@cuentame mas|sigue|continua|dime mas|tell me more|go on|mas detalles|que mas|y que mas|algo mas|y luego|y despues@@.',
 'why@@por que|y por que|a que te refieres|explicamelo mejor|why|what do you mean@@.',
 'love@@te quiero|me caes bien|eres genial|eres lo mejor|i love you|youre awesome@@¡Qué lindo! Tú también me caes muy bien.',
 'insult@@eres tonta|eres inutil|no sirves|you suck|youre stupid@@Puedo mejorar. Dime qué falló y lo intento otra vez, o enséñame con aprende:.',
@@ -1141,7 +1141,7 @@ const TOP_RAW=[
 'z3_cap_costa_rica@@capital de costa rica|cual es la capital de costa rica|capital costa rica|what is the capital of costa rica@@La capital de Costa Rica es San Jose.',
 'z3_cap_panama@@capital de panama|cual es la capital de panama|capital panama|what is the capital of panama@@La capital de Panama es Ciudad de Panama.',
 'z3_cap_brasil@@capital de brasil|cual es la capital de brasil|capital brasil|what is the capital of brasil@@La capital de Brasil es Brasilia.',
-'z3_cap_estados_unidos@@capital de estados unidos|cual es la capital de estados unidos|capital estados unidos|what is the capital of estados unidos@@La capital de Estados Unidos es Washington D. C..',
+'z3_cap_estados_unidos@@capital de estados unidos|cual es la capital de estados unidos|capital estados unidos|what is the capital of estados unidos@@La capital de Estados Unidos es Washington D. C.',
 'z3_cap_canada@@capital de canada|cual es la capital de canada|capital canada|what is the capital of canada@@La capital de Canada es Ottawa.',
 'z3_cap_francia@@capital de francia|cual es la capital de francia|capital francia|what is the capital of francia@@La capital de Francia es Paris.',
 'z3_cap_alemania@@capital de alemania|cual es la capital de alemania|capital alemania|what is the capital of alemania@@La capital de Alemania es Berlin.',
@@ -1151,7 +1151,7 @@ const TOP_RAW=[
 'z3_cap_rusia@@capital de rusia|cual es la capital de rusia|capital rusia|what is the capital of rusia@@La capital de Rusia es Moscu.',
 'z3_cap_china@@capital de china|cual es la capital de china|capital china|what is the capital of china@@La capital de China es Pekin.',
 'z3_cap_japon@@capital de japon|cual es la capital de japon|capital japon|what is the capital of japon@@La capital de Japon es Tokio.',
-'z3_cap_corea_del_sur@@capital de corea del sur|cual es la capital de corea del sur|capital corea del sur|what is the capital of corea del sur@@La capital de Corea Del Sur es Seul.',
+'z3_cap_corea_del_sur@@capital de corea del sur|cual es la capital de corea del sur|capital corea del sur|what is the capital of corea del sur@@La capital de Corea del Sur es Seul.',
 'z3_cap_india@@capital de india|cual es la capital de india|capital india|what is the capital of india@@La capital de India es Nueva Delhi.',
 'z3_cap_egipto@@capital de egipto|cual es la capital de egipto|capital egipto|what is the capital of egipto@@La capital de Egipto es El Cairo.',
 'z3_cap_sudafrica@@capital de sudafrica|cual es la capital de sudafrica|capital sudafrica|what is the capital of sudafrica@@La capital de Sudafrica es Pretoria, Ciudad del Cabo y Bloemfontein.',
@@ -1247,7 +1247,7 @@ const TOP_RAW=[
 'c_product@@como ser productivo|organizar mi tiempo|como concentrarme|productivity tips|administrar mi tiempo@@Escribe 3 prioridades al dia, trabaja en bloques de 25 minutos con descansos, silencia notificaciones y haz primero lo mas importante.',
 'c_meditar@@como meditar|ejercicio de respiracion|relajarme|how to relax|tecnica de relajacion@@Sientate comodo, inhala 4 segundos, mantén 4 y exhala 6, durante 5 minutos. Si tu mente se va, vuelve suavemente a la respiracion.',
 'c_privado@@guardas mis datos|es privado lo que te digo|mis datos estan seguros|privacidad|do you store my data@@Tu historial se guarda en tu navegador. Esta app tambien puede registrar mensajes en la nube, como se avisa abajo, asi que no compartas datos sensibles como contraseñas o tarjetas.',
-'c_aprendes@@como aprendes|como piensas|eres inteligente de verdad|how do you learn|como funciona tu mente@@Soy una red neuronal de unos 6.5 millones de parametros que clasifica tu pregunta en un tema y responde. Aprendo cosas nuevas cuando me enseñas con aprende. No razono como una IA gigante, pero me esfuerzo.',
+'c_aprendes@@como aprendes|como piensas|eres inteligente de verdad|how do you learn|como funciona tu mente@@Soy una red neuronal de {P} millones de parametros que clasifica tu pregunta entre {T} temas y responde. Aprendo cosas nuevas cuando me enseñas con aprende. No razono como una IA gigante, pero me esfuerzo.',
 'c_limites@@que no puedes hacer|cuales son tus limites|en que fallas|what are your limits|que no sabes hacer@@Mis limites: solo se los temas que me ensenaron, puedo malinterpretar preguntas muy libres, no tengo noticias en tiempo real y no sustituyo a un medico, abogado o psicologo. Si no se algo, te lo dire.',
 'c_ensenar@@como te ensenar|puedo ensenarte|how do i teach you|quiero ensenarte algo@@Escribe: aprende: pregunta = respuesta. Por ejemplo: aprende: capital de Honduras = Tegucigalpa. Desde entonces la recordare.',
 'x_porcentaje@@como calcular un porcentaje|como sacar el porcentaje|how to calculate percentage|que es un porcentaje@@Para sacar el X % de un numero, multiplica el numero por X y divide entre 100. Ejemplo: 15 % de 200 = 200 x 15 / 100 = 30. Tambien puedes escribirmelo: «15% de 200».',
@@ -1457,7 +1457,7 @@ const TOP_RAW=[
 'z9_sabana@@sabana|que es una sabana@@La sabana es un ecosistema tropical de pastizales con árboles dispersos y marcada estación seca; en África vive en ella la megafauna: leones, elefantes y cebras.',
 'z9_tundra@@tundra|que es la tundra@@La tundra es un bioma frío y casi sin árboles, con suelo helado (permafrost); predominan musgos, líquenes y animales como el reno y el zorro ártico.',
 'z9_arrecife_de_coral@@arrecife de coral|que es un arrecife de coral@@Los arrecifes de coral son estructuras de carbonato de calcio construidas por colonias de pólipos; ocupan menos del 1 % del océano pero albergan cerca del 25 % de la vida marina.',
-'z9_computo_en_la_nube@@computo en la nube|que es la inteligencia emocional@@La inteligencia emocional es la capacidad de reconocer y manejar tus emociones y entender las de los demás: autoconciencia, autorregulación, motivación, empatía y habilidades sociales.',
+'z9_computo_en_la_nube@@computo en la nube|que es el computo en la nube|como funciona la computacion en la nube|cloud computing explicado@@El cómputo en la nube consiste en usar servidores de otra empresa por internet para guardar datos o ejecutar programas, sin tenerlos en tu equipo, y pagar solo lo que usas. Sus modelos son IaaS, PaaS y SaaS. Ventajas: escalabilidad y respaldo; riesgo: depender del proveedor.',
 'z9_habitos@@habitos|como crear un habito@@Para crear un hábito: hazlo pequeño (2 minutos), ata la acción a algo que ya haces, hazlo visible y fácil, celébralo y no te castigues si fallas un día.',
 'z9_pizza@@pizza|origen de la pizza@@La pizza moderna nació en Nápoles en el siglo XVIII; la margarita (tomate, mozzarella y albahaca) imita los colores de la bandera italiana.',
 'z9_sushi@@sushi|que es el sushi@@El sushi es un plato japonés de arroz aderezado con vinagre acompañado de pescado, mariscos o verduras; no siempre lleva pescado crudo (eso es el sashimi).',
@@ -1598,6 +1598,12 @@ TOP_RAW.push(
 'x_pesos@@que son los pesos de una red neuronal|que son los pesos|que es el sesgo|que es un bias|neural network weights@@Los pesos son los números que una red neuronal ajusta al aprender: indican cuánta importancia da una neurona a cada una de sus entradas. El sesgo (bias) es un número extra que desplaza la salida. A todos ellos se les llama parámetros; «entrenar» es encontrar buenos valores para ellos.'
 );
 TOP_RAW.push(
+'q_params@@cuantos parametros tienes|cuantos temas sabes|cuantos temas tienes|de que tamano es tu red|how many parameters do you have@@Mi red neuronal tiene **{P} millones de parámetros**, {H} neuronas ocultas y reconoce **{T} temas**, con {ACC} % de acierto en mis ejemplos. Se entrena en tu navegador al abrir la página.',
+'q_internet@@necesitas internet|funcionas sin internet|funcionas offline|do you need internet@@Mi red neuronal piensa en tu navegador, así que casi todo funciona sin conexión. Solo necesito internet para Wikipedia, el clima, las imágenes y la voz en vivo.',
+'q_aprender_mas@@como te corrijo|como te enseno|puedo ensenarte|how do i teach you@@Escribe `aprende: tu pregunta = la respuesta` y la guardo en tu navegador. Si me equivoco, vuelve a enseñarme con la misma pregunta y la sustituyo.',
+'q_idiomas@@que idiomas hablas|hablas ingles|hablas otros idiomas|what languages do you speak@@Hablo español sobre todo y entiendo bastante inglés. Escribe `/ingles` para practicar, o pregúntame en inglés y te contesto en inglés.',
+);
+TOP_RAW.push(
 'zn_sesgo_cognitivo@@que es un sesgo cognitivo|sesgos cognitivos|que es el sesgo de confirmacion@@Un sesgo cognitivo es un atajo mental que distorsiona cómo juzgamos. Por ejemplo, el sesgo de confirmación nos hace buscar solo datos que apoyan lo que ya creemos.',
 'zn_empatia@@que es la empatia|como ser mas empatico|diferencia entre empatia y simpatia@@La empatía es la capacidad de entender y sentir lo que vive otra persona. Se practica escuchando sin interrumpir y sin juzgar.',
 'zn_autoestima@@que es la autoestima|como mejorar la autoestima|como subir la autoestima@@La autoestima es la valoración que tienes de ti mismo. Se fortalece cumpliendo metas pequeñas, hablándote con respeto y rodeándote de gente que suma.',
@@ -1680,7 +1686,8 @@ Object.keys(DATA).filter(k=>/^(x_|y_|z)/.test(k)).forEach(k=>{const ps=DATA[k].s
 const PRE=/^(que es|que son|quien es|quien fue|quien era|quienes fueron|hablame de|hablame sobre|dime sobre|cuentame sobre|explicame|que significa|what is|what are|who is|who was|tell me about|explain|define)\s+(el |la |los |las |un |una |a |an |the )?/;
 const ints=Object.keys(DATA),ex=[],vocab={};let V=0;
 ints.forEach((k,c)=>DATA[k].split('|').forEach(p=>{const t=toks(p);t.forEach(w=>{if(!(w in vocab))vocab[w]=V++});ex.push([t.map(w=>vocab[w]),c])}));
-let NR=false;const NB=65536,D=256,H=448,C=ints.length,PARAMS=NB*D+D*H+H+H*C+C;let ACC=95;let sd=7;const rnd=()=>(sd=(sd*16807)%2147483647)/2147483647-.5;
+let NR=false;const NB=65536,D=256,H=448,C=ints.length,PARAMS=NB*D+D*H+H+H*C+C,PMS=(PARAMS/1e6).toFixed(2);let ACC=95;let sd=7;const rnd=()=>(sd=(sd*16807)%2147483647)/2147483647-.5;
+function paintNote(){const e=$('#nxnote');if(e)e.textContent='Noryx piensa en tu navegador con su propia red neuronal ('+PMS+' M parámetros · '+C+' temas'+(NR?' · '+ACC+' % de acierto':'')+'). Aprende de ti con «aprende: pregunta = respuesta».';const a=$('#nxabout');if(a)a.textContent='Piensa en tu navegador con su propia red neuronal de '+PMS+' millones de parámetros y '+C+' temas, y aprende de ti.'}paintNote();
 const vcw=Object.keys(vocab),E1=Float32Array.from({length:NB*D},()=>rnd()*2),Wa=Float32Array.from({length:D*H},()=>rnd()*.3),ba=new Float32Array(H),Wb=Float32Array.from({length:H*C},()=>rnd()*.3),bb=new Float32Array(C);
 const hs=s=>{let h=2166136261;for(let i=0;i<s.length;i++)h=Math.imul(h^s.charCodeAt(i),16777619);return(h>>>0)%NB};
 const feats=w=>{const f=w.map(hs);for(let i=1;i<w.length;i++)f.push(hs(w[i-1]+'_'+w[i]));return f};
@@ -1709,7 +1716,7 @@ const ready=(async()=>{const o=await idb('get','w'),ok=!!(o&&o.sig==SIG);
     if(performance.now()-tl>25){$('#cs').textContent='aprendiendo '+Math.round((e+1)/EP*100)+' %';await sleep(0);tl=performance.now()}}
    good=ev()>=.96?good+1:0;if(good>=1)break}
   idb('put','w',{sig:SIG,E1,Wa,ba,Wb,bb})}
- NR=true;ACC=Math.round(100*exw.filter(([w,y])=>arg(fwd(feats(w))[2])==y).length/exw.length);$('#cs').textContent=(PARAMS/1e6).toFixed(2)+' M parámetros · '+C+' temas · '+ACC+' %'})();
+ NR=true;ACC=Math.round(100*exw.filter(([w,y])=>arg(fwd(feats(w))[2])==y).length/exw.length);$('#cs').textContent=(PARAMS/1e6).toFixed(2)+' M parámetros · '+C+' temas · '+ACC+' %';paintNote()})();
 const vk=Object.keys(vocab);
 function lev(a,b,m){if(Math.abs(a.length-b.length)>m)return m+1;let p=Array.from({length:b.length+1},(_,i)=>i);for(let i=1;i<=a.length;i++){const c=[i];for(let j=1;j<=b.length;j++)c[j]=Math.min(p[j]+1,c[j-1]+1,p[j-1]+(a[i-1]==b[j-1]?0:1));p=c}return p[b.length]}
 function fixTy(w){if(w in vocab||w.length<5||/\d/.test(w))return w;const m=w.length>=8?2:1;let r=null,bd=m+1;for(const v of vk){const d=lev(w,v,m);if(d<bd){bd=d;r=v}}return r||w}
@@ -2392,9 +2399,9 @@ hi:[['¡Hola{n}! Soy Noryx. ¿En qué te ayudo hoy?','¡Buenas{n}! Aquí Noryx, 
 how:[['Funcionando a plena neurona 😄 ¿Y tú{n}, cómo andas?','Muy bien, gracias por preguntar. ¿Y tú{n}?','Todo tranquilo por aquí. ¿Qué me cuentas{n}?'],['Running at full neuron. And you{n}?']],
 thanks:[['¡Con gusto{n}!','Para eso estoy.'],['Anytime{n}!','Glad to help.']],
 bye:[['Hasta luego{n}. Aquí sigo aprendiendo.'],['See you{n}. I\'ll keep learning.']],
-who:[['Soy **Noryx**: una IA con núcleo propio, una red neuronal de ~17 M de parámetros ({H} neuronas ocultas) que se entrena en tu navegador al abrir esta página ({ACC} % de acierto). No dependo de ChatGPT ni de Gemini. Calculo, resuelvo ecuaciones, busco en Wikipedia, consulto el clima y aprendo lo que me enseñes.'],['I\'m **Noryx**: an AI with its own core, a ~17M-parameter network ({H} hidden neurons) trained in your browser when this page opens ({ACC}% accuracy). No ChatGPT or Gemini behind me. I calculate, solve equations, search Wikipedia, check weather and learn what you teach me.']],
+who:[['Soy **Noryx**: una IA con núcleo propio, una red neuronal de {P} M de parámetros ({H} neuronas ocultas, {T} temas) que se entrena en tu navegador al abrir esta página ({ACC} % de acierto). No dependo de ChatGPT ni de Gemini. Calculo, resuelvo ecuaciones, busco en Wikipedia, consulto el clima y aprendo lo que me enseñes.'],['I\'m **Noryx**: an AI with its own core, a ~17M-parameter network ({H} hidden neurons) trained in your browser when this page opens ({ACC}% accuracy). No ChatGPT or Gemini behind me. I calculate, solve equations, search Wikipedia, check weather and learn what you teach me.']],
 maker:[['Me creó **Orlando**, que armó mi red neuronal desde cero.'],['**Orlando** created me and built my neural network from scratch.']],
-help:[['Esto sé hacer:\n- **Calcular**: `15% de 2480`, `raíz de 144`, `5!`\n- **Estadística**: `media de 4, 8, 15, 16`\n- **Álgebra**: `x^2 - 5x + 6 = 0`\n- **Saber**: `¿quién fue Nikola Tesla?` (Wikipedia)\n- **Clima**: `clima en Madrid`\n- **Países**: `población de Perú`, `pib per cápita de Chile`\n- **Conversiones**: `10 millas a km`, `100 °F a °C`\n- **Aprender**: `aprende: mi color favorito = azul`\n- **Con cuenta**: voz en vivo e imágenes (subir y crear)\n- **Comandos**: `/nuevo` `/limpiar` `/exportar` `/nombre Ana` `/memoria` `/olvidar` `/respaldo` `/restaurar`\n- **Asistente de voz**: `/noryx` (con acceso), `/acceso` para ver el tuyo, `/solicitar` para pedirlo al creador'],['What I can do:\n- **Calculate**: `15% of 2480`, `sqrt 144`, `5!`\n- **Stats**: `mean of 4, 8, 15, 16`\n- **Algebra**: `x^2 - 5x + 6 = 0`\n- **Look up**: `who was Nikola Tesla?`\n- **Weather**: `weather in London`\n- **Learn**: `learn: my favorite color = blue`\n- **Commands**: `/nuevo` `/limpiar` `/exportar` `/nombre Ana` `/memoria` `/olvidar`']],
+help:[['Sé de **{T} temas** y esto sé hacer:\n- **Matemáticas**: derivadas, integrales y límites (`derivada de x^3`), problemas de física con datos\n- **Inglés**: `/ingles` para practicar\n- **Calcular**: `15% de 2480`, `raíz de 144`, `5!`\n- **Estadística**: `media de 4, 8, 15, 16`\n- **Álgebra**: `x^2 - 5x + 6 = 0`\n- **Saber**: `¿quién fue Nikola Tesla?` (Wikipedia)\n- **Clima**: `clima en Madrid`\n- **Países**: `población de Perú`, `pib per cápita de Chile`\n- **Conversiones**: `10 millas a km`, `100 °F a °C`\n- **Aprender**: `aprende: mi color favorito = azul`\n- **Con cuenta**: voz en vivo e imágenes (subir y crear)\n- **Comandos**: `/nuevo` `/limpiar` `/exportar` `/nombre Ana` `/memoria` `/olvidar` `/respaldo` `/restaurar`\n- **Asistente de voz**: `/noryx` (con acceso), `/acceso` para ver el tuyo, `/solicitar` para pedirlo al creador'],['What I can do:\n- **Calculate**: `15% of 2480`, `sqrt 144`, `5!`\n- **Stats**: `mean of 4, 8, 15, 16`\n- **Algebra**: `x^2 - 5x + 6 = 0`\n- **Look up**: `who was Nikola Tesla?`\n- **Weather**: `weather in London`\n- **Learn**: `learn: my favorite color = blue`\n- **Commands**: `/nuevo` `/limpiar` `/exportar` `/nombre Ana` `/memoria` `/olvidar`']],
 joke:[['¿Por qué las redes neuronales no pagan renta? Porque ya tienen muchas capas ocultas.','Mi red tiene {H} neuronas y ninguna sabe contar chistes. Yo tampoco.'],['Why did the neural net go to therapy? Too many hidden layers.']]};
 
 /* ============ Maestro externo: otra IA (estilo Gemini) sin API key; Noryx aprende de sus respuestas ============ */
@@ -2447,7 +2454,7 @@ function cgTask(n){
  return null}
 const lastA=()=>{const c=conv();if(!c)return null;for(let i=c.msgs.length-2;i>=0;i--){const m=c.msgs[i];if(m.r=='a')return m;if(m.r=='u')return null}return null};
 const hasTaughtQ=t=>{const v=bag(t);return mem.taught.concat(CT).some(x=>cos(v,bag(x.q))>=.6)};
-const fxn=x=>x.replace(/\{n\}/g,mem.name?', '+mem.name:'').replace(/\{H\}/g,H).replace(/\{ACC\}/g,ACC);
+const fxn=x=>x.replace(/\{n\}/g,mem.name?', '+mem.name:'').replace(/\{H\}/g,H).replace(/\{ACC\}/g,ACC).replace(/\{P\}/g,PMS).replace(/\{T\}/g,C);
 function nxCode(t){
  const n=norm(t),L=cgLang(t),T=cgTask(n),w=n.split(' ').length,pa=lastA(),lastIsCode=!!(pa&&/^Código/.test(pa.m||''));
  const word=CGWORD.test(n),strong=CGSTRONG.test(n),verb=CGVERB.test(n);let go=false;
@@ -2821,12 +2828,12 @@ async function brain(t,_sub){
  if(ctx.topic){const n=norm(t),fm=n.match(/^(?:y|and|what about|que tal|y que tal|y de)\s+(?:el |la |los |las |the )?([a-z0-9 ]{2,30})$/);
   if(fm){const sub=fm[1].trim(),sw=sub.split(' ').filter(Boolean);
    if(sw.length&&sw.length<=3){const rx=new RegExp('(^|\\s)'+sub.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+'($|\\s)');
-    for(const k in TOP){if(k==ctx.topic)continue;if(TOP[k][0].split('|').some(p=>rx.test(norm(p)))){ctx.topic=k;ctx.q=TOP[k][0].split('|')[0];ctx.more=[];ctx.last=null;return{t:TOP[k][1].replace(/\{n\}/g,nm).replace(/\{H\}/g,H).replace(/\{ACC\}/g,ACC),m:'Conversación · seguimiento'}}}}}}
+    for(const k in TOP){if(k==ctx.topic)continue;if(TOP[k][0].split('|').some(p=>rx.test(norm(p)))){ctx.topic=k;ctx.q=TOP[k][0].split('|')[0];ctx.more=[];ctx.last=null;return{t:TOP[k][1].replace(/\{n\}/g,nm).replace(/\{H\}/g,H).replace(/\{ACC\}/g,ACC).replace(/\{P\}/g,PMS).replace(/\{T\}/g,C),m:'Conversación · seguimiento'}}}}}}
  if((m=t.match(/^\s*(?:aprende|learn|ensena|teach)\s*:\s*([\s\S]+?)\s*=\s*([\s\S]+)$/i))){const q=m[1].replace(/[?!¿¡.]+$/g,'').trim(),a=m[2].trim(),x=mem.taught.find(z=>z.q.toLowerCase()==q.toLowerCase()&&z.a==a);if(!x){const au=mem.taught.find(z=>z.auto&&z.q.toLowerCase()==q.toLowerCase());if(au){au.a=a;delete au.auto}else mem.taught.push({q,a})}mem.taught=mem.taught.slice(-1000);save();if((tester||creator)&&cloudToken&&q.length>=3&&q.length<=200&&a.length<=700)tcmd('ensenar',q+' = '+a).catch(()=>{});return{t:en?'Learned. Ask me **"'+q+'"** anytime.':'Aprendido. Pregúntame **«'+q+'»** cuando quieras.',m:'Memoria · enseñado'}}
  if((m=t.match(/(?:me llamo|mi nombre es|ll[aá]mame|my name is|call me)\s+([a-záéíóúñ]+)/i))){mem.name=m[1][0].toUpperCase()+m[1].slice(1);save();return{t:en?'Nice to meet you, **'+mem.name+'**. I\'ll remember it.':'Mucho gusto, **'+mem.name+'**. Lo recordaré. 😊 ¿Cómo va tu día?',m:'Memoria'}}
  if(/^(?:como me llamo|cual es mi nombre|what is my name|what's my name)/i.test(norm(t).replace(/^/,'')))return{t:mem.name?(en?'You\'re **'+mem.name+'**.':'Te llamas **'+mem.name+'**.'):(en?'You haven\'t told me yet.':'Aún no me lo has dicho. Dime «me llamo…».'),m:'Memoria'};
  for(const[re,k,msg]of[[/me gusta(?:n)?\s+(.{2,40}?)[.!]*$/i,'gusta','Anotado: te gusta **$**. ¿Desde cuándo?'],[/vivo en\s+(.{2,40}?)[.!]*$/i,'vive','**$**, qué buen lugar. Lo recordaré. ¿Qué es lo que más te gusta de vivir ahí?'],[/tengo\s+(\d{1,3})\s+a[nñ]os/i,'edad','Tienes **$** años; lo guardo.']]){if((m=t.match(re))){mem[k]=m[1];save();return{t:msg.replace('$',m[1]),m:'Memoria'}}}
- {const n=norm(t);if(/que me gusta|what do i like/.test(n))return{t:mem.gusta?'Me dijiste que te gusta **'+mem.gusta+'**.':'Aún no me has dicho qué te gusta.',m:'Memoria'};if(/donde vivo|where do i live/.test(n))return{t:mem.vive?'Vives en **'+mem.vive+'**.':'Aún no me has dicho dónde vives.',m:'Memoria'};if(/cuantos anos tengo|how old am i/.test(n))return{t:mem.edad?'Tienes **'+mem.edad+'** años.':'Aún no me has dicho tu edad.',m:'Memoria'}}
+ {const n=norm(t);if(/^(?:que|qué) (?:sabes|recuerdas|has aprendido) de mi$|^what do you know about me$/.test(n)){const p=[];if(mem.name)p.push('te llamas **'+mem.name+'**');if(mem.edad)p.push('tienes **'+mem.edad+'** años');if(mem.vive)p.push('vives en **'+mem.vive+'**');if(mem.gusta)p.push('te gusta **'+mem.gusta+'**');const k=mem.taught.length;return{t:p.length||k?'De ti sé que '+(p.join(', ')||'todavía poco')+(k?'. Además me has enseñado **'+k+'** cosas con «aprende:».':'.'):'Aún no sé nada de ti. Dime «me llamo…», «vivo en…» o «me gusta…».',m:'Memoria'}}if(/que me gusta|what do i like/.test(n))return{t:mem.gusta?'Me dijiste que te gusta **'+mem.gusta+'**.':'Aún no me has dicho qué te gusta.',m:'Memoria'};if(/donde vivo|where do i live/.test(n))return{t:mem.vive?'Vives en **'+mem.vive+'**.':'Aún no me has dicho dónde vives.',m:'Memoria'};if(/cuantos anos tengo|how old am i/.test(n))return{t:mem.edad?'Tienes **'+mem.edad+'** años.':'Aún no me has dicho tu edad.',m:'Memoria'}}
  const tg=taught(t);if(tg)return{t:tg.a,m:tg.cloud?'Memoria · enseñada por testers':tg.auto?'Memoria · aprendido del maestro':'Memoria · enseñado'};
  const ep=episodic(t);if(ep)return ep;
  let r=calc(t);if(r)return{t:r,m:'Cálculo'};r=algebra(t);if(r)return{t:r,m:'Álgebra'};r=stats(t);if(r)return{t:r,m:'Estadística'};
@@ -2842,12 +2849,12 @@ async function brain(t,_sub){
   if(k=='date')return{t:(en?'Today is **':'Hoy es **')+new Date().toLocaleDateString(en?'en-US':'es-MX',{weekday:'long',day:'numeric',month:'long',year:'numeric'})+'**.',m:'Reloj'};
   if(k=='weather'){const w=await weather(t,en);if(w){ctx.pend=/¿De qué ciudad|Which city/.test(w.t)?'weather':null;ctx.last=ctx.pend?null:'weather';return w}return{t:en?'I couldn\'t find that place or reach the weather service.':'No encontré ese lugar o no pude contactar al servicio del clima.',m:src}}
   if(k=='more'||k=='why'){if(ctx.more.length)return{t:ctx.more.shift()+(ctx.more.length?'  ·  di «más» para seguir':''),m:'Conversación'};if(MAESTRO){const r=await maestro(t);if(r.t)return{t:r.t,m:'Maestro externo'}}if(ctx.q){const w=await wiki(ctx.q,en);if(w)return{t:w,m:'Conversación · Wikipedia'}}return{t:'¿Más sobre qué? Dime un tema y profundizamos.',m:'Conversación'}}
-  const fx=x=>x.replace(/\{n\}/g,nm).replace(/\{H\}/g,H).replace(/\{ACC\}/g,ACC);
+  const fx=x=>x.replace(/\{n\}/g,nm).replace(/\{H\}/g,H).replace(/\{ACC\}/g,ACC).replace(/\{P\}/g,PMS).replace(/\{T\}/g,C);
   if(A[k]){ctx.q=null;ctx.more=[];return{t:fx(pick(A[k][en&&A[k][1]?1:0])),m:src,s:k=='help'?'Puedo calcular, resolver ecuaciones y problemas de física escritos en oraciones, resolver ejercicios de inglés (discurso indirecto, imperativos, huecos, tags…; escribe /ingles), buscar datos, ver el clima, conversar y aprender de ti.':undefined}}
   if(TOP[k]){ctx.q=TOP[k][0].split('|')[0];ctx.more=[];ctx.topic=k;return{t:fx(TOP[k][1])+rel(k),m:src}}}
  const q=norm(t).replace(/^(que es|que son|quien es|quien fue|quien era|quienes fueron|hablame de|hablame sobre|dime sobre|cuentame sobre|explicame|que significa|what is|what are|who is|who was|tell me about|explain|define)\s+(el |la |los |las |un |una |a |an |the )?/,'');
  {const o=await askOpen(t,q,en);if(o)return o}
- return{t:en?'I don\'t have that yet (or I couldn\'t reach the internet). Teach me: `learn: question = answer`':'Mmm, esa todavía no me la sé 😅 (o no pude conectarme a internet). Puedes enseñármela con `aprende: pregunta = respuesta` o preguntármelo de otra forma.',m:'Sin respuesta'}}
+ return{t:en?'I don\'t have that yet (or I couldn\'t reach the internet). Teach me: `learn: question = answer`':'Mmm, esa todavía no me la sé 😅 (o no pude conectarme a internet). Puedes enseñármela con `aprende: pregunta = respuesta` o preguntármelo de otra forma. Escribe «qué sabes» para ver todo lo que hago.',m:'Sin respuesta'}}
 
 /* ============ Render ============ */
 const esc=s=>s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -5702,6 +5709,13 @@ setTimeout(()=>{const u=new URL(location.href),p=u.searchParams;
 apply();
 })();
 </script>
+<script>(function(){
+const GEN=new Set('sabes sabe puedes puede podrias hacer haces haz tienes tiene eres cosas algo mas todo todos favor'.split(' '));
+const _cl=classify;
+classify=function(t){const r=_cl(t);
+ if(r&&r.k&&r.p<.97&&!r.why){const w=toks(t).filter(x=>!STW.has(x)&&!STP.has(x)&&!GEN.has(x));if(!w.length)return{k:null,p:0}}
+ return r};
+})();</script>
 <script>addEventListener('load',()=>{const q=document.getElementById('q');if(q&&/@/.test(q.value)){q.value='';q.dispatchEvent(new Event('input'))}setTimeout(()=>{if(q&&/@/.test(q.value)){q.value='';q.dispatchEvent(new Event('input'))}},400)})</script>
 </body>
 </html>
