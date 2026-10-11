@@ -451,6 +451,9 @@ html.nx-tt,html.nx-tt *{transition:background-color .3s,color .3s,border-color .
 :root[data-r="s"] #new,:root[data-r="s"] #mgb,:root[data-r="s"] #jvb,:root[data-r="s"] #pro button,:root[data-r="s"] #prof,:root[data-r="s"] .chips button,:root[data-r="s"] .ci,:root[data-r="s"] #q,:root[data-r="s"] .body pre{border-radius:8px}
 :root[data-gl="off"] *{-webkit-backdrop-filter:none!important;backdrop-filter:none!important}
 :root[data-gl="off"] #side,:root[data-gl="off"] .box{background:var(--panel)}:root[data-gl="off"] header{background:var(--bg)}
+:root[data-bgi="l"]{--bgo:35%}:root[data-bgi="m"]{--bgo:58%}:root[data-bgi="h"]{--bgo:78%}
+:root[data-bgi] body{background-image:linear-gradient(color-mix(in srgb,var(--bg) var(--bgo),transparent),color-mix(in srgb,var(--bg) var(--bgo),transparent)),var(--bgimg);background-size:cover;background-position:center;background-attachment:fixed}
+:root[data-bgi] body::before{display:none}
 .skg{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:10px;width:100%}
 .srow.col{flex-direction:column;align-items:stretch;gap:12px}
 .sk{display:flex;flex-direction:column;gap:7px;padding:8px;border-radius:14px;background:var(--sb);border:2px solid color-mix(in srgb,var(--si) 18%,transparent);color:var(--si);font-size:12.5px;text-align:left}
@@ -4977,6 +4980,36 @@ addEventListener('keydown',e=>{
  h('Color',by('Modos de color'));h('Texto',document.querySelector('#s-ff').closest('.srow'));h('Chat y fondo',by('Fondo'));
  addEventListener('keydown',e=>{if(e.altKey&&e.key.toLowerCase()=='t'){e.preventDefault();const b=[...g.querySelectorAll('.sk')],i=b.findIndex(x=>x.getAttribute('aria-pressed')=='true'),n=b[(i+1)%b.length];n.click();toast(n.textContent)}});
  paintSk();paintP();sync();
+})();
+/* ---------- Imagen de fondo propia (solo cuentas registradas) ---------- */
+(function(){
+ const sec=document.querySelector('#set .spn[data-p="gen"]'),DK='nx-bgd';
+ const email=()=>String((sess&&sess.email)||(creator&&privMail)||'').toLowerCase(),key=()=>'nx-bgi:'+email();
+ const dim=()=>{const v=S.get(DK,'m');return v=='l'||v=='h'?v:'m'};
+ const apply=()=>{const d=email()?S.get(key(),null):null;
+  if(d){R.style.setProperty('--bgimg','url("'+d+'")');R.dataset.bgi=dim()}else{R.style.removeProperty('--bgimg');delete R.dataset.bgi}};
+ const fi=document.createElement('input');fi.type='file';fi.accept='image/*';fi.hidden=true;document.body.append(fi);
+ const enc=(im,max,q)=>{const m=Math.min(1,max/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=Math.round(im.width*m);c.height=Math.round(im.height*m);c.getContext('2d').drawImage(im,0,0,c.width,c.height);return c.toDataURL('image/jpeg',q)};
+ fi.onchange=()=>{const f=fi.files[0];fi.value='';if(!f)return;
+  if(!/^image\//.test(f.type)||f.size>25e6){toast('Elige una imagen de menos de 25 MB');return}
+  const u=URL.createObjectURL(f),im=new Image();
+  im.onerror=()=>{URL.revokeObjectURL(u);toast('No pude leer esa imagen')};
+  im.onload=()=>{URL.revokeObjectURL(u);let d=enc(im,1600,.72);if(d.length>1.4e6)d=enc(im,1280,.55);
+   try{localStorage.setItem(key(),JSON.stringify(d))}catch(e){toast('No cabe en este dispositivo. Prueba con otra imagen más ligera.',3200);return}
+   apply();paint();toast('Fondo aplicado')};
+  im.src=u};
+ const dc=E('div'),pick=btn('Elegir imagen',()=>fi.click(),'pri'),rmv=btn('Quitar',()=>{localStorage.removeItem(key());apply();paint();toast('Fondo quitado')}),c=E('div','sc');
+ c.append(pick,rmv,dc);
+ const real=row('Imagen de fondo','Pon la foto que quieras detrás del chat. Se guarda solo en este dispositivo.',c);
+ const lockBtn=btn('Entrar',()=>{setClose(true);openDlg()},'pri');
+ const lock=row('Imagen de fondo','Disponible para cuentas registradas. Entra para poner tu propia imagen.',lockBtn);
+ const anchor=[...sec.querySelectorAll('.srow')].find(r=>{const b=r.querySelector('.sl b');return b&&b.textContent=='Fondo'});
+ (anchor||sec.lastElementChild).after(real);real.after(lock);
+ function paint(){const reg=!!email(),has=reg&&!!S.get(key(),null);real.hidden=!reg;lock.hidden=reg;rmv.hidden=!has;dc.hidden=!has;
+  if(has)seg(dc,[['l','Suave'],['m','Media'],['h','Fuerte']],dim(),v=>{S.set(DK,v);apply();paint()})}
+ const _pg=paintGeneral;paintGeneral=function(){_pg();paint()};
+ let last=email();setInterval(()=>{const e=email();if(e!=last){last=e;apply();paint()}},2000);
+ apply();paint();
 })();
 applyStored();setProf();mgBadge();
 let key='';
