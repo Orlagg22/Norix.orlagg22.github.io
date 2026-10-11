@@ -1588,6 +1588,15 @@ const TOP_RAW=[
 'zd_sedentarismo@@que es el sedentarismo|riesgos de no hacer ejercicio|como dejar el sedentarismo|sentarse mucho tiempo|sedentary lifestyle@@El sedentarismo es pasar la mayor parte del día sentado o sin actividad física. Se asocia con mayor riesgo de problemas cardiovasculares, diabetes tipo 2, obesidad y dolor de espalda, además de peor ánimo. Para empezar a cambiarlo: caminar más, usar escaleras, hacer pausas activas, bailar o practicar un deporte que disfrutes, aumentando poco a poco.',
 'zd_ef_adaptada@@que es la educacion fisica adaptada|deporte adaptado|actividad fisica con discapacidad|inclusion en el deporte|adapted physical education@@La educación física adaptada ajusta actividades, reglas y materiales para que todas las personas participen, con o sin discapacidad. Se modifican distancias, tiempos o equipos (por ejemplo, básquetbol en silla de ruedas o balones con cascabel). La meta es la inclusión: que cada estudiante avance a su ritmo y se sienta parte del grupo.',
 'zd_plan_clase_ef@@como planear una clase de educacion fisica|partes de una sesion de educacion fisica|plan de clase de educacion fisica|como dar una clase de ef|physical education lesson plan@@Una sesión de educación física suele tener tres partes: inicio (bienvenida, calentamiento y activación), desarrollo (la actividad principal con progresiones y juegos) y cierre (vuelta a la calma, estiramientos y reflexión). Se planean el propósito, los materiales, la organización del grupo, las adaptaciones para quien lo necesite, la seguridad del espacio y cómo se evaluará el aprendizaje.'];
+TOP_RAW.push(
+'x_neurona@@que es una neurona|que hace una neurona|neurona biologica|what is a neuron@@Una neurona es la célula básica del sistema nervioso: recibe señales por sus dendritas, las procesa en el cuerpo celular y las envía por el axón a otras neuronas a través de sinapsis. El cerebro humano tiene unos 86 000 millones. No la confundas con la neurona artificial de una red neuronal (pregúntame «qué es una neurona artificial»).',
+'x_neurona_art@@que es una neurona artificial|que es un perceptron|perceptron|artificial neuron@@Una neurona artificial es la unidad de una red neuronal: multiplica cada entrada por un peso, suma todo más un sesgo (bias) y pasa el resultado por una función de activación para producir su salida. Muchas neuronas organizadas en capas forman una red neuronal. El perceptrón (1958) es la versión más simple.',
+'x_activacion@@que es una funcion de activacion|funciones de activacion|activation function|que es relu|que es la funcion sigmoide@@Una función de activación decide qué señal pasa una neurona artificial a la siguiente capa. Introduce no linealidad: sin ella toda la red equivaldría a una sola operación lineal y no podría aprender patrones complejos. Ejemplos: ReLU (max(0, x)), sigmoide (entre 0 y 1), tanh (entre −1 y 1) y softmax (convierte salidas en probabilidades).',
+'x_descenso@@que es el descenso del gradiente|que es el gradiente descendente|gradient descent|descenso de gradiente@@El descenso del gradiente es el algoritmo con el que una red neuronal aprende: mide el error (la pérdida), calcula hacia dónde cambiar cada peso para reducirlo (el gradiente) y da pasos pequeños en esa dirección, controlados por la tasa de aprendizaje. Se repite miles de veces con los datos de entrenamiento.',
+'x_backprop@@que es la retropropagacion|que es el backpropagation|que es backpropagation|backpropagation@@La retropropagación (backpropagation) es la forma eficiente de calcular el gradiente en una red neuronal: el error se mide en la salida y se propaga hacia atrás, capa por capa, con la regla de la cadena, para saber cuánto contribuyó cada peso. Después el descenso del gradiente actualiza los pesos.',
+'x_dl@@que es el deep learning|que es el aprendizaje profundo|deep learning|what is deep learning@@El aprendizaje profundo (deep learning) es la rama del aprendizaje automático que usa redes neuronales con muchas capas. Cada capa aprende rasgos más abstractos (en una imagen: bordes, luego formas, luego objetos). Es la base de la visión por computadora, el reconocimiento de voz y los modelos de lenguaje.',
+'x_pesos@@que son los pesos de una red neuronal|que son los pesos|que es el sesgo|que es un bias|neural network weights@@Los pesos son los números que una red neuronal ajusta al aprender: indican cuánta importancia da una neurona a cada una de sus entradas. El sesgo (bias) es un número extra que desplaza la salida. A todos ellos se les llama parámetros; «entrenar» es encontrar buenos valores para ellos.'
+);
 const TOP={},ctx={q:null,more:[]};TOP_RAW.forEach(r=>{const[k,p,a]=r.split('@@');TOP[k]=[p,a];DATA[k]=p});
 const QP=/^(que (?:es |son |significa |fue |fueron )?|como |por que |cual |cuales |quien |quienes |cuanto |cuantos |donde |cuando |what |how |why |who |hablame |explicame |cuentame |dime |datos |informacion |tipos |receta |consejos |recomiendame |reglas |beneficios |mejores |historia |causas )/;
 Object.keys(DATA).filter(k=>/^(x_|y_|z)/.test(k)).forEach(k=>{const ps=DATA[k].split('|'),n0=norm(ps[0]);let c=n0.replace(QP,'').replace(/^(que |el |la |los |las |un |una |de |del )+/,'').trim();if(toks(c).length<1||toks(c).length>4)return;
@@ -1630,8 +1639,15 @@ function fixTy(w){if(w in vocab||w.length<5||/\d/.test(w))return w;const m=w.len
 const STP=new Set('quiero saber algo dime explicame funciona sirve sirven entender cuentame hablame forman forma llama como para pero esta este esto ellos ellas cual cuales cuando donde porque sobre entre desde hasta tiene tienen puede pueden hace hacen mas muy son'.split(' ')),stem=w=>w.length>3?w.replace(/(es|s)$/,''):w,IDX={};
 ints.forEach(k=>DATA[k].split('|').forEach(p=>toks(p).forEach(w=>{if(w.length>3&&!STP.has(w)){const x=stem(w);(IDX[x]||(IDX[x]=new Set())).add(k)}})));
 function kwBest(w){const sc={};w.forEach(x=>{x=stem(x);const S=IDX[x];if(S&&S.size<=12)S.forEach(k=>sc[k]=(sc[k]||0)+x.length*x.length/S.size+(/^(x_|y_|z)/.test(k)?.5:0))});let b=null,m=0;for(const k in sc)if(sc[k]>m){m=sc[k];b=k}return b?{k:b,m}:null}
-const EXM={},ART=/^(el |la |los |las |un |una )/;ints.forEach(k=>DATA[k].split('|').forEach(p=>{EXM[norm(p)]=k}));
-function classify(t){const nq=norm(t),qq=nq.replace(PRE,''),ek=EXM[nq]||EXM[qq]||EXM[qq.replace(ART,'')];if(ek)return{k:ek,p:1};const w=toks(t).map(fixTy);if(!NR){const kb=kwBest(w);return kb&&kb.m>=2?{k:kb.k,p:.8}:{k:null,p:0}}if(!w.some(x=>x in vocab))return{k:null,p:0};const o=fwd(feats(w))[2],c=arg(o),wc=w.filter(x=>x.length>3&&!STP.has(x)).map(stem);
+const EXM={},ART=/^(el |la |los |las |un |una )/;ints.forEach(k=>DATA[k].split('|').forEach(p=>{const n=norm(p),o=EXM[n];if(!o||!TOP[o]||!TOP[k]||TOP[k][1].length>=TOP[o][1].length)EXM[n]=k}));
+
+/* Resolutor de términos: «qué es / definición de / concepto de / para qué sirve X», con plurales y erratas ("neuroal" = neuronal) */
+const PRE2=/^(?:que (?:es|son|significa|significan|quiere decir|quieren decir|fue|fueron|era)|quien (?:es|fue|era|son)|quienes (?:son|fueron)|en que consiste|de que trata|a que se refiere|para que (?:sirve|sirven)|definicion de|definicion|concepto de|concepto|significado de|significado|hablame de|hablame sobre|dime sobre|cuentame sobre|explicame|explica|describeme|describe|defineme|define|what (?:is|are|does)|who (?:is|was)|tell me about|explain|definition of|meaning of)\s+(?:(?:el|la|los|las|un|una|unos|unas|lo|del|de|an|the)\s+)*/;
+const SUF=/\s+(?:significa|significado|definicion|concepto|que es|quiere decir|mean|means|meaning|definition)$/;
+const TERM={};
+ints.forEach(k=>DATA[k].split('|').forEach(p=>{const n=norm(p);if(!PRE2.test(n))return;const w=toks(n.replace(PRE2,'').replace(SUF,''));if(!w.length||w.length>4)return;const k1=w.join(' '),k2=w.map(stem).join(' ');for(const q of[k1,k2]){const o=TERM[q];if(!o||!TOP[o]||(TOP[k]&&TOP[k][1].length>TOP[o][1].length))TERM[q]=k}}));
+function termKey(t){const n=norm(t),h=n.replace(PRE2,'').replace(SUF,'').trim(),w=toks(h);if(!w.length||w.length>4||(h==n&&w.length>3))return null;const fw=w.map(fixTy);return TERM[w.join(' ')]||TERM[w.map(stem).join(' ')]||TERM[fw.join(' ')]||TERM[fw.map(stem).join(' ')]||null}
+function classify(t){const nq=norm(t),qq=nq.replace(PRE,''),ek=EXM[nq]||EXM[qq]||EXM[qq.replace(ART,'')];{const tk=termKey(t);if(tk&&(!ek||tk==ek||!TOP[ek]||!TOP[tk]||TOP[tk][1].length>TOP[ek][1].length))return{k:tk,p:1}}if(ek)return{k:ek,p:1};const w=toks(t).map(fixTy);if(!NR){const kb=kwBest(w);return kb&&kb.m>=2?{k:kb.k,p:.8}:{k:null,p:0}}if(!w.some(x=>x in vocab))return{k:null,p:0};const o=fwd(feats(w))[2],c=arg(o),wc=w.filter(x=>x.length>3&&!STP.has(x)).map(stem);
  if(wc.length&&!wc.some(x=>IDX[x]&&IDX[x].has(ints[c]))){const kb=kwBest(w);if(kb&&kb.m>=2)return{k:kb.k,p:.8}}
  if(/^(x_|y_|z)/.test(ints[c])&&wc.length>=2){const cv=wc.filter(x=>IDX[x]&&IDX[x].has(ints[c])).length;if(cv*2<wc.length)return{k:null,p:0}}
  return{k:ints[c],p:o[c]}}
@@ -1640,7 +1656,7 @@ const EPC=new Map(),emb=t=>{let v=EPC.get(t);if(!v){const w=toks(t).map(fixTy);v
 const cosv=(a,b)=>{let n=0,x=0,y=0;for(let i=0;i<a.length;i++){n+=a[i]*b[i];x+=a[i]*a[i];y+=b[i]*b[i]}return n/Math.sqrt(x*y||1)};
 function episodic(t){if(!NR||toks(t).length<3)return null;const v=emb(t),bt=bag(t);if(!v)return null;let b=null,bs=0;
  for(const c of convs)for(let i=1;i<(c.msgs||[]).length;i++){const m=c.msgs[i],q=c.msgs[i-1];if(m.r!='a'||q.r!='u'||!/Maestro|Memoria|Red neuronal/.test(m.m||''))continue;if(/^Un bug es un error/.test(m.t)&&!/bug|depur|error/i.test(t))continue;
-  const qv=emb(q.t);if(!qv||cos(bt,bag(q.t))<.34)continue;const d=cosv(v,qv);if(d>.97&&d>bs){bs=d;b=m}}
+  const qv=emb(q.t);if(!qv||cmatch(t,q.t)<.75||!ansOk(t,m.t))continue;const d=cosv(v,qv);if(d>.97&&d>bs){bs=d;b=m}}
  return b?{t:b.t,m:'Memoria episódica · conversación pasada ('+Math.round(bs*100)+' %)'}:null}
 
 /* ============ Habilidades: cálculo, estadística, álgebra ============ */
@@ -2211,7 +2227,17 @@ function tgPick(list,key){
  const u=TGU[key]||(TGU[key]={used:[],last:null});let c=list.filter(x=>!u.used.includes(x.a));
  if(!c.length){u.used=[];c=list.filter(x=>x.a!==u.last);if(!c.length)c=list}
  const x=c[Math.floor(Math.random()*c.length)];u.used.push(x.a);u.last=x.a;return x}
-function taught(t){const v=bag(t),all=mem.taught.concat(CT);let b=null,bs=0;all.forEach(x=>{const d=cos(v,bag(x.q));if(d>=(x.auto?.8:.6)&&d>bs){bs=d;b=x}});
+const STW=new Set('que es son una un unos unas el la los las lo de del al en y o u a e se me te mi tu su por para con como cual cuales quien quienes cuanto cuantos donde cuando sobre acerca dime explicame explica hablame cuentame define definicion concepto significa significado funciona funcionan sirve sirven quiero saber algo what is are the an of to tell about explain meaning how does do work works you please'.split(' '));
+const cwords=t=>toks(t).filter(w=>!STW.has(w));
+const wEq=(a,b)=>a==b||stem(a)==stem(b)||(a.length>=6&&b.length>=6&&lev(a,b,1)<=1)||(a.length>=10&&b.length>=10&&lev(a,b,2)<=2);
+/* parecido entre dos preguntas usando solo palabras de contenido (tolera erratas); los números deben coincidir */
+function cmatch(x,y){const a=cwords(x),b=cwords(y);if(!a.length||!b.length)return norm(x)==norm(y)?1:0;
+ const nm=l=>l.filter(w=>/\d/.test(w)).sort().join(',');if(nm(a)!=nm(b))return 0;
+ const used=new Set();let n=0;for(const w of a){const j=b.findIndex((v,i)=>!used.has(i)&&wEq(w,v));if(j>=0){used.add(j);n++}}return n/Math.max(a.length,b.length)}
+/* ¿la respuesta guardada habla de lo que se preguntó? evita reutilizar respuestas de otro tema */
+function ansOk(q,a){const qw=cwords(q).filter(w=>w.length>=3);if(!qw.length)return true;const aw=toks(a);let h=0;for(const w of qw)if(aw.some(v=>wEq(w,v)))h++;return h/qw.length>=.5}
+try{const n0=mem.taught.length;mem.taught=mem.taught.filter(x=>!x.auto||ansOk(x.q,x.a));if(mem.taught.length!=n0)save()}catch(e){}
+function taught(t){const all=mem.taught.concat(CT);let b=null,bs=0;all.forEach(x=>{const d=cmatch(t,x.q);if(d>=(x.auto?.85:.75)&&d>bs&&(!x.auto||ansOk(t,x.a))){bs=d;b=x}});
  if(!b)return null;
  /* todas las respuestas enseñadas a esa misma pregunta (sin repetir texto): se elige una distinta cada vez */
  const k=tgKey(b.q),seen=new Set(),opts=[];
@@ -2246,7 +2272,7 @@ async function askOpen(t,q,en){
  let note='';if(MAESTRO){const r=await maestro(t);if(r.t){learn(t,r.t);return{t:r.t,m:'Maestro externo · aprendido'}}note=r.err=='rate'?'El maestro externo está saturado ahora mismo. ':'No pude contactar al maestro externo. '}
  if(q.length>2){const w=await wiki(q,en);if(w)return{t:note?note+'Esto encontré en Wikipedia:\n\n'+w:w,m:'Wikipedia'}}
  return note?{t:note+'Inténtalo de nuevo en unos segundos o enséñame con `aprende: pregunta = respuesta`.',m:'Sin respuesta'}:null}
-const grp=k=>/^y_(select|join|pk|fk|nosql|index|norm|acid|mongo|pg|redis|insert)$/.test(k)?'db':/^(y_(egipto|grecia|medieval|renac|conquista|vikingos|inca|napoleon|muro|rusa|colon|prehist)|x_(ww1|ww2|frances|industrial|guerrafria|rommana|azteca|maya|indep|rev|luna69))$/.test(k)?'hi':/^y_(tobe|present|past|phrasal|saludos|numeros|dias|colores|there|makedo|aan|condic)$/.test(k)?'en':/^y_an_/.test(k)?'an':/^z2_/.test(k)?'sp':/^z3_el_/.test(k)?'el':/^y_(pozole|mole|guaca|tamal|arroz|huevo|pasta|pizza|sopa|pan|chilaq|ceviche|hotcakes|ensalada|frijol|vegan|prote|vitam)$/.test(k)?'fo':/^x_(wifi|5g|bateria|backup|phishing|vpn|linux|excel|internet|blockchain|nube|api|sql|git|cripto|pass)$/.test(k)?'te':/^x_(porcentaje|regla3|fraccion|area|media|pitag|pi|deriv|integral|primo|fibo|prob)$/.test(k)?'ma':null;
+const grp=k=>/^y_(select|join|pk|fk|nosql|index|norm|acid|mongo|pg|redis|insert)$/.test(k)?'db':/^(y_(egipto|grecia|medieval|renac|conquista|vikingos|inca|napoleon|muro|rusa|colon|prehist)|x_(ww1|ww2|frances|industrial|guerrafria|rommana|azteca|maya|indep|rev|luna69))$/.test(k)?'hi':/^y_(tobe|present|past|phrasal|saludos|numeros|dias|colores|there|makedo|aan|condic)$/.test(k)?'en':/^y_an_/.test(k)?'an':/^z2_/.test(k)?'sp':/^z3_el_/.test(k)?'el':/^y_(pozole|mole|guaca|tamal|arroz|huevo|pasta|pizza|sopa|pan|chilaq|ceviche|hotcakes|ensalada|frijol|vegan|prote|vitam)$/.test(k)?'fo':/^x_(wifi|5g|bateria|backup|phishing|vpn|linux|excel|internet|blockchain|nube|api|sql|git|cripto|pass)$/.test(k)?'te':/^x_(porcentaje|regla3|fraccion|area|media|pitag|pi|deriv|integral|primo|fibo|prob)$/.test(k)?'ma':/^(ai|nn|x_ml|x_llm|z9_machine_learning|x_neurona|x_neurona_art|x_activacion|x_descenso|x_backprop|x_dl|x_pesos)$/.test(k)?'ia':null;
 const relLab=x=>/^y_an_/.test(x)?x.slice(5):norm(TOP[x][0].split('|')[0]).replace(QP,'').replace(/^(el |la |los |las |un |una )/,'');
 const rel=k=>{const g=grp(k);if(!g)return'';const sib=ints.filter(x=>x!=k&&grp(x)==g);if(sib.length<3)return'';const r=[];while(r.length<3){const x=sib[Math.floor(Math.random()*sib.length)];if(!r.includes(x))r.push(x)}return'\n\nTambién puedo contarte de: '+r.map(x=>'**'+relLab(x)+'**').join(', ')+'.'};
 const splitQ=t=>{if(/^\s*(\/|aprende|learn|ensena|teach)/i.test(t))return[t];const p=t.split(/[?¿]+\s*|;\s+|\s+y\s+(?:luego|despues|después|tambien|también|ademas|además)\s+/i).map(x=>x.trim()).filter(x=>toks(x).length>=2);return p.length>1&&p.length<=4?p:[t]};
@@ -2665,7 +2691,7 @@ async function brain(t,_sub){
  r=convUnits(t);if(r)return{t:r,m:'Conversión'};r=geo(t);if(r)return r;
  const c=classify(t);
  const q0=norm(t).replace(PRE,''),oov=q0!=norm(t)&&toks(q0).some(w=>!(w in vocab));
- if(oov&&q0.length>2){const o=await askOpen(t,q0,en);if(o)return o}
+ if(oov&&q0.length>2&&!(c.k&&c.p>=.99)){const o=await askOpen(t,q0,en);if(o)return o}
  const oovN=toks(t).filter(w=>!(w in vocab)).length;
  if(c.p>=.55&&c.k&&!(MAESTRO&&TOP[c.k]&&oovN>=2&&c.p<.99)){
   const k=c.k,pc=Math.round(c.p*100),src='Red neuronal · '+pc+' %';
