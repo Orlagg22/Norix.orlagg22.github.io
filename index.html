@@ -328,7 +328,95 @@ textarea{flex:1;resize:none;border:0;outline:0;background:none;color:var(--ink);
  .sc{justify-content:flex-start}
 }
 </style>
-<script>try{var r=document.documentElement,g=function(k){try{return JSON.parse(localStorage.getItem(k)||'null')}catch(e){return null}};['font','fs','acc'].forEach(function(n){var v=g('nx-'+n);if(typeof v=='string'&&/^[a-z]{1,8}$/.test(v))r.dataset[n]=v});var t=g('nx-theme');if(t=='dark'||t=='light')r.dataset.theme=t}catch(e){}</script></head>
+<script>try{var r=document.documentElement,g=function(k){try{return JSON.parse(localStorage.getItem(k)||'null')}catch(e){return null}};['font','fs','acc'].forEach(function(n){var v=g('nx-'+n);if(typeof v=='string'&&/^[a-z]{1,8}$/.test(v))r.dataset[n]=v});var t=g('nx-theme');if(t=='dark'||t=='light')r.dataset.theme=t}catch(e){}</script><link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600&family=DM+Sans:wght@400;500;600&family=Fraunces:wght@400;600&family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style id="nx-skin">
+/* ===== Noryx · piel nueva: cristal, aurora y orbe ===== */
+:root{--bg:#f1f3f9;--panel:#fafbfe;--line:rgba(30,46,96,.13);--ink:#121828;--mute:#566079;--u:#dde6fb;--code:#e8ecf6;--sh:0 24px 60px -24px rgba(20,30,70,.35)}
+:root:not([data-acc]){--acc:#0a7a8c;--acc2:#6a56e4}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0a0d16;--panel:#0f1421;--line:rgba(150,172,225,.13);--ink:#e8edf8;--mute:#8b97b0;--u:#17233a;--code:#0b101b;--sh:0 30px 80px -24px rgba(0,0,0,.7)}:root:not([data-theme="light"]):not([data-acc]){--acc:#55dbe9;--acc2:#8f80ff}}
+:root[data-theme="dark"]{--bg:#0a0d16;--panel:#0f1421;--line:rgba(150,172,225,.13);--ink:#e8edf8;--mute:#8b97b0;--u:#17233a;--code:#0b101b;--sh:0 30px 80px -24px rgba(0,0,0,.7)}
+:root[data-theme="dark"]:not([data-acc]){--acc:#55dbe9;--acc2:#8f80ff}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;background:radial-gradient(55% 45% at 85% -10%,color-mix(in srgb,var(--acc2) 20%,transparent),transparent 72%),radial-gradient(45% 40% at 5% 108%,color-mix(in srgb,var(--acc) 15%,transparent),transparent 72%)}
+#app{position:relative;z-index:1}
+*{scrollbar-width:thin;scrollbar-color:color-mix(in srgb,var(--ink) 20%,transparent) transparent}
+::selection{background:color-mix(in srgb,var(--acc) 32%,transparent)}
+#side{background:color-mix(in srgb,var(--panel) 70%,transparent);-webkit-backdrop-filter:blur(20px) saturate(1.3);backdrop-filter:blur(20px) saturate(1.3);padding:16px 12px;gap:8px}
+.brand{font-size:24px;padding:6px 8px 10px}
+.brand i{width:16px;height:16px;background:radial-gradient(circle at 35% 30%,#fff,var(--acc) 42%,var(--acc2));box-shadow:0 0 22px color-mix(in srgb,var(--acc) 70%,transparent)}
+#new{border-radius:14px;padding:11px 14px;align-items:center;border-color:color-mix(in srgb,var(--acc) 38%,var(--line));background:linear-gradient(135deg,color-mix(in srgb,var(--acc) 20%,transparent),color-mix(in srgb,var(--acc2) 14%,transparent))}
+#new:hover{background:linear-gradient(135deg,color-mix(in srgb,var(--acc) 30%,transparent),color-mix(in srgb,var(--acc2) 22%,transparent))}
+#new span{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;line-height:1;background:color-mix(in srgb,var(--acc) 30%,transparent)}
+#mgb,#jvb,#pro button{border-radius:14px;border-color:transparent;background:color-mix(in srgb,var(--ink) 5%,transparent)}
+#mgb:hover,#jvb:hover,#pro button:hover{border-color:color-mix(in srgb,var(--acc) 50%,transparent);background:color-mix(in srgb,var(--acc) 10%,transparent)}
+#q{border-radius:12px;background:color-mix(in srgb,var(--ink) 4%,transparent);border-color:transparent}
+#q:focus{outline:0;border-color:color-mix(in srgb,var(--acc) 55%,var(--line))}
+.cg{font:500 12px 'Instrument Sans',sans-serif;color:var(--mute);padding:12px 10px 4px}
+.ci{border-radius:12px;padding:9px 12px}
+.ci.on{background:color-mix(in srgb,var(--acc) 15%,transparent)}
+.foot{gap:5px}
+.foot button{border-color:transparent;background:color-mix(in srgb,var(--ink) 5%,transparent);font-size:12.5px;padding:4px 11px}
+.foot button:hover,.foot button.on{border-color:color-mix(in srgb,var(--acc) 55%,transparent)}
+#prof{border:1px solid var(--line);border-radius:16px;padding:8px 10px;background:color-mix(in srgb,var(--ink) 3%,transparent)}
+.pav{background:linear-gradient(135deg,var(--acc),var(--acc2));box-shadow:0 0 16px color-mix(in srgb,var(--acc) 35%,transparent)}
+header{padding:12px 22px;background:color-mix(in srgb,var(--bg) 55%,transparent);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+#ttl{font:600 15px 'Instrument Sans',system-ui,sans-serif}
+#chip{background:color-mix(in srgb,var(--ink) 4%,transparent);border-color:transparent}
+.hero h1{background:linear-gradient(180deg,var(--ink) 30%,color-mix(in srgb,var(--ink) 45%,var(--acc)));-webkit-background-clip:text;background-clip:text;color:transparent}
+.chips button{border-radius:16px;padding:10px 16px;background:color-mix(in srgb,var(--ink) 4%,transparent)}
+.msg{padding:12px 22px;gap:16px}
+.msg.u .body{padding:11px 17px;border:1px solid color-mix(in srgb,var(--acc) 24%,var(--line));border-radius:20px 20px 6px 20px;background:linear-gradient(135deg,color-mix(in srgb,var(--acc) 22%,var(--panel)),color-mix(in srgb,var(--acc2) 16%,var(--panel)));box-shadow:0 6px 24px -14px color-mix(in srgb,var(--acc) 60%,transparent)}
+.av{width:28px;height:28px;margin-top:1px;box-shadow:0 0 18px color-mix(in srgb,var(--acc) 55%,transparent)}
+.msg.a .body{line-height:1.72}
+.body pre{border-radius:14px;padding:16px}
+.cp{border:1px solid var(--line);border-radius:999px;padding:2px 10px;background:var(--panel)}
+@media (hover:hover){.msg.a .meta button{opacity:0;transition:opacity .15s}.msg.a:hover .meta button,.msg.a:focus-within .meta button{opacity:1}}
+#comp{position:relative;padding:6px 18px 10px}
+.box{border-radius:26px;padding:9px 9px 9px 20px;background:color-mix(in srgb,var(--panel) 82%,transparent);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);box-shadow:0 12px 40px -18px rgba(0,0,0,.45)}
+.box:focus-within{border-color:color-mix(in srgb,var(--acc) 60%,var(--line));box-shadow:0 0 0 4px color-mix(in srgb,var(--acc) 14%,transparent),0 14px 44px -16px color-mix(in srgb,var(--acc) 45%,transparent)}
+#go{background:linear-gradient(135deg,var(--acc),var(--acc2))}
+.note{opacity:.8}
+#sdn{position:absolute;top:-50px;left:50%;transform:translateX(-50%);width:36px;height:36px;border-radius:50%;display:grid;place-items:center;background:var(--panel);border:1px solid var(--line);color:var(--ink);box-shadow:0 8px 24px -8px rgba(0,0,0,.5)}
+#sdn[hidden]{display:none}
+#sdn:hover{border-color:var(--acc)}
+#dlg,#studio,#md,#gx,#ex,#set,#mg{background:rgba(6,9,18,.55);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+#dlg .card,#studio .card,#md .card,#gx .card,#ex .card,#set .card,#mg .card{border-radius:24px;background:color-mix(in srgb,var(--panel) 94%,transparent);box-shadow:var(--sh)}
+.dh{padding:16px 20px}
+#toast{background:color-mix(in srgb,var(--ink) 92%,transparent);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);box-shadow:0 12px 36px -10px rgba(0,0,0,.5);bottom:108px}
+@media (max-width:760px){#set .card,#mg .card{border-radius:0}.msg{padding:10px 14px}}
+/* Los botones de Tema, Voz, Entrar, Exportar, Respaldo, Accesos, etc. viven solo en Ajustes */
+#side .foot{display:none!important}
+#side{overflow:hidden}
+#side button{line-height:1.3}
+#new,#mgb,#jvb,#pro button{padding:9px 14px}
+#pro{gap:6px}
+#in:focus,#in:focus-visible,#pw:focus,#pw:focus-visible{outline:none!important;box-shadow:none}
+.box{align-items:center}
+:root[data-acc="sky"]{--acc:#1769c9;--acc2:#6a56e4}
+@media (prefers-color-scheme:dark){:root[data-acc="sky"]:not([data-theme="light"]){--acc:#6db2ff;--acc2:#8f80ff}}
+:root[data-theme="dark"][data-acc="sky"]{--acc:#6db2ff;--acc2:#8f80ff}
+:root[data-acc="coral"]{--acc:#c8402b;--acc2:#6a56e4}
+@media (prefers-color-scheme:dark){:root[data-acc="coral"]:not([data-theme="light"]){--acc:#ff8266;--acc2:#8f80ff}}
+:root[data-theme="dark"][data-acc="coral"]{--acc:#ff8266;--acc2:#8f80ff}
+:root[data-acc="lime"]{--acc:#4f7d00;--acc2:#6a56e4}
+@media (prefers-color-scheme:dark){:root[data-acc="lime"]:not([data-theme="light"]){--acc:#b6e34a;--acc2:#8f80ff}}
+:root[data-theme="dark"][data-acc="lime"]{--acc:#b6e34a;--acc2:#8f80ff}
+:root[data-acc="graphite"]{--acc:#3d4658;--acc2:#6a56e4}
+@media (prefers-color-scheme:dark){:root[data-acc="graphite"]:not([data-theme="light"]){--acc:#c9d3e6;--acc2:#8f80ff}}
+:root[data-theme="dark"][data-acc="graphite"]{--acc:#c9d3e6;--acc2:#8f80ff}
+:root[data-font="manrope"]{--ff:'Manrope',system-ui,sans-serif}
+:root[data-font="dmsans"]{--ff:'DM Sans',system-ui,sans-serif}
+:root[data-font="fraunces"]{--ff:'Fraunces',Georgia,system-ui,sans-serif}
+:root[data-font="atkinson"]{--ff:'Atkinson Hyperlegible',system-ui,sans-serif}
+:root[data-font="fraunces"] body{line-height:1.7}
+:root[data-bg="plain"] body::before{display:none}
+@media (prefers-color-scheme:dark){:root[data-bg="amoled"]:not([data-theme="light"]){--bg:#000;--panel:#07090e}}
+:root[data-theme="dark"][data-bg="amoled"]{--bg:#000;--panel:#07090e}
+:root[data-bg="amoled"] body::before{opacity:.45}
+:root[data-w="n"]{--mw:660px}:root[data-w="l"]{--mw:980px}
+.msg,#comp,#slash{max-width:var(--mw,780px)}
+:root[data-mo="off"] *,:root[data-mo="off"] *::before{animation:none!important;transition:none!important;scroll-behavior:auto!important}
+</style>
+</head>
 <body>
 <div id="app">
  <aside id="side" aria-label="Conversaciones">
@@ -345,7 +433,7 @@ textarea{flex:1;resize:none;border:0;outline:0;background:none;color:var(--ink);
  <main>
   <header><button id="menu" aria-label="Menú">☰</button><div id="ttl">Noryx</div><div id="chip" title="Núcleo neuronal propio de Noryx"><b></b><span id="cs">entrenando…</span></div></header>
   <section id="feed" aria-live="polite"></section>
-  <div id="comp">
+  <div id="comp"><button id="sdn" type="button" hidden aria-label="Ir al final"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12l7 7 7-7"/></svg></button>
    <div id="mk" hidden><div class="h"><span>Teclado matemático</span><span><button type="button" id="mkr">🔊 Leer símbolos: no</button><button type="button" id="mkx" aria-label="Cerrar">✕</button></span></div><div class="g"></div></div><div id="slash" hidden></div><div class="box">
     <textarea id="in" rows="1" placeholder="Escribe a Noryx… (/ayuda para ver comandos)" aria-label="Mensaje"></textarea>
     <input id="pw" type="password" autocomplete="off" hidden aria-label="Contraseña de creador">
@@ -2509,7 +2597,7 @@ async function brain(t,_sub){
   if(k=='weather'){const w=await weather(t,en);if(w){ctx.pend=/¿De qué ciudad|Which city/.test(w.t)?'weather':null;ctx.last=ctx.pend?null:'weather';return w}return{t:en?'I couldn\'t find that place or reach the weather service.':'No encontré ese lugar o no pude contactar al servicio del clima.',m:src}}
   if(k=='more'||k=='why'){if(ctx.more.length)return{t:ctx.more.shift()+(ctx.more.length?'  ·  di «más» para seguir':''),m:'Conversación'};if(MAESTRO){const r=await maestro(t);if(r.t)return{t:r.t,m:'Maestro externo'}}if(ctx.q){const w=await wiki(ctx.q,en);if(w)return{t:w,m:'Conversación · Wikipedia'}}return{t:'¿Más sobre qué? Dime un tema y profundizamos.',m:'Conversación'}}
   const fx=x=>x.replace(/\{n\}/g,nm).replace(/\{H\}/g,H).replace(/\{ACC\}/g,ACC);
-  if(A[k]){ctx.q=null;ctx.more=[];return{t:fx(pick(A[k][en&&A[k][1]?1:0])),m:src,s:k=='help'?'Puedo calcular, resolver ecuaciones y problemas de física escritos en oraciones, buscar datos, ver el clima, conversar y aprender de ti.':undefined}}
+  if(A[k]){ctx.q=null;ctx.more=[];return{t:fx(pick(A[k][en&&A[k][1]?1:0])),m:src,s:k=='help'?'Puedo calcular, resolver ecuaciones y problemas de física escritos en oraciones, resolver ejercicios de inglés (discurso indirecto, imperativos, huecos, tags…; escribe /ingles), buscar datos, ver el clima, conversar y aprender de ti.':undefined}}
   if(TOP[k]){ctx.q=TOP[k][0].split('|')[0];ctx.more=[];ctx.topic=k;return{t:fx(TOP[k][1])+rel(k),m:src}}}
  const q=norm(t).replace(/^(que es|que son|quien es|quien fue|quien era|quienes fueron|hablame de|hablame sobre|dime sobre|cuentame sobre|explicame|que significa|what is|what are|who is|who was|tell me about|explain|define)\s+(el |la |los |las |un |una |a |an |the )?/,'');
  {const o=await askOpen(t,q,en);if(o)return o}
@@ -2525,11 +2613,12 @@ function md(s){const B=[],hold=h=>'\u0000'+(B.push(h)-1)+'\u0000';
 const greet=()=>{const h=new Date().getHours();return(h<12?'Buenos días':h<19?'Buenas tardes':'Buenas noches')+(mem.name?', '+mem.name:'')+'. '};
 const conv=()=>convs.find(c=>c.id==cur);
 const feed=$('#feed');let raf=0;
-function renderList(){$('#list').innerHTML='';const f=norm($('#q').value||'');convs.slice().reverse().filter(c=>!f||norm(c.title+' '+c.msgs.map(m=>m.t).join(' ')).includes(f)).forEach(c=>{const d=document.createElement('div');d.className='ci'+(c.id==cur?' on':'');d.innerHTML='<span>'+esc(c.title)+'</span><button aria-label="Borrar">✕</button>';d.onclick=e=>{if(e.target.tagName=='BUTTON'){convs=convs.filter(x=>x!=c);if(cur==c.id)cur=null;save();renderAll()}else{cur=c.id;save();renderAll();closeMenu()}};$('#list').append(d)})}
+const nxGrp=id=>{const d0=new Date();d0.setHours(0,0,0,0);const t=+id||0,dd=(+d0-t)/864e5;return t>=+d0?'Hoy':dd<=1?'Ayer':dd<=7?'Últimos 7 días':dd<=30?'Este mes':'Anteriores'};
+function renderList(){$('#list').innerHTML='';let _lg='';const f=norm($('#q').value||'');convs.slice().reverse().filter(c=>!f||norm(c.title+' '+c.msgs.map(m=>m.t).join(' ')).includes(f)).forEach(c=>{const gl=nxGrp(c.id);if(gl!==_lg){_lg=gl;const h=document.createElement('div');h.className='cg';h.textContent=gl;$('#list').append(h)}const d=document.createElement('div');d.className='ci'+(c.id==cur?' on':'');d.innerHTML='<span>'+esc(c.title)+'</span><button aria-label="Borrar">✕</button>';d.onclick=e=>{if(e.target.tagName=='BUTTON'){convs=convs.filter(x=>x!=c);if(cur==c.id)cur=null;save();renderAll()}else{cur=c.id;save();renderAll();closeMenu()}};$('#list').append(d)})}
 function renderAll(){renderList();const c=conv();$('#ttl').textContent=c?c.title:'Noryx';feed.innerHTML='';cancelAnimationFrame(raf);
  if(!c||!c.msgs.length){hero();return}c.msgs.forEach((m,i)=>feed.append(msgEl(m,i)));feed.scrollTop=feed.scrollHeight}
 function hero(){const h=document.createElement('div');h.className='hero';h.innerHTML='<canvas></canvas><h1>Noryx</h1><p>'+greet()+'Una IA con red neuronal propia que calcula, investiga, conversa y aprende de ti.</p><div class="chips"></div>';
- ['¿Cuánto es 15% de 2480?','Resuelve x^2 - 5x + 6 = 0','Derivada de 2x al cuadrado','Límite cuando x tiende a 2 de (x^2-4)/(x-2)','Integral de 3x^2 + 2x','Integral de x^2/sqrt(4-x^2)','Integral de x*e^x','¿Quién fue Nikola Tesla?','Clima en Ciudad de México','Media de 4, 8, 15, 16','Población de Perú','10 millas a km','PIB per cápita de Chile','Compara el PIB de Japón y Corea del Sur','Dame un dato curioso','¿Qué es una red neuronal?','Recomiéndame una serie','Explícame la relatividad como si tuviera 10 años','Ayúdame a planear un fin de semana','aprende: mi color favorito = azul'].sort(()=>Math.random()-.5).slice(0,5).forEach(q=>{const b=document.createElement('button');b.textContent=q;b.onclick=()=>send(q);h.querySelector('.chips').append(b)});feed.append(h);neural(h.querySelector('canvas'))}
+ ['¿Cuánto es 15% de 2480?','Resuelve x^2 - 5x + 6 = 0','Derivada de 2x al cuadrado','Límite cuando x tiende a 2 de (x^2-4)/(x-2)','Integral de 3x^2 + 2x','Integral de x^2/sqrt(4-x^2)','Integral de x*e^x','¿Quién fue Nikola Tesla?','Clima en Ciudad de México','Media de 4, 8, 15, 16','Población de Perú','10 millas a km','PIB per cápita de Chile','Compara el PIB de Japón y Corea del Sur','Dame un dato curioso','¿Qué es una red neuronal?','Recomiéndame una serie','Explícame la relatividad como si tuviera 10 años','Ayúdame a planear un fin de semana','aprende: mi color favorito = azul','Reported speech: She said, "I will call you tomorrow."','She ___ (go) to school every day.','Make it negative: Open the door.','She is nice, ___?','___ do you live?','/ingles'].sort(()=>Math.random()-.5).slice(0,5).forEach(q=>{const b=document.createElement('button');b.textContent=q;b.onclick=()=>send(q);h.querySelector('.chips').append(b)});feed.append(h);neural(h.querySelector('canvas'))}
 function msgEl(m,i){const d=document.createElement('div');d.className='msg '+m.r;
  if(m.r=='u'){d.innerHTML='<div class="body"></div>';d.firstChild.textContent=m.t;d.firstChild.title='Clic para editar';d.firstChild.style.cursor='pointer';d.firstChild.onclick=()=>{if(busy)return;const c=conv();c.msgs=c.msgs.slice(0,i);save();renderAll();inp.value=m.t;fit();inp.focus()};return d}
  d.innerHTML='<div class="av"></div><div><div class="body">'+md(m.t)+'</div><div class="meta"><span>'+esc(String(m.m||'').split(' · ').pop())+'</span><button data-a="c">copiar</button>'+(m.sys?'':'<button data-a="r">repetir</button>')+'<button data-a="s">leer</button>'+(/aprendid/.test(m.m||'')?'<button data-a="x">no es correcto</button>':'')+'</div></div>';
@@ -2627,7 +2716,8 @@ const TESTER_EMAILS=["proacsonicoyoutu@gmail.com"];
 const isTesterMail=e=>TESTER_EMAILS.some(x=>x.toLowerCase()==String(e||'').toLowerCase());
 let tester=false,tstep=0,tmail='',authFor='creator',privMail='',CT=S.get('nx-ct',[]);
 async function loadCT(){try{const r=await fetch(cloudBase()+'/rest/v1/ensenanzas?select=id,pregunta,respuesta,autor&order=id.desc&limit=1500',{headers:hdr()});if(!r.ok)return;const rows=await r.json(),seen=new Set();CT=[];rows.forEach(x=>{const k=String(x.pregunta).toLowerCase()+'\u0001'+String(x.respuesta);if(seen.has(k))return;seen.add(k);CT.push({id:x.id,q:x.pregunta,a:x.respuesta,by:x.autor,cloud:1})});S.set('nx-ct',CT)}catch(e){}}
-async function cloudWrite(method,path,body,pref){if(!cloudToken){const e=new Error('expired');e.expired=1;throw e}const r=await fetch(cloudBase()+'/rest/v1/'+path,{method,headers:{apikey:SUPA_KEY,Authorization:'Bearer '+cloudToken,'Content-Type':'application/json',Prefer:pref||'return=representation'},body:body?JSON.stringify(body):undefined});if(r.status==401){cloudToken=null;const e=new Error('expired');e.expired=1;throw e}if(r.status==403)throw new Error('sin permiso (¿ejecutaste el SQL de accesos en Supabase? Míralo en el panel /accesos)');if(!r.ok)throw new Error('HTTP '+r.status);return r.json()}
+async function ensureTok(){if(creator&&sess&&sess.refresh){await refreshSess();if(sess)cloudToken=sess.access}}
+async function cloudWrite(method,path,body,pref){await ensureTok();if(!cloudToken){const e=new Error('expired');e.expired=1;throw e}const r=await fetch(cloudBase()+'/rest/v1/'+path,{method,headers:{apikey:SUPA_KEY,Authorization:'Bearer '+cloudToken,'Content-Type':'application/json',Prefer:pref||'return=representation'},body:body?JSON.stringify(body):undefined});if(r.status==401){cloudToken=null;const e=new Error('expired');e.expired=1;throw e}if(r.status==403)throw new Error('sin permiso (¿ejecutaste el SQL de accesos en Supabase? Míralo en el panel /accesos)');if(!r.ok)throw new Error('HTTP '+r.status);return r.json()}
 const cut=(x,n)=>x.length>n?x.slice(0,n)+'…':x;
 
 /* ---- Mensaje programado: una sola vez al día, para una tester concreta, cuando enseña sobre programación ---- */
@@ -2662,8 +2752,8 @@ function cloudPost(tbl,row){if(!cloudOn())return;try{fetch(cloudBase()+'/rest/v1
 const logTurn=(rol,t)=>{if(creator||!t)return;cloudPost('mensajes',{session_id:SID,nombre:mem.name?String(mem.name).slice(0,60):null,rol,texto:String(t).slice(0,600)})};
 const sentQ=new Set(S.get('nx-sentq',[]));
 function cloudPending(q,en){q=(q||'').trim().replace(/\s+/g,' ').slice(0,200);const k=q.toLowerCase();if(q.length<3||sentQ.has(k)||/\d{6,}|@|https?:/i.test(q))return;sentQ.add(k);S.set('nx-sentq',[...sentQ].slice(-200));cloudPost('pendientes',{pregunta:q,idioma:en?'en':'es'})}
-async function cloudLogin(p,em){const r=await fetch(cloudBase()+'/auth/v1/token?grant_type=password',{method:'POST',headers:{apikey:SUPA_KEY,'Content-Type':'application/json'},body:JSON.stringify({email:em||CREATOR_EMAIL,password:p})});if(r.status==400||r.status==401){const e=new Error('bad');e.bad=1;throw e}if(!r.ok)throw new Error('HTTP '+r.status);const j=await r.json();if(!j.access_token)throw new Error('sin token');return j.access_token}
-async function cloudReq(method,path){if(!cloudToken){const e=new Error('expired');e.expired=1;throw e}const r=await fetch(cloudBase()+'/rest/v1/'+path,{method,headers:{apikey:SUPA_KEY,Authorization:'Bearer '+cloudToken}});if(r.status==401||r.status==403){cloudToken=null;const e=new Error('expired');e.expired=1;throw e}if(!r.ok)throw new Error('HTTP '+r.status);return method=='GET'?r.json():null}
+async function cloudLogin(p,em){const r=await fetch(cloudBase()+'/auth/v1/token?grant_type=password',{method:'POST',headers:{apikey:SUPA_KEY,'Content-Type':'application/json'},body:JSON.stringify({email:em||CREATOR_EMAIL,password:p})});if(r.status==400||r.status==401){const e=new Error('bad');e.bad=1;throw e}if(!r.ok)throw new Error('HTTP '+r.status);const j=await r.json();if(!j.access_token)throw new Error('sin token');if(String(em||CREATOR_EMAIL).toLowerCase()==CREATOR_EMAIL.toLowerCase())setSess(j,CREATOR_EMAIL);return j.access_token}
+async function cloudReq(method,path){await ensureTok();if(!cloudToken){const e=new Error('expired');e.expired=1;throw e}const r=await fetch(cloudBase()+'/rest/v1/'+path,{method,headers:{apikey:SUPA_KEY,Authorization:'Bearer '+cloudToken}});if(r.status==401||r.status==403){cloudToken=null;const e=new Error('expired');e.expired=1;throw e}if(!r.ok)throw new Error('HTTP '+r.status);return method=='GET'?r.json():null}
 async function creatorData(){const rows=(await cloudReq('GET','mensajes?select=session_id,nombre,rol,texto,ts&order=ts.desc&limit=5000')).reverse(),by=new Map();rows.forEach(r=>{let x=by.get(r.session_id);const ts=Date.parse(r.ts)||0;if(!x){x={id:r.session_id,t0:ts,t1:ts,name:null,m:[]};by.set(r.session_id,x)}if(r.nombre)x.name=r.nombre;x.t1=ts;x.m.push({r:r.rol,t:r.texto,ts})});return[...by.values()]}
 const STOPW=new Set('de la que el en y a los se del las un por con no una su para es al lo como mas pero sus le ya o este si porque esta entre cuando muy sin sobre tambien me hasta hay donde quien desde todo nos todos uno les ni contra otros ese eso ante ellos esto antes algunos unos yo otro otra tanto esa estos mucho nada cual poco ella estar estas algo mi mis tu tus te ti hola quiero puedes puede dime cuentame hablado dijo soy estoy tengo vivo gusta llamo the and or of to in is are was were it you my your this that for on with as at be have what who how not but so if there here hello hi tell can could would like name'.split(' '));
 const fdate=ts=>new Date(ts).toLocaleString('es-MX',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
@@ -2694,7 +2784,7 @@ async function ccmd(c,a){
  }
 /* true = el mensaje era comando/contraseña/pregunta privada y ya se atendió */
 function gate(t){
- if((creator||tester)&&Date.now()-creatorAct>6e5)lock(false);
+ if(tester&&!creator&&Date.now()-creatorAct>6e5)lock(false);
  if(tstep==1){tstep=0;
   if(/^\/cancelar$/i.test(t)){sysMsg('Verificación cancelada.');return true}
   const em=t.trim().toLowerCase();
@@ -2712,6 +2802,7 @@ function gate(t){
   if(c=='creador'||c=='admin'){echoU('/creador');
    if(creator){creatorAct=Date.now();sysMsg('Ya estás verificado. Escribe /ayuda para ver los comandos.');return true}
    const w=authLock-Date.now();if(w>0){sysMsg('Bloqueado por intentos fallidos. Prueba en '+Math.ceil(w/1e3)+' s.');return true}
+   if(sess&&sess.refresh&&sess.email.toLowerCase()==CREATOR_EMAIL.toLowerCase()){refreshSess().then(()=>{if(sess){cloudToken=sess.access;creator=true;privMail=CREATOR_EMAIL;creatorAct=Date.now();sysMsg('✅ Sesión de creador restaurada, Orlando. Escribe /ayuda.')}else sysMsg('Tu sesión guardada venció. Escribe /creador para entrar de nuevo.')});return true}
    authBegin('Contraseña de creador');sysMsg('Escribe tu contraseña de creador (no se muestra ni se guarda). /cancelar para salir.');return true}
   if(c=='tester'){echoU('/tester');
    if(tester||creator){creatorAct=Date.now();sysMsg('Ya estás verificado. Escribe /ayuda para ver los comandos.','Tester');return true}
@@ -2722,11 +2813,11 @@ function gate(t){
    if(!tester&&!creator){sysMsg('Ese comando es solo para testers y para mi creador.');return true}
    creatorAct=Date.now();
    if(c=='ayuda'&&!creator){sysMsg('Comandos de tester:\n- `/ensenar pregunta = respuesta` — Noryx lo guarda y lo usará con todos los usuarios\n- `/ensenados` — lo que has enseñado\n- `/quitar N` — borrar una de tus enseñanzas\n- `/salir` — cerrar la sesión de tester\n\nEl creador puede revisar y corregir lo que enseñes.','Tester');return true}
-   if(c=='salir'){lock(true);return true}
+   if(c=='salir'){forgetCreator();lock(true);return true}
    tcmd(c,a).catch(e=>sysMsg(cErr(e)));return true}
   if(CCMD.includes(c)||(creator&&(c=='exportar'||c=='ayuda'||c=='salir'))){echoU(t);
    if(!creator){sysMsg('Ese comando es solo para mi creador.');return true}
-   creatorAct=Date.now();if(c=='testers'){tcmd(c,a).catch(e=>sysMsg(cErr(e)));return true}if(c=='salir'){lock(true);return true}ccmd(c,a).catch(e=>sysMsg(cErr(e)));return true}}
+   creatorAct=Date.now();if(c=='testers'){tcmd(c,a).catch(e=>sysMsg(cErr(e)));return true}if(c=='salir'){forgetCreator();lock(true);return true}ccmd(c,a).catch(e=>sysMsg(cErr(e)));return true}}
  const sw=t.match(ASK_SAID);
  if(ASK_PEOPLE.test(t)||sw){echoU(t);
   if(!creator){const r='Eso es información privada: solo mi creador, verificado con su contraseña, puede consultarla. No comparto lo que otras personas me han dicho.';sysMsg(r,'Privacidad');logTurn('u',t);logTurn('a',r);return true}
@@ -2741,11 +2832,12 @@ async function aPost(path,body,tok){const h={apikey:SUPA_KEY,'Content-Type':'app
 const aErr=e=>{const x=e.message+' '+e.code;return/signup.disabled|signups? not allowed|signups? (are )?disabled/i.test(x)?'El registro de cuentas nuevas está desactivado en el servidor. Si eres el creador: en Supabase activa «Allow new users to sign up» (Authentication → Sign In / Providers).':/invalid.login|invalid_credentials/i.test(x)?'Correo o contraseña incorrectos.':/not.confirmed|email_not_confirmed/i.test(x)?'Confirma tu correo (revisa tu bandeja) y vuelve a entrar.':/already|exists/i.test(x)?'Ese correo ya tiene cuenta: entra con tu contraseña.':/rate|too many|over_/i.test(x)?'Demasiados intentos. Espera un momento.':e.message==='Failed to fetch'?'No pude conectar con el servidor.':e.message};
 function setSess(j,email){const u=j.user||{},nm=(u.user_metadata&&u.user_metadata.name)||'',em=u.email||email;
  sess={access:j.access_token,refresh:j.refresh_token,exp:Date.now()+(j.expires_in||3600)*1000,email:em,name:nm};S.set('nx-sess',sess);
- mem.name=nm||mem.name||em.split('@')[0];save();
+ mem.name=nm||mem.name||(em.toLowerCase()==CREATOR_EMAIL.toLowerCase()?'Orlando':em.split('@')[0]);save();
  if(em.toLowerCase()==CREATOR_EMAIL.toLowerCase()){cloudToken=sess.access;creator=true;privMail=CREATOR_EMAIL;creatorAct=Date.now()}else{applyGrants()}
  paintAcc()}
-async function refreshSess(){if(!sess||!sess.refresh)return;if(sess.exp-Date.now()>6e4)return;try{setSess(await aPost('token?grant_type=refresh_token',{refresh_token:sess.refresh}),sess.email)}catch(e){if(e.message!=='Failed to fetch'){sess=null;S.set('nx-sess',null);paintAcc()}}}
-async function logout(){const t=sess&&sess.access;sess=null;GR=null;GRX=[];S.set('nx-sess',null);if(creator||tester)lock(false);paintAcc();toast('Sesión cerrada');if(t)aPost('logout',{},t).catch(()=>{})}
+let _rfp=null;function refreshSess(){return _rfp||(_rfp=_refreshSess().finally(()=>{_rfp=null}))}
+async function _refreshSess(){if(!sess||!sess.refresh)return;if(sess.exp-Date.now()>6e4)return;try{setSess(await aPost('token?grant_type=refresh_token',{refresh_token:sess.refresh}),sess.email)}catch(e){if(!/Failed to fetch|NetworkError|Load failed|HTTP 5\d\d/i.test(e.message)){sess=null;S.set('nx-sess',null);paintAcc()}}}
+async function logout(){const t=sess&&sess.access;sess=null;GR=null;GRX=[];S.set('nx-sess',null);if(creator||tester)lock(false);paintAcc();toast('Sesión cerrada');if(t)aPost('logout?scope=local',{},t).catch(()=>{})}
 const openDlg=()=>{dlg.hidden=false;AM.textContent='';AE.focus()},closeDlg=()=>{dlg.hidden=true;AP.value=''};
 async function doAuth(kind){const email=AE.value.trim(),pwd=AP.value;AM.textContent='';
  if(kind=='reset'){if(!/^\S+@\S+\.\S+$/.test(email)){AM.textContent='Escribe tu correo arriba.';return}try{await aPost('recover',{email});AM.textContent='Si el correo existe, te envié un enlace para restablecer la contraseña.'}catch(e){AM.textContent=aErr(e)}return}
@@ -2758,7 +2850,7 @@ acc.onclick=()=>{closeMenu();sess?confirm('Sesión de '+sess.email+'. ¿Cerrar s
 $('#ain').onclick=()=>doAuth('in');$('#aup').onclick=()=>doAuth('up');$('#are').onclick=()=>doAuth('reset');$('#acl').onclick=closeDlg;
 dlg.addEventListener('click',e=>{if(e.target==dlg)closeDlg()});
 dlg.addEventListener('keydown',e=>{if(e.key=='Escape')closeDlg();if(e.key=='Enter'&&(e.target==AP||e.target==AE)){e.preventDefault();doAuth('in')}});
-paintAcc();refreshSess().then(()=>{if(sess&&sess.email.toLowerCase()==CREATOR_EMAIL.toLowerCase()&&!creator){cloudToken=sess.access;creator=true;privMail=CREATOR_EMAIL;creatorAct=Date.now()}else if(sess&&!creator){applyGrants()}});
+paintAcc();refreshSess().then(()=>{if(sess&&sess.email.toLowerCase()==CREATOR_EMAIL.toLowerCase()&&!creator){cloudToken=sess.access;creator=true;privMail=CREATOR_EMAIL;creatorAct=Date.now();toast('Sesión de creador activa')}else if(sess&&!creator){applyGrants()}});
 
 /* ============ Controles ============ */
 const inp=$('#in');function fit(){inp.style.height='auto';inp.style.height=Math.min(180,inp.scrollHeight)+'px'}
@@ -4322,6 +4414,7 @@ CFGOK[EXK]=v=>Array.isArray(v)&&v.length<=EXMAX&&v.every(x=>x&&typeof x.q=='stri
 
 /* ---------- resolver un enunciado con los motores de Noryx (sin red) ---------- */
 function exSolve(t){
+ try{if(window.ENG){const e=ENG.solve(t);if(e&&!/ayuda|teoría/.test(e.m))return{t:e.t,m:e.m}}}catch(e){}
  let r=null;
  try{r=phys(t)}catch(e){r=null}
  if(r&&!r.need&&/Respuesta/.test(r.t))return{t:r.t,m:'Física · ejercicio'};
@@ -4331,7 +4424,7 @@ function exSolve(t){
  try{const x=algebra(t);if(x)return{t:x,m:'Álgebra'}}catch(e){}
  try{const x=stats(t);if(x)return{t:x,m:'Estadística'}}catch(e){}
  return null}
-const exKind=m=>/Física/.test(m)?'Física':/Álgebra/.test(m)?'Álgebra':/Estad/.test(m)?'Estadística':/Motor/.test(m)?'Matemáticas':'Cálculo';
+const exKind=m=>/Ingl/.test(m)?'Inglés':/Física/.test(m)?'Física':/Álgebra/.test(m)?'Álgebra':/Estad/.test(m)?'Estadística':/Motor/.test(m)?'Matemáticas':'Cálculo';
 
 /* ---------- guardar ---------- */
 function exBadge(){const b=$('#exb');if(b){const n=exAll().length;b.textContent='Ejercicios'+(n?' ('+n+')':'')}}
@@ -4343,7 +4436,7 @@ function exAdd(q,a,m,src){
  exSave(L);exBadge();return true}
 function exMaybe(q,a,m,src){
  m=String(m||'');
- if(!/^(Física · ejercicio|Álgebra|Cálculo|Estadística|Motor matemático)/.test(m))return;
+ if(!/^(Física · ejercicio|Álgebra|Cálculo|Estadística|Motor matemático|Inglés · (?!ayuda|teoría))/.test(m))return;
  if(/^Física/.test(m)&&!/Respuesta/.test(a))return;
  if(/^Cálculo/.test(m)&&String(q).length<12)return;
  if(!exSolve(q))return; /* solo enunciados completos que Noryx puede volver a resolver */
@@ -4560,9 +4653,9 @@ $('#imnote').textContent='Todo corre en tu navegador y la imagen no sale de tu e
 /* ===== Ajustes (tema, fuente, cuenta) y Mensajes del creador ===== */
 (()=>{
 const R=document.documentElement,E=(t,c,x)=>{const e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e};
-const FONTS=[['base','Instrument Sans'],['system','Sistema'],['lexend','Lexend (lectura cómoda)'],['serif','Serif clásica'],['mono','Monoespaciada']];
+const FONTS=[['base','Instrument Sans'],['system','Sistema'],['lexend','Lexend (lectura cómoda)'],['serif','Serif clásica'],['mono','Monoespaciada'],['manrope','Manrope (moderna)'],['dmsans','DM Sans (limpia)'],['fraunces','Fraunces (elegante)'],['atkinson','Atkinson (muy legible)']];
 const SIZES=[['s','Pequeño'],['m','Normal'],['l','Grande'],['xl','Enorme']];
-const ACCS=[['cyan','Cian','#00a3b3'],['amber','Ámbar','#e08a00'],['green','Verde','#2bb55d'],['violet','Violeta','#8b66f0'],['rose','Rosa','#e8438a']];
+const ACCS=[['cyan','Cian','#00a3b3'],['amber','Ámbar','#e08a00'],['green','Verde','#2bb55d'],['violet','Violeta','#8b66f0'],['rose','Rosa','#e8438a'],['sky','Cielo','#2f7de1'],['coral','Coral','#e5533d'],['lime','Lima','#8fc21a'],['graphite','Grafito','#5a6580']];
 const THEMES=[['system','Sistema'],['light','Claro'],['dark','Oscuro']];
 const DEF={font:'base',fs:'m',acc:'cyan'},LIST={font:FONTS,fs:SIZES,acc:ACCS};
 const rm=k=>{try{localStorage.removeItem(k)}catch(e){}};
@@ -4803,6 +4896,389 @@ applyStored();setProf();mgBadge();
 let key='';
 setInterval(()=>{setProf();const k=(sess?sess.email:'')+'|'+creator+'|'+tester;if(k!=key){key=k;mgPoll()}},1500);
 setInterval(mgPoll,60000);
+})();
+</script>
+<script>
+/* ===== Noryx · Motor de ejercicios de inglés (reglas locales, sin red) ===== */
+(function(G){'use strict';
+const IRR='go:went:gone|have:had:had|do:did:done|say:said:said|get:got:got|make:made:made|know:knew:known|think:thought:thought|take:took:taken|see:saw:seen|come:came:come|give:gave:given|find:found:found|tell:told:told|buy:bought:bought|bring:brought:brought|eat:ate:eaten|write:wrote:written|read:read:read|run:ran:run|drink:drank:drunk|sit:sat:sat|stand:stood:stood|speak:spoke:spoken|begin:began:begun|break:broke:broken|choose:chose:chosen|drive:drove:driven|fall:fell:fallen|feel:felt:felt|fly:flew:flown|forget:forgot:forgotten|hear:heard:heard|keep:kept:kept|leave:left:left|lose:lost:lost|meet:met:met|pay:paid:paid|put:put:put|send:sent:sent|sing:sang:sung|sleep:slept:slept|swim:swam:swum|teach:taught:taught|win:won:won|wear:wore:worn|steal:stole:stolen|sell:sold:sold|build:built:built|catch:caught:caught|cut:cut:cut|draw:drew:drawn|grow:grew:grown|hide:hid:hidden|hold:held:held|lend:lent:lent|let:let:let|ride:rode:ridden|ring:rang:rung|rise:rose:risen|shut:shut:shut|spend:spent:spent|throw:threw:thrown|understand:understood:understood|wake:woke:woken|hit:hit:hit|hurt:hurt:hurt|cost:cost:cost|set:set:set|shoot:shot:shot|shake:shook:shaken|bite:bit:bitten|blow:blew:blown|dig:dug:dug|feed:fed:fed|fight:fought:fought|hang:hung:hung|mean:meant:meant|become:became:become|lead:led:led|learn:learnt:learnt|show:showed:shown|lay:laid:laid|forgive:forgave:forgiven|tear:tore:torn|quit:quit:quit|sink:sank:sunk|stick:stuck:stuck|bend:bent:bent|burn:burnt:burnt|undo:undid:undone|spread:spread:spread';
+const P={},R={};IRR.split('|').forEach(x=>{const a=x.split(':');P[a[0]]=[a[1],a[2]];R[a[1]]=a[0]});P.be=['was','been'];
+const AMB=new Set('put read cut let set hit hurt cost shut quit spread'.split(' '));
+const BV=new Set(('like love want need work play watch live study help start stop open close walk talk listen look use try call ask answer clean cook dance visit wash wait travel stay turn move change finish decide enjoy hate hope plan prefer remember miss laugh smile cry shout carry arrive agree believe die pass pick pull push reach receive repeat rent save shop smoke explain happen invite join jump kick kiss knock lift mix notice offer order paint park phone practise practice promise report rush share sound touch train trust type wish worry add allow appear apply borrow brush celebrate collect copy count cover damage deliver describe destroy discuss earn fix follow guess imagine improve include marry mention name pack plant pour print produce protect repair rescue return roll sail search serve smell suggest surprise taste thank tie wonder rain snow cook clean fill post lock fail climb check reply').split(' ').concat(Object.keys(P)));
+const DET=new Set('a an the my your his her our their its this that these those some any no every each'.split(' '));
+const ADV=new Set('always never usually often sometimes seldom rarely generally normally also just really still already ever almost probably'.split(' '));
+const AUX=new Set('am is are was were have has had do does did will would can could may might must shall should'.split(' '));
+const PN=new Set('i you he she it we they'.split(' '));
+const WH=new Set('what where when why who whom whose which how'.split(' '));
+const PLN=new Set('people children men women police parents feet teeth mice these those cattle'.split(' '));
+const FEM=new Set('mary anna ana sara sarah maria lucy emma sophie kate laura julia susan linda jane lisa carol anne ann emily olivia sofia clara helen rose betty nancy karen paula alice eva lily mia nora rachel rebecca hannah grace amy sue jenny jessica lucia carmen elena marta'.split(' '));
+const FW=/mother|sister|woman|girl|wife|daughter|aunt|grandmother|mum|mom|lady|queen|miss|mrs|ms\b/i;
+const FM={i:{s:'I',o:'me',p:'my',r:'myself'},you:{s:'you',o:'you',p:'your',r:'yourself'},he:{s:'he',o:'him',p:'his',r:'himself'},she:{s:'she',o:'her',p:'her',r:'herself'},it:{s:'it',o:'it',p:'its',r:'itself'},we:{s:'we',o:'us',p:'our',r:'ourselves'},they:{s:'they',o:'them',p:'their',r:'themselves'}};
+const cap=s=>s.replace(/^\s*(\S)/,(m,c)=>c.toUpperCase());
+const J=a=>a.join(' ').replace(/\s+([,;:.!?])/g,'$1').replace(/\s+/g,' ').replace(/\bi\b/g,'I').trim();
+const lc0=a=>{if(a.length&&/^[A-Z][a-z]+$/.test(a[0])){const l=a[0].toLowerCase();if(PN.has(l)||DET.has(l)||AUX.has(l)||WH.has(l)||ADV.has(l)||BV.has(l)||'there let please never here'.split(' ').includes(l))a=[l].concat(a.slice(1))}return a};
+function dbl(v){return(/^[^aeiou]*[aeiou][^aeiouwxy]$/.test(v)&&v.length<=4)||['admit','prefer','permit','occur','refer','regret','control'].includes(v)}
+function past(v){if(P[v])return P[v][0];if(/e$/.test(v))return v+'d';if(/[^aeiou]y$/.test(v))return v.slice(0,-1)+'ied';return v+(dbl(v)?v.slice(-1):'')+'ed'}
+function pp(v){return P[v]?P[v][1]:past(v)}
+function ing(v){if(v=='be')return'being';if(/ie$/.test(v))return v.slice(0,-2)+'ying';if(/[^e]e$/.test(v)||/[^aeiou]ee$/.test(v)&&false)return v.slice(0,-1)+'ing';return v+(dbl(v)?v.slice(-1):'')+'ing'}
+function s3(v){if(v=='have')return'has';if(v=='be')return'is';if(/(s|x|z|ch|sh|o)$/.test(v))return v+'es';if(/[^aeiou]y$/.test(v))return v.slice(0,-1)+'ies';return v+'s'}
+function base(w){if(BV.has(w))return w;if(w=='has')return'have';if(/ies$/.test(w)&&BV.has(w.slice(0,-3)+'y'))return w.slice(0,-3)+'y';if(/es$/.test(w)&&BV.has(w.slice(0,-2)))return w.slice(0,-2);if(/s$/.test(w)&&BV.has(w.slice(0,-1)))return w.slice(0,-1);return null}
+function pastBase(w){if(R[w]&&!AMB.has(w))return R[w];if(/ed$/.test(w)){for(const c of[w.slice(0,-2),w.slice(0,-1),w.slice(0,-3)+'y',w.slice(0,-3)])if(BV.has(c))return c}return null}
+const isPl=w=>PLN.has(w)||(/[^s]s$/.test(w)&&!/^(is|his|this|us|was|has|does|yes)$/.test(w));
+function ex(s){return s.replace(/\bcan['’]t\b/gi,'can not').replace(/\bcannot\b/gi,'can not').replace(/\bwon['’]t\b/gi,'will not').replace(/\bshan['’]t\b/gi,'shall not').replace(/\bain['’]t\b/gi,'is not').replace(/\bI['’]m\b/g,'I am').replace(/\b(\w+)n['’]t\b/gi,'$1 not').replace(/\b(he|she|it|that|there|here|who|what|where)['’]s\b/gi,'$1 is').replace(/\b(\w+)['’]re\b/gi,'$1 are').replace(/\b(\w+)['’]ve\b/gi,'$1 have').replace(/\b(\w+)['’]ll\b/gi,'$1 will').replace(/\b(\w+)['’]d\b/gi,'$1 would').replace(/\b(he|she|it|there|that) is (been|gone|done|seen|taken|made|written|\w+ed)\b/gi,'$1 has $2')}
+const tk=s=>ex(s).replace(/[“”"]/g,'').replace(/([,;:!?.])/g,' $1 ').split(/\s+/).filter(Boolean);
+/* ---- retroceso de tiempos ---- */
+function lexIdx(L,sep){for(let j=0;j<L.length;j++){const w=L[j],pv=L[j-1];if(ADV.has(w)||w==','||w=='not')continue;if(pv&&DET.has(pv))continue;if(j==0&&!(sep=='and'||sep==','))continue;if(w=='used'&&L[j+1]=='to')return null;const b=base(w);if(b&&!(w=='to'))return{j,k:'pres',b};const pb=pastBase(w);if(pb)return{j,k:'past',b:pb}}return null}
+function wasWere(L,i,sep,orig){const pv=L[i-1];if(['they','we','you'].includes(pv))return'were';if(['i','he','she','it'].includes(pv))return'was';if(sep=='and'&&i<=1)return'were';if(pv=='there')return orig=='are'?'were':'was';if(pv&&isPl(pv))return'were';if(!pv)return orig=='are'?'were':'was';return'was'}
+function bseg(S,sep){const L=S.map(x=>x.toLowerCase());let i=L.findIndex((x,j)=>AUX.has(x)&&(!(x=='do'||x=='does')||L[j+1]=='not'));const o=S.slice();
+ if(i>=0){const a=L[i];
+  if(a=='am'||a=='is'||a=='are')o[i]=wasWere(L,i,sep,a);
+  else if(a=='was'||a=='were'){if(L[i+1]=='not')o.splice(i,2,'had','not','been');else o.splice(i,1,'had','been')}
+  else if(a=='have'||a=='has')o[i]='had';
+  else if(a=='do'||a=='does')o[i]='did';
+  else if(a=='did'){if(L[i+1]=='not'&&L[i+2]&&(BV.has(L[i+2])))o.splice(i,3,'had','not',pp(L[i+2]))}
+  else if(a=='will')o[i]='would';else if(a=='can')o[i]='could';else if(a=='may')o[i]='might';else if(a=='must')o.splice(i,1,'had','to');else if(a=='shall')o[i]='should';
+  return o}
+ const x=lexIdx(L,sep);if(!x)return o;
+ if(x.k=='pres')o[x.j]=past(x.b);else o.splice(x.j,1,'had',pp(x.b));return o}
+function back(T){const out=[];let seg=[],sep='';const SP=[',','and','but','because','so','that','if','when','while','or','before','after','until','since'];const fl=()=>{if(seg.length)out.push(...bseg(seg,sep));seg=[]};
+ for(const w of T){if(SP.includes(w.toLowerCase())){fl();out.push(w);sep=w.toLowerCase()}else seg.push(w)}fl();return out}
+/* ---- discurso indirecto ---- */
+const TM=[['right now','then'],['at the moment','at that moment'],['this morning','that morning'],['this evening','that evening'],['this afternoon','that afternoon'],['tonight','that night'],['today','that day'],['now','then'],['tomorrow','the next day'],['yesterday','the day before'],['last night','the night before'],['last week','the week before'],['last month','the month before'],['last year','the year before'],['next week','the following week'],['next month','the following month'],['next year','the following year'],['ago','before'],['here','there'],['these','those'],['this','that']];
+function pform(x){x=x.toLowerCase().trim();const a={i:'i',me:'i',we:'we',us:'we',he:'he',him:'he',she:'she',her:'she',they:'they',them:'they',you:'you',it:'it'};if(a[x])return{f:FM[a[x]],txt:x=='i'?'I':x};
+ const f1=x.split(/\s+/)[0],g=FEM.has(f1)||FW.test(x)?'she':'he';const pl=/\b(parents|friends|children|boys|girls|students|teachers|people)\b/.test(x);const f=FM[pl?'they':g];const nm=/^(the|my|our|his|her|their)\s/.test(x)?x:x.replace(/\b\w/g,c=>c.toUpperCase());return{f,txt:nm,name:1,guess:!(FEM.has(f1)||FW.test(x))&&!/\b(father|brother|man|boy|husband|son|uncle|grandfather|dad|mr|sir)\b/.test(x)}}
+function pm(T,sp,ad){return T.map((w,i)=>{const l=w.toLowerCase(),pv=(T[i-1]||'').toLowerCase();const sj=i==0||[',','and','but','that','if','when','because','while','so','or','what','where','why','how','who','whether','which'].includes(pv)||AUX.has(pv);
+ if(l=='i')return sp.s;if(l=='me')return sp.o;if(l=='my')return sp.p;if(l=='myself')return sp.r;
+ if(l=='we')return sp===FM.i?'we':'they';if(l=='us')return sp===FM.i?'us':'them';if(l=='our')return sp===FM.i?'our':'their';
+ if(ad){if(l=='you')return sj?ad.s:ad.o;if(l=='your')return ad.p;if(l=='yourself')return ad.r}return w})}
+const clauseOf=T=>{ /* pregunta -> orden de oración */
+ const L=T.map(x=>x.toLowerCase());let lead=[],cl;const subjLen=r=>{const q=r.map(x=>x.toLowerCase());if(PN.has(q[0]))return 1;if(DET.has(q[0])){let k=1;while(k<r.length&&!(BV.has(q[k])||base(q[k])||P[q[k]])&&k<4)k++;return k}return q[1]=='and'?3:1};
+ const inv=(aux,r)=>{const n=subjLen(r),s=r.slice(0,n),pr=r.slice(n);if(aux=='did'&&pr.length)return s.concat([past(pr[0].toLowerCase())],pr.slice(1));if((aux=='do'||aux=='does')&&pr.length)return s.concat(pr);return s.concat([aux],pr)};
+ if(WH.has(L[0])){let ai=L.findIndex((x,j)=>j>0&&AUX.has(x));if(ai<0){let k=1;if(L[0]=='how'&&/^(many|much)$/.test(L[1])){k=2;if(L[2]&&!base(L[2]))k=3}lead=T.slice(0,k);cl=T.slice(k)}
+  else{const nx=L[ai+1];const sl=PN.has(nx)||DET.has(nx)||nx=='there'||/^[A-Z]/.test(T[ai+1]||'');if(!sl&&(nx!==undefined)&&(P[nx]||/(ed|ing)$/.test(nx)||base(nx))){lead=T.slice(0,ai);cl=T.slice(ai)}else{lead=T.slice(0,ai);cl=inv(L[ai],T.slice(ai+1))}}}
+ else if(AUX.has(L[0])){cl=inv(L[0],T.slice(1))}else cl=T;return{lead,cl}};
+function agr(T){const P3=['he','she','it'];return T.map((w,i)=>{const l=w.toLowerCase();if(i==0)return w;let k=i-1;while(k>0&&ADV.has(T[k].toLowerCase()))k--;const pv=T[k].toLowerCase();if(P3.includes(pv)){if(l=='am'||l=='are')return'is';if(l=='have')return'has';if(l=='do')return'does';if(BV.has(l)&&!AUX.has(l)&&!/s$/.test(l)&&!ADV.has(l)&&!P[l]||(P[l]&&!AUX.has(l)&&pv&&l!=pv&&BV.has(l)&&!/s$/.test(l)))return s3(l)}if(pv=='i'){if(l=='is'||l=='are')return'am';if(l=='has')return'have'}if(['we','they','you'].includes(pv)){if(l=='am'||l=='is')return'are';if(l=='has')return'have';if(l=='does')return'do'}return w})}
+function rs(s){let q,pre,post,m=s.match(/[“"]([^”"]+)[”"]/);
+ if(m){q=m[1];pre=s.slice(0,m.index);post=s.slice(m.index+m[0].length)}
+ else if((m=s.match(/(?:^|[\s,:])['‘](.+)['’]/))){q=m[1];pre=s.slice(0,m.index);post=s.slice(m.index+m[0].length)}
+ else if((m=s.match(/^(.*?\b(?:said|says|told|tells|asked|asks)\b[^:]*?)\s*:\s*(.+)$/is))){pre=m[1];q=m[2];post=''}else return null;
+ if(/^[^:]*(speech|indirect|reported|direct|change|rewrite|convert|turn|put|write)[^:]*:/i.test(pre))pre=pre.replace(/^[^:]*:/,'');pre=pre.replace(/:\s*$/,'');const c=(pre+' '+post).replace(/[,.;!?]/g,' ').replace(/\s+/g,' ').trim();const mv=c.match(/\b(said|says|say|told|tells|tell|asked|asks|ask|ordered|begged|replied|explained|warned|advised|suggested|exclaimed|wondered|promised|offered|reminded|invited|shouted|answered|added)\b/i);if(!mv)return null;
+ let verb=mv[1].toLowerCase(),subjT=c.slice(0,mv.index).trim(),aft=c.slice(mv.index+mv[0].length).trim();if(!subjT&&/^(said|asked|replied|explained|exclaimed|answered|added|shouted|warned|suggested|wondered)$/.test(verb)&&aft){const mi=aft.match(/^((?:the|my|our|his|her|their)\s+\w+|[A-Z]\w*(?:\s[A-Z]\w*)?|he|she|they|we|I)\b\s*(.*)$/);if(mi){subjT=mi[1];aft=mi[2]}}if(!subjT)subjT='He';const m2=aft.match(/^(?:to\s+)?(me|you|him|her|us|them|(?:the|my|our|his|her|their)\s+\w+|[A-Z]\w*(?:\s[A-Z]\w*)?)\b/);const addr=m2?m2[1]:null;
+ const sp=pform(subjT),adF=addr?pform(addr):null,pastR=/(ed|aid|old)$/.test(verb),spk=subjT.toLowerCase()=='i'?FM.i:sp.f;let ad=addr?pform(addr).f:(spk===FM.i?null:FM.i);
+ const notes=[];if(sp.name&&sp.guess)notes.push('Género de «'+subjT+'» supuesto: **'+spk.s+'** (cámbialo a she si es mujer).');
+ let body=q.trim().replace(/^[\s,]+/,'').replace(/[,\s]+$/,'');const isQ=/\?\s*$/.test(body);body=body.replace(/[.!?,]+\s*$/,'');
+ if(pastR)TM.forEach(([a,b])=>{body=body.replace(new RegExp('\\b'+a+'\\b','gi'),b)});
+ const used=pastR?TM.filter(([a])=>new RegExp('\\b'+a+'\\b','i').test(q)).map(x=>x[0]+'→'+x[1]):[];
+ let T=tk(body);const L0=T[0]?T[0].toLowerCase():'';const aObj=adF?(adF.name?adF.txt:ad.o):(ad?ad.o:'');const S=subjT.toLowerCase()=='i'?'I':cap(subjT);let out,kind;
+ const V=(def)=>{const v=verb;if(def)return def;if(/^(told|tells|tell)$/.test(v))return v+' '+(aObj||'me');if(/^(said|says|say)$/.test(v)&&addr)return(pastR?'told ':'tells ')+aObj;return v+(addr&&!/^(asked|asks|ask|ordered|begged|advised|warned|reminded|invited)$/.test(v)?' to '+aObj:addr?' '+aObj:'')};
+ const fin=a=>{let r=pm(lc0(a),spk,ad);if(pastR)r=back(r);else r=agr(r);return J(r)};
+ if(/^let['’]?s$/i.test(T[0]||'')||/^let$/i.test(T[0]||'')&&/^us$/i.test(T[1]||'')){const rest=T.slice(/^let$/i.test(T[0])?2:1);const r=pm(rest,spk,ad);const v=r[0]?r[0].toLowerCase():'';kind='sugerencia';out=S+' suggested '+J([ing(v)].concat(r.slice(1)))+'.';notes.push('«Let\'s…» → suggested + gerundio (o «suggested that we/they should + verbo»).')}
+ else if(/^shall$/.test(L0)&&/^(i|we)$/.test((T[1]||'').toLowerCase())){kind='ofrecimiento';const r=pm(T.slice(2),spk,ad);out=S+' offered to '+J(r)+'.'}
+ else if(isQ&&/^(could|would|can|will)$/.test(L0)&&(T[1]||'').toLowerCase()=='you'){kind='petición';const r=T.slice(2).filter(x=>x.toLowerCase()!='please'&&x!==',');out=S+' asked '+(aObj||'me')+' to '+J(pm(lc0(r),spk,ad))+'.';notes.push('Could/Would/Can/Will you…? → asked + persona + to + infinitivo.')}
+ else if(isQ){kind='pregunta';const{lead,cl}=clauseOf(T);const c2=fin(cl);const conn=lead.length?J(lead).toLowerCase():'if';out=S+' asked '+(aObj&&!lead.length?aObj+' ':'')+conn+' '+c2+'.';notes.push(lead.length?'Pregunta con wh-: se mantiene la palabra interrogativa y el orden pasa a **afirmativo** (sin do/does/did, sin «?»).':'Pregunta sí/no: se usa **if/whether** y orden afirmativo, sin «?».')}
+ else if(/^(please|don|do|never|be)$/.test(L0)&&(L0!='do'||/^not$/i.test(T[1]||'')||/^(please)/.test(L0))||(BV.has(L0)&&!PN.has(L0)&&!AUX.has(L0)&&!WH.has(L0)&&!DET.has(L0))||L0=='please'){
+  let r=T.filter(x=>x.toLowerCase()!='please'&&x!==',');const hasP=T.length!=r.length;let neg=false;if(r[0]&&/^don$/i.test(r[0])&&r[1]=="'")r=r.slice(3);else if(/^do$/i.test(r[0])&&/^not$/i.test(r[1]||'')){r=r.slice(2)}else if(/^never$/i.test(r[0])){r=r.slice(1)}else r=r;
+  neg=/^(don|do|never)$/i.test(T.filter(x=>x.toLowerCase()!='please')[0]||'')&&true;kind='orden';const vb=hasP||verb=='asked'||verb=='begged'?(verb=='begged'?'begged':'asked'):/^(ordered|advised|warned|reminded)$/.test(verb)?verb:'told';
+  out=S+' '+vb+' '+(aObj||'me')+(neg?' not':'')+' to '+J(pm(lc0(r),spk,ad))+'.';notes.push('Imperativo → told/asked + persona + (not) to + infinitivo.')}
+ else{kind='afirmación';const r=fin(T);const v=/^(said|says|say)$/.test(verb)&&!addr?verb:V();out=S+' '+v+' that '+r+'.';notes.push(pastR?'Verbo de reporte en pasado → los tiempos **retroceden un paso** (presente→pasado, pasado→pasado perfecto, will→would, can→could, must→had to).':'Verbo de reporte en presente (says) → los tiempos **no** retroceden.')}
+ if(used.length)notes.push('Expresiones de tiempo/lugar: '+used.join(', ')+'.');
+ return{t:'**Estilo directo:** «'+q.trim().replace(/[,\s]+$/,'')+'» ('+c+')\n\n**Estilo indirecto ('+kind+'):** '+out+'\n\n'+notes.map(n=>'- '+n).join('\n')+'\n- «that» es opcional tras said/told.\n- Si es una verdad universal, el verbo puede quedarse en presente.',m:'Inglés · discurso indirecto'}}
+/* ---- conjugación y tiempos ---- */
+function person(txt){const w=txt.toLowerCase().replace(/[^a-z' ]/g,' ').trim().split(/\s+/).filter(x=>x&&!ADV.has(x)&&x!='not'&&x!="n't");if(!w.length)return'3s';const ai=w.lastIndexOf('and');const l=w[w.length-1];if(ai>0&&ai<w.length-1||l=='and'&&w.length>1)return'pl';
+ if(l=='i')return'1s';if(l=='you')return'2';if(['we','they','these','those'].includes(l))return'pl';if(['he','she','it','this','that','everyone','everybody','someone','somebody','nobody','each','everything','something','nothing','there'].includes(l))return'3s';
+ if(l=='who'||l=='which'||l=='that'){return person(w.slice(0,-1).join(' '))}return isPl(l)?'pl':'3s'}
+const bePast=p=>p=='1s'||p=='3s'?'was':'were',bePres=p=>p=='1s'?'am':p=='3s'?'is':'are';
+const NB={am:'am not',is:"isn't",are:"aren't",was:"wasn't",were:"weren't"};
+function conj(v,T,p,n){v=v.trim().toLowerCase();const be=T=='pa'||T=='pac'?bePast(p):bePres(p);
+ switch(T){case'ps':return v=='be'?(n?NB[be]:be):n?(p=='3s'?"doesn't ":"don't ")+v:(p=='3s'?s3(v):v);
+ case'pa':return v=='be'?(n?NB[bePast(p)]:bePast(p)):n?"didn't "+v:past(v);
+ case'pc':case'pac':return(n?NB[be]:be)+' '+ing(v);
+ case'pf':return(n?(p=='3s'?"hasn't":"haven't"):(p=='3s'?'has':'have'))+' '+pp(v);
+ case'pfc':return(n?(p=='3s'?"hasn't":"haven't"):(p=='3s'?'has':'have'))+' been '+ing(v);
+ case'pap':return(n?"hadn't":'had')+' '+pp(v);case'fu':return(n?"won't ":'will ')+v;case'w':return(n?"wouldn't ":'would ')+v;case'wh':return(n?"wouldn't":'would')+' have '+pp(v);
+ case'base':return n?'not '+v:v;case'ing':return n?'not '+ing(v):ing(v);case'pp':return pp(v);case'inf':return n?'not to '+v:'to '+v}return v}
+const TN={ps:'presente simple',pa:'pasado simple',pc:'presente continuo',pac:'pasado continuo',pf:'presente perfecto',pfc:'presente perfecto continuo',pap:'pasado perfecto',fu:'futuro con will',w:'condicional (would)',wh:'condicional perfecto (would have)',base:'infinitivo sin to',ing:'gerundio (-ing)',pp:'participio',inf:'infinitivo con to'};
+const GER=new Set('enjoy avoid finish mind keep suggest practise practice consider imagine miss risk deny admit quit stop'.split(' ')),INF=new Set('want need hope decide plan promise agree refuse learn manage afford offer expect seem tend pretend fail choose'.split(' '));
+const CRE=new Set('make build write invent discover paint design create sell produce speak find open close clean steal break found hold grow repair cancel deliver invite publish translate wash teach spell sign'.split(' '));
+function tenseOf(full,pos,verb){const pre=full.slice(0,pos).toLowerCase(),post=full.slice(pos).toLowerCase().replace(/^[^)]*\)?/,'');const pw=pre.replace(/[^a-z' ]/g,' ').trim().split(/\s+/).filter(Boolean),l=pw[pw.length-1]||'',l2=pw[pw.length-2]||'';const all=full.toLowerCase();
+ if(['will','would','can','could','may','might','must','should','shall','do','does','did',"don't","doesn't","didn't",'to','please','let','make','makes','made'].includes(l)||l=="let's"){if(l=='to'&&(GER.has(l2)||/^(look forward|used|be used|get used)$/.test(l2)))return['ing','tras «to» de esta expresión va -ing'];return['base','tras «'+l+'» va el verbo base']}
+ const lb=base(l)||l;if(GER.has(lb))return['ing','«'+l+'» + gerundio (-ing)'];if(INF.has(lb))return['inf','«'+l+'» + to + verbo'];
+ if(['have','has','had'].includes(l)&&!/^to\b/.test(post.trim()))return['pp','have/has/had + participio'];
+ if(l=='been')return/\bby\b/.test(post)?['pp','pasiva: been + participio']:['ing','have been + -ing'];if(l=='being')return['pp','being + participio (pasiva continua)'];
+ if(['am','is','are','was','were','be'].includes(l)){const subj=pw.slice(0,-1).join(' ');if(/\bby\b/.test(post)||(CRE.has(verb)&&!/^\s*(the|a|an|my|your|his|her|our|their|some|\d)/.test(post.trim())&&!/^(i|you|he|she|we|they)$/.test(pw[pw.length-2]||'')&&pw.length>1&&!/\b(now|at the moment|looking|listen)\b/.test(all)))return['pp','pasiva: be + participio'];return['ing','be + -ing']}
+ const ifm=all.search(/\bif\b/);if(ifm>=0){const ci=all.indexOf(',',ifm),inIf=ci<0?pos>ifm:(pos>ifm&&pos<ci);const other=ci<0?all.slice(0,ifm):(inIf?all.slice(ci):all.slice(0,ifm)+' '+all.slice(ifm,ci));let ty=0;
+  const vis=inIf?other:all.slice(ifm,ci<0?undefined:ci);if(/would have|'d have/.test(other))ty=3;else if(/\bwould\b|'d\b/.test(other))ty=2;else if(/\bwill\b|'ll|won't|\bcan\b|\bmay\b|\bmust\b/.test(other))ty=1;
+  if(!ty&&!inIf){if(/\bhad\s+\w+(ed|en|n)\b|\bhad been\b/.test(vis))ty=3;else if(/\b(were|had|knew|won|lived|was|could|did|went)\b/.test(vis))ty=2;else ty=1}if(!ty)ty=1;
+  if(inIf)return[ty==1?'ps':ty==2?'pa':'pap','oración con if tipo '+ty+(ty==2&&verb=='be'?' (con be se usa «were» para todas las personas)':'')];return[ty==1?'fu':ty==2?'w':'wh','oración principal de condicional tipo '+ty]}
+ if(/\b(all (day|morning|week|night)|how long|lately|recently)\b/.test(all))return['pfc','acción que continúa hasta ahora (all day / how long…)'];
+ if(/\b(already|yet|just|ever|since|so far|for (a|an|two|three|four|five|six|several|many|\d+) |this (week|month|year|morning)|never .* before)\b/.test(all))return['pf','marcador de presente perfecto (already/yet/since/for…)'];
+ if(/\bwhile\b/.test(all)){const wi=all.search(/\bwhile\b/);if(pos>wi)return['pac','while + acción en progreso (pasado continuo)']}
+ if(/\b(yesterday|ago|last (night|week|month|year|summer|monday|tuesday|wednesday|thursday|friday|saturday|sunday)|in (19|20)\d\d|when i was|the other day|once upon)\b/.test(all)){return['pa','marcador de pasado (yesterday / ago / last…)']}
+ if(/\b(tomorrow|next |tonight|soon|in the future|in \d+ (minutes|hours|days|years)|later|someday|will\b)/.test(all)||/going to/.test(all)&&false)return['fu','marcador de futuro'];
+ if(/\b(now|at the moment|right now|currently|look!|listen!|at present|these days)\b/.test(all)||/\b(look|listen)\s*[!.]/.test(all))return['pc','marcador de acción en curso (now / at the moment…)'];
+ if(/\bwhen\b/.test(all)&&/\b(rang|came|arrived|started|began|happened|saw|heard|fell|called|opened)\b/.test(all))return['pac','acción en progreso interrumpida por otra (pasado continuo)'];
+ if(/\b(always|usually|often|every|never|sometimes|seldom|rarely|generally|normally|on (mon|tues|wednes|thurs|fri|satur|sun)days|once a|twice a|each|frequently|daily)\b/.test(all))return['ps','marcador de hábito (always / every / usually…)'];
+ return['ps','sin marcadores de tiempo: presente simple por defecto']}
+const COLL={interested:'in',good:'at',bad:'at',afraid:'of',proud:'of',tired:'of',fond:'of',listen:'to',depend:'on',rely:'on',worry:'about',wait:'for',different:'from',married:'to',similar:'to',angry:'with',famous:'for',responsible:'for',believe:'in',belong:'to',laugh:'at',pay:'for',succeed:'in',apologise:'for',apologize:'for',accuse:'of',suffer:'from',participate:'in',care:'about',insist:'on',focus:'on',concentrate:'on',congratulate:'on',agree:'with',excited:'about',keen:'on',late:'for',ready:'for',scared:'of',worried:'about',crazy:'about',jealous:'of',capable:'of',full:'of',consist:'of',result:'in',search:'for',ask:'for',look:'at / for / after (según el sentido)',think:'about / of',talk:'to / about',arrive:'at / in',dream:'of / about',surprised:'at / by',sorry:'for / about'};
+const UNC=new Set('water milk money time information advice bread rice sugar homework furniture news luggage traffic weather music coffee tea butter cheese juice work food sand hair paper salt oil luck fun progress'.split(' '));
+const MON=/^(january|february|march|april|may|june|july|august|september|october|november|december)/,WKD=/^(monday|tuesday|wednesday|thursday|friday|saturday|sunday)/;
+function art(n){return/^(hour|honest|honou?r|heir)/.test(n)?'an':/^(uni|use|usu|eu|one|once|ewe)/.test(n)?'a':/^[aeiou]/.test(n)?'an':'a'}
+function expect(pre,post,full,ans){const pw=pre.toLowerCase().replace(/[^a-z' ]/g,' ').trim().split(/\s+/).filter(Boolean),l=pw[pw.length-1]||'',l2=pw[pw.length-2]||'';const aw=post.toLowerCase().replace(/^[^a-z0-9]+/,'').replace(/[^a-z0-9' ]/g,' ').trim().split(/\s+/),a0=aw[0]||'',a1=aw[1]||'',ps=post.toLowerCase();const all=full.toLowerCase();
+ if(!pw.length&&/\?/.test(full)){const A=ans||'';
+  if(/^(old|many|much|long|often|far|tall|big|heavy|fast|expensive)\b/.test(a0))return['How','how + adjetivo/adverbio'];
+  if(/^(time|colou?r|kind|sort|day|subject|sport|food|music|book|film|size)\b/.test(a0))return['What','what + sustantivo'];
+  if(A){if(/\bbecause\b/i.test(A))return['Why','la respuesta da una razón'];if(/\b(yesterday|tomorrow|o'clock|am|pm|at \d|in (19|20)\d\d|on (mon|tues|wednes|thurs|fri|satur|sun)|\d+:\d+)/i.test(A))return['When','la respuesta da un momento'];if(/\bby (bus|car|train|plane|bike|taxi|foot)\b/i.test(A))return['How','la respuesta da un medio'];if(/\b(in|at|from|to)\s+[A-Z]/.test(A))return['Where','la respuesta da un lugar'];if(/\b(my|his|her)\s+(brother|sister|friend|mother|father|teacher|uncle|aunt)|\b[A-Z][a-z]+\s+(is|was)\b/.test(A))return['Who','la respuesta nombra a una persona'];if(/^\s*(i['’]?m|i am|it['’]?s|it is|my name)/i.test(A))return['What','la respuesta nombra algo'];}
+  if(/^(do|does|did|are|is|was|were|can|will)\s+\w+\s+(live|from|come|born|work|study)\b/.test(ps)||/^(is|are)\s+(he|she|it|they|\w+)\s+from\b/.test(ps))return['Where','pregunta por el lugar'];
+  if(/^(is|are)\s+(your|his|her|the|their)\s+(name|phone|address|favou?rite|job|age|birthday|surname|email|capital)/.test(ps)||/^(do|does|did)\s+(you|he|she|they)\s+(do|want|like|have|eat|drink|say|think)\b/.test(ps)||/^'?s the matter/.test(ps))return['What','pregunta por una cosa'];
+  if(/^(is|are|was|were)\s+(he|she|that|this|they|those|these)\b/.test(ps))return['Who / What','depende de la respuesta (persona → Who, cosa → What)'];
+  if(/^(is|are|does|do|did|was)\s+\w+\s+(late|sad|crying|angry|upset|laughing|absent|not)\b/.test(ps))return['Why','pregunta por la causa'];return null}
+ if(l=='there'||(/^(is|are|was|were)$/.test(a0)&&false)){}
+ if(/^there$/.test(l)||(pw.length==0&&/^\s*there\b/.test(ps))){}
+ if(/\bthere\s*$/.test(pre.toLowerCase().trim())){const past_=/\b(yesterday|last|ago|was|were)\b/.test(all);const nx=aw.find(w=>!['a','an','the','some','any','many','much','no','two','three','four','five','six','seven','eight','nine','ten','lot','lots','of','few','little'].includes(w))||'';const pl=/^(many|two|three|four|five|six|seven|eight|nine|ten|few|some|any)$/.test(a0)&&!UNC.has(nx)||isPl(nx)&&!UNC.has(nx);return[past_?(pl?'were':'was'):(pl?'are':'is'),'there + be concuerda con el sustantivo que sigue ('+(pl?'plural':'singular/incontable')+')']}
+ if(WH.has(l)||(l=='many'&&l2=='how')||(/^(old|long|often|much|far)$/.test(l)&&l2=='how')){const p=person(a0=='the'?a1:a0);const T0=tenseOf(full,pre.length,'x');if(/^[a-z]+ing$/.test(a1)&&a1.length>4)return[T0[0]=='pa'?bePast(p):bePres(p),'be + -ing'];if(a1&&(BV.has(a1)||P[a1]||pastBase(a1))&&!/^(from|late|here|there)$/.test(a1))return[T0[0]=='pa'?'did':p=='3s'?'does':'do','pregunta con '+TN[T0[0]]];return[T0[0]=='pa'?bePast(p):bePres(p),'verbo be según el sujeto («'+a0+'»)']}
+ if(MON.test(a0)||/^\d{1,2}(st|nd|rd|th)?$/.test(a0)&&MON.test(a1)||WKD.test(a0)||/^(my|his|her|your|our|their|new|christmas)\b.*\b(birthday|day|eve)\b/.test(aw.slice(0,3).join(' '))&&false){if(WKD.test(a0)||/^\d/.test(a0)&&MON.test(a1))return['on','on + días y fechas'];return['in','in + meses']}
+ if(/^\d{1,2}(:\d\d)?$/.test(a0)&&/^(o'clock|am|pm|a|p)$/.test(a1)||/^(night|noon|midnight|dawn|sunset|sunrise|lunchtime|christmas|easter|weekends?)$/.test(a0)||/^\d{1,2}(:\d{2})?(am|pm)$/.test(a0)||a0=='the'&&/^(weekend|moment)$/.test(a1)&&false)return['at','at + hora, night, noon, midnight, weekend (UK)'];
+ if(/^(\d{4}|summer|winter|spring|autumn|fall|morning|afternoon|evening|century|future|past|decade)$/.test(a0)||a0=='the'&&/^(morning|afternoon|evening|summer|winter|spring|autumn|future|past|20th|21st)$/.test(a1)||/^(the )?(\d{2}s)$/.test(a0))return['in','in + años, estaciones, partes del día (morning/afternoon/evening), siglos'];
+ if(/^(monday|tuesday|wednesday|thursday|friday|saturday|sunday)\s+(morning|afternoon|evening|night)/.test(ps.trim()))return['on','on + día + parte del día'];
+ if(a0=='the'&&/^(table|wall|floor|bus|street|ceiling|desk|shelf|beach|first floor|second floor|left|right)$/.test(a1)||/^(the )?(left|right)$/.test(a0))return['on','on + superficie / calle / transporte público'];
+ if(/^(home|school|work|university|college|church|the (station|door|airport|bus stop|corner|party|office|cinema|supermarket|bank))\b/.test(ps.trim())&&/^(at|)$/.test(l)==false&&!/^(go|went|goes|going|come|came|arrive|get|got|walk|walked|run|drive)$/.test(l)){return['at','at + punto concreto / lugar de actividad']}
+ if(/^(go|went|goes|going|come|came|comes|walk|walked|drive|drove|fly|flew|travel|travelled|run|ran|return|returned)$/.test(l)&&/^(the|a|my|his|her|school|work|home|london|paris|spain|mexico|england|bed|church|town|college|university|\w+)/.test(a0))return[a0=='home'?'(nada)':'to',a0=='home'?'home no lleva preposición':'verbo de movimiento + to'];
+ if(/^(the )?(box|room|bag|house|car|city|country|world|garden|kitchen|park|bed|bedroom|water|sky|mirror|picture|newspaper|[A-Z]\w+)/i.test(ps.trim())&&/^(live|lives|lived|stay|stays|stayed|am|is|are|was|were|born|work|works|worked|put)$/.test(l)||/^(spain|mexico|london|paris|england|france|italy|germany|madrid|barcelona|new york|japan|china|brazil|argentina|colombia)\b/.test(ps.trim()))return['in','in + espacios cerrados, ciudades, países'];
+ if(COLL[l]&&!/^(\d)/.test(a0))return[COLL[l],'colocación fija: «'+l+' '+COLL[l]+'»'];if(l=='forward'&&l2=='look')return['to','look forward to + -ing'];
+ if(/\b(how|not|too|so)\s*$/.test(pre.toLowerCase())&&/^(many|much)$/.test(a0)==false&&false){}
+ if(/\bhow\s*$/.test(pre.toLowerCase())){const nx=aw[0];return[(UNC.has(nx)||(!isPl(nx)&&!/^(books|people)$/.test(nx)))?'much':'many','how much (incontables) / how many (contables en plural)']}
+ if(isPl(a0)||UNC.has(a0)){const pl=isPl(a0)&&!UNC.has(a0);const neg=/\b(not|n't|never|no one)\b/.test(all.slice(0,all.indexOf('§')<0?all.length:all.indexOf('§')))||/\?/.test(full);
+  if(/\b(a lot of)\b/.test(all)==false&&(/\b(few|little)\b/.test(all)||false))return[pl?'few':'little','few + contable plural / little + incontable'];
+  if(/\b(how)\b/.test(pre))return[pl?'many':'much','many (contables) / much (incontables)'];
+  if(/(some|any)/.test(l)==false&&/^(do you|does|is there|are there|have you|did)/.test(all.trim())&&/\?/.test(full)&&/(have|got|there)/.test(all)&&!/\bhow\b/.test(all))return['any','any en preguntas y negaciones'];
+  if(neg&&/\b(not|n't)\b/.test(all.slice(0,pre.length)))return[(/\b(much|many)\b/.test(all)?(pl?'many':'much'):'any'),'any en negativas (much/many también)'];
+  if(l!='the'&&/\b(i|we|they|he|she)\s+(have|has|bought|need|want|ate|drank|saw)\b/.test(all)&&!/\bnot\b/.test(all))return['some','some en afirmativas']}
+ if(/^(is|are|was|were|has|have|had|do|does|did|will|can|am)$/.test(a0)==false&&/^(he|she|it|they|we|i|you)$/.test(l)==false&&false){}
+ if(/^(is|are|was|were|am)$/.test(a0)==false&&/\b(who|that|which)\s*$/.test(pre.toLowerCase())==false&&/^(a|an|the)$/.test(l)==false&&/^(have|has|had|eat|ate|buy|bought|need|want|see|saw|got|get|read|wrote|write|is|was|am|'m)$/.test(l)&&/^[a-z]/.test(a0)&&!/^\d/.test(a0)){const sup=/^(best|worst|first|last|only|same|sun|moon|world|internet|biggest|tallest|most|highest|longest)$/.test(a0);const rep=new RegExp('\\b'+a0+'\\b').test(pre.toLowerCase());if(sup||rep)return['the',sup?'the + superlativo/único':'the: ya se mencionó'];return[art(a0),'a/an = «uno cualquiera» ('+art(a0)+' delante de sonido '+(art(a0)=='an'?'vocal':'consonante')+'); si ya se mencionó, the']}
+ if(/\b(who|which|whose|where|that)\s*$/.test(pre.toLowerCase())==false&&/^(the|a)\s+(man|woman|boy|girl|person|people|teacher|student|friend|book|film|movie|car|house|place|city|town|restaurant|shop|dog|cat)$/.test(l2+' '+l)==false&&/\b(man|woman|boy|girl|person|people|teacher|friend|neighbou?r|doctor|writer)\s*$/.test(pre.toLowerCase())&&/^(is|are|was|were|lives?|lived|works?|worked|has|have|had|\w+s|\w+ed)$/.test(a0))return['who / that','who para personas (that también vale)'];
+ if(/\b(book|film|movie|car|house|computer|phone|thing|bag|song|game|dress|picture)\s*$/.test(pre.toLowerCase())&&/^(i|you|we|they|he|she|is|was|has|costs?|\w+s)$/.test(a0))return['which / that','which/that para cosas'];
+ if(/\b(man|woman|boy|girl|person|people|friend|teacher|student|writer)\s*$/.test(pre.toLowerCase())&&/^(car|house|book|mother|father|name|son|daughter|dog|phone|bike|wife|husband)\b/.test(a0))return['whose','whose + sustantivo = posesión'];
+ if(/\b(place|city|town|country|house|restaurant|room|village|street)\s*$/.test(pre.toLowerCase())&&/^(i|you|we|they|he|she|my|the)$/.test(a0))return['where','where para lugares'];
+ if(/^(is|are|am|was|were|have|has|had|do|does|did|will|would|can|could|should|must|may|might)$/.test(a0)==false&&pw.length&&false){}
+ if(!pw.length||/[.?!]\s*$/.test(pre)){if(/^(you|he|she|they|we|it|i|\w+)\b/.test(a0)||true){const T0=tenseOf(full,pre.length,'x');const p=person(a0);if(/(ing)$/.test(a1)&&a1.length>4)return[T0[0]=='pa'?bePast(p):bePres(p),'be + -ing'];if(/\?/.test(full)&&(PN.has(a0)||/^[a-z]+$/.test(a0))&&(BV.has(a1)||!a1||P[a1]))return[T0[0]=='pa'?'did':p=='3s'?'does':'do','pregunta con '+TN[T0[0]]+': '+(T0[0]=='pa'?'did':p=='3s'?'does':'do')]}}
+ if(/^(ing|[a-z]+ing)$/.test(a0)&&a0.length>4&&PN.has(l)||/^[a-z]+ing$/.test(a0)&&a0.length>4&&pw.length){const p=person(pre);const past_=/\b(yesterday|last|ago|was|when|while)\b/.test(all);return[past_?bePast(p):bePres(p),'be + -ing (presente/pasado continuo)']}
+ if(PN.has(l)||pw.length&&/^(he|she|it|they|we|i|you)$/.test(l)){const p=person(pre);if(/^(not|never|always|often|usually)$/.test(a0)==false&&/^(been|gone|seen|done|\w+(ed|en))$/.test(a0)&&a0.length>3)return[p=='3s'?'has':'have','have/has + participio'];if(!a0||/^(a|an|the|happy|sad|tired|ready|late|in|at|from|here|there|very|not|my)$/.test(a0)||/^[a-z]+$/.test(a0)&&!BV.has(a0)&&!/ing$/.test(a0)){const T0=tenseOf(full,pre.length,'be');return[T0[0]=='pa'?bePast(p):bePres(p),'verbo be según el sujeto']}}
+ const sbj=['i','me','you','he','him','she','her','it','we','us','they','them'];
+ if(!pw.length||/\b(and|but|so|because|when|if|that)\s*$/.test(pre.toLowerCase()))if(BV.has(a0)||base(a0)||P[a0]||pastBase(a0)){let g='he/she/it';const pr=pre.toLowerCase();if(/\b(mary|anna|sara|lucy|mother|sister|woman|girl|wife|mum|she)\b/.test(pr))g='she';else if(/\b(tom|john|peter|father|brother|man|boy|husband|dad|he)\b/.test(pr))g='he';else if(/\b(parents|friends|children|boys|girls|people|they)\b/.test(pr))g='they';const p=base(a0)===a0?(/s$/.test(a0)?'3s':'pl'):'3s';return[g=='he/she/it'&&p!='3s'?'I / you / we / they':g,'pronombre sujeto delante de verbo']}
+ if(/^(is|are|was|were|has|have|had|do|does|did)$/.test(a0)==false&&pw.length&&/\b(by)\s*$/.test(pre.toLowerCase()))return['myself / himself…','by + reflexivo = «solo/a»'];
+ return null}
+function blanks(s){return s.replace(/_{2,}|\.{3,}|…|\[\s*\]/g,'§')}
+function cmpSup(a,kind){a=a.trim().toLowerCase();const I={good:['better','best'],bad:['worse','worst'],far:['farther','farthest'],little:['less','least'],many:['more','most'],much:['more','most'],old:['older','oldest']};if(I[a])return kind=='sup'?'the '+I[a][1]:I[a][0];
+ const sy=(a.replace(/e$/,'').match(/[aeiouy]+/g)||[]).length;let r;
+ if(sy==1||(sy==2&&/(y|ow|er|le|et)$/.test(a))){let b=a;if(/[^aeiou]y$/.test(b))b=b.slice(0,-1)+'i';else if(dbl(b))b+=b.slice(-1);const sfx=kind=='sup'?'est':'er';r=/e$/.test(b)?b+(kind=='sup'?'st':'r'):b+sfx;return kind=='sup'?'the '+r:r}
+ return kind=='sup'?'the most '+a:'more '+a}
+function plural(n){n=n.toLowerCase();const I={man:'men',woman:'women',child:'children',foot:'feet',tooth:'teeth',mouse:'mice',person:'people',goose:'geese',ox:'oxen',fish:'fish',sheep:'sheep',deer:'deer',leaf:'leaves',wolf:'wolves',knife:'knives',life:'lives',wife:'wives',half:'halves',shelf:'shelves',thief:'thieves',loaf:'loaves',hero:'heroes',potato:'potatoes',tomato:'tomatoes',cactus:'cacti',analysis:'analyses',crisis:'crises',phenomenon:'phenomena',criterion:'criteria',bacterium:'bacteria',piano:'pianos',photo:'photos',roof:'roofs'};if(I[n])return I[n];if(/(s|x|z|ch|sh)$/.test(n))return n+'es';if(/[^aeiou]y$/.test(n))return n.slice(0,-1)+'ies';return n+'s'}
+/* ---- relleno de huecos ---- */
+function fillLine(line,ans){const L=blanks(line);if(L.indexOf('§')<0)return null;let out=[],cur=L,res=[],whys=[];let idx;let k=0;
+ while((idx=cur.indexOf('§'))>=0&&k++<8){const pre=cur.slice(0,idx),post=cur.slice(idx+1);const m=post.match(/^\s*\(([^()]*)\)/);let ansS,why;
+  const m2=post.match(/^\s+(\S+)\s+§\s*\(([^()]*)\)/);
+  if(m2){const spec=m2[2],neg=/\bnot\b|negative|neg\b|\bn't/i.test(spec),v=spec.replace(/\b(not|negative|neg)\b|[-–,\/]/gi,'').trim().split(/\s+/)[0],p=person(m2[1]);const T=tenseOf(cur,idx+post.indexOf('§')+1,v);const t=T[0];const c=conj(v,t=='base'||t=='ing'||t=='inf'||t=='pp'?'ps':t,p,neg);
+   const aux={ps:p=='3s'?'does':'do',pa:'did',pc:bePres(p),pac:bePast(p),pf:p=='3s'?'has':'have',pfc:p=='3s'?'has':'have',pap:'had',fu:'will',w:'would',wh:'would'}[t]||'do';const main={ps:v,pa:v,pc:ing(v),pac:ing(v),pf:pp(v),pfc:'been '+ing(v),pap:pp(v),fu:v,w:v,wh:'have '+pp(v)}[t]||v;
+   res.push(cap(aux.toLowerCase())+(aux==''?'':''));res.push(main);cur=cur.slice(0,idx)+'\u0001'+post.slice(0,post.indexOf('§'))+'\u0002'+post.slice(post.indexOf('§')+1).replace(/^\s*\([^()]*\)/,'');
+   cur=cur.replace('\u0001',aux).replace('\u0002',main);continue}
+  if(m){const spec=m[1].trim(),neg=/\bnot\b|negative|neg\b|\bn't/i.test(spec),v=spec.replace(/\b(not|negative|neg)\b|[-–,\/]/gi,'').trim().split(/\s+/)[0].toLowerCase();const ct0=cur.toLowerCase(),adjCtx=/\bthan\b/.test(ct0)||/\b(the|as)\s*$/.test(pre.toLowerCase())&&!/(plural)/.test(spec)||/\b(two|three|four|five|many|some|few|several|\d+|these|those|both)\s*$/.test(pre.toLowerCase());const verbLike=!adjCtx||BV.has(v)||P[v]||v=='be';
+   if(!verbLike&&v){const ct=cur.toLowerCase();if(/\bthan\b/.test(ct)){ansS=cmpSup(v,'cmp');why='comparativo (than)'}else if(/\bthe\s*$/.test(pre.toLowerCase())){ansS=cmpSup(v,'sup').replace(/^the /,'');why='superlativo (the + -est / most)'}else if(/\bas\s*$/.test(pre.toLowerCase())){ansS=v;why='as … as: adjetivo en grado normal'}else if(/\b(two|three|four|five|many|some|few|several|\d+|these|those|both)\s*$/.test(pre.toLowerCase())){ansS=plural(v);why='plural'}else{ansS=null}whys.push(why)}
+   else{const sub=person(pre);const T=tenseOf(cur,idx,v);let t=T[0];why=TN[t]+' — '+T[1];whys.push(why);let c=conj(v,t=='ps'&&false?'ps':t,sub,neg);if(t=='ps'&&v=='be'&&false){}if(v=='be'&&/(pa|ps)/.test(t)&&/\bif\b/.test(pre.toLowerCase())&&t=='pa')c='were';ansS=c;if(['base','ing','inf','pp'].includes(t)){ansS=conj(v,t,sub,neg);if(t=='inf')ansS=ansS}}
+   cur=cur.slice(0,idx)+'\u0003'+post.replace(/^\s*\([^()]*\)/,'');if(ansS==null){res.push('?');cur=cur.replace('\u0003','?');continue}res.push(ansS);cur=cur.replace('\u0003',ansS);continue}
+  const e=expect(pre,post,cur,ans);if(e){res.push(e[0]);whys.push(e[1]);why=e[1];cur=cur.slice(0,idx)+e[0].split(' / ')[0]+post}else{res.push('?');cur=cur.slice(0,idx)+'?'+post}}
+ return{res,whys,sentence:cur.replace(/\u0001|\u0002|\u0003/g,'')}}
+function explainFill(line,ans){const r=fillLine(line,ans);if(!r)return null;if(r.res.some(x=>x=='?'))return{ok:false,r};return{ok:true,r}}
+/* ---- opciones múltiples ---- */
+function mcq(s){const m=s.match(/\(?\b[a-d][\).]\s*\S[\s\S]*?\(?\b[b-e][\).]\s*\S/i);let opts=[];
+ const re=/(?:^|\s)\(?([a-e])[\).]\s*([^\s][^]*?)(?=\s+\(?[a-e][\).]\s|\s*$)/gi;let mm;let body=s;const f=s.search(/(?:^|\s)\(?a[\).]\s*\S/i);if(f>=0){body=s.slice(0,f);const rest=s.slice(f);while((mm=re.exec(rest)))opts.push({k:mm[1].toLowerCase(),v:mm[2].trim().replace(/[.;,]$/,'')})}
+ if(opts.length<2){const sl=s.match(/\(([^()]*\/[^()]*)\)/);if(sl&&/§|_{2,}|\.{3,}/.test(s)&&!/\b(not|negative|neg)\b/i.test(sl[1])){opts=sl[1].split('/').map((v,i)=>({k:'abcde'[i],v:v.trim()}));body=s.replace(sl[0],'')}}
+ if(opts.length<2)return null;if(!/_{2,}|\.{3,}|…|§/.test(body))return null;return{body:body.trim(),opts}}
+function solveMcq(x){const body=blanks(x.body),idx=body.indexOf('§'),pre=body.slice(0,idx),post=body.slice(idx+1);const norm=v=>v.toLowerCase().replace(/[^a-z' ]/g,'').trim();
+ const lem=x.opts.map(o=>{const w=norm(o.v).split(' ').pop();return base(w)||pastBase(w)||(/ing$/.test(w)?base(w.replace(/ing$/,''))||base(w.replace(/ing$/,'e'))||w.replace(/ing$/,''):w)}).filter(Boolean);
+ let target=null,why='';const lm=lem[0];const verbOpts=lem.length>=2&&lem.every(v=>v==lm)&&(BV.has(lm)||P[lm]||lm=='be');
+ if(verbOpts){const sub=person(pre);const T=tenseOf(body,idx,lm);target=conj(lm,T[0],sub,false);why=TN[T[0]]+' — '+T[1]}
+ else{const r=fillLine(body,'');if(r&&r.res[0]&&r.res[0]!='?'){target=r.res[0];const e=expect(pre,post,body,'');why=e?e[1]:''}}
+ if(!target)return null;const tn=norm(target);let hit=x.opts.find(o=>norm(o.v)==tn)||x.opts.find(o=>tn.split(' / ').some(t=>norm(o.v)==t.toLowerCase()))||x.opts.find(o=>norm(target.split(' / ')[0])==norm(o.v));
+ return{hit,target,why}}
+/* ---- tags ---- */
+const NEGC={is:"isn't",are:"aren't",was:"wasn't",were:"weren't",have:"haven't",has:"hasn't",had:"hadn't",do:"don't",does:"doesn't",did:"didn't",will:"won't",would:"wouldn't",can:"can't",could:"couldn't",should:"shouldn't",must:"mustn't",may:"may not",might:"might not",shall:"shan't"};
+function tagFor(s){let t=s.replace(/[.!?]+$/,'').trim();const rawL=t.toLowerCase();const T=tk(t).filter(x=>!/^[,;]$/.test(x)),L=T.map(x=>x.toLowerCase());if(!L.length)return null;
+ const negW=/^(never|hardly|scarcely|barely|seldom|rarely|nobody|nothing|neither|no one|nowhere)$/;const neg=L.includes('not')||L.some(x=>negW.test(x))||/\bno one\b/.test(rawL);
+ if(/^let['’]?s\b|^let us\b/i.test(rawL))return{tag:'shall we?',why:'Let\'s… → shall we?'};
+ const imp=(BV.has(L[0])&&!PN.has(L[0])&&!AUX.has(L[0]))||/^(do|don)$/.test(L[0])&&(L[1]=='not'||L[1]=="'")||L[0]=='please'||L[0]=='be';if(imp)return{tag:'will you?',why:'imperativo → will you? (also would you / can you)'};
+ let ai=L.findIndex((x,j)=>AUX.has(x)&&!(x=='do'||x=='does')||((x=='do'||x=='does')&&L[j+1]=='not'));let aux,subjT=T.slice(0,Math.max(ai,0)).join(' ');
+ if(ai<0){const x=lexIdx(L,',');if(!x)return null;aux=x.k=='past'?'did':(person(T.slice(0,x.j).join(' '))=='3s'?'does':'do');subjT=T.slice(0,x.j).join(' ')}else aux=L[ai];
+ if(/^(used)$/.test(L[ai+1]||'')||L.includes('used')&&L[L.indexOf('used')+1]=='to')aux='did';
+ let p=person(subjT.replace(/\b(always|never|often|usually)\b/gi,''));const sl=subjT.toLowerCase().replace(/[^a-z' ]/g,'').trim();let pr;
+ if(/^(this|that|everything|something|nothing|anything)$/.test(sl))pr='it';else if(/^(these|those)$/.test(sl))pr='they';else if(/^(everyone|everybody|someone|somebody|anyone|anybody|nobody|no one)$/.test(sl))pr='they';else if(sl=='there')pr='there';else if(PN.has(sl))pr=sl;else if(p=='pl')pr='they';else{const g=FEM.has(sl.split(' ')[0])||FW.test(sl)?'she':/\b(tom|john|peter|father|brother|man|boy|husband|dad|teacher|doctor|mr|david|james|paul)\b/i.test(sl)?'he':(/^[A-Z]/.test(subjT)&&!DET.has(sl.split(' ')[0])?'he':'it');pr=g}
+ let tg;if(aux=='am'&&!neg)tg="aren't I?";else if(aux=='am'&&neg)tg='am I?';else if(neg)tg=aux+' '+pr+'?';else tg=(NEGC[aux]||aux+' not')+' '+pr+'?';
+ return{tag:tg,why:(neg?'frase negativa → tag afirmativo':'frase afirmativa → tag negativo')+' (mismo auxiliar, pronombre del sujeto)'}}
+/* ---- identificar tiempo ---- */
+function tenseId(s){const T=tk(s.replace(/[.!?]+$/,'')).map(x=>x.toLowerCase()).filter(x=>!/^[,;]$/.test(x));const j=T.join(' ');let r,e;const has=re=>re.test(j);const pas=/\b(am|is|are|was|were|be|been|being)\s+(\w+ed|\w+en|made|done|built|written|sold|taught|known|seen|given|taken|found|bought|held|kept|left|lost|paid|read|sent|told|won)\b/.test(j);
+ if(has(/\bwill have been \w+ing\b/)){r='Futuro perfecto continuo';e='will have been + -ing'}else if(has(/\bwill have \w+/)){r='Futuro perfecto';e='will have + participio'}else if(has(/\bwill be \w+ing\b/)){r='Futuro continuo';e='will be + -ing'}else if(has(/\b(will|shall)\b/)||has(/\b(am|is|are) going to\b/)){r='Futuro simple'+(has(/going to/)?' (be going to)':' (will)');e='will + verbo / be going to + verbo'}
+ else if(has(/\bwould have \w+/)){r='Condicional perfecto';e='would have + participio'}else if(has(/\bwould \w+/)){r='Condicional simple';e='would + verbo'}
+ else if(has(/\bhad been \w+ing\b/)){r='Pasado perfecto continuo';e='had been + -ing'}else if(has(/\bhad \w+/)){r='Pasado perfecto';e='had + participio'}
+ else if(has(/\b(have|has) been \w+ing\b/)){r='Presente perfecto continuo';e='have/has been + -ing'}else if(has(/\b(have|has) \w+/)&&!has(/\b(have|has) to\b/)){r='Presente perfecto';e='have/has + participio'}
+ else if(has(/\b(was|were) \w+ing\b/)){r='Pasado continuo';e='was/were + -ing'}else if(has(/\b(am|is|are) \w+ing\b/)){r='Presente continuo';e='am/is/are + -ing'}
+ else if(has(/\bdid\b/)||T.some((w,i)=>i>0&&pastBase(w))||has(/\b(was|were)\b/)){r='Pasado simple';e='verbo en pasado / did + verbo'}else{r='Presente simple';e='verbo base (+s con he/she/it) / do-does'}
+ return{r,e,pas}}
+/* ---- correcciones ---- */
+const FIX=[[/\b(he|she|it)\s+(don't|do not)\b/gi,'$1 doesn\'t','he/she/it usan doesn\'t'],[/\b(he|she|it)\s+have\b(?!\s+to)/gi,'$1 has','he/she/it + has'],[/\b(I|you|we|they)\s+(is|has|does)\b/gi,(m,a,b)=>a+' '+({is:a.toLowerCase()=='i'?'am':'are',has:'have',does:'do'})[b.toLowerCase()],'concordancia con el sujeto'],[/\bI am agree\b/gi,'I agree','agree es verbo, no necesita be'],[/\bmore\s+(better|bigger|taller|faster|older|smaller|worse)\b/gi,'$1','comparativo doble'],[/\b(most)\s+(best|worst|tallest|biggest)\b/gi,'$2','superlativo doble'],[/\bdidn't\s+(went|came|saw|did|had|ate|took|made|knew|bought|got|gave|found)\b/gi,(m,v)=>"didn't "+(R[v.toLowerCase()]||v),'tras didn\'t va verbo base'],[/\b(doesn't|don't|didn't)\s+has\b/gi,'$1 have','tras do/does/did va verbo base'],[/\b(doesn't|don't)\s+(\w+)s\b/gi,(m,a,v)=>BV.has(v.toLowerCase())?a+' '+v:m,'tras do/does va verbo base'],[/\b(don't|doesn't|didn't|can't|won't|haven't)\s+(\w+\s+)?(nothing|nobody|no one|never|nowhere)\b/gi,(m,a,b,c)=>a+' '+(b||'')+({nothing:'anything',nobody:'anybody','no one':'anyone',never:'ever',nowhere:'anywhere'})[c.toLowerCase()],'doble negación'],[/\ba\s+([aeiou]\w*)/gi,(m,w)=>/^(uni|use|eu|one|once)/i.test(w)?m:'an '+w,'an delante de sonido vocal'],[/\ban\s+([bcdfgjklmnpqrstvwxz]\w*)/gi,(m,w)=>/^(hour|honest|honou?r|heir)/i.test(w)?m:'a '+w,'a delante de sonido consonante'],[/\b(peoples|childrens|informations|advices|furnitures|homeworks|mans|womans|foots|tooths)\b/gi,m=>({peoples:'people',childrens:'children',informations:'information',advices:'advice',furnitures:'furniture',homeworks:'homework',mans:'men',womans:'women',foots:'feet',tooths:'teeth'})[m.toLowerCase()],'plural/incontable incorrecto'],[/\bsince\s+(\d+\s+(years|months|weeks|days|hours))/gi,'for $1','for + duración, since + punto de inicio'],[/\bI have\s+(\d+)\s+years\b/gi,'I am $1 years old','la edad se dice con be'],[/\b(explain|say|describe)\s+me\b/gi,'$1 to me','explain/say/describe + to + persona'],[/\bdiscuss about\b/gi,'discuss','discuss no lleva about'],[/\b(he|she|it)\s+(go|do|come|want|like|play|work|live|need|know|make|take|eat|speak|watch|study|get|see|say|think|have)\b(?!s)/gi,(m,a,v)=>a+' '+s3(v.toLowerCase()),'tercera persona: verbo + s']];
+function fixm(s){let r=s,notes=[];for(const[re,rep,why]of FIX){const b=r;r=r.replace(re,rep);if(b!==r)notes.push(why)}return{r,notes}}
+/* ---- transformaciones ---- */
+const NEGW=[[/\bsome(thing|one|body|where)?\b/gi,(m,a)=>'any'+(a||'')],[/\balready\b/gi,'yet']];
+function parts(s){const T=lc0(tk(s.replace(/[.!?]+$/,'').trim()));const L=T.map(x=>x.toLowerCase());let ai=L.findIndex((x,j)=>AUX.has(x)&&(!(x=='do'||x=='does')||L[j+1]=='not'));if(ai>=0&&(L[ai]=='have'||L[ai]=='has')&&/^(to|a|an|the|some|my|your|his|her|breakfast|lunch|dinner|\d)/.test(L[ai+1]||'')&&!/^been$/.test(L[ai+1]||''))ai=-1;
+ if(ai>=0)return{T,L,ai,kind:'aux'};const x=lexIdx(L,',');if(!x)return null;return{T,L,x,kind:x.k}}
+function negate(s){const c=parts(s);if(!c)return null;const{T,L}=c;let out;
+ if(c.kind=='aux'){const ai=c.ai,a=L[ai];if(L[ai+1]=='not'){out=T.slice(0,ai).concat(T.slice(ai+2));if(a=='do'||a=='does'||a=='did'){out=T.slice(0,ai).concat(T.slice(ai+2));const vi=ai;if(a=='did')out[vi]=past(L[ai+2]);else if(a=='does')out[vi]=s3(L[ai+2])}else if(a=='can'&&false){}}else{out=T.slice();out.splice(ai,1,a=='am'?'am not':(NEGC[a]||a));}}
+ else{const x=c.x;out=T.slice();if(x.k=='past')out.splice(x.j,1,"didn't",x.b);else out.splice(x.j,1,(person(T.slice(0,x.j).join(' '))=='3s'?"doesn't":"don't"),x.b)}
+ let r=J(out);const isNeg=c.kind=='aux'&&L[c.ai+1]=='not'||false;if(!isNeg)NEGW.forEach(([a,b])=>{r=r.replace(a,b)});return{r:cap(r)+'.',aff:isNeg}}
+function question(s){const c=parts(s);if(!c)return null;const{T,L}=c;let out;
+ if(c.kind=='aux'){const ai=c.ai;out=[T[ai]].concat(T.slice(0,ai),T.slice(ai+1))}else{const x=c.x,p=person(T.slice(0,x.j).join(' '));const aux=x.k=='past'?'Did':p=='3s'?'Does':'Do';out=[aux].concat(T.slice(0,x.j),[x.b],T.slice(x.j+1))}
+ let r=J(lc0(out).map((w,i)=>i==0?w:w));r=r.replace(/\bsome(thing|one|body|where)?\b/gi,(m,a)=>'any'+(a||''));r=r.replace(/^(\w)/,c2=>c2.toUpperCase()).replace(/\bI\b/g,'I');if(/^I\b/.test(r)==false)r=r.replace(/\b(\w+) (i)\b/g,'$1 I');return cap(r)+'?'}
+const PROBJ={i:'me',he:'him',she:'her',we:'us',they:'them',you:'you',it:'it'},POSUB={me:'I',him:'he',her:'she',us:'we',them:'they',you:'you',it:'it'};
+function passive(s){const T=lc0(tk(s.replace(/[.!?]+$/,'').trim()));const L=T.map(x=>x.toLowerCase());let ai=L.findIndex(x=>AUX.has(x)&&x!='do'&&x!='does'&&x!='did');let vi,kind,sub,vb=[],obj;
+ if(ai>=0&&['will','can','could','may','might','must','should','would'].includes(L[ai])){vb=[L[ai],'be'];vi=ai+1;kind='modal'}else if(ai>=0&&(L[ai]=='have'||L[ai]=='has'||L[ai]=='had')){vb=[L[ai],'been'];vi=ai+1;kind='perf'}else if(ai>=0&&(L[ai]=='am'||L[ai]=='is'||L[ai]=='are'||L[ai]=='was'||L[ai]=='were')){vi=ai+1;kind=/^(am|is|are)$/.test(L[ai])?'pc':'pac'}
+ else{const x=lexIdx(L,',');if(!x)return null;vi=x.j;kind=x.k=='past'?'pa':'ps'}
+ const sj=T.slice(0,ai>=0?ai:vi);const vtok=L[vi];const v=kind=='pc'||kind=='pac'?(base(vtok.replace(/ing$/,''))||base(vtok.replace(/ing$/,'e'))||vtok.replace(/ing$/,'')):(base(vtok)||pastBase(vtok)||(kind=='perf'?pastBase(vtok)||vtok:vtok));
+ let rest=T.slice(vi+1);const pi=rest.findIndex(x=>/^(at|in|on|to|with|for|by|from|yesterday|every|last|next|tomorrow|today|during|after|before|because|when)$/i.test(x));let objT=pi<0?rest:rest.slice(0,pi),adj=pi<0?[]:rest.slice(pi);if(!objT.length)return null;
+ const ol=objT.map(x=>x.toLowerCase());const oPl=ol.length==1&&['you','they','we'].includes(ol[0])||ol.some(x=>isPl(x)||x=='and');const nsub=ol.length==1&&POSUB[ol[0]]?POSUB[ol[0]]:J(objT);const nO=ol.length==1&&PROBJ[L[0]]?0:0;
+ let agree=ol[0]=='i'?'1s':ol.length==1&&['you','we','they'].includes(ol[0])||oPl?'pl':'3s';
+ const by=J(sj.map(x=>PROBJ[x.toLowerCase()]||x));const pv=pp(v);let aux;
+ if(kind=='ps')aux=bePres(agree);else if(kind=='pa')aux=bePast(agree);else if(kind=='pc')aux=bePres(agree)+' being';else if(kind=='pac')aux=bePast(agree)+' being';else aux=vb.join(' ');
+ return{r:cap(nsub.replace(/^i$/,'I'))+' '+aux+' '+pv+(adj.length?' '+J(adj):'')+' by '+by+'.'.replace(/\s\./,'.'),agree}}
+/* ---- imperativos ---- */
+function impOp(s,op){let t=s.replace(/[.!?]+$/,'').trim();const T=lc0(tk(t));const L=T.map(x=>x.toLowerCase());
+ let neg=/^(do not|never)/i.test(L.join(' '))||/^do$/.test(L[0])&&L[1]=='not',let_=/^let$/.test(L[0])&&/^(s|us)$/.test(L[1]||'');let core;
+ if(let_){core=T.slice(2);if(core[0]&&core[0].toLowerCase()=='not'){neg=true;core=core.slice(1)}}else if(neg){core=L[0]=='never'?T.slice(1):T.slice(2)}else core=T.slice();core=core.filter(x=>x.toLowerCase()!='please'||false);const hasPl=/please/i.test(t);
+ core=core.filter(x=>x.toLowerCase()!='please');const body=J(core);
+ const res={};res.neg=let_?"Let's not "+body+'!':"Don't "+body+'!';res.aff=let_?"Let's "+body+'!':cap(body)+'!';res.pol=(neg?'Could you not ':'Could you ')+body+', please?';res.pol2='Would you mind '+(neg?'not ':'')+ing(core[0]?core[0].toLowerCase():'')+' '+J(core.slice(1))+'?';res.cur=neg;res.let_=let_;res.body=body;res.pls=hasPl;return res}
+const isImp=s=>{const w=tk(s.replace(/[.!?]+$/,''));const l=w.map(x=>x.toLowerCase());return /^(do not|never)\b/.test(l.join(' '))||l[0]=='do'&&l[1]=='not'||(l[0]=='let'&&/^(s|us)$/.test(l[1]||''))||l[0]=='please'||(BV.has(l[0])&&!PN.has(l[0])&&!AUX.has(l[0])&&!WH.has(l[0])&&!DET.has(l[0]))||l[0]=='be'};
+/* ---- ordenar palabras ---- */
+function unscramble(s){let w=s.replace(/^[^:]*?(?:order|ordena|unscramble|words?)[^:]*:\s*/i,'').split(/\s*[\/|]\s*|\s+-\s+|,\s*(?=[a-zA-Z])/).map(x=>x.trim().replace(/[.?!]+$/,'')).filter(Boolean);if(w.length<3)return null;
+ const L=w.map(x=>x.toLowerCase());const wh=[],rest=[];let aux=null,subj=null,verb=null,adv=[],time=[],place=[],obj=[];const used=new Set();
+ const take=(i)=>{used.add(i);return w[i]};
+ const hi=L.findIndex(x=>WH.has(x));let lead=[];if(hi>=0){lead.push(take(hi));if(L[hi]=='how'){const k=L.findIndex((x,j)=>/^(many|much|old|long|often|far|tall)$/.test(x)&&!used.has(j));if(k>=0){lead.push(take(k));const n=L.findIndex((x,j)=>!used.has(j)&&j!=hi&&(isPl(x)||UNC.has(x))&&k>=0&&false);if(n>=0)lead.push(take(n))}}else if(/^(what|which|whose)$/.test(L[hi])){const n=L.findIndex((x,j)=>!used.has(j)&&/^(time|colou?r|kind|sort|day|subject|sport|food|music|book|film)$/.test(x));if(n>=0)lead.push(take(n))}}
+ const si=L.findIndex((x,j)=>!used.has(j)&&PN.has(x));if(si>=0)subj=[take(si)];else{const j0=L.findIndex((x,j)=>!used.has(j)&&/^[A-Z]/.test(w[j])&&!WH.has(x));if(j0>=0)subj=[take(j0)];else{const d=L.findIndex((x,j)=>!used.has(j)&&DET.has(x));if(d>=0){subj=[take(d)];const n=L.findIndex((x,j)=>j>d&&!used.has(j)&&!AUX.has(x)&&!BV.has(x)&&!base(x));if(n>=0)subj.push(take(n))}}}
+ const ai=L.findIndex((x,j)=>!used.has(j)&&AUX.has(x));if(ai>=0)aux=take(ai);
+ const vi=L.findIndex((x,j)=>!used.has(j)&&(BV.has(x)||base(x)||P[x]||pastBase(x)||/ing$/.test(x)&&x.length>4));if(vi>=0)verb=take(vi);
+ for(let j=0;j<w.length;j++)if(!used.has(j)){const x=L[j];if(ADV.has(x))adv.push(w[j]);else if(/^(yesterday|today|tomorrow|now|tonight|every|last|next|always|usually|often|never|sometimes|then|soon|later)$/.test(x)||/^(at|on|in)$/.test(x)&&/\d|morning|evening|night|monday|tuesday|wednesday|thursday|friday|saturday|sunday|weekend|summer|winter/.test(L.slice(j,j+4).join(' '))||j>0&&/^\d|morning|evening|night|weekend|o'clock|monday|tuesday|wednesday|thursday|friday|saturday|sunday/.test(x)&&time.length)time.push(w[j]);else if(/^(at|in|on|to|from|near|under|behind|next)$/.test(x)||place.length&&!time.length&&j>0&&!used.has(j-1)&&false)place.push(w[j]);else obj.push(w[j])}
+ if(!subj&&!lead.length)return null;
+ if(!verb&&!aux)return null;
+ const q=lead.length||/\?/.test(s)&&false||(hi>=0)||(aux&&L.indexOf(aux.toLowerCase())<L.indexOf((subj?subj[0]:'').toLowerCase())&&false);
+ const isQ=hi>=0||(aux&&/^(do|does|did|is|are|was|were|have|has|can|will|would|should|could)$/.test(aux.toLowerCase())&&/\?/.test(s));
+ const tail=obj.concat(place,time);let out;
+ if(isQ||hi>=0){if(!aux&&verb&&hi>=0){const x=person(subj?subj.join(' '):'');aux=x=='3s'?'does':'do'}out=lead.concat(aux?[aux]:[],subj||[],adv,verb?[verb]:[],tail);if(true)return{r:cap(J(out).replace(/\s+\?$/,''))+'?',kind:'pregunta'}}
+ out=(subj||[]).concat(aux?[aux]:[],adv,verb?[verb]:[],tail);const o=J(out);return{r:cap(o)+'.',kind:'afirmación'}}
+/* ---- teoría rápida ---- */
+const TH={'present simple':'**Presente simple:** hábitos y hechos. Afirmativa: *I/you/we/they + verbo*, *he/she/it + verbo+s*. Negativa: *don\'t/doesn\'t + verbo base*. Pregunta: *Do/Does + sujeto + verbo base?*',
+'present continuous':'**Presente continuo:** acción en curso. *am/is/are + verbo-ing*. Marcadores: now, at the moment, look!',
+'present perfect':'**Presente perfecto:** pasado con relación al presente. *have/has + participio*. Marcadores: already, yet, just, ever, never, since, for.',
+'past simple':'**Pasado simple:** acción terminada. Verbo -ed o forma irregular. Negativa/pregunta: *did + verbo base*. Marcadores: yesterday, ago, last…',
+'past continuous':'**Pasado continuo:** acción en progreso en el pasado. *was/were + verbo-ing*. Típico con *while* y *when*.',
+'past perfect':'**Pasado perfecto:** pasado anterior a otro pasado. *had + participio*.',
+'future':'**Futuro:** *will + verbo* (decisiones, predicciones) o *be going to + verbo* (planes, evidencias).',
+'conditional':'**Condicionales:** 0: *If + presente, presente*. 1: *If + presente, will + verbo*. 2: *If + pasado, would + verbo* (con be: *were*). 3: *If + had + participio, would have + participio*.',
+'passive':'**Pasiva:** *be + participio* (+ *by* agente). El objeto pasa a sujeto: *Tom wrote the letter → The letter was written by Tom.*',
+'reported speech':'**Discurso indirecto:** verbo de reporte en pasado → tiempos retroceden (am/is→was, present→past, past→past perfect, will→would, can→could, must→had to); cambian pronombres y expresiones de tiempo (today→that day, tomorrow→the next day). Preguntas: *asked if/whether…* o wh- + orden afirmativo. Órdenes: *told/asked + persona + (not) to + verbo*.',
+'imperative':'**Imperativo:** verbo base sin sujeto (*Open the door!*). Negativo: *Don\'t + verbo* (*Don\'t open…*). Con *Let\'s* para sugerir; *please* lo suaviza.',
+'question tags':'**Question tags:** frase positiva → tag negativo y al revés, con el mismo auxiliar: *She is nice, isn\'t she?* / *You don\'t like it, do you?* Excepciones: *I am… aren\'t I?*, *Let\'s… shall we?*, imperativo → *will you?*',
+'modals':'**Modales:** can, could, may, might, must, should, would + verbo base (sin -s, sin to). Negativo con *not*; pregunta invirtiendo el modal.',
+'comparatives':'**Comparativos:** 1 sílaba: *-er/-est* (tall → taller → the tallest). 2+ sílabas: *more/most* (beautiful). Irregulares: good → better → best; bad → worse → worst.',
+'articles':'**Artículos:** *a/an* = uno cualquiera (an delante de sonido vocal); *the* = ya conocido/único; sin artículo en plurales generales e incontables.',
+'gerund':'**Gerundio vs infinitivo:** enjoy, avoid, finish, mind, keep, suggest + -ing. want, need, hope, decide, plan, promise + to + verbo. let/make + verbo base.',
+'relative':'**Relativos:** who (personas), which (cosas), that (ambos), whose (posesión), where (lugares).',
+'used to':'**Used to + verbo:** hábito pasado que ya no ocurre. *be/get used to + -ing:* estar acostumbrado.',
+'wish':'**Wish:** presente irreal → *wish + pasado simple* (I wish I had a car). Pasado → *wish + had + participio*. Queja/futuro → *wish + would*.'};
+const THK=[[/present simple|presente simple/,'present simple'],[/present continuous|presente continuo|progressive/,'present continuous'],[/present perfect|presente perfecto/,'present perfect'],[/past simple|pasado simple|simple past/,'past simple'],[/past continuous|pasado continuo/,'past continuous'],[/past perfect|pasado perfecto/,'past perfect'],[/\bfuture|futuro|will vs|going to/,'future'],[/conditional|condicional|\bif clauses?\b/,'conditional'],[/passive|pasiva/,'passive'],[/reported|indirect|indirecto/,'reported speech'],[/imperative|imperativo/,'imperative'],[/tags?\b/,'question tags'],[/modal/,'modals'],[/comparative|superlative|comparativo|superlativo/,'comparatives'],[/article|art[ií]culo/,'articles'],[/gerund|infinitive|gerundio|infinitivo/,'gerund'],[/relative|relativo/,'relative'],[/used to/,'used to'],[/\bwish\b/,'wish']];
+const HELP='**Ejercicios de inglés que sé resolver** (escríbelos tal cual):\n- **Discurso indirecto:** `Reported speech: She said, "I am tired."` · preguntas · órdenes · peticiones · Let\'s…\n- **Imperativos:** `Make it negative: Open the door.` · `polite: Close the window` · `Is "Sit down" an imperative?`\n- **Completar huecos:** `She ___ (go) to school every day.` · `If I ___ (have) time, I ___ (go).` · con opciones `a) go b) goes`\n- **Preguntas incompletas:** `___ do you live?` · `___ many apples are there?` · `Where ___ you from?`\n- **Question tags:** `She is nice, ___?`\n- **Transformar:** negativa / interrogativa / pasiva · **Ordenar:** `you / where / live / do`\n- **Formas:** `past participle of write` · `comparative of beautiful` · `plural of child` · `what tense is: She has been working?`\n- **Corregir:** `Correct the mistake: He don\'t like coffee.`\n- **Teoría:** `explain present perfect`, `reported speech`, `conditionals`…';
+/* ---- enrutador ---- */
+function tg(s){let m=s.match(/[“"]([^”"]+)[”"]/);if(m)return m[1].trim();m=s.match(/:\s*([^]+)$/);if(m)return m[1].trim();return s.replace(/^\s*(?:please\s*)?(?:make|put|change|turn|write|rewrite|convert|transform|ponlo|pon|pasa|convierte|cambia|escribe)\b[^.?!]*?\b(?:negative|affirmative|positive|interrogative|question|passive|polite|imperative|negativo|afirmativo|pregunta|pasiva|cortes|imperativo)\b(?:\s+(?:form|sentence|forma|oraci[oó]n))?\s*[:\-]?\s*/i,'').trim()}
+function solve(t){const s=String(t||'').trim();if(s.length<5||s.length>1800||/^\s*(\/|aprende|learn|ensena|teach)/i.test(s))return null;const l=s.toLowerCase();let r;
+ const R_=(txt,m)=>({t:txt,m:'Inglés · '+m});
+ if(/^(ayuda|help|\/?ingl[eé]s)\b.*(ingl[eé]s|english|ejercicios)|ejercicios de ingl[eé]s.*(sabes|puedes|resuelves)|qu[eé] (ejercicios|tipos) de ingl[eé]s/.test(l)&&!/[_]{2,}/.test(s))return R_(HELP,'ayuda');
+ if(/\b(direct speech|estilo directo|discurso directo|to direct)\b/i.test(l)&&!/[“"]/.test(s)&&/\b(said|asked|told)\b/i.test(s))return R_('Por ahora convierto **de directo a indirecto** (tú me das la frase con comillas). Para pasar de indirecto a directo, invierte las reglas: **was→am/is, would→will, could→can, had+participio→pasado simple, then→now, the day before→yesterday**, y cambia he/she → I y el reporte a comillas.','discurso indirecto');
+ const RV=/\b(said|says|told|tells|asked|asks|ordered|begged|replied|explained|warned|advised|suggested|exclaimed|wondered|promised)\b/i;
+ if((/[“"].+[”"]|(?:^|[\s,:])['‘].+['’]/.test(s)||/\b(reported|indirect|indirecto|estilo indirecto)\b/i.test(s)&&/:/.test(s))&&RV.test(s)&&!/\b(correct|corrige|tag)\b/i.test(l)){try{r=rs(s);if(r)return r}catch(e){}}
+ for(const[re,k]of THK)if(/\b(explain|explica|explícame|explicame|teoria|teoría|when (do|to) (i )?use|cu[aá]ndo se usa|c[oó]mo se forma|how (do (i|you) )?form|rules? (of|for)|reglas? (de|del))\b/i.test(l)&&re.test(l)&&!/_{2,}/.test(s))return R_(TH[k],'teoría');
+ if(/,\s*(_{2,}|\.{3,}|…|\[\s*\])\s*\?|\b(question tags?|tag questions?)\b/i.test(s)){const body=tg(s).split(/\n/).filter(Boolean);const out=[];for(const ln of body){const m=ln.replace(/^\s*\d+[.)]\s*/,'').match(/^(.*?)[,]?\s*(?:_{2,}|\.{3,}|…|\[\s*\])?\s*\?*\s*$/);if(!m||!m[1])continue;const x=tagFor(m[1]);if(x)out.push('**'+m[1].trim()+', '+x.tag+'**\n  '+x.why)}if(out.length)return R_(out.join('\n\n'),'question tags')}
+ if(/\b(comparative|superlative|comparativo|superlativo)\b/i.test(l)&&/\bof\b|\bde\b|\(/.test(l)){const w=(l.match(/\b(?:of|de)\s+(?:the\s+)?([a-z]+)\s*[?.!]*$/)||l.match(/\(([a-z]+)\)/)||[])[1];if(w){return R_('**'+w+'** → comparativo: **'+cmpSup(w,'cmp')+'** · superlativo: **'+cmpSup(w,'sup')+'**\n\n- 1 sílaba: *-er / the -est*; 2+ sílabas: *more / the most*; terminadas en -y: *-ier / the -iest*; irregulares: good→better→best, bad→worse→worst.','comparativos')}}
+ if(/\b(plural of|plural de|make .* plural|pon en plural|in plural)\b/i.test(l)){const ws=(s.match(/(?:of|de|plural)\s*:?\s*["“]?([a-zA-Z]+)["”]?\s*[?.!]*$/i)||[])[1];if(ws)return R_('**'+ws+'** → **'+plural(ws)+'**\n\n- Regla: +s; -s/-x/-z/-ch/-sh → +es; consonante+y → -ies; irregulares: man→men, child→children, foot→feet, person→people.','plurales')}
+ const vm=l.match(/\b(past participle|participio|past simple|past tense|pasado|gerund|gerundio|-ing form|principal parts|forms|formas|3rd person|third person)\b.*?\b(?:of|de)\s+(?:to\s+)?["“]?([a-z]+)["”]?\s*[?.!]*$/);
+ if(vm&&(BV.has(vm[2])||P[vm[2]]||vm[2]=='be')){const v=vm[2];const f=v=='be'?'be / am-is-are / was-were / been / being':v+' / '+s3(v)+' / '+past(v)+' / '+pp(v)+' / '+ing(v);return R_('**'+v+'** (base / 3.ª persona / pasado / participio / -ing):\n\n**'+f+'**'+(P[v]?'\n\n- «'+v+'» es **irregular**.':'\n\n- «'+v+'» es **regular**: pasado y participio en -ed.'),'formas verbales')}
+ if(/\b(what|which|identify|name)\s+tense\b|qu[eé] tiempo verbal|cu[aá]l es el tiempo|tiempo verbal/.test(l)&&(tg(s)!==s||/["“]/.test(s))){const x=tg(s);const q=tenseId(x);return R_('**'+x+'**\n\n**'+q.r+'**'+(q.pas?' · voz pasiva':'')+'\n\n- Estructura: '+q.e+'.','tiempo verbal')}
+ if(/\b(correct|corrige|find the (mistake|error)|spot the (mistake|error)|mistake|error|incorrect|wrong)\b/i.test(l)&&!/_{2,}/.test(s)){const x=tg(s);const f=fixm(x);if(f.notes.length)return R_('**Original:** '+x+'\n\n**Corregida:** **'+f.r.replace(/^(\w)/,c=>c.toUpperCase())+'**\n\n'+f.notes.map(n=>'- '+n).join('\n'),'corrección');if(x!==s)return R_('No encontré errores con mis reglas en: *'+x+'*. Si hay uno, dime cuál sospechas.','corrección')}
+ if((/\b(order|unscramble|ordena|word order|jumbled|put the words)\b/i.test(l)||/^[^.?!]*\s\/\s[^.?!]*\s\/\s/.test(s))&&!/_{2,}/.test(s)){const u=unscramble(s);if(u)return R_('**'+u.r+'**\n\n- Orden: '+(u.kind=='pregunta'?'palabra interrogativa + auxiliar + sujeto + verbo + resto.':'sujeto + (auxiliar) + verbo + objeto + lugar + tiempo.')+' (Es una reconstrucción por reglas: si hay varias posibles, compara con tu enunciado.)','ordenar palabras')}
+ const lines=s.split(/\n+/).map(x=>x.trim()).filter(Boolean);const hasBlank=/_{2,}|…|\[\s*\]|\.{3,}/.test(s);
+ if(hasBlank){const out=[];let ok=0;const nEx=lines.filter(x=>/_{2,}|…|\[\s*\]|\.{3,}/.test(x)).length;const ansT=((lines.find(x=>/^(?:a|b|r|answer|respuesta)\s*[:.)]\s*\S/i.test(x))||(s.match(/(?:→|=>)\s*([^\n]+)$/)||[])[1]||'')+'').replace(/^(?:a|b|r|answer|respuesta)\s*[:.)]\s*/i,'');
+  for(const ln0 of lines){if(/^(?:a|b|r|answer|respuesta)\s*[:.)]\s*\S/i.test(ln0)&&!/_{2,}|…|\[\s*\]/.test(ln0))continue;let ln=ln0.replace(/^\s*(?:\d+|[a-z])[.)]\s+/i,'');if(/^[^:_]*:\s*\S/.test(ln))ln=ln.replace(/^[^:_]*:\s*/,'');if(/[¿¡áéíóúñ]/i.test(ln))continue;if(!/_{2,}|…|\[\s*\]|\.{3,}/.test(ln))continue;const m=mcq(ln0.replace(/^\s*\d+[.)]\s+/,''))||(lines.length==1?mcq(s):null);
+   if(m){const q=solveMcq(m);if(q&&q.hit){ok++;out.push('**'+q.hit.k+') '+q.hit.v+'** — '+q.why);continue}else if(q&&q.target){ok++;out.push('**'+q.target+'** (ninguna opción coincide exactamente) — '+q.why);continue}}
+   const clean=ln.replace(/\s*(?:→|=>)[^\n]*$/,'');const f=fillLine(clean,ansT);if(!f)continue;const done=!f.res.some(x=>x=='?');if(done)ok++;
+   out.push((nEx>1?'**'+(out.length+1)+'.** ':'')+'**'+f.sentence.replace(/§/g,'___')+'**'+(f.res.length?'  →  respuesta: `'+f.res.join('` · `')+'`':'')+(done?'':' _(no estoy seguro de un hueco; dame más contexto o las opciones)_')+(f.whys.filter(Boolean).length?'\n  - '+f.whys.filter(Boolean).join('\n  - '):''))}
+  if(out.length&&ok)return R_(out.join('\n\n')+(/\([a-z ]+\)/i.test(s)?'\n\n- Si hay marcadores de tiempo (yesterday, always, now, since…) decido el tiempo por ellos; sin marcadores uso presente simple.':''),'completar huecos');
+  if(out.length)return R_(out.join('\n\n'),'completar huecos')}
+ const mq=mcq(s);if(mq){const q=solveMcq(mq);if(q&&(q.hit||q.target))return R_('**'+(q.hit?q.hit.k+') '+q.hit.v:q.target)+'** — '+q.why,'opción múltiple')}
+ const tgt=tg(s);
+ if(/\b(imperative|imperativo|command|orden|polite|cort[eé]s|politely|request)\b/i.test(l)||(/\b(negative|negativo|affirmative|afirmativo)\b/i.test(l)&&isImp(tgt)&&tgt!==s)){const x=tgt;if(x&&x!==s||/["“]/.test(s)){const o=impOp(x);const w=/polite|cort[eé]s|request|petici/i.test(l);const isq=/\b(is|es|identify|identifica|what (kind|type)|qu[eé] tipo)\b/i.test(l);
+  if(isq&&/\b(imperative|imperativo)\b/i.test(l))return R_('**'+x+'** → '+(isImp(x)?'**Sí, es un imperativo**: va sin sujeto y con el verbo en forma base.':'**No es un imperativo**: tiene sujeto explícito.'),'imperativos');
+  if(w)return R_('**Original:** '+x+'\n\n- **Petición cortés:** '+o.pol+'\n- Otra forma: '+o.pol2+'\n\n- Could/Would you…? suaviza la orden; «please» también.','imperativos');
+  if(/\b(negative|negativo)\b/i.test(l)&&o.cur)return R_('**Original:** '+x+'\n\nYa es negativo; su forma **afirmativa** es: **'+o.aff+'**','imperativos');
+  if(/\b(negative|negativo)\b/i.test(l))return R_('**Original:** '+x+'\n\n**Negativo:** '+(o.cur?o.aff:o.neg)+'\n\n- Imperativo negativo: *Don\'t* (o *Do not*) + verbo base. En «Let\'s» → *Let\'s not*.','imperativos');
+  if(/\b(affirmative|afirmativo|positive)\b/i.test(l))return R_('**Original:** '+x+'\n\n**Afirmativo:** '+o.aff,'imperativos');
+  return R_('**Original:** '+x+'\n\n- Negativo: '+(o.cur?o.aff:o.neg)+'\n- Cortés: '+o.pol+'\n- Afirmativo: '+o.aff,'imperativos')}}
+ if(/\b(negative|negativo|interrogative|question|pregunta|passive|pasiva|affirmative|afirmativo)\b/i.test(l)&&tgt!==s&&tgt.length>5){
+  if(/\b(passive|pasiva)\b/i.test(l)){const p=passive(tgt);if(p)return R_('**Original:** '+tgt+'\n\n**Pasiva:** '+p.r+'\n\n- El objeto pasa a sujeto, el verbo pasa a *be + participio* (mismo tiempo) y el sujeto original va con *by*.','pasiva')}
+  if(/\b(negative|negativo|affirmative|afirmativo)\b/i.test(l)){if(isImp(tgt)&&!/^(i|you|he|she|it|we|they)\b/i.test(tgt)){const o=impOp(tgt);return R_('**'+(o.cur?o.aff:o.neg)+'**','imperativos')}const n=negate(tgt);if(n)return R_('**Original:** '+tgt+'\n\n**'+(n.aff?'Afirmativa':'Negativa')+':** '+n.r+'\n\n- Con *be*, modales y have: añade *not* tras el auxiliar. Con otros verbos: *do/does/did + not + verbo base*.','transformación')}
+  if(/\b(interrogative|question|pregunta)\b/i.test(l)){const q=question(tgt);if(q)return R_('**Original:** '+tgt+'\n\n**Pregunta:** '+q+'\n\n- Se invierte el auxiliar y el sujeto; si no hay auxiliar se usa *do/does/did*.','transformación')}}
+ return null}
+G.ENG={solve,rs,tagFor,fillLine,negate,question,passive,tenseId,fixm,unscramble,impOp,HELP,cmpSup,plural};
+})(typeof window!=='undefined'?window:globalThis);
+
+</script>
+<script>
+/* Noryx · hooks del motor de inglés */
+(function(){
+ const _brain=brain;
+ brain=async function(t,s){let r=null;try{if(!(typeof ctx!=='undefined'&&ctx.pend))r=window.ENG&&ENG.solve(t)}catch(e){r=null}return r||_brain(t,s)};
+ const _send=send;
+ send=async function(t){if(/^\s*\/ingl[eé]s\s*$/i.test(t||''))t='ayuda ejercicios de inglés';return _send(t)};
+})();
+</script>
+<script>
+/* Noryx · mejoras de interfaz */
+function forgetCreator(){if(sess&&String(sess.email).toLowerCase()==CREATOR_EMAIL.toLowerCase()){const t=sess.access;sess=null;S.set('nx-sess',null);paintAcc();if(t)aPost('logout?scope=local',{},t).catch(()=>{})}}
+(function(){
+ const fd=$('#feed'),sd=$('#sdn'),inp0=$('#in');
+ const chk=()=>{sd.hidden=fd.scrollHeight-fd.scrollTop-fd.clientHeight<160};
+ fd.addEventListener('scroll',chk,{passive:true});
+ new MutationObserver(chk).observe(fd,{childList:true,subtree:true});
+ sd.onclick=()=>fd.scrollTo({top:fd.scrollHeight,behavior:'smooth'});
+ $('#new').title='Nueva conversación (Ctrl+K)';
+ addEventListener('keydown',e=>{
+  const k=e.key.toLowerCase();
+  if((e.ctrlKey||e.metaKey)&&k=='k'){e.preventDefault();$('#new').click()}
+  else if(e.key=='/'&&!e.ctrlKey&&!e.metaKey&&!/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)&&!inp0.hidden)inp0.focus();
+ });
+ setInterval(()=>{if(creator&&sess)ensureTok().catch(()=>{})},3e5);
+})();
+</script>
+<script>
+/* Noryx · ajustes de apariencia extra */
+(function(){
+ const R0=document.documentElement,sec=document.querySelector('#set .spn[data-p="gen"]');
+ const P=[['bg','Fondo','Aurora con luces suaves, liso, o negro profundo para pantallas OLED.',[['aurora','Aurora'],['plain','Liso'],['amoled','Negro']],'aurora'],
+  ['w','Ancho del chat','Qué tan ancha es la columna de mensajes.',[['n','Estrecho'],['m','Normal'],['l','Amplio']],'m'],
+  ['mo','Animaciones','Apágalas si tu equipo va lento o prefieres calma.',[['on','Sí'],['off','No']],'on']];
+ const get=(k,d)=>{const v=S.get('nx-'+k,null);return P.find(x=>x[0]==k)[3].some(o=>o[0]==v)?v:d};
+ const set=(k,v,d)=>{if(v==d){delete R0.dataset[k];S.set('nx-'+k,null)}else{R0.dataset[k]=v;S.set('nx-'+k,v)}};
+ P.forEach(([k,,,,d])=>{const v=get(k,d);if(v!=d)R0.dataset[k]=v});
+ const ctl={};
+ P.forEach(([k,l,desc])=>{const c=E('div','sc');ctl[k]=c;sec.append(row(l,desc,c))});
+ sec.append(row('Restablecer apariencia','Vuelve al tema, color, fuente y tamaño originales.',btn('Restablecer',()=>{
+  ['font','fs','acc'].forEach(n=>setPref(n,DEF[n]));setTheme('system');P.forEach(([k,,,,d])=>set(k,d,d));paintGeneral();toast('Apariencia restablecida')},'dng')));
+ const paint=()=>P.forEach(([k,,,o,d])=>seg(ctl[k],o,R0.dataset[k]||d,v=>{set(k,v,d);paint()}));
+ const _pg=paintGeneral;paintGeneral=function(){_pg();paint()};
+ paint();
 })();
 </script>
 </body>
