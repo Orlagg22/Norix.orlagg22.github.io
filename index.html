@@ -470,6 +470,25 @@ html.nx-tt,html.nx-tt *{transition:background-color .3s,color .3s,border-color .
 .sk i::after{content:"";position:absolute;right:6px;top:6px;width:10px;height:10px;border-radius:50%;background:var(--sa)}
 .sk:hover{border-color:var(--sa)}.sk[aria-pressed="true"]{border-color:var(--sa);box-shadow:0 0 0 3px color-mix(in srgb,var(--sa) 25%,transparent)}
 </style>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Noryx"><meta name="apple-mobile-web-app-status-bar-style" content="default">
+<style id="nx-app-css">
+html,body{overscroll-behavior:none}#feed{overscroll-behavior:contain}
+@media (min-width:761px){#app{grid-template-columns:var(--sw,272px) 1fr}:root[data-sb="off"] #app,:root[data-fo="on"] #app{grid-template-columns:1fr}:root[data-fo="on"] #side{display:none}}
+#sbr{position:absolute;top:0;bottom:0;left:calc(var(--sw,272px) - 3px);width:6px;cursor:col-resize;z-index:5;touch-action:none}
+#sbr:hover,#sbr.on{background:color-mix(in srgb,var(--acc) 45%,transparent)}
+@media (max-width:760px){#sbr{display:none}}:root[data-sb="off"] #sbr,:root[data-fo="on"] #sbr{display:none}
+:root[data-fo="on"] header,:root[data-fo="on"] .note{display:none}
+#fob{display:none;position:fixed;top:calc(8px + env(safe-area-inset-top,0px));right:10px;z-index:12;border:1px solid var(--line);background:color-mix(in srgb,var(--panel) 85%,transparent);border-radius:999px;padding:5px 13px;font-size:12.5px;color:var(--mute);opacity:.75}
+#fob:hover{opacity:1;color:var(--ink)}:root[data-fo="on"] #fob{display:block}
+:root[data-tt="l"] .ib{width:48px;height:48px}:root[data-tt="l"] .hb{width:44px;height:44px}
+:root[data-tt="l"] .ci,:root[data-tt="l"] #side button,:root[data-tt="l"] .seg button,:root[data-tt="l"] .sbt,:root[data-tt="l"] .chips button,:root[data-tt="l"] .tg{min-height:46px}
+:root[data-tt="l"] .tg{min-width:56px}:root[data-tt="l"] .tg::after{top:10px}
+@media (max-height:520px) and (orientation:landscape){.hero canvas{height:96px}.hero{padding-top:1vh}.hero h1{font-size:38px;margin:2px 0 6px}.hero p{margin-bottom:10px}.chips button{flex:0 1 auto!important}header{padding:6px 14px}}
+</style>
 </head>
 <body>
 <div id="app">
@@ -5422,6 +5441,92 @@ function forgetCreator(){if(sess&&String(sess.email).toLowerCase()==CREATOR_EMAI
   if(e.key=='Escape'&&!kb.hidden){kb.hidden=true;return}
   if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()=='b'){e.preventDefault();tog()}
   else if(e.key=='?'&&!typing)kb.hidden=!kb.hidden});
+})();
+</script>
+<script>
+/* Noryx · app instalable (PWA) y opciones de dispositivo */
+(function(){
+const R=document.documentElement,E=(t,c,x)=>{const e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e};
+const get=(k,d)=>{try{const v=S.get(k,null);return v==null?d:v}catch(e){return d}},put=(k,v)=>{try{S.set(k,v)}catch(e){}};
+const nav=document.querySelector('#set .snav'),host=document.querySelector('#set .spanes');if(!nav||!host)return;
+const D={ent:'enter',tt:'n',fo:'off',hap:'on',kbc:'off',wl:'on'},P={};Object.keys(D).forEach(k=>P[k]=get('nx-'+k,D[k]));
+const inp=$('#in');let dip=null,reg=null,wl=null;
+const std=()=>matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;
+const ios=/iphone|ipad|ipod/i.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+const fsOK=!!R.requestFullscreen;
+/* barra lateral con ancho ajustable (PC y tablet) */
+const sbr=E('div');sbr.id='sbr';sbr.title='Arrastra para cambiar el ancho · doble toque para restablecer';$('#app').append(sbr);
+const sw0=get('nx-sw',null);if(sw0)R.style.setProperty('--sw',sw0+'px');
+const setW=(w,keep)=>{w=Math.max(220,Math.min(420,Math.round(w)));if(w==272&&keep)R.style.removeProperty('--sw');else R.style.setProperty('--sw',w+'px');put('nx-sw',w==272?null:w)};
+sbr.onpointerdown=e=>{sbr.setPointerCapture(e.pointerId);sbr.classList.add('on');document.body.style.userSelect='none'};
+sbr.onpointermove=e=>{if(sbr.classList.contains('on'))R.style.setProperty('--sw',Math.max(220,Math.min(420,e.clientX))+'px')};
+sbr.onpointerup=()=>{sbr.classList.remove('on');document.body.style.userSelect='';setW(parseInt(R.style.getPropertyValue('--sw'))||272,0);if(!sec.hidden)render()};
+sbr.ondblclick=()=>{R.style.removeProperty('--sw');put('nx-sw',null);if(!sec.hidden)render()};
+/* modo enfoque */
+const fob=E('button','','Salir del modo enfoque');fob.id='fob';fob.type='button';fob.onclick=()=>setP('fo','off');document.body.append(fob);
+/* aplicar opciones */
+function apply(){P.tt=='l'?R.dataset.tt='l':delete R.dataset.tt;P.fo=='on'?R.dataset.fo='on':delete R.dataset.fo;wake()}
+function setP(k,v){P[k]=v;put('nx-'+k,v==D[k]?null:v);apply();if(!sec.hidden)render()}
+/* Enter envía, o Ctrl/⌘+Enter envía */
+inp.addEventListener('keydown',e=>{if(e.key!=='Enter'||e.isComposing||P.ent!=='ctrl')return;e.stopImmediatePropagation();if(e.ctrlKey||e.metaKey){e.preventDefault();send(inp.value)}},true);
+/* cerrar el teclado al enviar (móvil) */
+const _s=send;send=async function(t){const r=_s(t);if(P.kbc=='on'&&matchMedia('(pointer:coarse)').matches)inp.blur();return r};
+/* vibración */
+try{const v0=navigator.vibrate&&navigator.vibrate.bind(navigator);if(v0)navigator.vibrate=p=>P.hap=='off'?false:v0(p)}catch(e){}
+/* pantalla encendida durante la voz */
+const vis=()=>['#vl','#jv'].some(s=>{const n=$(s);return n&&!n.hidden});
+async function wake(){try{if(P.wl=='on'&&vis()&&!document.hidden&&navigator.wakeLock&&!wl){wl=await navigator.wakeLock.request('screen');wl.addEventListener('release',()=>{wl=null})}else if((!vis()||P.wl!='on')&&wl){await wl.release();wl=null}}catch(e){}}
+['#vl','#jv'].forEach(s=>{const n=$(s);if(n)new MutationObserver(wake).observe(n,{attributes:true,attributeFilter:['hidden']})});
+document.addEventListener('visibilitychange',wake);
+/* pantalla completa */
+const fs=()=>document.fullscreenElement?document.exitFullscreen():R.requestFullscreen().catch(()=>toast('Tu navegador no permite pantalla completa'));
+document.addEventListener('fullscreenchange',()=>{if(!sec.hidden)render()});
+/* instalar */
+addEventListener('beforeinstallprompt',e=>{e.preventDefault();dip=e;if(!sec.hidden)render()});
+addEventListener('appinstalled',()=>{dip=null;toast('Noryx instalada');if(!sec.hidden)render()});
+const install=()=>{if(!dip)return;dip.prompt();dip.userChoice.then(()=>{dip=null;render()})};
+const insText=()=>std()?'Ya usas Noryx como aplicación instalada.':location.protocol=='file:'?'Para instalarla, publica Noryx en una dirección https:// y ábrela desde ahí.':dip?'Se agrega a tu pantalla de inicio y abre sin la barra del navegador.':ios?'En Safari toca Compartir y elige «Añadir a pantalla de inicio».':'Abre el menú del navegador y elige «Instalar aplicación» o «Añadir a pantalla de inicio».';
+let had=!!(navigator.serviceWorker&&navigator.serviceWorker.controller);
+if('serviceWorker' in navigator&&/^https?:$/.test(location.protocol)){
+ navigator.serviceWorker.register('sw.js').then(r=>{reg=r;if(!sec.hidden)render()}).catch(()=>{});
+ navigator.serviceWorker.addEventListener('controllerchange',()=>{if(had)toast('Noryx se actualizó. Recarga para ver lo nuevo.',4000);had=true;if(!sec.hidden)render()})}
+async function upd(){if(!reg){toast('Las actualizaciones solo funcionan con la app publicada en https://');return}try{await reg.update();toast('Revisado. Si hay versión nueva, se aplica al reabrir.')}catch(e){toast('No pude buscar actualizaciones')}}
+/* panel «App y dispositivo» en Ajustes */
+const sec=E('section','spn');sec.dataset.p='app';sec.hidden=true;host.append(sec);
+const nb=E('button');nb.type='button';nb.dataset.p='app';
+nb.innerHTML='<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="7" y="2" width="10" height="20" rx="2"/><path d="M11 18h2"/></svg>App y dispositivo';
+nav.insertBefore(nb,nav.querySelector('[data-p="ace"]'));
+const row=(l,d,c)=>{const r=E('div','srow'),s=E('div','sl');s.append(E('b','',l));if(d)s.append(E('small','',d));r.append(s);if(c)r.append(c);return r};
+const btn=(l,fn,cls)=>{const b=E('button','sbt'+(cls?' '+cls:''),l);b.type='button';b.onclick=fn;return b};
+const seg=(items,cur,fn)=>{const g=E('div','seg');items.forEach(([v,l])=>{const b=E('button',String(v)==String(cur)?'on':'',l);b.type='button';b.setAttribute('aria-pressed',String(String(v)==String(cur)));b.onclick=()=>fn(v);g.append(b)});return g};
+const tgl=(on,fn)=>{const b=E('button','tg');b.type='button';b.setAttribute('role','switch');b.setAttribute('aria-checked',String(on));b.onclick=()=>fn(!on);return b};
+function render(){
+ sec.replaceChildren();const h=t=>sec.append(E('div','sgh',t));
+ h('Instalar');
+ const ib=btn('Instalar',install,'pri');ib.hidden=!dip||std();
+ sec.append(row('Instalar Noryx como app',insText(),ib));
+ const sc=navigator.serviceWorker&&navigator.serviceWorker.controller;
+ sec.append(row('Uso sin conexión',sc?'Lista: Noryx abre aunque no tengas internet. La nube y las imágenes sí la necesitan.':reg?'Preparándose. Vuelve a abrir Noryx una vez más.':'Se activa cuando Noryx está publicada en https://.',btn('Buscar actualización',upd)));
+ h('Pantalla');
+ if(fsOK)sec.append(row('Pantalla completa','Quita la barra del navegador. Ideal en PC y tablet.',btn(document.fullscreenElement?'Salir':'Activar',fs)));
+ sec.append(row('Modo enfoque','Oculta barra lateral y encabezado para dejar solo la conversación. Atajo: Alt + Z.',tgl(P.fo=='on',v=>setP('fo',v?'on':'off'))));
+ sec.append(row('Ancho de la barra lateral','También puedes arrastrar su borde en PC. Doble clic para restablecer.',seg([[232,'Estrecha'],[272,'Normal'],[320,'Ancha'],[380,'Muy ancha']],parseInt(R.style.getPropertyValue('--sw'))||272,v=>{setW(v,1);render()})));
+ h('Escritura y toque');
+ sec.append(row('Enviar mensajes con','Con Ctrl + Enter el Enter solo baja de línea, útil para textos largos.',seg([['enter','Enter'],['ctrl','Ctrl + Enter']],P.ent,v=>setP('ent',v))));
+ sec.append(row('Botones táctiles','Más grandes y fáciles de pulsar en celular y tablet.',seg([['n','Normales'],['l','Grandes']],P.tt,v=>setP('tt',v))));
+ sec.append(row('Cerrar el teclado al enviar','En celular, libera la pantalla para leer la respuesta.',tgl(P.kbc=='on',v=>setP('kbc',v?'on':'off'))));
+ sec.append(row('Vibración al enviar','Una vibración corta al mandar un mensaje.',tgl(P.hap!='off',v=>setP('hap',v?'on':'off'))));
+ sec.append(row('Pantalla encendida en modo voz','Evita que el celular se apague mientras hablas con Noryx.',tgl(P.wl!='off',v=>setP('wl',v?'on':'off'))));
+ sec.append(row('Restablecer estas opciones','Vuelve a los valores originales de este panel.',btn('Restablecer',()=>{Object.keys(D).forEach(k=>{P[k]=D[k];put('nx-'+k,null)});R.style.removeProperty('--sw');put('nx-sw',null);apply();render();toast('Opciones restablecidas')},'dng')))}
+nav.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const on=b==nb;sec.hidden=!on;if(on){nav.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x==nb));host.querySelectorAll('.spn').forEach(s=>{if(s!=sec)s.hidden=true});render()}});
+/* atajos y accesos directos de la app instalada */
+addEventListener('keydown',e=>{if(e.altKey&&e.key.toLowerCase()=='z'){e.preventDefault();setP('fo',P.fo=='on'?'off':'on')}});
+setTimeout(()=>{const u=new URL(location.href),p=u.searchParams;
+ if(p.get('new')=='1')$('#new').click();
+ const t=['title','text','url'].map(k=>p.get(k)).filter(Boolean).join('\n');
+ if(t){inp.value=t;if(typeof fit=='function')fit();inp.focus()}
+ if([...p.keys()].length)history.replaceState(null,'',u.pathname)},500);
+apply();
 })();
 </script>
 </body>
