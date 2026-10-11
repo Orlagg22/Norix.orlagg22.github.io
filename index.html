@@ -489,6 +489,21 @@ html,body{overscroll-behavior:none}#feed{overscroll-behavior:contain}
 :root[data-tt="l"] .tg{min-width:56px}:root[data-tt="l"] .tg::after{top:10px}
 @media (max-height:520px) and (orientation:landscape){.hero canvas{height:96px}.hero{padding-top:1vh}.hero h1{font-size:38px;margin:2px 0 6px}.hero p{margin-bottom:10px}.chips button{flex:0 1 auto!important}header{padding:6px 14px}}
 </style>
+<style id="nx-modes-css">
+:root[data-rd="on"]{--mw:640px}
+:root[data-rd="on"] .msg.a .body{font-family:Georgia,'Iowan Old Style',serif;line-height:1.85;font-size:1.06em}
+:root[data-rd="on"] .av,:root[data-rd="on"] .msg.a .meta{display:none}
+:root[data-rd="on"] .msg.u .body{background:transparent;border:0;box-shadow:none;border-left:3px solid var(--acc);border-radius:0;padding-left:12px}
+#oh{display:none}
+@media (max-width:760px){:root[data-oh="on"] #oh{display:grid;position:fixed;left:12px;bottom:calc(92px + env(safe-area-inset-bottom,0px));width:48px;height:48px;border-radius:50%;place-items:center;background:var(--acc);color:var(--bg);z-index:12;box-shadow:0 10px 28px -8px color-mix(in srgb,var(--acc) 70%,#000)}
+ header{transition:margin-top .25s}:root[data-ah="on"] header.hid{margin-top:calc(-1 * var(--hh,60px))}}
+#qa{position:fixed;inset:0;z-index:58;display:grid;align-items:start;justify-items:center;padding-top:12vh;background:rgba(6,9,18,.55);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}#qa[hidden]{display:none}
+#qa .card{width:min(520px,94vw);background:var(--panel);border:1px solid var(--line);border-radius:20px;box-shadow:var(--sh);overflow:hidden;animation:nxpop .2s ease-out}
+#qa input{width:100%;border:0;border-bottom:1px solid var(--line);background:none;color:var(--ink);padding:15px 18px;font:inherit;font-size:16px;outline:0}
+#qa .ls{max-height:50vh;overflow:auto;padding:6px;display:flex;flex-direction:column;gap:2px}
+#qa .ls button{text-align:left;padding:10px 12px;border-radius:12px;display:flex;justify-content:space-between;gap:12px}
+#qa .ls button.on,#qa .ls button:hover{background:color-mix(in srgb,var(--acc) 15%,transparent)}#qa .ls small{color:var(--mute)}
+</style>
 </head>
 <body>
 <div id="app">
@@ -5526,6 +5541,55 @@ setTimeout(()=>{const u=new URL(location.href),p=u.searchParams;
  const t=['title','text','url'].map(k=>p.get(k)).filter(Boolean).join('\n');
  if(t){inp.value=t;if(typeof fit=='function')fit();inp.focus()}
  if([...p.keys()].length)history.replaceState(null,'',u.pathname)},500);
+apply();
+})();
+</script>
+<script>
+/* Noryx · paleta de acciones y modos nuevos */
+(function(){
+const R=document.documentElement,E=(t,c,x)=>{const e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e};
+const get=(k,d)=>{try{const v=S.get(k,null);return v==null?d:v}catch(e){return d}},put=(k,v)=>{try{S.set(k,v)}catch(e){}};
+const D={rd:'off',an:'off',oh:'off',ah:'off'},P={};Object.keys(D).forEach(k=>P[k]=get('nx-'+k,D[k]));
+const nav=document.querySelector('#set .snav'),host=document.querySelector('#set .spanes'),sec=E('section','spn');sec.dataset.p='modos';sec.hidden=true;
+function apply(){['rd','oh','ah'].forEach(k=>P[k]=='on'?R.dataset[k]='on':delete R.dataset[k]);night()}
+function setP(k,v){P[k]=v;put('nx-'+k,v==D[k]?null:v);apply();if(!sec.hidden)render()}
+/* modo noche automático: oscuro de 7 pm a 7 am */
+function night(){if(P.an!='on'||R.dataset.skin)return;const h=new Date().getHours(),t=h>=19||h<7?'dark':'light';if(R.dataset.theme!=t){R.dataset.theme=t;put('nx-theme',t)}}
+setInterval(night,6e4);
+/* botón de una mano: abre la barra lateral */
+const oh=E('button');oh.id='oh';oh.type='button';oh.setAttribute('aria-label','Abrir menú');oh.innerHTML='<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h10"/></svg>';oh.onclick=()=>$('#sbt').click();document.body.append(oh);
+/* encabezado inteligente: se oculta al bajar, vuelve al subir */
+const fd=$('#feed'),hd=$('header');let ly=0;
+fd.addEventListener('scroll',()=>{if(P.ah!='on'||innerWidth>760)return;const y=fd.scrollTop;hd.style.setProperty('--hh',hd.offsetHeight+'px');hd.classList.toggle('hid',y>ly&&y>90);ly=y},{passive:true});
+/* paleta de acciones */
+const R2=document.createElement('div');R2.id='qa';R2.hidden=true;R2.innerHTML='<div class="card" role="dialog" aria-label="Acciones rápidas"><input placeholder="Busca una acción…" aria-label="Buscar acción" autocomplete="off"><div class="ls"></div></div>';document.body.append(R2);
+const qi=R2.querySelector('input'),ql=R2.querySelector('.ls');let items=[],sel=0;
+const clk=s=>()=>{const e=$(s);if(e)e.click()};
+const key=(k,o)=>()=>dispatchEvent(new KeyboardEvent('keydown',Object.assign({key:k,bubbles:true},o)));
+const fsz=d=>()=>{const o=['s','m','l','xl'],c=Math.max(0,o.indexOf(R.dataset.fs||'m')),n=o[Math.max(0,Math.min(3,c+d))];n=='m'?delete R.dataset.fs:R.dataset.fs=n;put('nx-fs',n=='m'?null:n);toast('Texto: '+({s:'pequeño',m:'normal',l:'grande',xl:'enorme'})[n])};
+const shr=()=>{const c=conv();if(!c||!c.msgs.length)return toast('No hay nada que compartir');const t=c.msgs.map(m=>(m.r=='u'?'Tú: ':'Noryx: ')+m.t).join('\n\n');navigator.share?navigator.share({title:'Conversación con Noryx',text:t}).catch(()=>{}):navigator.clipboard.writeText(t).then(()=>toast('Conversación copiada'))};
+const ACT=[['Nueva conversación','Ctrl+K',clk('#new'),'#new'],['Ajustes','Ctrl+,',clk('#prof'),'#prof'],['Mensajes','',clk('#mgb'),'#mgb'],['Voz en vivo','',clk('#vlb'),'#vlb'],['Modo Noryx','',clk('#jvb'),'#jvb'],['Imágenes','',clk('#imb'),'#imb'],['Ejercicios','',clk('#exb'),'#exb'],['Exportar conversación','',clk('#exp'),'#exp'],['Compartir conversación','',shr],['Copiar conversación','',clk('#cpc'),'#cpc'],['Cambiar tema claro u oscuro','',clk('#thm'),'#thm'],['Siguiente modo de color','Alt+T',key('t',{altKey:true})],['Modo enfoque','Alt+Z',key('z',{altKey:true})],['Modo lectura','',()=>setP('rd',P.rd=='on'?'off':'on')],['Barra lateral','Ctrl+B',clk('#sbt')],['Teclado matemático','',clk('#fx')],['Texto más grande','',fsz(1)],['Texto más pequeño','',fsz(-1)],['Pantalla completa','',()=>document.fullscreenElement?document.exitFullscreen():R.requestFullscreen&&R.requestFullscreen().catch(()=>{})],['Atajos de teclado','?',key('?')]];
+const ok=a=>!a[3]||(()=>{const e=$(a[3]);return e&&!e.closest('[hidden]')})();
+function list(){const q=qi.value.trim().toLowerCase();items=ACT.filter(a=>ok(a)&&a[0].toLowerCase().includes(q));sel=0;ql.replaceChildren();items.forEach((a,i)=>{const b=E('button',i?'':'on');b.type='button';b.append(E('span','',a[0]),E('small','',a[1]));b.onclick=()=>run(a);ql.append(b)});if(!items.length)ql.append(E('div','',''))}
+function run(a){close();setTimeout(a[2],60)}
+function open(){R2.hidden=false;qi.value='';list();qi.focus()}function close(){R2.hidden=true}
+const mark=()=>[...ql.children].forEach((b,i)=>{b.classList.toggle('on',i==sel);if(i==sel)b.scrollIntoView({block:'nearest'})});
+qi.addEventListener('input',list);
+qi.addEventListener('keydown',e=>{if(e.key=='ArrowDown'){e.preventDefault();sel=Math.min(items.length-1,sel+1);mark()}else if(e.key=='ArrowUp'){e.preventDefault();sel=Math.max(0,sel-1);mark()}else if(e.key=='Enter'&&items[sel]){e.preventDefault();run(items[sel])}else if(e.key=='Escape'){e.stopPropagation();close()}});
+R2.onclick=e=>{if(e.target==R2)close()};
+addEventListener('keydown',e=>{if(e.altKey&&e.key.toLowerCase()=='k'){e.preventDefault();R2.hidden?open():close()}});
+const hb=E('button','hb');hb.type='button';hb.title='Acciones rápidas (Alt+K)';hb.setAttribute('aria-label','Acciones rápidas');hb.innerHTML='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg>';hb.onclick=open;hd.insertBefore(hb,$('#chip'));
+/* panel «Modos» en Ajustes */
+if(nav&&host){host.append(sec);const nb=E('button');nb.type='button';nb.dataset.p='modos';nb.innerHTML='<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg>Modos';nav.insertBefore(nb,nav.querySelector('[data-p="ace"]'));
+ const row=(l,d,c)=>{const r=E('div','srow'),x=E('div','sl');x.append(E('b','',l));if(d)x.append(E('small','',d));r.append(x);if(c)r.append(c);return r};
+ const tgl=(k,fn)=>{const b=E('button','tg');b.type='button';b.setAttribute('role','switch');b.setAttribute('aria-checked',String(P[k]=='on'));b.onclick=()=>fn?fn(k):setP(k,P[k]=='on'?'off':'on');return b};
+ function render(){sec.replaceChildren();
+  sec.append(row('Acciones rápidas','Busca y lanza cualquier función desde el teclado (Alt + K) o con el rayo del encabezado.',(()=>{const b=E('button','sbt pri','Abrir');b.type='button';b.onclick=()=>{$('#setx').click();setTimeout(open,80)};return b})()));
+  sec.append(row('Modo lectura','Texto tipo libro, columna estrecha y sin adornos para leer respuestas largas.',tgl('rd')));
+  sec.append(row('Modo noche automático','Oscuro de 7 pm a 7 am y claro el resto del día.',tgl('an')));
+  sec.append(row('Modo una mano','En celular, agrega un botón de menú abajo a la izquierda, al alcance del pulgar.',tgl('oh')));
+  sec.append(row('Encabezado inteligente','En celular, se esconde al bajar y reaparece al subir para ganar espacio.',tgl('ah')))}
+ nav.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const on=b==nb;sec.hidden=!on;if(on){nav.querySelectorAll('button').forEach(x=>x.classList.toggle('on',x==nb));host.querySelectorAll('.spn').forEach(s=>{if(s!=sec)s.hidden=true});render()}})}
 apply();
 })();
 </script>
