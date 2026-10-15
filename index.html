@@ -1750,7 +1750,7 @@ const TOP={},ctx={q:null,more:[]};TOP_RAW.forEach(r=>{const[k,p,a]=r.split('@@')
 const QP=/^(que (?:es |son |significa |fue |fueron )?|como |por que |cual |cuales |quien |quienes |cuanto |cuantos |donde |cuando |what |how |why |who |hablame |explicame |cuentame |dime |datos |informacion |tipos |receta |consejos |recomiendame |reglas |beneficios |mejores |historia |causas )/;
 Object.keys(DATA).filter(k=>/^(x_|y_|z)/.test(k)).forEach(k=>{const ps=DATA[k].split('|'),n0=norm(ps[0]);let c=n0.replace(QP,'').replace(/^(que |el |la |los |las |un |una |de |del )+/,'').trim();if(toks(c).length<1||toks(c).length>4)return;
  DATA[k]=ps.concat([c,'explicame '+c,'como funciona '+c,'quiero saber de '+c,'por que '+c,'dime algo sobre '+c]).join('|')});
-const PRE=/^(que es|que son|quien es|quien fue|quien era|quienes fueron|hablame de|hablame sobre|dime sobre|cuentame sobre|explicame|que significa|what is|what are|who is|who was|tell me about|explain|define)\s+(el |la |los |las |un |una |a |an |the )?/;
+const PRE=/^(que es|que son|quien es|quien fue|quien era|quienes fueron|hablame de|hablame sobre|dime sobre|cuentame sobre|explicame|que significa|what is|what are|who is|who was|tell me about|explain|define|cual es|cual fue|cuales son|cuales fueron)\s+(el |la |los |las |un |una |a |an |the )?/;
 const ints=Object.keys(DATA),ex=[],vocab={};let V=0;
 ints.forEach((k,c)=>DATA[k].split('|').forEach(p=>{const t=toks(p);t.forEach(w=>{if(!(w in vocab))vocab[w]=V++});ex.push([t.map(w=>vocab[w]),c])}));
 let NR=false;const NB=65536,D=256,H=448,C=ints.length,PARAMS=NB*D+D*H+H+H*C+C,PMS=(PARAMS/1e6).toFixed(2);let ACC=95;let sd=7;const rnd=()=>(sd=(sd*16807)%2147483647)/2147483647-.5;
@@ -2493,8 +2493,12 @@ async function maestro(t){
  const c=conv(),h=((c&&c.msgs)||[]).slice(-9,-1).map(m=>({role:m.r=='u'?'user':'assistant',content:m.t.slice(0,600)}));
  return ask([{role:'system',content:SYS+(mem.name?' El usuario se llama '+mem.name+'.':'')},...h,{role:'user',content:t}])}
 function learn(q,a){if(toks(q).length<3||a.length>700||/^y\s/i.test(q.trim()))return;const k=q.replace(/[?!¿¡.]+$/g,'').trim(),x=mem.taught.find(z=>z.q.toLowerCase()==k.toLowerCase());if(x){if(x.auto)x.a=a}else mem.taught.push({q:k,a,auto:1});if(mem.taught.length>1000){const i=mem.taught.findIndex(z=>z.auto);mem.taught.splice(i<0?0:i,1)}save()}
+let _lastMa=null;
 async function askOpen(t,q,en){
- let note='';if(MAESTRO){const r=await maestro(t),ks=wkeys(t);if(r.t&&(!ks.length||wcov(ks,r.t)>=.34)){learn(t,r.t);return{t:r.t,m:'Maestro externo · aprendido'}}note=r.t?'El maestro externo respondió algo que no corresponde a tu pregunta y lo descarté. ':r.err=='rate'?'El maestro externo está saturado ahora mismo. ':'No pude contactar al maestro externo. '}
+ let note='';if(MAESTRO){const r=await maestro(t),ks=wkeys(t),rt=r.t?String(r.t).trim():'',kq=t.toLowerCase(),rep=!!(rt&&_lastMa&&_lastMa.t===rt&&_lastMa.q!==kq);
+  if(rt&&!rep&&(!ks.length||wcov(ks,rt)>=.34)){_lastMa={q:kq,t:rt};learn(t,r.t);return{t:r.t,m:'Maestro externo · aprendido'}}
+  if(rt)_lastMa={q:kq,t:rt};
+  note=rt?(rep?'El maestro externo repitió una respuesta anterior que no corresponde a esta pregunta y la descarté. ':'El maestro externo respondió algo que no corresponde a tu pregunta y lo descarté. '):r.err=='rate'?'El maestro externo está saturado ahora mismo. ':'No pude contactar al maestro externo. '}
  if(q.length>2){const w=await wiki(q,en);if(w)return{t:note?note+'Esto encontré en Wikipedia:\n\n'+w:w,m:'Wikipedia'}}
  return note?{t:note+'No encontré una fuente que responda a tu pregunta. Puedes reformularla o enseñármela con `aprende: pregunta = respuesta`.',m:'Sin respuesta'}:null}
 const grp=k=>/^y_(select|join|pk|fk|nosql|index|norm|acid|mongo|pg|redis|insert)$/.test(k)?'db':/^(y_(egipto|grecia|medieval|renac|conquista|vikingos|inca|napoleon|muro|rusa|colon|prehist)|x_(ww1|ww2|frances|industrial|guerrafria|rommana|azteca|maya|indep|rev|luna69))$/.test(k)?'hi':/^y_(tobe|present|past|phrasal|saludos|numeros|dias|colores|there|makedo|aan|condic)$/.test(k)?'en':/^y_an_/.test(k)?'an':/^zl_/.test(k)?'le':/^z2_/.test(k)?'sp':/^z3_el_/.test(k)?'el':/^y_(pozole|mole|guaca|tamal|arroz|huevo|pasta|pizza|sopa|pan|chilaq|ceviche|hotcakes|ensalada|frijol|vegan|prote|vitam)$/.test(k)?'fo':/^x_(wifi|5g|bateria|backup|phishing|vpn|linux|excel|internet|blockchain|nube|api|sql|git|cripto|pass)$/.test(k)?'te':/^x_(porcentaje|regla3|fraccion|area|media|pitag|pi|deriv|integral|primo|fibo|prob)$/.test(k)?'ma':/^(ai|nn|x_ml|x_llm|z9_machine_learning|x_neurona|x_neurona_art|x_activacion|x_descenso|x_backprop|x_dl|x_pesos)$/.test(k)?'ia':null;
@@ -4733,6 +4737,7 @@ async function vlWait(){const q=window.speechSynthesis;await sleep(250);let k=0;
 async function vlTurn(t){vlSet('think');vlText('Tú: '+t);
  if(/^(adios|chao|terminar|colgar|fin|hasta luego|bye|goodbye|end call)$/.test(norm(t))){say(isEn(t)?'Goodbye':'Hasta luego');await vlWait();vlStop();return}
  while(busy)await sleep(150);
+ {const _k=norm(t),_n=Date.now();if(VL.lk===_k&&_n-(VL.la||0)<5000){if(VL.on)vlListen();return}VL.lk=_k;VL.la=_n}
  await send(t);if(!VL.on)return;
  const c=conv(),l=c&&c.msgs[c.msgs.length-1];if(l&&l.r=='a')vlText(l.t.replace(/[*`_]/g,'').slice(0,240));
  vlSet('speak');await vlWait();if(VL.on)vlListen()}
@@ -7941,7 +7946,12 @@ function support(t,k){
  const w=toks(t).map(fixTy).filter(x=>x.length>2&&!/^\d+$/.test(x)&&!STP.has(x)&&!STW.has(x));
  if(!w.length)return false;const A=anc(k);if(!A.size)return true;
  return w.some(x=>{const s=stem(x);if(A.has(s))return true;if(s.length<5)return false;for(const a of A)if(a.length>=5&&Math.abs(a.length-s.length)<=1&&lev(a,s,1)<=1)return true;return false})}
+function covOk(t,k){const base=(typeof unwrap=='function'&&typeof glue=='function'&&unwrap(glue(t)))||norm(t);
+ const qs=[...new Set(toks(base).map(fixTy).filter(x=>x.length>2&&!STP.has(x)).map(stem))],kn=qs.filter(x=>IDX[x]);
+ if(!kn.length)return true;const wt=x=>Math.log(1+C/(1+IDX[x].size)),A=anc(k),tot=kn.reduce((a,x)=>a+wt(x),0);
+ return kn.reduce((a,x)=>a+(A.has(x)?wt(x):0),0)/tot>=.5}
 function neuralOk(t,r){
+ if(r&&r.why==='razonado'&&r.k&&!/^(x_|y_|z)/.test(r.k)&&!covOk(t,r.k))return false;
  if(!r||!r.k||r.amb||r.why||r.p>=1)return true;
  if(!support(t,r.k))return false;
  const q=domain(t),tp=topicDom(r.k);
@@ -8083,12 +8093,53 @@ const NW={un:1,uno:1,una:1,dos:2,tres:3,cuatro:4,cinco:5,seis:6,siete:7,ocho:8,n
 function countOf(n){let m=n.match(/\b(\d{1,2})\s+(?:oraci(?:on|ones)|frases?|ejemplos?)/)||n.match(/\b(un|una|uno|dos|tres|cuatro|cinco|seis|siete|ocho|nueve|diez|once|doce)\s+(?:oraci(?:on|ones)|frases?|ejemplos?)/);
  if(m)return /^\d/.test(m[1])?+m[1]:NW[m[1]];m=n.match(/\b(\d{1,2})\b/);return m?+m[1]:null}
 const ENCAP='Sí, manejo **inglés a nivel escolar**. Puedo:\n- **Explicar** la estructura y el uso de los tiempos verbales (presente, pasado y futuro, simples, continuos y perfectos), condicionales, voz pasiva y verbos modales\n- **Generar oraciones de ejemplo** con el tiempo que pidas y el número exacto que necesites, con traducción\n- **Resolver ejercicios**: completar huecos, ordenar palabras, preguntas y negaciones, discurso indirecto, question tags y corrección de errores (escribe `/ingles` para ver el formato)\n\nNo traduzco textos libres ni mantengo conversaciones largas en inglés. ¿Qué necesitas?';
-function enGen(k,N,dom,more){const E=ENT[k],bank=E.s;let off=0;
+const VB=[
+ ['work','works','working','worked','worked','trabajar',[['at a bank','en un banco'],['in the office','en la oficina'],['from home','desde casa'],['with the team','con el equipo']]],
+ ['study','studies','studying','studied','studied','estudiar',[['English','inglés'],['for the exam','para el examen'],['at the library','en la biblioteca'],['math','matemáticas']]],
+ ['cook','cooks','cooking','cooked','cooked','cocinar',[['dinner','la cena'],['pasta','pasta'],['a cake','un pastel']]],
+ ['clean','cleans','cleaning','cleaned','cleaned','limpiar',[['the house','la casa'],['the kitchen','la cocina'],['the room','el cuarto']]],
+ ['walk','walks','walking','walked','walked','caminar',[['in the park','en el parque'],['to school','a la escuela'],['with the dog','con el perro']]],
+ ['talk','talks','talking','talked','talked','hablar',[['to the teacher','con el maestro'],['about the project','sobre el proyecto'],['on the phone','por teléfono']]],
+ ['listen','listens','listening','listened','listened','escuchar',[['to music','música'],['to the radio','la radio'],['to the teacher','al maestro']]],
+ ['wait','waits','waiting','waited','waited','esperar',[['for the bus','el autobús'],['for a friend','a un amigo'],['for the results','los resultados']]],
+ ['help','helps','helping','helped','helped','ayudar',[['with the homework','con la tarea'],['a friend','a un amigo'],['the children','a los niños']]],
+ ['paint','paints','painting','painted','painted','pintar',[['the wall','la pared'],['a picture','un cuadro'],['the fence','la cerca']]],
+ ['visit','visits','visiting','visited','visited','visitar',[['the museum','el museo'],['the grandparents','a los abuelos'],['Mexico City','la Ciudad de México']]],
+ ['dance','dances','dancing','danced','danced','bailar',[['at the party','en la fiesta'],['with friends','con amigos'],['in the street','en la calle']]],
+ ['travel','travels','traveling','traveled','traveled','viajar',[['to Spain','a España'],['by train','en tren'],['to Canada','a Canadá']]],
+ ['call','calls','calling','called','called','llamar',[['a friend','a un amigo'],['the doctor','al doctor'],['the office','a la oficina']]],
+ ['buy','buys','buying','bought','bought','comprar',[['a new phone','un teléfono nuevo'],['some bread','pan'],['a ticket','un boleto']]],
+ ['use','uses','using','used','used','usar',[['the computer','la computadora'],['a dictionary','un diccionario'],['the phone','el teléfono']]],
+ ['finish','finishes','finishing','finished','finished','terminar',[['the homework','la tarea'],['the project','el proyecto'],['the report','el informe']]]
+].map(a=>({b:a[0],s:a[1],g:a[2],d:a[3],p:a[4],es:a[5],c:a[6]}));
+const SB=['I','you','he','she','we','they'],PR=['','','Él','Ella','','Ellos'],BE=['am','are','is','is','are','are'],WAS=['was','were','was','was','were','were'],HAVE=['have','have','has','has','have','have'];
+const EF={est:['estoy','estás','está','está','estamos','están'],estb:['estaba','estabas','estaba','estaba','estábamos','estaban'],estf:['estaré','estarás','estará','estará','estaremos','estarán'],hab:['he','has','ha','ha','hemos','han'],habb:['había','habías','había','había','habíamos','habían'],habf:['habré','habrás','habrá','habrá','habremos','habrán'],ir:['voy','vas','va','va','vamos','van'],pres:['o','as','a','a','amos','an'],pret:['é','aste','ó','ó','amos','aron'],fut:['é','ás','á','á','emos','án']};
+const MK={ps:[['every day','todos los días'],['on Mondays','los lunes'],['every morning','todas las mañanas']],pc:[['right now','ahora mismo'],['at the moment','en este momento'],['today','hoy']],pas:[['yesterday','ayer'],['last night','anoche'],['two days ago','hace dos días']],pac:[['all morning','toda la mañana'],['at eight o\'clock last night','anoche a las ocho'],['when I called','cuando llamé']],fs:[['tomorrow','mañana'],['next week','la próxima semana'],['next year','el próximo año']],fc:[['tomorrow at 9 AM','mañana a las 9 de la mañana'],['this time next week','a esta hora la próxima semana'],['tonight at eight','esta noche a las ocho']],pp:[['three times','tres veces'],['this week','esta semana'],['many times','muchas veces']],ppc:[['for two hours','durante dos horas'],['since morning','desde la mañana'],['all day','todo el día']],pap:[['before dinner','antes de la cena'],['before noon','antes del mediodía'],['before the class started','antes de que empezara la clase']],fp:[['by Friday','para el viernes'],['by next month','para el próximo mes'],['by 2030','para 2030']],gt:[['tomorrow','mañana'],['next week','la próxima semana'],['this weekend','este fin de semana']]};
+const GENK=new Set(Object.keys(MK));
+const cap1=x=>x.charAt(0).toUpperCase()+x.slice(1);
+function genSent(k,i){const nV=VB.length,v=VB[i%nV],ci=Math.floor(i/nV),p=(i*5+ci)%6,c=v.c[ci%v.c.length],mk=MK[k][(i+ci)%MK[k].length],st=v.es.slice(0,-2),S=SB[p],pr=PR[p];
+ let a,e;
+ switch(k){
+  case'ps':a=(p==2||p==3)?v.s:v.b;e=st+EF.pres[p];break;
+  case'pc':a=BE[p]+' '+v.g;e=EF.est[p]+' '+st+'ando';break;
+  case'pas':a=v.d;e=st+EF.pret[p];break;
+  case'pac':a=WAS[p]+' '+v.g;e=EF.estb[p]+' '+st+'ando';break;
+  case'fs':a='will '+v.b;e=v.es+EF.fut[p];break;
+  case'fc':a='will be '+v.g;e=EF.estf[p]+' '+st+'ando';break;
+  case'pp':a=HAVE[p]+' '+v.p;e=EF.hab[p]+' '+st+'ado';break;
+  case'ppc':a=HAVE[p]+' been '+v.g;e=EF.hab[p]+' estado '+st+'ando';break;
+  case'pap':a='had '+v.p;e=EF.habb[p]+' '+st+'ado';break;
+  case'fp':a='will have '+v.p;e=EF.habf[p]+' '+st+'ado';break;
+  default:a=BE[p]+' going to '+v.b;e=EF.ir[p]+' a '+v.es}
+ return[cap1(S+' '+a+' '+c[0]+' '+mk[0])+'.',cap1([pr,e,c[1],mk[1]].filter(Boolean).join(' '))+'.']}
+const seqLen=k=>ENT[k].s.length+(GENK.has(k)?VB.length*3:0);
+const sentAt=(k,i)=>{const b=ENT[k].s;return i<b.length?b[i]:genSent(k,i-b.length)};
+function enGen(k,N,dom,more){const E=ENT[k],cap=GENK.has(k)?30:E.s.length,L=seqLen(k);let off=0;
  if(dom&&dom.d=='ingles'&&dom.tense==k&&dom.off!=null&&more)off=dom.off;
- N=Math.max(1,Math.min(N||5,bank.length));const pick=[];for(let i=0;i<N;i++)pick.push(bank[(off+i)%bank.length]);
- setDom({d:'ingles',tense:k,n:N,off:(off+N)%bank.length});
+ const asked=N||5;N=Math.max(1,Math.min(asked,cap));const pick=[];for(let i=0;i<N;i++)pick.push(sentAt(k,(off+i)%L));
+ setDom({d:'ingles',tense:k,n:asked>cap?cap:N,off:(off+N)%L});
  const W=['','una','dos','tres','cuatro','cinco','seis','siete','ocho','nueve','diez','once','doce'][N]||String(N);
- return{t:'Aquí tienes '+W+' oraci'+(N==1?'ón':'ones')+' en inglés con **'+E.n+'** ('+E.en+'):\n\n'+pick.map((s,i)=>(i+1)+'. '+s[0]+' — *'+s[1]+'*').join('\n')+'\n\n**Estructura:** '+E.f+(bank.length>N?'\n\nDi «otras» para ver más ejemplos.':''),m:'Inglés · oraciones'}}
+ return{t:'Aquí tienes '+W+' oraci'+(N==1?'ón':'ones')+' en inglés con **'+E.n+'** ('+E.en+'):\n\n'+pick.map((x,i)=>(i+1)+'. '+x[0]+' — *'+x[1]+'*').join('\n')+'\n\n**Estructura:** '+E.f+(asked>cap?'\n\nPediste '+asked+', pero de este tema solo puedo darte '+cap+' por vez'+(GENK.has(k)?'':' (es todo lo que tengo de este tipo)')+'.':'')+'\n\nDi «otras» para ver más ejemplos.',m:'Inglés · oraciones'}}
 function enExplain(k){const E=ENT[k];setDom({d:'ingles',tense:k});
  return{t:'**'+E.n[0].toUpperCase()+E.n.slice(1)+' ('+E.en+')**\n- **Estructura:** '+E.f+'\n- **Se usa para:** '+E.u+'\n- **Marcadores:** '+E.mk+'\n\n**Ejemplos**\n1. '+E.s[0][0]+' — *'+E.s[0][1]+'*\n2. '+E.s[1][0]+' — *'+E.s[1][1]+'*\n\nPuedo darte más oraciones con este tiempo si me dices cuántas.',m:'Inglés · gramática'}}
 function enHandle(n,t,dom,fol){
@@ -8105,6 +8156,15 @@ function enHandle(n,t,dom,fol){
  if(cap&&/\b(ingles|english)\b/.test(n)||(cap&&dom&&dom.d=='ingles')){setDom({d:'ingles'});return{t:ENCAP,m:'Inglés · capacidades'}}
  if(/^(ingles|english)$/.test(n)||/^(y )?(el )?ingles\??$/.test(n)){setDom({d:'ingles'});return{t:ENCAP,m:'Inglés · capacidades'}}
  return null}
+
+/* ---------- 6b. Conocimiento local verificado (cada entrada: patrón, respuesta, fuentes) ---------- */
+const GEOK=[{re:/(cdmx|ciudad de mexico|valle de mexico).*(subsuelo|suelo|nivel freatico|hundimiento|arcilla|profundidad)|(subsuelo|suelo|nivel freatico|hundimiento|arcilla).*(cdmx|ciudad de mexico|valle de mexico)/,
+ t:'La pregunta puede referirse a varias cosas; esto es lo que sé con seguridad:\n- **Altitud:** la Ciudad de México está a unos **2 240 m sobre el nivel del mar** (promedio, INEGI).\n- **Subsuelo:** el valle es el antiguo lago de Texcoco. Se divide en tres zonas geotécnicas: **I Lomas** (roca y suelo firme), **II Transición** (arenas y limos con capas de arcilla; los depósitos profundos están a unos 20 m o menos) y **III Lago** (arcillas lacustres blandas y muy compresibles).\n- **Hundimiento:** la extracción de agua del acuífero compacta esas arcillas y el terreno se hunde.\n\nNo tengo un valor único de profundidad ni de nivel freático porque cambia según la zona. ¿Te interesa la altitud, el espesor de las arcillas o el nivel del agua en una zona concreta?\n\nFuentes: Gobierno de la Ciudad de México / INEGI (altitud) y tesis de ingeniería geotécnica de la UNAM (zonificación del subsuelo).'}];
+function geoKnow(n){for(const g of GEOK)if(g.re.test(n))return{t:g.t,m:'Geografía · conocimiento local'};return null}
+
+/* ---------- 6c. Memoria aprendida: elimina respuestas automáticas sin relación con su pregunta o repetidas en preguntas distintas ---------- */
+function heal(){try{const T=mem&&mem.taught;if(!Array.isArray(T))return 0;const cnt={};T.forEach(x=>{if(x&&x.auto)cnt[x.a]=(cnt[x.a]||0)+1});
+ const keep=T.filter(x=>!x||!x.auto||(ansOk(x.q,x.a)&&cnt[x.a]<2)),n=T.length-keep.length;if(n>0){T.length=0;keep.forEach(x=>T.push(x));try{save()}catch(e){}}return n}catch(e){return 0}}
 
 /* ---------- 7. Contexto conversacional y orquestación ---------- */
 let turn=0;
@@ -8142,6 +8202,7 @@ function handle(t,sub){
   if(fol&&!a.ex&&!a.more&&!a.steps&&/^(y )?(el |la )?(ejemplo|ejercicio|explicame|explica|ponme|dame|resuelvelo|hazlo)/.test(n))a.ex=true;
   if(fol&&/^(mas|otro|otra|sigue|dame otro|ponme otro)/.test(n))a.more=true;
   const r=opHandle(op,a,raw,dom);if(r)return r}
+ {const g=geoKnow(n);if(g)return g}
  /* 4) física general (los ejercicios con números los resuelve el motor existente) */
  {const noQ=/\bno\s+(es\s+)?(la\s+)?(fisica\s+)?cuantic|sin cuantic/.test(n);
   const phyOwn=!/\d/.test(raw)&&((D.d=='fisica'&&D.s>=2)||(noQ&&/fisica|general/.test(n))||(fol&&dom&&dom.d=='fisica')||(dom&&dom.d=='fisica'&&noQ));
@@ -8162,8 +8223,9 @@ function after(t,r){
   const L={geografia:'geografía',historia:'historia',informatica:'informática',redes:'redes',derecho:'derecho',psicologia:'psicología',quimica:'química',actualidad:'información actual',idiomas:'idiomas',gramatica:'gramática',mate:'matemáticas',fisica:'física'}[D.d];
   if(L)r.t='Entiendo que es una pregunta de **'+L+'**, pero no tengo ese dato en mi base local y no pude confirmarlo en una fuente fiable. Prefiero no inventarlo. ¿Puedes darme más detalle, o enseñármelo con `aprende: pregunta = respuesta`?'}
  return r}
-return{domain,support,neuralOk,mathTry,handle,after,tenseOf,countOf,fixw,nz,topicDom,get turn(){return turn}}})();
+return{domain,support,neuralOk,covOk,mathTry,handle,after,tenseOf,countOf,fixw,nz,topicDom,heal,genSent:(k,i)=>genSent(k,i),seqLen:k=>seqLen(k),get turn(){return turn}}})();
 
+try{NXR.healed=NXR.heal()}catch(e){}
 /* classify: la red neuronal solo cuenta si el tema comparte contenido con la pregunta */
 (function(){const _cl=classify;classify=function(t){const r=_cl(t);try{return NXR.neuralOk(t,r)?r:{k:null,p:0,why:'sin soporte'}}catch(e){return r}}})();
 /* brain: el enrutador va primero; lo que no reclama pasa intacto a la cadena existente */
