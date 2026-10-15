@@ -2359,11 +2359,20 @@ function physTry(t){
 
 /* ============ Internet sin otra IA: Wikipedia y Open-Meteo ============ */
 async function J(u){const c=new AbortController(),t=setTimeout(()=>c.abort(),7000);try{const r=await fetch(u,{signal:c.signal});return r.ok?await r.json():null}catch(e){return null}finally{clearTimeout(t)}}
+const WGEN=new Set('ejemplo ejemplos formula formulas calcular calcula calculo explicame explica significa significado definicion concepto sabes dame dime cuentame hablame necesito quiero puedes ayuda ayudame favor general basica nivel'.split(' '));
+const wkeys=q=>[...new Set(toks(q).filter(w=>w.length>2&&!/^\d+$/.test(w)&&!STW.has(w)&&!STP.has(w)&&!WGEN.has(w)).map(stem))];
+const wcov=(keys,txt)=>{if(!keys.length)return 0;const a=toks(txt).map(stem);let h=0;for(const k of keys)if(a.some(v=>v==k||(k.length>=6&&v.length>=6&&lev(v,k,1)<=1)))h++;return h/keys.length};
+const wneed=keys=>keys.length>=3?.6:.99;
 async function wiki(q,en){
- const l=en?'en':'es',s=await J('https://'+l+'.wikipedia.org/w/api.php?action=query&list=search&srsearch='+encodeURIComponent(q)+'&srlimit=1&format=json&origin=*'),h=s&&s.query&&s.query.search[0];if(!h)return null;
+ const l=en?'en':'es',keys=wkeys(q);if(!keys.length)return null;
+ const s=await J('https://'+l+'.wikipedia.org/w/api.php?action=query&list=search&srsearch='+encodeURIComponent(q)+'&srlimit=5&format=json&origin=*'),hs=(s&&s.query&&s.query.search)||[];
+ let h=null,bs=0;for(const x of hs){const sn=String(x.snippet||'').replace(/<[^>]+>/g,' '),c=wcov(keys,x.title+' '+sn);if(c>=wneed(keys)){const sc=c+wcov(keys,x.title)*.5;if(sc>bs){bs=sc;h=x}}}
+ if(!h)return null;
  const d=await J('https://'+l+'.wikipedia.org/api/rest_v1/page/summary/'+encodeURIComponent(h.title.replace(/ /g,'_')));if(!d||!d.extract||d.type==='disambiguation')return null;
+ if(wcov(keys,d.title+' '+d.extract)<wneed(keys))return null;
  const ss=d.extract.match(/[^.!?]+[.!?]+\s*/g)||[d.extract],ch=[];let cu='';ss.forEach(x=>{if((cu+x).length>420&&cu){ch.push(cu.trim());cu=''}cu+=x});if(cu)ch.push(cu.trim());ctx.q=q;ctx.more=ch.slice(1);
- return'**'+d.title+'**\n'+ch[0]+(ctx.more.length?'\n\ndi «más» para seguir':'')}
+ const url=(d.content_urls&&d.content_urls.desktop&&d.content_urls.desktop.page)||'https://'+l+'.wikipedia.org/wiki/'+encodeURIComponent(h.title.replace(/ /g,'_'));
+ return'**'+d.title+'**\n'+ch[0]+(ctx.more.length?'\n\ndi «más» para seguir':'')+'\n\nFuente: ['+(en?'Wikipedia':'Wikipedia')+']('+url+')'}
 const WC=[[0,'despejado','clear'],[3,'parcialmente nublado','partly cloudy'],[48,'niebla','fog'],[57,'llovizna','drizzle'],[67,'lluvia','rain'],[77,'nieve','snow'],[82,'chubascos','showers'],[99,'tormenta','thunderstorm']];
 async function weather(t,en){
  const m=t.replace(/[?¿!.]/g,'').match(/^.*?\b(?:en|in|for|de)\s+(.+)$/i);if(!m)return{t:en?'Which city?':'¿De qué ciudad quieres el clima?',m:'Open-Meteo'};
@@ -2485,9 +2494,9 @@ async function maestro(t){
  return ask([{role:'system',content:SYS+(mem.name?' El usuario se llama '+mem.name+'.':'')},...h,{role:'user',content:t}])}
 function learn(q,a){if(toks(q).length<3||a.length>700||/^y\s/i.test(q.trim()))return;const k=q.replace(/[?!¿¡.]+$/g,'').trim(),x=mem.taught.find(z=>z.q.toLowerCase()==k.toLowerCase());if(x){if(x.auto)x.a=a}else mem.taught.push({q:k,a,auto:1});if(mem.taught.length>1000){const i=mem.taught.findIndex(z=>z.auto);mem.taught.splice(i<0?0:i,1)}save()}
 async function askOpen(t,q,en){
- let note='';if(MAESTRO){const r=await maestro(t);if(r.t){learn(t,r.t);return{t:r.t,m:'Maestro externo · aprendido'}}note=r.err=='rate'?'El maestro externo está saturado ahora mismo. ':'No pude contactar al maestro externo. '}
+ let note='';if(MAESTRO){const r=await maestro(t),ks=wkeys(t);if(r.t&&(!ks.length||wcov(ks,r.t)>=.34)){learn(t,r.t);return{t:r.t,m:'Maestro externo · aprendido'}}note=r.t?'El maestro externo respondió algo que no corresponde a tu pregunta y lo descarté. ':r.err=='rate'?'El maestro externo está saturado ahora mismo. ':'No pude contactar al maestro externo. '}
  if(q.length>2){const w=await wiki(q,en);if(w)return{t:note?note+'Esto encontré en Wikipedia:\n\n'+w:w,m:'Wikipedia'}}
- return note?{t:note+'Inténtalo de nuevo en unos segundos o enséñame con `aprende: pregunta = respuesta`.',m:'Sin respuesta'}:null}
+ return note?{t:note+'No encontré una fuente que responda a tu pregunta. Puedes reformularla o enseñármela con `aprende: pregunta = respuesta`.',m:'Sin respuesta'}:null}
 const grp=k=>/^y_(select|join|pk|fk|nosql|index|norm|acid|mongo|pg|redis|insert)$/.test(k)?'db':/^(y_(egipto|grecia|medieval|renac|conquista|vikingos|inca|napoleon|muro|rusa|colon|prehist)|x_(ww1|ww2|frances|industrial|guerrafria|rommana|azteca|maya|indep|rev|luna69))$/.test(k)?'hi':/^y_(tobe|present|past|phrasal|saludos|numeros|dias|colores|there|makedo|aan|condic)$/.test(k)?'en':/^y_an_/.test(k)?'an':/^zl_/.test(k)?'le':/^z2_/.test(k)?'sp':/^z3_el_/.test(k)?'el':/^y_(pozole|mole|guaca|tamal|arroz|huevo|pasta|pizza|sopa|pan|chilaq|ceviche|hotcakes|ensalada|frijol|vegan|prote|vitam)$/.test(k)?'fo':/^x_(wifi|5g|bateria|backup|phishing|vpn|linux|excel|internet|blockchain|nube|api|sql|git|cripto|pass)$/.test(k)?'te':/^x_(porcentaje|regla3|fraccion|area|media|pitag|pi|deriv|integral|primo|fibo|prob)$/.test(k)?'ma':/^(ai|nn|x_ml|x_llm|z9_machine_learning|x_neurona|x_neurona_art|x_activacion|x_descenso|x_backprop|x_dl|x_pesos)$/.test(k)?'ia':null;
 const relLab=x=>/^y_an_/.test(x)?x.slice(5):norm(TOP[x][0].split('|')[0]).replace(QP,'').replace(/^(el |la |los |las |un |una )/,'');
 const rel=k=>{const g=grp(k);if(!g)return'';const sib=ints.filter(x=>x!=k&&grp(x)==g);if(sib.length<3)return'';const r=[];while(r.length<3){const x=sib[Math.floor(Math.random()*sib.length)];if(!r.includes(x))r.push(x)}return'\n\nTambién puedo contarte de: '+r.map(x=>'**'+relLab(x)+'**').join(', ')+'.'};
@@ -4360,7 +4369,8 @@ function say(t){if(!window.speechSynthesis)return;speechSynthesis.cancel();const
 
 /* ============ Flujo del chat ============ */
 function setThink(v){thinking=v;$('#chip').classList.toggle('think',v)}
-async function send(t){t=(t||'').trim();if(!t||busy)return;$('#in').value='';fit();closeMenu();window.speechSynthesis&&speechSynthesis.cancel();
+let _nxLast={k:'',at:0};
+async function send(t){t=(t||'').trim();if(!t||busy)return;{const k=t.toLowerCase(),now=Date.now();if(k===_nxLast.k&&now-_nxLast.at<1200)return;_nxLast={k,at:now}}$('#in').value='';fit();closeMenu();window.speechSynthesis&&speechSynthesis.cancel();
  if(gate(t))return;
  let m;if((m=t.match(/^\/(\w+)\s*(.*)$/))){const k=m[1].toLowerCase();
   if(k=='mic'||k.startsWith('micr')){mdOpen();return}
@@ -4385,7 +4395,7 @@ async function reply(t){busy=true;stop=false;setThink(true);$('#go').innerHTML='
  const t0=Date.now(),[r]=await Promise.all([brain(t).catch(()=>({t:'Algo falló en mi núcleo. Intenta de nuevo.',m:'Error'})),sleep(350)]);setThink(false);
  const body=holder.querySelector('.body');body.classList.remove('dots');let n=0;const full=r.t,step=Math.max(2,Math.ceil(full.length/110));
  while(n<full.length&&!stop){n=Math.min(full.length,n+step);body.innerHTML=md(full.slice(0,n));if(feed.scrollHeight-feed.scrollTop-feed.clientHeight<140)feed.scrollTop=feed.scrollHeight;await sleep(14)}
- const shown=full.slice(0,n);logTurn('a',shown);if(/^Sin respuesta/.test(r.m||''))cloudPending(t,isEn(t));r.m=(r.m||'')+' · '+((Date.now()-t0)/1000).toFixed(1)+' s';const c=conv();c.msgs.push({r:'a',t:shown,m:r.m,s:r.s,q:t});save();busy=false;stop=false;
+ const shown=full.slice(0,n);{const _c=conv(),_l=_c&&_c.msgs[_c.msgs.length-1];if(_l&&_l.r=='a'&&_l.q===t){holder.remove();busy=false;stop=false;setThink(false);return}}logTurn('a',shown);if(/^Sin respuesta/.test(r.m||''))cloudPending(t,isEn(t));r.m=(r.m||'')+' · '+((Date.now()-t0)/1000).toFixed(1)+' s';const c=conv();c.msgs.push({r:'a',t:shown,m:r.m,s:r.s,q:t});save();busy=false;stop=false;
  holder.replaceWith(msgEl(c.msgs[c.msgs.length-1],c.msgs.length-1));renderList();$('#go').innerHTML='<svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>';
  if(speak||(VL&&VL.on))say(r.s||speakable(shown))}
 function regen(){const c=conv();if(!c||busy)return;while(c.msgs.length&&c.msgs[c.msgs.length-1].r=='a')c.msgs.pop();const u=c.msgs[c.msgs.length-1];if(!u)return;renderAll();reply(u.t)}
@@ -7881,5 +7891,285 @@ applyEco(true);
 })();
 </script>
 
+<script id="nx-router-js">
+/* ===== Noryx · Enrutador de dominio v22 =====
+   Se ejecuta ANTES de la cadena existente (ENG → NXM → brain) y solo reclama lo que sabe resolver con certeza:
+   · aritmética con % (módulo) y fracciones exactas, con analizador propio (sin eval)
+   · «¿sabes derivar?», ejemplos y seguimiento de derivadas/integrales
+   · física general (trabajo, fuerza, potencia, energía, velocidad, aceleración, movimiento) sin mezclarla con la cuántica
+   · inglés: capacidades, estructura de los tiempos y oraciones de ejemplo con el número exacto pedido
+   · seguimiento de contexto («¿y la fórmula?», «más», «otro»), con caducidad y cambio de tema
+   Además valida lo que devuelve la red neuronal (classify) para que no conteste temas sin relación con la pregunta.
+   Lo que no reconoce se lo pasa intacto a la cadena existente. */
+const NXR=(()=>{'use strict';
+const nz=s=>String(s==null?'':s).replace(/²/g,'^2').replace(/³/g,'^3').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[¿?¡!,;:"“”`]/g,' ').replace(/\s+/g,' ').trim();
+
+/* ---------- 1. Clasificador de dominio (puntúa varias señales; no depende de una sola palabra) ---------- */
+const KW='deriva derivada derivadas derivar integral integrales fisica cuantica ingles oraciones oracion continuo continua futuro pasado presente formula formulas ejemplo ejemplos trabajo fuerza potencia energia velocidad aceleracion movimiento capital moneda gramatica ecuacion funcion simple perfecto condicionales pasiva english tiempo verbal'.split(' ');
+function fixw(n){return n.split(' ').map(w=>{if(w.length<6||/\d/.test(w)||KW.includes(w))return w;for(const k of KW)if(Math.abs(k.length-w.length)<=1&&lev(w,k,1)<=1)return k;return w}).join(' ')}
+const LX={
+ saludo:[[/^(hola+|ola|holi+|buen[oa]s?( (dias|tardes|noches))?|que onda|que tal|hey+|hello|hi|saludos|ayuda|gracias|adios|chao|bye|hasta luego)( |$)/,5]],
+ mate:[[/\d\s*[+\-*/%^x×÷]\s*\d/,3],[/\b(suma|sumar|resta|restar|multiplic\w*|divid\w*|division|porcentaje|modulo|residuo|potencias?|raiz|fraccion\w*|operacion\w*|cuanto es)\b/,2],[/\bmod\b/,3]],
+ algebra:[[/\becuacion(?:es)?\b|\bdespej\w*|\bsistema de ecuaciones|\bfactoriz\w*|\bpolinomio/,3]],
+ deriv:[[/\bderiv(?:ar|a|e|ada|adas|ando|acion)\b/,4],[/\bd\/d[a-z]\b/,4],[/regla de la cadena|regla del producto|regla del cociente|regla de la potencia/,3],[/derivative|differentiat/,3],[/deriva continental|placas|tectonic|a la deriva|derivado de/,-8]],
+ integral:[[/\bintegra(?:l|les|r|la|le)\b|\bantiderivada|\bprimitiva\b|∫/,4]],
+ fisica:[[/\bfisica\b/,3],[/\b(fuerza|velocidad|rapidez|aceleracion|masa|energia|cinematica|dinamica|newton|joule|julio|watt|vatio|mru|mrua|gravedad|friccion|desplazamiento|trabajo mecanico)\b/,2],[/\btrabajo\b/,1],[/(trabajo|work)\b.*\b(fisica|fuerza|desplazamiento|joule|julios)/,3],[/(formula|calcul\w*)\b.*\btrabajo\b|\btrabajo\b.*(formula|calcul)/,1],[/estres|renunci|entrevista|empleo|\bjefe\b|sueldo|despid|vacante|laboral|chamba|oficina|equipo de trabajo/,-6]],
+ cuantica:[[/cuantic\w*|quantum|schrodinger|heisenberg|entrelazamiento|particula subatomica|dualidad onda/,5],[/\bno\s+(es\s+)?(la\s+)?(fisica\s+)?cuantic|sin cuantic/,-9]],
+ quimica:[[/\bquimic\w*|tabla periodica|\bmolecula|\breaccion quimica|\benlace (ionico|covalente)|\bacido\b|\bmol\b|\bvalencia\b/,3]],
+ ingles:[[/\bingles\b|\benglish\b/,4],[/(futuro|pasado|presente) (simple|continuo|perfecto)|future (simple|continuous|perfect)|(present|past) (simple|continuous|perfect)|will be \w+ing|\bgoing to\b|passive voice|verbos modales|modal verbs|\bconditionals?\b|question tags?|reported speech/,4],[/\bwill\b|\bwould\b/,1]],
+ idiomas:[[/\b(frances|aleman|italiano|portugues|japones|chino|coreano|ruso|latin)\b/,3],[/\btraduc\w*|como se dice|how do you say|\btranslate/,3]],
+ gramatica:[[/\b(sujeto|predicado|sustantivo|adjetivo|adverbio|pronombre|conjugacion|ortografia|tilde|acentuacion|sinonimos?|antonimos?|verbo|participio|gerundio)\b/,3]],
+ geografia:[[/\b(capital|moneda|divisa|idioma|continente|poblacion|bandera|habitantes|pib)\s+(de|del)\b/,4],[/\b(pais(?:es)?|continente|rio|montana|oceano|isla|volcan|desierto|cordillera|subsuelo|altitud|latitud|longitud|cdmx|ciudad de mexico|lago)\b/,3]],
+ historia:[[/\b(guerra|revolucion|independencia|imperio|conquista|batalla|reino|dinastia|edad media|renacimiento|prehispanic\w*|azteca|maya|romano|egipto|historia de)\b/,3]],
+ informatica:[[/\b(programa\w*|codigo|python|javascript|java|html|css|algoritmo|base de datos|sql|git|github|api|software|hardware|computadora|compilador|variable|framework|linux|windows|ci\/cd|integracion continua|despliegue continuo|devops)\b/,3]],
+ redes:[[/\b(ip|dns|router|wifi|wi-fi|firewall|vpn|ciberseguridad|phishing|malware|tcp|udp|puerto|protocolo|http|https|ssl|tls|ransomware|hackeo|lan|wan)\b/,3]],
+ derecho:[[/\b(constituc\w*|cpeum|articulo \d+|amparo|codigo penal|codigo civil|derecho\w*|demanda|contrato|lft|ley federal|garantias|delito|sentencia|jurisprudencia)\b/,3]],
+ psicologia:[[/\b(psicolog\w*|ansiedad|depresion|terapia|emocion\w*|conducta|freud|piaget|cognitiv\w*|autoestima|trauma|personalidad)\b/,3]],
+ casos:[[/\b(simulacion|simula\w*|caso practico|juego de rol|expediente|audiencia|detective|consultorio)\b/,3]],
+ ajedrez:[[/\b(ajedrez|jaque|gambito|peon|alfil|enroque|mate pastor)\b/,4]],
+ actualidad:[[/\b(ultimas noticias|noticias|este ano|2026|cotizacion|quien gano|tipo de cambio)\b/,3]]
+};
+const FAM={mate:'M',algebra:'M',deriv:'M',integral:'M',fisica:'F',cuantica:'Q',ingles:'L',idiomas:'L',gramatica:'L',informatica:'I',redes:'I',derecho:'D',psicologia:'P',casos:'C',ajedrez:'A',geografia:'G',historia:'H',quimica:'K',actualidad:'N',saludo:'S'};
+function domain(t){const n=fixw(nz(t)),sc=[];
+ for(const d in LX){if(d=='saludo'&&n.split(' ').length>3)continue;let s=0;for(const[re,w]of LX[d])if(re.test(n))s+=w;if(s>0)sc.push([d,s])}
+ sc.sort((a,b)=>b[1]-a[1]);const a=sc[0],b=sc[1];
+ if(!a)return{d:null,s:0,m:0,n};return{d:a[0],s:a[1],m:a[1]-(b?b[1]:0),n,all:sc}}
+const TD={};function topicDom(k){if(k in TD)return TD[k];const r=domain((typeof DATA!='undefined'&&DATA[k]||'').split('|').join(' . '));return TD[k]=r.s>=3?r.d:null}
+
+/* ---------- 2. Validación de la red neuronal: el tema elegido debe compartir contenido con la pregunta ---------- */
+function support(t,k){
+ const w=toks(t).map(fixTy).filter(x=>x.length>2&&!/^\d+$/.test(x)&&!STP.has(x)&&!STW.has(x));
+ if(!w.length)return false;const A=anc(k);if(!A.size)return true;
+ return w.some(x=>{const s=stem(x);if(A.has(s))return true;if(s.length<5)return false;for(const a of A)if(a.length>=5&&Math.abs(a.length-s.length)<=1&&lev(a,s,1)<=1)return true;return false})}
+function neuralOk(t,r){
+ if(!r||!r.k||r.amb||r.why||r.p>=1)return true;
+ if(!support(t,r.k))return false;
+ const q=domain(t),tp=topicDom(r.k);
+ if(q.s>=3&&tp&&FAM[q.d]&&FAM[tp]&&FAM[q.d]!==FAM[tp]&&q.d!=='saludo')return false;
+ return true}
+
+/* ---------- 3. Aritmética segura: módulo, fracciones exactas (analizador propio, nada de eval) ---------- */
+function lexMath(s){const tk=s.match(/\d+(?:\.\d+)?|[-+*/%^()]/g);return tk&&tk.join('')===s.replace(/\s+/g,'')?tk:null}
+function prepMath(t){return String(t).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[¿?=]/g,' ').replace(/(\d),(\d)/g,'$1.$2').replace(/(?:residuo|resto) de (\d+(?:\.\d+)?)\s*(?:entre|\/|dividido (?:entre|por))\s*(\d+(?:\.\d+)?)/g,'$1%$2')
+ .replace(/\b(cuanto es|cuanto da|cuanto|calcula|resuelve|resultado de|el residuo de|el resto de|residuo de|resto de)\b/g,' ').replace(/(\d)\s*(?:mod|modulo)\s*(\d)/g,'$1%$2').replace(/\s+(?:mod|modulo)\s+/g,'%')
+ .replace(/[×·]|\bpor\b/g,'*').replace(/÷|\bentre\b|\bdividido (?:entre|por)\b/g,'/').replace(/(\d)\s*x\s*(?=\d)/g,'$1*').replace(/\bmas\b/g,'+').replace(/\bmenos\b/g,'-').replace(/\s+/g,' ').trim()}
+function evalNum(tk){let i=0;const E=()=>{let v=T();while(tk[i]=='+'||tk[i]=='-'){const o=tk[i++],r=T();v=o=='+'?v+r:v-r}return v},
+ T=()=>{let v=U();while(tk[i]=='*'||tk[i]=='/'||tk[i]=='%'){const o=tk[i++],r=U();if((o=='/'||o=='%')&&r===0)throw new RangeError('div0');v=o=='*'?v*r:o=='/'?v/r:v%r}return v},
+ U=()=>tk[i]=='-'?(i++,-U()):tk[i]=='+'?(i++,U()):P(),P=()=>{const b=A();if(tk[i]=='^'){i++;return Math.pow(b,U())}return b},
+ A=()=>{const x=tk[i++];if(x===undefined)throw 0;if(/^\d/.test(x))return+x;if(x=='('){const v=E();if(tk[i++]!=')')throw 0;return v}throw 0};
+ const v=E();if(i<tk.length)throw 0;return v}
+const gcd=(a,b)=>{a=a<0n?-a:a;b=b<0n?-b:b;while(b){[a,b]=[b,a%b]}return a};
+const RQ=(n,d)=>{if(d==0n)throw new RangeError('div0');if(d<0n){n=-n;d=-d}const g=gcd(n,d)||1n;return{n:n/g,d:d/g}};
+function evalRat(tk){let i=0;const E=()=>{let v=T();while(tk[i]=='+'||tk[i]=='-'){const o=tk[i++],r=T();v=o=='+'?RQ(v.n*r.d+r.n*v.d,v.d*r.d):RQ(v.n*r.d-r.n*v.d,v.d*r.d)}return v},
+ T=()=>{let v=U();while(tk[i]=='*'||tk[i]=='/'){const o=tk[i++],r=U();v=o=='*'?RQ(v.n*r.n,v.d*r.d):RQ(v.n*r.d,v.d*r.n)}return v},
+ U=()=>tk[i]=='-'?(i++,(x=>RQ(-x.n,x.d))(U())):tk[i]=='+'?(i++,U()):P(),
+ P=()=>{const b=A();if(tk[i]=='^'){i++;const e=U();if(e.d!=1n||e.n>64n||e.n<-64n)throw 0;const k=e.n<0n?-e.n:e.n;let r=RQ(b.n**k,b.d**k);return e.n<0n?RQ(r.d,r.n):r}return b},
+ A=()=>{const x=tk[i++];if(x===undefined)throw 0;if(/^\d+$/.test(x))return RQ(BigInt(x),1n);if(x=='('){const v=E();if(tk[i++]!=')')throw 0;return v}throw 0};
+ const v=E();if(i<tk.length)throw 0;return v}
+const nfmt=v=>String(+v.toPrecision(12));
+function mathTry(t){
+ const raw=String(t||'');if(raw.length>120)return null;
+ const s=prepMath(raw);if(!/\d/.test(s))return null;
+ const hasPct=/%/.test(s),pctDe=/\d\s*%\s*(?:de|of)\s*\d/.test(s);
+ const frac=/\d+\s*\/\s*\d+.*[-+*].*\d+\s*\/\s*\d+|\d+\s*\/\s*\d+\s*[-+*]\s*\d+|\d+\s*[-+*]\s*\d+\s*\/\s*\d+/.test(s)&&!/\./.test(s)&&!hasPct;
+ if(pctDe||(!hasPct&&!frac))return null;
+ const tk=lexMath(s);if(!tk||tk.length<3)return null;
+ try{
+  if(frac){const r=evalRat(tk),dec=Number(r.n)/Number(r.d),ex=tk.join(' ').replace(/\*/g,'×').replace(/\//g,'÷');
+   return{t:ex+' = **'+(r.d==1n?String(r.n):r.n+'/'+r.d)+'**'+(r.d==1n?'':' (≈ '+nfmt(dec)+')')+'\nFracciones exactas, simplificadas al máximo.',m:'Matemáticas · fracciones'}}
+  const v=evalNum(tk);if(!isFinite(v))return null;
+  const mod=tk.filter(x=>x=='%').length===1&&tk.length==3;
+  return{t:tk.join(' ').replace(/\*/g,'×').replace(/\//g,'÷').replace(/ % /g,' mod ')+' = **'+nfmt(v)+'**'+(mod?'\nInterpreto «%» como **módulo**: el resto de dividir '+tk[0]+' entre '+tk[2]+'. Si querías un porcentaje, escribe «'+tk[0]+'% de '+tk[2]+'».':''),m:'Matemáticas · módulo'}
+ }catch(e){return e instanceof RangeError?{t:'No se puede dividir entre cero (ni calcular el resto de una división entre cero).',m:'Matemáticas · módulo'}:null}}
+
+/* ---------- 4. Derivadas e integrales ---------- */
+const DEX=['3x^3 + 2x^2 - 5x + 7','x^2 + 3x','x^2 * sin(x)','e^(2x)','ln(x^2 + 1)','(x^2 + 1)^3','5x^4 - 3x'],
+      IEX=['3x^2 + 2x','x^3 - 4x + 1','cos(x)','e^(2x)','x * e^x','1/x'];
+const OPS={deriv:{v:'derivar',vb:'deriva',nom:'derivadas',ex:DEX,
+  cap:'Sí, sé **derivar**: polinomios, potencias, productos, cocientes, funciones trigonométricas, exponenciales y logaritmos, con la regla de la cadena y el procedimiento paso a paso. Envíame una función (por ejemplo `x² + 3x`) o pídeme un ejemplo.',
+  how:'**Cómo se deriva, paso a paso**\n1. Identifica la forma de la función: suma, potencia, producto, cociente o función compuesta.\n2. Aplica la regla que corresponde: potencia (xⁿ)′ = n·xⁿ⁻¹, suma (f + g)′ = f′ + g′, constante por función (c·f)′ = c·f′, producto (f·g)′ = f′·g + f·g′, cadena (f(u))′ = f′(u)·u′.\n3. Deriva término a término y simplifica.\n4. Si piden el valor en un punto, sustituye x al final.\n\nPor ejemplo:\n\n'},
+ integral:{v:'integrar',vb:'integra',nom:'integrales',ex:IEX,
+  cap:'Sí, sé **integrar**: polinomios, potencias, funciones trigonométricas y exponenciales, sustitución, partes, fracciones parciales e integrales definidas, con el procedimiento paso a paso. Envíame la función (por ejemplo `3x² + 2x`) o pídeme un ejemplo.',
+  how:'**Cómo se integra, paso a paso**\n1. Identifica la forma: potencia, suma, producto, cociente o función compuesta.\n2. Usa la regla básica: ∫xⁿ dx = xⁿ⁺¹/(n+1) (n ≠ −1), ∫(f + g) dx = ∫f dx + ∫g dx, ∫c·f dx = c·∫f dx.\n3. Si hay una función dentro de otra, prueba sustitución; si hay un producto, prueba partes.\n4. Suma la constante de integración C (en las definidas, evalúa F(b) − F(a)).\n\nPor ejemplo:\n\n'}};
+function calcOp(op,f){const r=NXM.solve(OPS[op].vb+' '+f);return r}
+function opHandle(op,ask,t,dom){const O=OPS[op];
+ if(ask.cap&&!ask.expr){setDom({d:op,await:'fn'});return{t:O.cap,m:op=='deriv'?'Derivadas':'Integrales'}}
+ if(ask.ex||ask.more||ask.steps){const off=(dom&&dom.d==op&&dom.off!=null?dom.off+1:0)%O.ex.length;let r=calcOp(op,O.ex[off]);if(!r)return null;
+  setDom({d:op,await:'fn',off});return{t:(ask.steps&&!ask.more?O.how:'Ejemplo desarrollado de '+op.replace('deriv','derivada')+':\n\n')+r.t+(ask.more||ask.ex?'\n\nDi «otro» para ver otro ejemplo, o envíame tu propia función.':''),m:op=='deriv'?'Derivadas · ejemplo':'Integrales · ejemplo',s:r.s}}
+ return null}
+
+/* ---------- 5. Física general ---------- */
+const PHK={
+ trabajo:{n:'trabajo mecánico',def:'En física, el **trabajo mecánico** mide la energía que una fuerza transfiere a un cuerpo al desplazarlo. Solo cuenta la parte de la fuerza que va en la dirección del movimiento: si empujas una pared que no se mueve, el trabajo es cero.',
+  formula:'**W = F · d · cos(θ)**\n- W: trabajo mecánico\n- F: magnitud de la fuerza\n- d: desplazamiento\n- θ: ángulo entre la fuerza y el desplazamiento\n\nSi la fuerza es constante y paralela al desplazamiento (θ = 0°), queda **W = F · d**. Con θ = 90° el trabajo es 0, y con θ = 180° es negativo (por ejemplo, la fricción).',
+  units:'La unidad es el **joule (J)**: 1 J = 1 N·m = 1 kg·m²/s².',
+  example:'Una fuerza de 50 N empuja una caja 10 m con un ángulo de 60° respecto al movimiento.\n- **Datos:** F = 50 N, d = 10 m, θ = 60°\n- **Fórmula:** W = F · d · cos(θ)\n- **Sustitución:** W = 50 · 10 · cos(60°)\n- **Desarrollo:** W = 500 · 0.5\n- **Resultado:** W = **250 J**',
+  steps:'Para resolver un ejercicio de trabajo: 1) anota los datos, 2) escribe la fórmula W = F·d·cos(θ), 3) sustituye, 4) desarrolla y 5) da el resultado con su unidad (J).'},
+ fuerza:{n:'fuerza',def:'La **fuerza** es una interacción que cambia la velocidad o la forma de un cuerpo. Es un vector: tiene magnitud, dirección y sentido.',
+  formula:'**F = m · a** (segunda ley de Newton)\n- F: fuerza neta · m: masa · a: aceleración\nEl peso es una fuerza: **P = m · g**, con g ≈ 9.8 m/s².',units:'La unidad es el **newton (N)**: 1 N = 1 kg·m/s².',
+  example:'Un carrito de 10 kg acelera a 3 m/s².\n- **Datos:** m = 10 kg, a = 3 m/s²\n- **Fórmula:** F = m · a\n- **Sustitución:** F = 10 · 3\n- **Resultado:** F = **30 N**',steps:'Anota m y a, escribe F = m·a, sustituye y da el resultado en newtons.'},
+ potencia:{n:'potencia',def:'La **potencia** mide qué tan rápido se realiza un trabajo o se transfiere energía.',
+  formula:'**P = W / t**, o bien **P = F · v** si la fuerza es paralela a la velocidad.\n- P: potencia · W: trabajo · t: tiempo',units:'La unidad es el **watt (W)**: 1 W = 1 J/s.',
+  example:'Una grúa realiza 600 J de trabajo en 3 s.\n- **Datos:** W = 600 J, t = 3 s\n- **Fórmula:** P = W / t\n- **Sustitución:** P = 600 / 3\n- **Resultado:** P = **200 W**',steps:'Obtén el trabajo y el tiempo, aplica P = W/t y expresa el resultado en watts.'},
+ energia:{n:'energía',def:'La **energía** es la capacidad de realizar trabajo. La mecánica se divide en **cinética** (por el movimiento) y **potencial** (por la posición).',
+  formula:'**Cinética:** Ec = ½ · m · v²\n**Potencial gravitatoria:** Ep = m · g · h\n**Teorema trabajo–energía:** W = ΔEc',units:'La unidad es el **joule (J)**.',
+  example:'Un balón de 2 kg se mueve a 3 m/s.\n- **Datos:** m = 2 kg, v = 3 m/s\n- **Fórmula:** Ec = ½·m·v²\n- **Sustitución:** Ec = ½ · 2 · 3²\n- **Resultado:** Ec = **9 J**',steps:'Identifica si es cinética o potencial, escribe su fórmula, sustituye y da el resultado en joules.'},
+ velocidad:{n:'velocidad',def:'La **velocidad** indica qué tan rápido cambia la posición de un cuerpo y en qué dirección. La rapidez es su magnitud, sin dirección.',
+  formula:'**v = d / t** (movimiento uniforme)',units:'Se mide en **m/s** (o km/h; 1 m/s = 3.6 km/h).',
+  example:'Un ciclista recorre 100 m en 20 s.\n- **Datos:** d = 100 m, t = 20 s\n- **Fórmula:** v = d / t\n- **Sustitución:** v = 100 / 20\n- **Resultado:** v = **5 m/s**',steps:'Anota distancia y tiempo, aplica v = d/t y revisa las unidades.'},
+ aceleracion:{n:'aceleración',def:'La **aceleración** es la rapidez con que cambia la velocidad de un cuerpo.',
+  formula:'**a = (v_f − v_i) / t**',units:'Se mide en **m/s²**.',
+  example:'Un auto pasa de 0 a 20 m/s en 4 s.\n- **Datos:** v_i = 0, v_f = 20 m/s, t = 4 s\n- **Fórmula:** a = (v_f − v_i)/t\n- **Sustitución:** a = (20 − 0)/4\n- **Resultado:** a = **5 m/s²**',steps:'Anota las velocidades inicial y final y el tiempo, y aplica a = Δv/t.'},
+ movimiento:{n:'movimiento',def:'El **movimiento** es el cambio de posición de un cuerpo respecto a un punto de referencia. La cinemática lo describe con posición, velocidad y aceleración.',
+  formula:'**MRU (velocidad constante):** d = v · t\n**MRUA (aceleración constante):**\n- v_f = v_i + a·t\n- d = v_i·t + ½·a·t²\n- v_f² = v_i² + 2·a·d',units:'Distancia en m, tiempo en s, velocidad en m/s, aceleración en m/s².',
+  example:'Un cuerpo parte del reposo y acelera a 2 m/s² durante 5 s.\n- **Datos:** v_i = 0, a = 2 m/s², t = 5 s\n- **Fórmula:** d = v_i·t + ½·a·t²\n- **Sustitución:** d = 0 + ½ · 2 · 5²\n- **Resultado:** d = **25 m**',steps:'Decide si es MRU o MRUA, anota los datos, elige la ecuación que contenga la incógnita y sustituye.'}};
+const PHN={trabajo:/\btrabajo\b/,potencia:/\bpotencia\b/,energia:/\benergia\b|cinetica|potencial gravit/,fuerza:/\bfuerza\b/,velocidad:/\b(velocidad|rapidez)\b/,aceleracion:/\baceleracion\b/,movimiento:/\b(movimiento|mru|mrua|cinematica)\b/};
+const phTopics=n=>Object.keys(PHN).filter(k=>PHN[k].test(n)&&!(k=='potencia'&&/elev|exponente|base|a la potencia|potencias de/.test(n)));
+const FACET=[['def',/\b(que es|que son|a que se refiere|que significa|define|definicion|concepto|explica\w*|significado|se refiere)\b/],['formula',/\b(formulas?|ecuacion|como se calcula|como calcul\w*|calcular|expresion)\b/],['units',/\b(unidad(?:es)?|en que se mide|se mide en)\b/],['example',/\b(ejemplos?|ejercicio|ponme uno|dame uno)\b/],['steps',/\b(paso a paso|procedimiento|como se resuelve|como resolver)\b/]];
+const facets=n=>FACET.filter(([k,re])=>re.test(n)).map(x=>x[0]);
+const PHOV='**Física general (clásica)** — puedo explicar y resolver ejercicios de:\n- **Trabajo** (W = F·d·cos θ), **fuerza** (F = m·a), **potencia** (P = W/t) y **energía** (cinética y potencial)\n- **Velocidad, aceleración y movimiento** (MRU y MRUA)\n- Problemas con datos, fórmula, sustitución, desarrollo y resultado\n\nElige un tema o escribe un ejercicio, por ejemplo: «Una fuerza de 20 N mueve una caja 5 m».';
+function phSection(k,f){const P=PHK[k];return f=='def'?P.def:f=='formula'?'**Fórmula del '+P.n+'**\n'+P.formula:f=='units'?'**Unidades:** '+P.units.replace(/^(La unidad es|Se mide en) /,''):f=='example'?'**Ejemplo resuelto**\n'+P.example:f=='steps'?P.steps:''}
+function phHandle(n,t,dom,fol){
+ let ts=phTopics(n),fc=facets(n);if(ts.length)fol=false;
+ const noQ=/\bno\s+(es\s+)?(la\s+)?(fisica\s+)?cuantic|sin cuantic|general/.test(n)&&/cuantic|general|clasic/.test(n);
+ if(fc.length==1&&fc[0]=='def')fc=/explica/.test(n)&&!/que es|que son|define|definicion|concepto/.test(n)?[]:['def','formula','units'];
+ if(/diferencia|difiere|distingue|se diferencia|vs\b/.test(n)&&ts.length>=2)return{t:'**Diferencias**\n'+ts.map(k=>'- **'+PHK[k].n[0].toUpperCase()+PHK[k].n.slice(1)+':** '+PHK[k].def.replace(/\*\*/g,'').split('. ')[0].replace(/\.$/,'')+'. Se calcula con '+PHK[k].formula.split('\n')[0].replace(/\*\*/g,'')+' ('+PHK[k].units.replace(/^La unidad es el |^Se mide en |\*\*/g,'').replace(/\.$/,'')+').').join('\n'),m:'Física general'};
+ if(!ts.length&&fol&&dom&&dom.topic)ts=[dom.topic];
+ if(!ts.length){
+  if(noQ||/fisica/.test(n)){setDom({d:'fisica',noQuantum:noQ?1:undefined});return{t:(noQ?'Entendido: **física general (clásica), no cuántica**.\n\n':'')+PHOV,m:'Física general'}}
+  return null}
+ const k=ts[0];if(ts.length>1&&!fc.length)fc=['def'];
+ let shown=dom&&dom.topic==k&&dom.shown?dom.shown.slice():[];
+ let want=fc.length?fc:(fol?[]:['def','formula','units','example']);
+ if(fol&&!fc.length){const all=['def','formula','units','example'];want=[all.find(x=>!shown.includes(x))||'example']}
+ if(/ejercicio|ejemplo/.test(n)&&!want.includes('example'))want.push('example');
+ setDom({d:'fisica',topic:k,shown:[...new Set(shown.concat(want))],noQuantum:(dom&&dom.noQuantum)||(noQ?1:undefined)});
+ const out=want.map(f=>phSection(k,f)).filter(Boolean).join('\n\n');
+ return{t:(noQ?'Entendido: física general, no cuántica.\n\n':'')+out+'\n\nSi quieres, resuelvo un ejercicio con tus datos.',m:'Física general'}}
+
+/* ---------- 6. Inglés: capacidades, estructura de los tiempos y oraciones de ejemplo ---------- */
+const ENT={
+ ps:{n:'presente simple',en:'present simple',f:'Subject + verb (he/she/it + -s) + complement.',u:'hábitos, rutinas y hechos generales',mk:'always, usually, every day, on Mondays',
+  s:[['She works at a hospital.','Ella trabaja en un hospital.'],['I drink coffee every morning.','Bebo café todas las mañanas.'],['They play football on Saturdays.','Ellos juegan fútbol los sábados.'],['My brother studies English at school.','Mi hermano estudia inglés en la escuela.'],['We live in Mexico City.','Vivimos en la Ciudad de México.'],['He doesn\'t eat meat.','Él no come carne.'],['Do you speak Spanish?','¿Hablas español?'],['The train leaves at eight o\'clock.','El tren sale a las ocho.'],['Water boils at 100 degrees Celsius.','El agua hierve a 100 grados Celsius.'],['My mother cooks dinner every night.','Mi mamá cocina la cena todas las noches.'],['Our teacher reads a story every Friday.','Nuestro maestro lee un cuento todos los viernes.'],['The shops open at nine.','Las tiendas abren a las nueve.']]},
+ pc:{n:'presente continuo',en:'present continuous',f:'Subject + am/is/are + verb-ing + complement.',u:'acciones que ocurren ahora o planes cercanos',mk:'now, right now, at the moment, today',
+  s:[['I am studying English right now.','Estoy estudiando inglés ahora mismo.'],['She is cooking dinner at the moment.','Ella está cocinando la cena en este momento.'],['They are playing in the park.','Ellos están jugando en el parque.'],['We are waiting for the bus.','Estamos esperando el autobús.'],['He is not watching TV today.','Él no está viendo la tele hoy.'],['Are you listening to me?','¿Me estás escuchando?'],['The children are sleeping.','Los niños están durmiendo.'],['It is raining outside.','Está lloviendo afuera.'],['My sister is talking on the phone.','Mi hermana está hablando por teléfono.'],['You are learning very fast.','Estás aprendiendo muy rápido.'],['The students are writing an exam.','Los estudiantes están escribiendo un examen.'],['I am meeting my friends tonight.','Me voy a ver con mis amigos esta noche.']]},
+ pas:{n:'pasado simple',en:'past simple',f:'Subject + verb in past (-ed o irregular) + complement.',u:'acciones terminadas en el pasado',mk:'yesterday, last week, ago, in 2020',
+  s:[['I visited my grandmother last weekend.','Visité a mi abuela el fin de semana pasado.'],['She bought a new phone yesterday.','Ella compró un teléfono nuevo ayer.'],['They watched a movie last night.','Ellos vieron una película anoche.'],['We went to the beach in July.','Fuimos a la playa en julio.'],['He didn\'t do his homework.','Él no hizo su tarea.'],['Did you see that car?','¿Viste ese carro?'],['My father cooked pasta on Sunday.','Mi papá cocinó pasta el domingo.'],['The train arrived late.','El tren llegó tarde.'],['She wrote a letter to her friend.','Ella le escribió una carta a su amiga.'],['I lost my keys this morning.','Perdí mis llaves esta mañana.'],['We played video games after school.','Jugamos videojuegos después de la escuela.'],['They traveled to Spain two years ago.','Viajaron a España hace dos años.']]},
+ pac:{n:'pasado continuo',en:'past continuous',f:'Subject + was/were + verb-ing + complement.',u:'acciones en progreso en un momento del pasado',mk:'while, when, at 5 o\'clock yesterday',
+  s:[['I was studying when you called.','Estaba estudiando cuando llamaste.'],['She was cooking while he was cleaning.','Ella cocinaba mientras él limpiaba.'],['They were playing football at five o\'clock yesterday.','Estaban jugando fútbol ayer a las cinco.'],['We were waiting for the bus when it started to rain.','Esperábamos el autobús cuando empezó a llover.'],['He was sleeping at midnight.','Él estaba durmiendo a medianoche.'],['It was raining all morning.','Estuvo lloviendo toda la mañana.'],['Were you watching TV at nine?','¿Estabas viendo la tele a las nueve?'],['The children were laughing in the garden.','Los niños se reían en el jardín.'],['I was walking home when I saw an accident.','Caminaba a casa cuando vi un accidente.'],['She was not working last Friday afternoon.','Ella no estaba trabajando el viernes pasado por la tarde.'],['My parents were traveling to Oaxaca that day.','Mis papás viajaban a Oaxaca ese día.'],['The teacher was explaining the lesson.','El maestro estaba explicando la lección.']]},
+ fs:{n:'futuro simple',en:'future simple',f:'Subject + will + base verb + complement.',u:'decisiones espontáneas, predicciones y promesas',mk:'tomorrow, next year, soon, I think',
+  s:[['I will call you tomorrow.','Te llamaré mañana.'],['She will travel to Canada next year.','Ella viajará a Canadá el próximo año.'],['They will win the game.','Ellos ganarán el partido.'],['We will help you with the project.','Te ayudaremos con el proyecto.'],['It will rain this weekend.','Va a llover este fin de semana.'],['He will not forget your birthday.','Él no olvidará tu cumpleaños.'],['Will you come to the party?','¿Vendrás a la fiesta?'],['I think the exam will be easy.','Creo que el examen será fácil.'],['My brother will be 18 next month.','Mi hermano cumplirá 18 el próximo mes.'],['The teacher will give us the results on Monday.','El maestro nos dará los resultados el lunes.'],['You will love this movie.','Te va a encantar esta película.'],['They will arrive at noon.','Llegarán al mediodía.']]},
+ fc:{n:'futuro continuo',en:'future continuous',f:'Subject + will be + verb-ing + complement.',u:'acciones que estarán en progreso en un momento del futuro',mk:'at 8 PM, tomorrow morning, this time next week',
+  s:[['I will be studying at 8 PM.','Estaré estudiando a las 8 de la noche.'],['She will be working tomorrow morning.','Ella estará trabajando mañana por la mañana.'],['They will be playing football this afternoon.','Ellos estarán jugando fútbol esta tarde.'],['We will be traveling to Cancún this time next week.','Estaremos viajando a Cancún a esta hora la próxima semana.'],['He will be sleeping when you arrive.','Él estará durmiendo cuando llegues.'],['At noon, I will be having lunch with my family.','Al mediodía estaré almorzando con mi familia.'],['Will you be waiting for me at the station?','¿Me estarás esperando en la estación?'],['The students will be taking an exam at ten o\'clock.','Los estudiantes estarán presentando un examen a las diez.'],['My parents will be watching TV tonight.','Mis papás estarán viendo la tele esta noche.'],['It will be raining all day tomorrow.','Mañana estará lloviendo todo el día.'],['You will be using the computer until five.','Estarás usando la computadora hasta las cinco.'],['Tomorrow at this time, I will be flying to Madrid.','Mañana a esta hora estaré volando a Madrid.']]},
+ pp:{n:'presente perfecto',en:'present perfect',f:'Subject + have/has + past participle + complement.',u:'experiencias y acciones pasadas con relevancia en el presente',mk:'already, yet, ever, never, just, since, for',
+  s:[['I have finished my homework.','He terminado mi tarea.'],['She has visited Paris three times.','Ella ha visitado París tres veces.'],['They have lived here for ten years.','Ellos han vivido aquí por diez años.'],['We have already eaten.','Ya hemos comido.'],['He hasn\'t seen that movie yet.','Él todavía no ha visto esa película.'],['Have you ever tried sushi?','¿Alguna vez has probado el sushi?'],['My brother has lost his wallet.','Mi hermano ha perdido su cartera.'],['The students have just arrived.','Los estudiantes acaban de llegar.'],['It has rained a lot this week.','Ha llovido mucho esta semana.'],['I have known her since 2015.','La conozco desde 2015.'],['She has worked here since January.','Ella trabaja aquí desde enero.'],['We have never been to Japan.','Nunca hemos estado en Japón.']]},
+ ppc:{n:'presente perfecto continuo',en:'present perfect continuous',f:'Subject + have/has been + verb-ing + complement.',u:'acciones que empezaron en el pasado y siguen o acaban de terminar',mk:'for, since, all day, lately, how long',
+  s:[['I have been studying for two hours.','He estado estudiando durante dos horas.'],['She has been working here since 2020.','Ella ha estado trabajando aquí desde 2020.'],['They have been playing football all afternoon.','Han estado jugando fútbol toda la tarde.'],['We have been waiting for you since six.','Te hemos estado esperando desde las seis.'],['It has been raining all day.','Ha estado lloviendo todo el día.'],['He has been learning English for three years.','Él ha estado aprendiendo inglés durante tres años.'],['Have you been sleeping?','¿Has estado durmiendo?'],['My mother has been cooking since morning.','Mi mamá ha estado cocinando desde la mañana.'],['The kids have been watching TV for an hour.','Los niños han estado viendo la tele durante una hora.'],['I have been living in Puebla for five years.','He estado viviendo en Puebla durante cinco años.'],['She has been feeling tired lately.','Ella se ha sentido cansada últimamente.'],['How long have you been waiting?','¿Cuánto tiempo llevas esperando?']]},
+ pap:{n:'pasado perfecto',en:'past perfect',f:'Subject + had + past participle + complement.',u:'una acción pasada anterior a otra acción pasada',mk:'before, after, already, by the time, when',
+  s:[['I had finished my homework before dinner.','Había terminado mi tarea antes de la cena.'],['She had already left when I arrived.','Ella ya se había ido cuando llegué.'],['They had never seen snow before that trip.','Nunca habían visto nieve antes de ese viaje.'],['We had eaten before the movie started.','Habíamos comido antes de que empezara la película.'],['He had lost his keys, so he couldn\'t enter.','Había perdido sus llaves, así que no pudo entrar.'],['Had you met her before the party?','¿La habías conocido antes de la fiesta?'],['The train had gone when we got to the station.','El tren se había ido cuando llegamos a la estación.'],['My sister had studied a lot, so she passed the exam.','Mi hermana había estudiado mucho, así que aprobó el examen.'],['When I called, they had already gone to sleep.','Cuando llamé, ya se habían ido a dormir.'],['It had rained all night before we woke up.','Había llovido toda la noche antes de que despertáramos.'],['She hadn\'t called me before she came.','Ella no me había llamado antes de venir.'],['By the time the teacher arrived, the students had cleaned the room.','Para cuando llegó el maestro, los estudiantes ya habían limpiado el salón.']]},
+ fp:{n:'futuro perfecto',en:'future perfect',f:'Subject + will have + past participle + complement.',u:'una acción que estará terminada antes de un momento futuro',mk:'by tomorrow, by Friday, by the time, before',
+  s:[['I will have finished the project by Friday.','Habré terminado el proyecto para el viernes.'],['She will have graduated by next June.','Ella se habrá graduado para el próximo junio.'],['They will have arrived before midnight.','Habrán llegado antes de la medianoche.'],['By 2030, we will have lived here for twenty years.','Para 2030 habremos vivido aquí veinte años.'],['He will have cooked dinner by the time you get home.','Él habrá cocinado la cena para cuando llegues a casa.'],['Will you have finished by six o\'clock?','¿Habrás terminado para las seis?'],['By tomorrow, the students will have taken the test.','Para mañana, los estudiantes habrán presentado el examen.'],['My parents will have been married for 30 years next May.','Mis papás llevarán 30 años de casados el próximo mayo.'],['The sun will have set by seven.','El sol se habrá puesto para las siete.'],['I won\'t have saved enough money by December.','Para diciembre no habré ahorrado suficiente dinero.'],['She will have read the book by tomorrow.','Ella habrá leído el libro para mañana.'],['We will have cleaned the house before they come.','Habremos limpiado la casa antes de que lleguen.']]},
+ cond:{n:'condicionales',en:'conditionals',f:'Cero: If + present, present · Primero: If + present, will + verbo · Segundo: If + past, would + verbo · Tercero: If + past perfect, would have + participio.',u:'situaciones reales, posibles, hipotéticas o imposibles',mk:'if, unless, when',
+  s:[['If you heat ice, it melts. (cero)','Si calientas el hielo, se derrite.'],['If it rains tomorrow, we will stay at home. (primero)','Si llueve mañana, nos quedaremos en casa.'],['If I had a lot of money, I would travel around the world. (segundo)','Si tuviera mucho dinero, viajaría por todo el mundo.'],['If I had studied, I would have passed the exam. (tercero)','Si hubiera estudiado, habría aprobado el examen.'],['If I don\'t sleep well, I feel tired. (cero)','Si no duermo bien, me siento cansado.'],['If you study, you will pass the exam. (primero)','Si estudias, aprobarás el examen.'],['If I were you, I would talk to her. (segundo)','Si yo fuera tú, hablaría con ella.'],['If they had left earlier, they wouldn\'t have missed the train. (tercero)','Si hubieran salido antes, no habrían perdido el tren.'],['If she calls me, I will answer. (primero)','Si ella me llama, contestaré.'],['If he studied more, he would get better grades. (segundo)','Si estudiara más, sacaría mejores calificaciones.'],['If she had known the truth, she would have helped us. (tercero)','Si ella hubiera sabido la verdad, nos habría ayudado.'],['If we finish early, we will go to the cinema. (primero)','Si terminamos temprano, iremos al cine.']]},
+ pasiva:{n:'voz pasiva',en:'passive voice',f:'Subject + to be (en el tiempo del verbo) + past participle (+ by agent).',u:'cuando importa más la acción o el objeto que quien la realiza',mk:'by + agente, was/were + participio',
+  s:[['The cake was made by my mother.','El pastel fue hecho por mi mamá.'],['English is spoken all over the world.','El inglés se habla en todo el mundo.'],['The window was broken yesterday.','La ventana se rompió ayer.'],['The letters will be sent tomorrow.','Las cartas serán enviadas mañana.'],['This house was built in 1990.','Esta casa fue construida en 1990.'],['The homework has been done.','La tarea ya está hecha.'],['The thief was caught by the police.','El ladrón fue atrapado por la policía.'],['Spanish is taught at this school.','En esta escuela se enseña español.'],['The movie is being filmed in Mexico.','La película se está filmando en México.'],['The documents had been signed before noon.','Los documentos habían sido firmados antes del mediodía.'],['The room is cleaned every day.','El cuarto se limpia todos los días.'],['The song was written by a famous singer.','La canción fue escrita por una cantante famosa.']]},
+ modal:{n:'verbos modales',en:'modal verbs',f:'Subject + modal (can, could, should, must, may, might, would) + base verb.',u:'habilidad, permiso, consejo, obligación y posibilidad',mk:'can, should, must, might, would like',
+  s:[['I can swim very well.','Sé nadar muy bien.'],['You should drink more water.','Deberías beber más agua.'],['She must finish her homework tonight.','Ella debe terminar su tarea esta noche.'],['We could play outside when we were children.','Podíamos jugar afuera cuando éramos niños.'],['May I come in?','¿Puedo pasar?'],['He might arrive late.','Quizá llegue tarde.'],['You mustn\'t use your phone in class.','No debes usar tu celular en clase.'],['They would like some coffee.','Ellos quisieran un café.'],['Can you help me, please?','¿Puedes ayudarme, por favor?'],['You don\'t have to wait for me.','No tienes que esperarme.'],['It could be a good idea.','Podría ser una buena idea.'],['You shouldn\'t eat so much sugar.','No deberías comer tanta azúcar.']]},
+ gt:{n:'futuro con going to',en:'going to',f:'Subject + am/is/are + going to + base verb + complement.',u:'planes e intenciones, o predicciones por evidencia presente',mk:'tomorrow, next week, look at those clouds',
+  s:[['I am going to study tonight.','Voy a estudiar esta noche.'],['She is going to buy a new car.','Ella va a comprar un carro nuevo.'],['They are going to visit their grandparents.','Van a visitar a sus abuelos.'],['We are going to watch a movie.','Vamos a ver una película.'],['It is going to rain.','Va a llover.'],['He is not going to come.','Él no va a venir.'],['Are you going to cook dinner?','¿Vas a cocinar la cena?'],['My sister is going to travel to Italy.','Mi hermana va a viajar a Italia.'],['I am going to call my mom.','Voy a llamar a mi mamá.'],['The baby is going to cry.','El bebé va a llorar.'],['We are going to play football after school.','Vamos a jugar fútbol después de la escuela.'],['You are going to love this song.','Te va a encantar esta canción.']]}};
+const ENR=[['ppc',/presente perfecto continuo|present perfect (continuous|progressive)/],['fp',/futuro perfecto|future perfect/],['fc',/futuro continuo|futuro progresivo|future (continuous|progressive)|will be \w+ing/],['pap',/pasado perfecto|past perfect/],['pac',/pasado continuo|pasado progresivo|past (continuous|progressive)/],['pas',/pasado simple|past simple|simple past|preterito/],['pp',/presente perfecto|present perfect/],['pc',/presente continuo|presente progresivo|present (continuous|progressive)/],['ps',/presente simple|present simple|simple present/],['gt',/going to|futuro con going/],['fs',/futuro simple|simple future|future simple|futuro con will|futuro \(will\)/],['cond',/condicional(es)?|conditionals?|\bif clause/],['pasiva',/voz pasiva|passive voice|\bpasiva\b/],['modal',/verbos? modal(es)?|modal verbs?/]];
+const tenseOf=n=>{for(const[k,re]of ENR)if(re.test(n))return k;return null};
+const NW={un:1,uno:1,una:1,dos:2,tres:3,cuatro:4,cinco:5,seis:6,siete:7,ocho:8,nueve:9,diez:10,once:11,doce:12};
+function countOf(n){let m=n.match(/\b(\d{1,2})\s+(?:oraci(?:on|ones)|frases?|ejemplos?)/)||n.match(/\b(un|una|uno|dos|tres|cuatro|cinco|seis|siete|ocho|nueve|diez|once|doce)\s+(?:oraci(?:on|ones)|frases?|ejemplos?)/);
+ if(m)return /^\d/.test(m[1])?+m[1]:NW[m[1]];m=n.match(/\b(\d{1,2})\b/);return m?+m[1]:null}
+const ENCAP='Sí, manejo **inglés a nivel escolar**. Puedo:\n- **Explicar** la estructura y el uso de los tiempos verbales (presente, pasado y futuro, simples, continuos y perfectos), condicionales, voz pasiva y verbos modales\n- **Generar oraciones de ejemplo** con el tiempo que pidas y el número exacto que necesites, con traducción\n- **Resolver ejercicios**: completar huecos, ordenar palabras, preguntas y negaciones, discurso indirecto, question tags y corrección de errores (escribe `/ingles` para ver el formato)\n\nNo traduzco textos libres ni mantengo conversaciones largas en inglés. ¿Qué necesitas?';
+function enGen(k,N,dom,more){const E=ENT[k],bank=E.s;let off=0;
+ if(dom&&dom.d=='ingles'&&dom.tense==k&&dom.off!=null&&more)off=dom.off;
+ N=Math.max(1,Math.min(N||5,bank.length));const pick=[];for(let i=0;i<N;i++)pick.push(bank[(off+i)%bank.length]);
+ setDom({d:'ingles',tense:k,n:N,off:(off+N)%bank.length});
+ const W=['','una','dos','tres','cuatro','cinco','seis','siete','ocho','nueve','diez','once','doce'][N]||String(N);
+ return{t:'Aquí tienes '+W+' oraci'+(N==1?'ón':'ones')+' en inglés con **'+E.n+'** ('+E.en+'):\n\n'+pick.map((s,i)=>(i+1)+'. '+s[0]+' — *'+s[1]+'*').join('\n')+'\n\n**Estructura:** '+E.f+(bank.length>N?'\n\nDi «otras» para ver más ejemplos.':''),m:'Inglés · oraciones'}}
+function enExplain(k){const E=ENT[k];setDom({d:'ingles',tense:k});
+ return{t:'**'+E.n[0].toUpperCase()+E.n.slice(1)+' ('+E.en+')**\n- **Estructura:** '+E.f+'\n- **Se usa para:** '+E.u+'\n- **Marcadores:** '+E.mk+'\n\n**Ejemplos**\n1. '+E.s[0][0]+' — *'+E.s[0][1]+'*\n2. '+E.s[1][0]+' — *'+E.s[1][1]+'*\n\nPuedo darte más oraciones con este tiempo si me dices cuántas.',m:'Inglés · gramática'}}
+function enHandle(n,t,dom,fol){
+ if(/_{2,}|…/.test(t)||(typeof isEn=='function'&&isEn(t)))return null;
+ const k=tenseOf(n),ora=/\b(oracion(?:es)?|frases?)\b/.test(n),exs=/\bejemplos?\b/.test(n),gen=ora||(exs&&k),N=countOf(n);
+ const cap=/\b(sabes|sabe|puedes|podrias|conoces|dominas|manejas|hablas|entiendes|le sabes|sabras|eres capaz)\b/.test(n);
+ if(dom&&dom.await=='tense'&&k)return enGen(k,dom.n,dom);
+ if(fol&&dom&&dom.d=='ingles'&&dom.tense&&/^(otras?|mas|otro|otra vez|siguen?|continua|dame mas|ponme mas|mas oraciones|otras oraciones|mas ejemplos)\b/.test(n))return enGen(dom.tense,dom.n,dom,true);
+ if(fol&&dom&&dom.d=='ingles'&&dom.tense&&/^(y )?(la |su )?(estructura|formula|como se forma|para que se usa|cuando se usa)/.test(n))return enExplain(dom.tense);
+ if(fol&&dom&&dom.d=='ingles'&&!dom.tense&&/^(otras?|mas|otro|sigue|continua|dame mas|mas ejemplos)\b/.test(n)){setDom({d:'ingles',await:'tense',n:3});return{t:'¿Con qué **tiempo verbal** quieres las oraciones? (por ejemplo: presente simple, pasado simple, futuro continuo, presente perfecto, condicionales…)',m:'Inglés · aclaración'}}
+ if(gen){if(k)return enGen(k,N,dom);setDom({d:'ingles',await:'tense',n:N||5});return{t:'¿Con qué **tiempo verbal** las quieres? Por ejemplo: presente simple, presente continuo, pasado simple, pasado continuo, futuro simple, futuro continuo, presente perfecto, pasado perfecto, condicionales, voz pasiva o verbos modales.',m:'Inglés · aclaración'}}
+ if(k&&/(que es|como se forma|estructura|formula|como se usa|para que sirve|cuando se usa|explica|diferencia|uso)/.test(n)&&!/diferencia/.test(n))return enExplain(k);
+ if(k&&n.split(' ').length<=4&&!/\d/.test(n))return enExplain(k);
+ if(cap&&/\b(ingles|english)\b/.test(n)||(cap&&dom&&dom.d=='ingles')){setDom({d:'ingles'});return{t:ENCAP,m:'Inglés · capacidades'}}
+ if(/^(ingles|english)$/.test(n)||/^(y )?(el )?ingles\??$/.test(n)){setDom({d:'ingles'});return{t:ENCAP,m:'Inglés · capacidades'}}
+ return null}
+
+/* ---------- 7. Contexto conversacional y orquestación ---------- */
+let turn=0;
+const fresh=()=>{const d=ctx.dom;return d&&(turn-d.turn)<=4&&(Date.now()-d.ts)<20*60*1000?d:null};
+const setDom=o=>{ctx.dom=Object.assign({turn,ts:Date.now()},o)};
+const FOLL=/^(y |pero |entonces )?(la |las |el |los |su |sus )?(formula|formulas|unidad(?:es)?|ejemplo|ejemplos|ejercicio|definicion|estructura|como se calcula|en que se mide|y eso|paso a paso|mas|otro|otra|otros|otras|explicame|explica|ponme un ejemplo|dame un ejemplo|dame otro|sigue|continua|mas ejemplos|otro ejemplo|otra vez|detalla|detalles|resuelvelo|hazlo|a ver|dale)( .{0,24})?$/;
+const bareFn=n=>/^[\d\sx+\-*/^().a-z]+$/.test(n)&&/x|\d/.test(n)&&/[+\-*/^]|\bx\b|\d/.test(n)&&n.split(' ').filter(w=>/^[a-z]{4,}$/.test(w)&&!/^(sin|cos|tan|sqrt|exp|log|asin|acos|atan)$/.test(w)).length==0;
+function opAsk(n){return{cap:/\b(sabes|sabe|puedes|podrias|conoces|dominas|manejas|eres capaz)\b/.test(n)||/^(derivar|integrar|derivada|derivadas|integral|integrales|derivacion)$/.test(n),
+ ex:/\bejemplos?\b|\bponme uno\b|\bdame uno\b|\bmuestrame\b/.test(n),steps:/paso a paso|como (se )?(deriva|integra|derivar|integrar)|procedimiento/.test(n),
+ more:/^(otro|otra|otros|otras|mas|dame otro|otro ejemplo|ponme otro|sigue)\b/.test(n),expr:false,def:/\bque (es|son)\b|\bdefine\b|definicion/.test(n)}}
+function handle(t,sub){
+ turn++;const raw=String(t==null?'':t);
+ if(!raw.trim()||raw.length>700)return null;
+ if(/^\s*(\/|aprende|learn|ensena|teach)/i.test(raw))return null;
+ if(ctx.sim||ctx.tr||ctx.ps||ctx.dt||ctx.pend)return null;
+ if(ctx.ph&&/\d/.test(raw))return null;
+ const nn=fixw(nz(raw));
+ if(!fresh()&&/^(el |la )?(trabajo|potencia)$/.test(nn)){const T=nn.replace(/^(el|la) /,'');return{t:T=='trabajo'?'¿Te refieres al **trabajo en física** (W = F·d·cos θ) o al **trabajo/empleo**? Dime cuál y te ayudo.':'¿Hablas de la **potencia en física** (P = W/t) o de la **potencia de un número** (xⁿ)? Dime cuál y te ayudo.',m:'Aclaración'}}
+ /* 1) aritmética con % (módulo) y fracciones: determinista y local */
+ {const r=mathTry(raw);if(r){setDom({d:'mate'});return r}}
+ {const r=(typeof calc=='function')&&/\d/.test(raw)&&raw.length<80?calc(raw):null;if(r){setDom({d:'mate'});return{t:r,m:'Cálculo'}}}
+ const n=fixw(nz(raw)),D=domain(raw),dom=fresh();
+ const fol=!!dom&&n.split(' ').length<=7&&FOLL.test(n);
+ /* cambio de tema explícito */
+ if(/^(otro tema|cambiemos de tema|cambia de tema|otra cosa|mejor otro tema)\b/.test(n)){ctx.dom=null;return null}
+ /* 2) seguimiento: función suelta tras «¿sabes derivar?» */
+ if(dom&&dom.await=='fn'&&(dom.d=='deriv'||dom.d=='integral')&&bareFn(n)){const r=calcOp(dom.d,raw.replace(/[¿?]/g,''));if(r){setDom({d:dom.d,await:'fn',off:dom.off});return r}}
+ /* 3) derivadas / integrales */
+ for(const op of['deriv','integral']){
+  const own=D.d==op&&D.s>=3||(fol&&dom&&dom.d==op)||(dom&&dom.d==op&&/^(otro|otra|mas|otro ejemplo)\b/.test(n));
+  if(!own)continue;
+  if(NXM.solve(raw))return null;           /* hay una función explícita: la resuelve el motor existente */
+  const a=opAsk(n);
+  if(a.def&&op=='deriv'&&typeof TOP!='undefined'&&TOP.x_deriv)return{t:TOP.x_deriv[1],m:'Derivadas · definición'};
+  if(fol&&!a.ex&&!a.more&&!a.steps&&/^(y )?(el |la )?(ejemplo|ejercicio|explicame|explica|ponme|dame|resuelvelo|hazlo)/.test(n))a.ex=true;
+  if(fol&&/^(mas|otro|otra|sigue|dame otro|ponme otro)/.test(n))a.more=true;
+  const r=opHandle(op,a,raw,dom);if(r)return r}
+ /* 4) física general (los ejercicios con números los resuelve el motor existente) */
+ {const noQ=/\bno\s+(es\s+)?(la\s+)?(fisica\s+)?cuantic|sin cuantic/.test(n);
+  const phyOwn=!/\d/.test(raw)&&((D.d=='fisica'&&D.s>=2)||(noQ&&/fisica|general/.test(n))||(fol&&dom&&dom.d=='fisica')||(dom&&dom.d=='fisica'&&noQ));
+  if(phyOwn){const r=phHandle(n,raw,dom,fol);if(r)return r}}
+ /* 5) inglés */
+ {const own=(D.d=='ingles'&&D.s>=3)||(dom&&dom.d=='ingles'&&(fol||dom.await=='tense'))||(tenseOf(n)&&/oracion|frases?|ejemplo/.test(n));
+  if(own){const r=enHandle(n,raw,dom,fol);if(r)return r}}
+ if(/^(mas|dime mas|dame mas|sigue|continua|otro|otra|otros|otras|explicame|ponme un ejemplo|dame un ejemplo|dame otro)$/.test(nn)){
+  if(ctx.more&&ctx.more.length)return{t:ctx.more.shift()+(ctx.more.length?'\n\ndi «más» para seguir':''),m:'Conversación · continuación'};
+  return{t:'¿Más sobre qué? Dime un tema o una pregunta y seguimos desde ahí.',m:'Conversación · aclaración'}}
+ return null}
+/* tras la cadena existente: mantiene o cambia el dominio y aclara las respuestas vacías */
+function after(t,r){
+ if(!r)return r;const D=domain(t),dom=ctx.dom;
+ if((r.m=='Motor matemático'||/^Derivadas|^Integrales/.test(r.m||''))&&(D.d=='deriv'||D.d=='integral'))setDom({d:D.d,await:'fn',off:dom&&dom.d==D.d?dom.off:undefined});
+ else if(D.d&&D.s>=3&&D.d!=='saludo'&&(!dom||dom.d!=D.d))setDom({d:D.d});
+ if(/^Sin respuesta/.test(r.m||'')&&D.d&&D.s>=3&&D.d!=='saludo'&&r.t&&/todavía no me la sé/.test(r.t)){
+  const L={geografia:'geografía',historia:'historia',informatica:'informática',redes:'redes',derecho:'derecho',psicologia:'psicología',quimica:'química',actualidad:'información actual',idiomas:'idiomas',gramatica:'gramática',mate:'matemáticas',fisica:'física'}[D.d];
+  if(L)r.t='Entiendo que es una pregunta de **'+L+'**, pero no tengo ese dato en mi base local y no pude confirmarlo en una fuente fiable. Prefiero no inventarlo. ¿Puedes darme más detalle, o enseñármelo con `aprende: pregunta = respuesta`?'}
+ return r}
+return{domain,support,neuralOk,mathTry,handle,after,tenseOf,countOf,fixw,nz,topicDom,get turn(){return turn}}})();
+
+/* classify: la red neuronal solo cuenta si el tema comparte contenido con la pregunta */
+(function(){const _cl=classify;classify=function(t){const r=_cl(t);try{return NXR.neuralOk(t,r)?r:{k:null,p:0,why:'sin soporte'}}catch(e){return r}}})();
+/* brain: el enrutador va primero; lo que no reclama pasa intacto a la cadena existente */
+(function(){const _brain=brain;brain=async function(t,s){let r=null;try{r=NXR.handle(t,s)}catch(e){console.warn('NXR',e);r=null}
+ if(r)return r;r=await _brain(t,s);try{return NXR.after(t,r)}catch(e){return r}}})();
+
+</script>
 </body>
 </html>
