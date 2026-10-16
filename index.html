@@ -161,7 +161,13 @@ textarea{flex:1;resize:none;border:0;outline:0;background:none;color:var(--ink);
 #slash{max-width:780px;margin:0 auto 6px;display:flex;flex-wrap:wrap;gap:6px;padding:0 4px}#slash[hidden]{display:none}
 #slash button{border:1px solid var(--line);border-radius:999px;padding:4px 12px;font-size:13px;color:var(--mute)}#slash button:hover{border-color:var(--acc);color:var(--ink)}#slash button b{color:var(--ink);font-weight:600}
 .jvq{margin-top:-2px}.jvq button{font-size:13px;padding:5px 12px}
-</style>
+
+.ne-combat [data-weapon]:disabled{cursor:not-allowed;filter:grayscale(.85)}
+.ne-gun.shot{animation:neKick .14s ease-out}
+@keyframes neKick{0%{transform:translateY(0) scale(1)}35%{transform:translateY(12px) scale(.96)}100%{transform:translateY(0) scale(1)}}
+.ne-pin{user-select:none;text-shadow:0 0 9px currentColor}
+.ne-combat .ne-mission{max-width:min(38vw,420px);line-height:1.3}
+
 <style>
 #mk{border:1px solid var(--line);background:var(--panel);border-radius:16px;padding:10px;margin-bottom:8px;max-height:40vh;overflow:auto}#mk[hidden]{display:none}
 #mk .h{display:flex;justify-content:space-between;align-items:center;gap:8px;font-weight:600;font-size:13.5px;margin-bottom:8px}#mk .h span{display:flex;gap:6px}
@@ -567,6 +573,51 @@ html,body{overscroll-behavior:none}#feed{overscroll-behavior:contain}
 @media(prefers-reduced-motion:reduce){#nxLab *,#nxLab *::before,#nxLab *::after{scroll-behavior:auto!important;animation-duration:.01ms!important;transition-duration:.01ms!important}}
 </style>
 
+
+<style id="nxEsc-visual-responsive-fixes">
+#nxEsc{background:#17232c;isolation:isolate;min-height:100dvh}
+#nxEsc .ne-cv{filter:brightness(1.12) contrast(1.04) saturate(1.08);touch-action:none}
+#nxEsc.lose .ne-cv{filter:brightness(.72) saturate(.75)}
+#nxEsc .ne-vig{background:radial-gradient(ellipse at center,transparent 78%,#0002 100%)}
+#nxEsc .ne-dust{opacity:.45}
+#nxEsc .ne-top{background:#08131be8;box-shadow:0 8px 28px #0003}
+#nxEsc .ne-inv span.it{background:#10212be8;border-color:#ffffff35}
+#nxEsc .ne-combat[hidden]{display:none!important}
+#nxEsc .ne-combat button,#nxEsc .ne-use{touch-action:manipulation;min-height:38px;cursor:pointer}
+#nxEsc .ne-combat button:active,#nxEsc .ne-use:active{transform:scale(.96);filter:brightness(1.25)}
+#nxEsc .ne-pin{width:17px;height:17px;margin:-8px;border-width:2px;box-shadow:0 0 16px var(--a),0 0 30px color-mix(in srgb,var(--a) 45%,transparent)}
+#nxEsc .ne-cross{width:16px;height:16px;border-color:#fff;box-shadow:0 0 5px #000}
+#nxEsc .ne-gun{filter:drop-shadow(0 8px 12px #0009);transition:filter .12s}
+#nxEsc .ne-say{background:#08141fee;color:#f3f7fa;box-shadow:0 8px 28px #0006}
+@media(max-width:700px){
+ #nxEsc .ne-top{left:5px;right:5px;top:calc(5px + env(safe-area-inset-top,0px));padding:6px;gap:4px;border-radius:12px}
+ #nxEsc .ne-top .ne-title{font-size:13px;line-height:1.2}
+ #nxEsc .ne-top .ne-btn{padding:6px 8px;font-size:11px;min-height:32px}
+ #nxEsc .ne-inv{top:calc(100px + env(safe-area-inset-top,0px));left:6px;right:6px;font-size:11px;max-height:42px;overflow:hidden}
+ #nxEsc .ne-combat:not([hidden]){top:auto;bottom:calc(8px + env(safe-area-inset-bottom,0px));left:6px;right:6px;transform:none;width:auto;max-width:none;gap:5px;padding:7px;max-height:30dvh;overflow-y:auto;justify-content:center;background:#07121beF}
+ #nxEsc .ne-combat button{font-size:11px;padding:7px 8px;min-height:36px;flex:0 1 auto}
+ #nxEsc .ne-combat .ne-mission{max-width:100%;flex-basis:100%;text-align:center;font-size:11px}
+ #nxEsc .ne-combat .ne-hp,#nxEsc .ne-combat .ne-arm,#nxEsc .ne-combat .ne-kills,#nxEsc .ne-combat .ne-weapon,#nxEsc .ne-combat .ne-ammo{font-size:11px}
+ #nxEsc .ne-gun{width:112px;height:95px;transform:translateX(-50%) scale(.82);transform-origin:bottom center}
+ #nxEsc .ne-use{right:12px;bottom:calc(120px + env(safe-area-inset-bottom,0px));padding:11px 14px;max-width:55%;white-space:normal}
+ #nxEsc .ne-say{bottom:calc(8px + env(safe-area-inset-bottom,0px));max-height:24dvh}
+ #nxEsc .ne-help{bottom:calc(4px + env(safe-area-inset-bottom,0px));font-size:10px}
+ #nxEsc .ne-joy{left:14px;bottom:calc(62px + env(safe-area-inset-bottom,0px));width:92px;height:92px}
+ #nxEsc .ne-joy i{width:42px;height:42px;margin:-21px}
+}
+@media(max-height:520px) and (orientation:landscape){
+ #nxEsc .ne-top{padding:4px;top:3px}
+ #nxEsc .ne-inv{top:58px}
+ #nxEsc .ne-combat:not([hidden]){bottom:4px;max-height:35dvh;left:115px;right:6px}
+ #nxEsc .ne-gun{opacity:.55;transform:translateX(-50%) scale(.62);transform-origin:bottom center}
+ #nxEsc .ne-joy{width:76px;height:76px;bottom:12px}
+ #nxEsc .ne-joy i{width:34px;height:34px;margin:-17px}
+}
+@media(prefers-reduced-motion:reduce){
+ #nxEsc .ne-dust,#nxEsc .ne-pin,#nxEsc .ne-card{animation-duration:.01ms!important;animation-iteration-count:1!important}
+}
+</style>
+
 </head>
 <body>
 <div id="app">
@@ -710,6 +761,7 @@ html,body{overscroll-behavior:none}#feed{overscroll-behavior:contain}
     <div class="srow"><div class="sl"><b>Fuente</b></div><select class="ssel" id="s-ff" aria-label="Fuente"></select></div>
     <div class="srow"><div class="sl"><b>Tamaño del texto</b></div><div class="seg" id="s-fs" role="group" aria-label="Tamaño del texto"></div></div>
     <div class="srow"><div class="sl"><b>Respuestas en voz alta</b><small>Noryx lee lo que responde.</small></div><button class="tg" id="s-sp" role="switch" aria-checked="false" aria-label="Respuestas en voz alta"></button></div>
+    <div class="srow"><div class="sl"><b>Ranking de Escape Room</b><small>Consulta los mejores puntajes y tu récord personal.</small></div><button class="sbt" id="s-esc-rank" type="button">Ver ranking</button></div>
     <div class="srow"><div class="sl"><b>Restablecer apariencia</b><small>Vuelve al tema, color, fuente y tamaño originales.</small></div><button class="sbt" id="s-rs">Restablecer</button></div>
    </section>
    <section class="spn" data-p="cta" hidden><div id="s-ca"></div></section>
@@ -1325,7 +1377,7 @@ const TOP_RAW=[
 'c_logro@@me dieron el trabajo|aprobe el examen|logre mi meta|i did it|lo logre@@Felicidades{n}. Te lo ganaste con esfuerzo. Cuentame como fue.',
 'c_platicar@@platiquemos|conversemos|quiero platicar|let us talk|platica conmigo@@Con gusto{n}. Podemos hablar de lo que quieras: tu dia, el espacio, la historia, animales, tecnologia o ideas. ¿Por donde empezamos?',
 'c_pregunta@@preguntame algo|hazme una pregunta|ask me something|haz una pregunta@@Va una: si pudieras aprender cualquier cosa en una semana, ¿que seria y por que?',
-'c_juego@@juguemos|quiero jugar|vamos a jugar|play a game|un juego@@Puedo proponerte una trivia, un acertijo o el juego de las 20 preguntas. Escribe «trivia» o «acertijo» para empezar.',
+'c_juego@@juguemos|quiero jugar|vamos a jugar|play a game|un juego@@¿Qué quieres jugar?\n1. Trivia\n2. Acertijos\n3. Veinte preguntas\n4. Ver ranking de escape room.\nEscribe el nombre del juego o `4` para consultar el ranking.',
 'c_trivia@@hazme una trivia|trivia|quiz me|una trivia@@Trivia: ¿cual es el planeta mas caliente del sistema solar? Pista: no es el mas cercano al Sol. Respuesta: Venus, con unos 465 grados. Pidemela otra vez y te hago otra.',
 'c_idea@@dame una idea|ideas para un proyecto|tengo que crear algo|idea de proyecto|no tengo ideas@@Ideas rapidas: una app que registre tus gastos, un blog sobre lo que aprendes, un huerto en casa o un video explicando un tema que te guste. Dime tus intereses y afino.',
 'c_regalo@@ideas de regalo|que le regalo a|gift ideas|regalo para mama|regalo para mi pareja@@Piensa en lo que la persona disfruta: un libro, una experiencia como cena o curso, algo hecho a mano o un detalle util. Dime edad e intereses y te sugiero.',
@@ -4346,24 +4398,24 @@ const M='Modo escape room',pick=a=>a[Math.floor(Math.random()*a.length)],ri=(a,b
 const RK=()=>'nx-esc-'+String((sess&&sess.email)||'invitado').toLowerCase(),rg=()=>Object.assign({ok:0,no:0,best:0,pts:0,rk:0,dif:-1},ld(RK(),{}));
 /* Escenario: n nombre, i intro, o objetos [nombre, claves de búsqueda, icono, texto con {d} dígito y {p} posición], i1/i2 objetos que ganas, pn frase del panel, cp frase del cifrado, fin final, am ambiente */
 const TH=[
-{n:'Laboratorio abandonado',ic:'🧪',i:'Despiertas en un laboratorio sin ventanas. La puerta blindada tiene un lector con una luz roja que parpadea, y sobre la mesa hay una caja fuerte con candado de **3 dígitos**.',
+{n:'Laboratorio abandonado',ic:'🧪',i:'A las 02:17, el laboratorio Helix perdió toda comunicación. Tú eras parte del equipo enviado a recuperar el registro del experimento 09, pero al entrar las compuertas se cerraron y el sistema anunció: «Personal no autorizado». En las paredes hay marcas de arrastre, los monitores siguen mostrando signos vitales de alguien que oficialmente nunca existió y algo golpea desde el interior de la cámara de contención. La salida está bloqueada por una caja fuerte de **3 dígitos**. Recupera las pruebas, descubre qué activó el protocolo y no confíes en las sombras detrás del cristal.',
  o:[['pizarra','pizarra|pizarron|formulas','📋','En la pizarra, entre fórmulas tachadas, hay un número subrayado dos veces: **{d}**. Una flecha dice «dígito {p}».'],['microscopio','microscopio|lente|laminilla','🔬','Bajo el lente ves un número grabado con láser en una laminilla: **{d}**. Al lado, una etiqueta: «dígito {p}».'],['refrigerador','refrigerador|refri|nevera|congelador','🧊','Dentro del refrigerador hay un frasco con una etiqueta: «dígito {p}: **{d}**».']],
- i1:'🪪 tarjeta de acceso',pn:'El lector de la puerta se enciende y muestra una secuencia de luces',i2:'🔑 llave magnética',cp:'La pantalla del lector pide una **palabra cifrada** para liberar el último cerrojo',fin:'La puerta blindada se abre con un silbido y entra aire fresco. ¡Saliste del laboratorio! 🌅',am:['Un tubo de ensayo vibra solo en la repisa…','Escuchas un zumbido eléctrico detrás de la pared.','Una luz fluorescente parpadea y vuelve a estabilizarse.']},
-{n:'Biblioteca embrujada',ic:'📚',i:'Las puertas de la biblioteca se cerraron a tus espaldas. Un candelabro se balancea solo y en el escritorio del bibliotecario hay un cofre con candado de **3 dígitos**.',
+ i1:'🪪 tarjeta de acceso',pn:'El lector de la puerta se enciende y muestra una secuencia de luces',i2:'🔑 llave magnética',cp:'La pantalla del lector pide una **palabra cifrada** para liberar el último cerrojo',fin:'🏁 **FINAL · Protocolo de salida**\nLa puerta blindada se abre con un silbido. Las luces rojas cambian a verde y el sistema anuncia que el protocolo de emergencia ha sido completado. Al cruzar el umbral, la alarma se apaga y las puertas del laboratorio quedan selladas detrás de ti. Has escapado con las pruebas intactas; ahora alguien tendrá que explicar qué ocurrió allí. 🌅',am:['Un tubo de ensayo vibra solo en la repisa…','Escuchas un zumbido eléctrico detrás de la pared.','Una luz fluorescente parpadea y vuelve a estabilizarse.']},
+{n:'Biblioteca embrujada',ic:'📚',i:'La biblioteca Blackwood iba a ser demolida, pero el último bibliotecario desapareció la noche en que catalogó un libro sin título. Ahora has quedado encerrado cuando el reloj marcó las 12:13, una hora que no existe en ningún mecanismo del edificio. Los libros cambian de lugar cuando no los miras y desde el piso superior alguien susurra tu nombre. En el escritorio hay un cofre con candado de **3 dígitos**. Encuentra quién escribió las notas y averigua por qué todas las páginas describen tu llegada antes de que ocurriera.',
  o:[['reloj','reloj|pendulo|manecillas','🕰️','El reloj de pared se detuvo y en su esfera alguien escribió con tinta: **{d}**. Debajo: «dígito {p}».'],['estantería','estanteria|estante|libros|libro|librero','📖','Un libro asoma del estante con una página marcada con el número **{d}**. En el margen: «dígito {p}».'],['retrato','retrato|cuadro|pintura|marco','🖼️','Detrás del retrato del fundador hay una nota pegada: «dígito {p}: **{d}**».']],
- i1:'🗝️ llave de bronce',pn:'Del cofre sale un mecanismo con runas que se encienden una por una',i2:'📜 pergamino sellado',cp:'En el pergamino hay una **palabra cifrada** que abre el portón principal',fin:'El portón cruje y la luz de la luna te recibe. ¡Escapaste de la biblioteca embrujada! 🌙',am:['Una página pasa sola en un libro cercano…','Oyes pasos arriba, pero no hay nadie.','El candelabro se apaga un segundo y se enciende de nuevo.']},
-{n:'Nave a la deriva',ic:'🚀',i:'La nave perdió el rumbo y las luces de emergencia parpadean. La escotilla de escape está bloqueada por un panel con candado de **3 dígitos**.',
+ i1:'🗝️ llave de bronce',pn:'Del cofre sale un mecanismo con runas que se encienden una por una',i2:'📜 pergamino sellado',cp:'En el pergamino hay una **palabra cifrada** que abre el portón principal',fin:'🏁 **FINAL · El último capítulo**\nEl portón cruje y los candelabros se encienden por última vez. Los libros regresan a sus estantes y el reloj vuelve a ponerse en marcha. Al salir bajo la luz de la luna, encuentras una última nota: «La historia termina cuando alguien logra salir». La biblioteca queda en silencio a tus espaldas… aunque una ventana se ilumina en el piso superior. 🌙',am:['Una página pasa sola en un libro cercano…','Oyes pasos arriba, pero no hay nadie.','El candelabro se apaga un segundo y se enciende de nuevo.']},
+{n:'Nave a la deriva',ic:'🚀',i:'La nave de exploración Asterion lleva 19 horas enviando una señal de socorro… aunque tu reloj indica que la misión apenas comenzó hace 40 minutos. La tripulación ha desaparecido y la inteligencia de a bordo repite órdenes con la voz del capitán, incluso después de que el registro confirma su muerte. Algo sigue moviéndose por los conductos. El reactor está en cuenta regresiva y la escotilla de escape está bloqueada por un panel con candado de **3 dígitos**. Restaura energía, revisa la bitácora y decide si puedes confiar en la computadora que controla la nave.',
  o:[['consola','consola|panel de control|panel|tablero|mandos','🎛️','En la consola parpadea un registro de error: «código {p}: **{d}**».'],['bitácora','bitacora|diario|registro|tableta','📟','La bitácora del capitán dice: «Recuerden el dígito {p}, es el **{d}**».'],['traje','traje|casco|escafandra|armario|casillero','🧑‍🚀','En el casco de un traje espacial hay un número pintado: **{d}**. Una etiqueta dice «dígito {p}».']],
- i1:'💳 tarjeta de oficial',pn:'El panel de la escotilla enciende una fila de luces en secuencia',i2:'🔋 celda de energía',cp:'La computadora de a bordo muestra una **palabra cifrada** como contraseña final',fin:'La cápsula se desprende y la nave queda atrás entre las estrellas. ¡Escapaste! ✨',am:['Una alarma lejana suena dos veces y se corta.','El suelo vibra suavemente: los motores siguen a medias.','Una estrella pasa veloz por la ventana.']},
-{n:'Submarino averiado',ic:'🌊',i:'El submarino se hundió hasta el fondo y el casco cruje por la presión. La compuerta de emergencia está atrapada por un candado de **3 dígitos**.',
+ i1:'💳 tarjeta de oficial',pn:'El panel de la escotilla enciende una fila de luces en secuencia',i2:'🔋 celda de energía',cp:'La computadora de a bordo muestra una **palabra cifrada** como contraseña final',fin:'🏁 **FINAL · Regreso a casa**\nLa contraseña desbloquea la escotilla y la cápsula de emergencia se separa de la nave. La computadora confirma que la trayectoria es estable y, poco a poco, las alarmas desaparecen. Mientras el planeta aparece en el horizonte, recibes una última transmisión: «Señal de rescate confirmada». Sobreviviste a la deriva y lograste volver a casa. ✨',am:['Una alarma lejana suena dos veces y se corta.','El suelo vibra suavemente: los motores siguen a medias.','Una estrella pasa veloz por la ventana.']},
+{n:'Submarino averiado',ic:'🌊',i:'El submarino científico Némesis dejó de responder justo encima de una fosa que no aparece en los mapas. El casco soporta una presión imposible y el sonar detecta tres señales alrededor del barco, pero no hay nada visible por las cámaras. La última nota del capitán dice: «No abran la compuerta exterior, aunque escuchen golpes». El agua ya alcanza el compartimento inferior y la compuerta de emergencia está bloqueada por un candado de **3 dígitos**. Averigua qué saboteó el sistema antes de que el oxígeno se agote.',
  o:[['manómetro','manometro|presion|medidor|tuberia|tubo','🌡️','El manómetro marca un número rayado en rojo: **{d}**. Una etiqueta dice «dígito {p}».'],['periscopio','periscopio|visor|lente','🔭','En el visor del periscopio hay un número grabado: **{d}**. Debajo: «dígito {p}».'],['literas','literas|litera|cama|colchon|almohada','🛏️','Bajo una almohada hay una nota: «dígito {p}: **{d}**».']],
- i1:'🔧 llave inglesa',pn:'El panel de la compuerta enciende burbujas luminosas en orden',i2:'🧰 válvula maestra',cp:'El sonar muestra una **palabra cifrada** que libera la compuerta',fin:'La compuerta se abre y subes a la superficie entre burbujas. ¡Escapaste del submarino! 🌊',am:['Un golpe sordo resuena fuera del casco…','Una gota cae en el suelo metálico.','El sonar emite un pitido lejano.']},
-{n:'Museo de noche',ic:'🏺',i:'Las puertas del museo se cerraron al caer la noche. Las alarmas están apagadas y la salida tiene un candado de **3 dígitos**.',
+ i1:'🔧 llave inglesa',pn:'El panel de la compuerta enciende burbujas luminosas en orden',i2:'🧰 válvula maestra',cp:'El sonar muestra una **palabra cifrada** que libera la compuerta',fin:'🏁 **FINAL · Superficie a la vista**\nLa válvula maestra libera la compuerta y el submarino comienza el ascenso. La presión disminuye, las luces dejan de parpadear y el sonar detecta la señal del equipo de rescate. Al emerger, el aire fresco y la luz del día llenan la cabina. La tripulación está a salvo y el misterio de la avería tendrá que investigarse desde tierra firme. 🌊',am:['Un golpe sordo resuena fuera del casco…','Una gota cae en el suelo metálico.','El sonar emite un pitido lejano.']},
+{n:'Museo de noche',ic:'🏺',i:'Durante la exposición privada del Museo de Antigüedades desapareció la pieza central: el Ojo de Anubis. Las cámaras muestran las salas vacías, salvo por una figura que aparece en cada grabación mirando directamente al lente. Al terminar tu turno, todas las puertas se bloquearon y las vitrinas comenzaron a empañarse desde dentro. La salida tiene un candado de **3 dígitos**. Sigue las pistas sin activar el sistema de seguridad y descubre si alguien robó la reliquia… o si la reliquia está intentando volver a su lugar.',
  o:[['vitrina','vitrina|cristal|joya|gema','💎','En la vitrina hay una placa con un número: «dígito {p}: **{d}**».'],['estatua','estatua|busto|escultura','🗿','En la base de la estatua hay grabado un número: **{d}**. Dice «dígito {p}».'],['sarcófago','sarcofago|momia|ataud','⚱️','Dentro del sarcófago hay un papiro con el número **{d}**. Anotado: «dígito {p}».']],
- i1:'🔦 linterna de guardia',pn:'Los jeroglíficos de la puerta se iluminan uno tras otro',i2:'📿 amuleto dorado',cp:'Un papiro tiene una **palabra cifrada** para abrir la salida',fin:'Las puertas del museo se abren al amanecer. ¡Escapaste! 🌅',am:['Una estatua parece haberse movido…','Pasos suaves recorren la sala contigua.','La luz de la luna cruza una vitrina.']},
-{n:'Búnker secreto',ic:'🔦',i:'Despiertas en un búnker sellado y las luces de emergencia titilan. La compuerta blindada tiene un candado de **3 dígitos**.',
+ i1:'🔦 linterna de guardia',pn:'Los jeroglíficos de la puerta se iluminan uno tras otro',i2:'📿 amuleto dorado',cp:'Un papiro tiene una **palabra cifrada** para abrir la salida',fin:'🏁 **FINAL · La pieza que faltaba**\nAl introducir la clave, las alarmas vuelven a su estado normal y las puertas se abren justo cuando amanece. La linterna ilumina el vestíbulo vacío; las piezas siguen en sus vitrinas, pero descubres una inscripción que nadie había registrado: «Quien resuelve el enigma merece conocer la verdad». Sales del museo con la sensación de haber descubierto un secreto que permanecerá oculto para los demás. 🌅',am:['Una estatua parece haberse movido…','Pasos suaves recorren la sala contigua.','La luz de la luna cruza una vitrina.']},
+{n:'Búnker secreto',ic:'🔦',i:'Despiertas en el búnker Atlas sin recordar cómo llegaste. El sistema informa que ocurrió una evacuación hace 27 años, pero el café aún está caliente y una terminal acaba de imprimir una orden con tu nombre. La radio transmite una voz que afirma estar afuera y te pide que no abras la compuerta. Los registros han sido borrados y los sensores detectan movimiento en un sector que debería estar vacío. La salida blindada tiene un candado de **3 dígitos**. Recupera la energía y los archivos de misión antes de decidir a quién creer.',
  o:[['generador','generador|motor|bateria|maquina','⚡','El generador tiene pintado un número: **{d}**. Una etiqueta dice «dígito {p}».'],['mapa','mapa|plano|tablero|mesa','🗺️','En el mapa hay un círculo rojo con el número **{d}**. Anotado: «dígito {p}».'],['taquilla','taquilla|taquillas|casillero|armario|locker','🗄️','En la taquilla hay una nota: «dígito {p}: **{d}**».']],
- i1:'🪪 pase militar',pn:'Las luces de la compuerta parpadean en secuencia',i2:'📡 radio portátil',cp:'La radio muestra una **palabra cifrada** como contraseña final',fin:'La compuerta blindada se abre y sales al aire libre. ¡Escapaste del búnker! 🌄',am:['El generador tose y se estabiliza.','Una sirena lejana suena y se apaga.','Cae polvo del techo.']}];
+ i1:'🪪 pase militar',pn:'Las luces de la compuerta parpadean en secuencia',i2:'📡 radio portátil',cp:'La radio muestra una **palabra cifrada** como contraseña final',fin:'🏁 **FINAL · Operación concluida**\nLa compuerta blindada se abre y la radio recupera la señal. Una voz confirma que el bloqueo ha terminado y que la operación queda oficialmente cerrada. Sales del búnker mientras el sol ilumina el terreno; detrás de ti, el sistema borra automáticamente los códigos de seguridad. Has conseguido escapar, pero el mensaje final de la radio deja claro que este búnker guardaba más secretos de los que imaginabas. 🌄',am:['El generador tose y se estabiliza.','Una sirena lejana suena y se apaga.','Cae polvo del techo.']}];
 const WD=['escapar','libertad','llave','misterio','enigma','salida','candado','secreto','puerta','tesoro','cerebro','noryx','astucia','laberinto','destino'];
 const enc=(w,k)=>w.replace(/[a-z]/g,c=>String.fromCharCode((c.charCodeAt(0)-97+k)%26+97)).toUpperCase();
 function seq(qq){qq=qq||[0,3];const k=ri(qq[0],qq[1]);let a,d,r,b,p,q,ar=[],ru,h;
@@ -4386,10 +4438,10 @@ function end(s,win,why){const c=s.camp,r0=win?Math.max(0,1000-20*s.used-100*s.h-
 function spend(s){s.T--;s.used++}
 const EX=/^(?:examin\w*|revis\w*|inspeccion\w*|busc\w*|registr\w*|mir\w*|ver|abr\w*|toc\w*|leo|leer|lee)\s+(?:a |al |en |la |el |las |los |el |del )*(.+)$/,AB=/^(?:abr\w*|codigo|clave|prob\w*|marc\w*|ingres\w*|teclea\w*|introduc\w*|usar codigo|usa el codigo)\s+(?:el |la |con |en |codigo |clave |numero |candado |caja |cofre |panel )*(\d[\d ]*)$/,AN=/^(?:responder|responde|respuesta|contesto|digo|la respuesta es|la palabra es|palabra|es|seria|son)\s+(.+)$/;
 const DF=[{l:'Fácil',T:34,k:[2,3],q:[0,1]},{l:'Medio',T:24,k:[2,7],q:[0,3]},{l:'Difícil',T:17,k:[5,11],q:[2,3]}];
-const MENU='**🗝️ Modo escape room.** Elige la dificultad escribiendo una opción:\n- `facil`: 34 acciones por sala, secuencias sencillas.\n- `medio`: 24 acciones por sala.\n- `dificil`: 17 acciones por sala, luz tenue, secuencias y cifrados duros.\n\nCada dificultad es una campaña de **3 salas distintas** seguidas. Si te quedas sin acciones, pierdes la campaña.';
+const MENU='**🗝️ Modo escape room.** Elige una opción escribiendo su nombre o número:\n1. `facil`: 34 acciones por sala, secuencias sencillas.\n2. `medio`: 24 acciones por sala.\n3. `dificil`: 17 acciones por sala, luz tenue, secuencias y cifrados duros.\n4. **Ver ranking** de Escape Room.\n\nCada dificultad es una campaña de **3 salas distintas** seguidas. Si te quedas sin acciones, pierdes la campaña.';
 function newRoom(d,c){const first=!c;c=c||{d,n:0,u:[],tot:0,us:0,hs:0,fs:0};const D=DF[d],pool=TH.filter(x=>!c.u.includes(x.n)),th=pick(pool.length?pool:TH);c.n++;c.u.push(th.n);
  const ns={th,code:[ri(1,9),ri(0,9),ri(0,9)],pos:shuf([0,1,2]),w:pick(WD),k:ri(D.k[0],D.k[1]),sq:seq(D.q),T:D.T,used:0,h:0,fa:0,ex:[false,false,false],inv:[],ph:'p1',camp:c};ctx.er=ns;if(first)try{dispatchEvent(new CustomEvent('nx-er-start'))}catch(e){}return ns}
-const RBK='nx-esc-board',RKX=/^(ranking|perfil|clasificacion|top|tabla)( de)?( del)?( modo)?( de)? ?(escape|escape room|sala de escape)$/,DN=['Fácil','Medio','Difícil'];
+const RBK='nx-esc-board',RKX=/^(?:(?:ver|muestrame|ensename|abrir) )?(?:el )?(ranking|perfil|clasificacion|top|tabla)(?: de)?(?: del)?(?: modo)?(?: de)? ?(?:escape|escape room|sala de escape)?$/,DN=['Fácil','Medio','Difícil'];
 const myName=()=>(sess&&(sess.name||String(sess.email).split('@')[0]))||'Invitado';
 async function rkSave(r){const l=ld(RBK,{});l[RK()]={nombre:myName(),puntos:r.rk,campanas:r.ok,derrotas:r.no,dif:r.dif};sv(RBK,l);
  if(!(sess&&sess.access))return;try{await _refreshSess();await fetch(cloudBase()+'/rest/v1/escape_ranking?on_conflict=email',{method:'POST',headers:{apikey:SUPA_KEY,Authorization:'Bearer '+sess.access,'Content-Type':'application/json',Prefer:'resolution=merge-duplicates,return=minimal'},body:JSON.stringify({email:String(sess.email).toLowerCase(),nombre:myName(),puntos:r.rk,campanas:r.ok,derrotas:r.no,dif:r.dif,updated_at:new Date().toISOString()})})}catch(e){}}
@@ -4398,8 +4450,9 @@ globalThis.nxEscRank=async function(){let rows=null;try{const x=await fetch(clou
 async function rkText(){const d=await nxEscRank(),m=d.me;return '**Ranking de escape room** '+(d.remote?'(global)':'(solo este dispositivo)')+'\n\n'+(d.rows.length?d.rows.slice(0,10).map((x,i)=>(i+1)+'. **'+x.nombre+'** · '+x.puntos+' pts · '+x.campanas+' campañas · máx. '+(x.dif>=0?DN[x.dif]:'-')).join('\n'):'Aún no hay jugadores. Termina una campaña para aparecer.')+'\n\n**Tu perfil:** '+m.nombre+' · '+m.puntos+' pts · '+m.campanas+' campañas ganadas · '+m.derrotas+' derrotas'+(m.login?'':'\n\nInicia sesión para aparecer en el ranking global.')}
 globalThis.erTry=function(t){const n=norm(t).replace(/\s+/g,' ').trim(),s=ctx.er,R=x=>({t:x,m:M});let m;
  if(!s){
-  if(RKX.test(n))return rkText().then(R);
-  if(ctx.erq){const m2=n.match(/^(?:modo |dificultad |nivel )?(facil|medio|normal|dificil)$/);ctx.erq=0;if(m2)return R(head(newRoom(m2[1]=='facil'?0:m2[1]=='dificil'?2:1)))}
+  if(RKX.test(n)||/^(ver )?ranking(?: de escape room)?$/.test(n))return rkText().then(R);
+  if(ctx.erq){const m2=n.match(/^(?:modo |dificultad |nivel )?(facil|medio|normal|dificil|1|2|3)$/);ctx.erq=0;if(n==='4'||/^(ver )?ranking(?: de escape room)?$/.test(n))return rkText().then(R);if(m2)return R(head(newRoom(/^(facil|1)$/.test(m2[1])?0:/^(dificil|3)$/.test(m2[1])?2:1)))}
+  if(n==='4'){try{const cc=conv(),msgs=cc&&cc.msgs||[],prev=[...msgs].reverse().find(x=>x&&x.r==='a');if(prev&&/que quieres jugar|ver ranking de escape room|veinte preguntas|acertijos/i.test(prev.t||''))return rkText().then(R)}catch(e){}}
   if(/(mis escapes|mi record|mis puntos|record|expediente) (de )?(escape|sala de escape)|escape room (record|puntos)/.test(n)){const r=rg();return R('🗝️ **Tu récord de escape room:** '+r.ok+' escapes · '+r.no+' derrotas · mejor puntuación '+r.best+' · '+r.pts+' pts acumulados.')}
   if(!/escape room|sala de escape|cuarto de escape|habitacion de escape|modo escape|juego de escape/.test(n)||!/(modo escape|jugar|jugu|quiero|abre|activa|ponme|hazme|empez|inicia|comenz|otro|nuevo|simul|entrar|entra|vamos)/.test(n)||/que es|que son|que significa|historia de|como se (hace|crea|construye)|como hacer|ingles|english|tecla|velocidad de escape|secuencia de escape|caracter|pelicula|serie /.test(n))return null;
   const d=/\bfacil\b/.test(n)?0:/\bdificil\b/.test(n)?2:/\b(medio|normal)\b/.test(n)?1:-1;if(d<0){ctx.erq=1;return R(MENU)}return R(head(newRoom(d)))}
@@ -9602,7 +9655,7 @@ if(comp&&box){const bar=E('div');bar.id='nxModeBar';bar.setAttribute('role','sta
 #nxEsc .ne-pin.done{border-color:#69f0ae;box-shadow:none;animation:none;background:#69f0ae44}
 #nxEsc .ne-pin.done::after{content:"";position:absolute;left:3px;top:0;width:4px;height:8px;border:solid #69f0ae;border-width:0 2px 2px 0;transform:rotate(40deg)}
 @keyframes nePin{50%{transform:scale(1.35);opacity:.6}}
-#nxEsc .ne-cross{position:absolute;z-index:2;left:50%;top:50%;width:14px;height:14px;margin:-7px;border:2px solid #ffffffaa;border-radius:50%;pointer-events:none;transition:transform .15s,border-color .15s,box-shadow .15s}
+#nxEsc .ne-gun{position:absolute;z-index:2;bottom:-8px;left:50%;width:150px;height:125px;transform:translateX(-50%);pointer-events:none;opacity:.88;filter:drop-shadow(0 8px 9px #000)}.ne-gun:before{content:'';position:absolute;bottom:0;left:35px;width:80px;height:72px;background:linear-gradient(110deg,#111820,#46515c 45%,#141a21);clip-path:polygon(25% 0,75% 0,100% 100%,0 100%)}.ne-gun i{position:absolute;bottom:62px;left:52px;width:46px;height:34px;background:linear-gradient(#78838e,#202832);border:2px solid #111820;border-radius:5px 5px 2px 2px}.ne-gun b{position:absolute;bottom:50px;left:67px;width:18px;height:31px;background:#202832;transform:skew(-12deg);border-radius:0 0 5px 5px}.ne-gun.shot{animation:gunKick .13s ease-out}@keyframes gunKick{0%{transform:translateX(-50%) translateY(0)}45%{transform:translateX(-50%) translateY(18px) scale(.96)}100%{transform:translateX(-50%) translateY(0)}}.ne-cross{position:absolute;z-index:2;left:50%;top:50%;width:14px;height:14px;margin:-7px;border:2px solid #ffffffaa;border-radius:50%;pointer-events:none;transition:transform .15s,border-color .15s,box-shadow .15s}
 #nxEsc .ne-cross.on{border-color:var(--a);transform:scale(1.8);box-shadow:0 0 14px var(--a)}
 #nxEsc .ne-tag{position:absolute;z-index:2;left:50%;top:calc(50% + 26px);transform:translateX(-50%);font:600 13px 'JetBrains Mono',monospace;background:#000c;border:1px solid var(--a);border-radius:10px;padding:5px 14px;pointer-events:none;white-space:nowrap}
 #nxEsc .ne-tag[hidden],#nxEsc .ne-use[hidden],#nxEsc .ne-say[hidden]{display:none}
@@ -9627,7 +9680,7 @@ if(comp&&box){const bar=E('div');bar.id='nxModeBar';bar.setAttribute('role','sta
 #nxEsc .ne-dust{position:absolute;inset:0;pointer-events:none;overflow:hidden}
 #nxEsc .ne-dust i{position:absolute;bottom:-4%;left:var(--x);width:var(--s);height:var(--s);border-radius:50%;background:color-mix(in srgb,var(--a) 55%,#fff);opacity:0;animation:neUp var(--t) linear infinite;animation-delay:var(--dl)}
 @keyframes neUp{15%{opacity:.5}to{transform:translate(var(--dx),-105vh);opacity:0}}
-#nxEsc .ne-vig{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at center,transparent 55%,#000a 100%)}
+#nxEsc .ne-vig{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse at center,transparent 68%,#0005 100%)}
 #nxEsc .ne-fade{position:absolute;inset:0;z-index:4;background:#000;pointer-events:none;opacity:0}
 #nxEsc .ne-fade.on{animation:neFd 1.6s ease-out}
 @keyframes neFd{from{opacity:1}to{opacity:0}}
@@ -9635,9 +9688,12 @@ if(comp&&box){const bar=E('div');bar.id='nxModeBar';bar.setAttribute('role','sta
 @keyframes neFo{from{opacity:0}to{opacity:1}}
 #nxEsc .ne-card{position:absolute;z-index:4;left:50%;top:38%;transform:translate(-50%,-50%);padding:14px 30px;border-radius:16px;border:1px solid var(--a);background:#050a10d9;font:800 clamp(18px,4vw,30px) 'Bricolage Grotesque',sans-serif;letter-spacing:-.02em;text-align:center;pointer-events:none;opacity:0;box-shadow:0 0 40px -8px var(--a)}
 #nxEsc .ne-card.on{animation:neCard 3.2s ease both .5s}
+#nxEsc .ne-card{max-width:min(90%,680px);line-height:1.35;text-shadow:0 2px 18px #000;backdrop-filter:blur(8px);border-width:1px;box-shadow:0 0 55px -8px var(--a),inset 0 0 28px #ffffff08}
+#nxEsc .ne-say{border-color:color-mix(in srgb,var(--a) 50%,#fff2);box-shadow:0 12px 40px #0008}
+#nxEsc .ne-pin{font-weight:900;text-shadow:0 0 12px currentColor;box-shadow:0 0 16px color-mix(in srgb,var(--a) 40%,transparent)}
 @keyframes neCard{0%{opacity:0;transform:translate(-50%,-30%) scale(.92)}15%,75%{opacity:1;transform:translate(-50%,-50%) scale(1)}100%{opacity:0;transform:translate(-50%,-60%) scale(1.03)}}
 #nxEsc.sub{--a:#4df0c8}#nxEsc.mus{--a:#ffd166}#nxEsc.bun{--a:#9bff6a}
-#nxEsc .ne-rank{z-index:6}
+#nxEsc .ne-combat{position:absolute;z-index:3;left:50%;top:calc(74px + env(safe-area-inset-top,0px));transform:translateX(-50%);display:flex;gap:7px;align-items:center;justify-content:center;flex-wrap:wrap;width:min(96%,720px);pointer-events:auto;background:#050a10c9;border:1px solid #ffffff25;border-radius:14px;padding:7px 9px;backdrop-filter:blur(8px);font:600 12px 'JetBrains Mono',monospace}#nxEsc .ne-combat[hidden]{display:none}#nxEsc .ne-combat button{border:1px solid #ffffff30;border-radius:8px;background:#ffffff10;color:#eef7ff;padding:7px 10px;font:inherit;cursor:pointer}#nxEsc .ne-combat button.active{border-color:var(--a);background:color-mix(in srgb,var(--a) 20%,#000)}#nxEsc .ne-combat .ne-hp{min-width:70px;color:#ff7777}#nxEsc .ne-combat .ne-ammo{color:#b9d8ff}#nxEsc .ne-combat .ne-combat-help{opacity:.8}\n#nxEsc .ne-rank{z-index:6}
 #nxEsc .rk-me{display:flex;gap:12px;align-items:center;text-align:left}
 #nxEsc .rk-me i{width:44px;height:44px;border-radius:50%;background:var(--a);color:#05080c;display:grid;place-items:center;font:800 20px 'Bricolage Grotesque',sans-serif;font-style:normal}
 #nxEsc .rk-src{font-size:12px;color:#9fb3c2}
@@ -9656,8 +9712,8 @@ const strip=t=>String(t).replace(/[\p{Extended_Pictographic}\uFE0F\u200D]/gu,'')
 const md=t=>esc(strip(t)).replace(/\*\*(.+?)\*\*/g,'<b>$1</b>').replace(/`(.+?)`/g,'<code>$1</code>').replace(/(^|[\s(])_(.+?)_(?=[\s).,]|$)/g,'$1<i>$2</i>').replace(/\n/g,'<br>');
 const enc=(w,k)=>w.replace(/[a-z]/g,c=>String.fromCharCode((c.charCodeAt(0)-97+k)%26+97)).toUpperCase();
 const dec=(w,k)=>w.replace(/[A-Z]/g,c=>String.fromCharCode((c.charCodeAt(0)-65-k+26)%26+65));
-const TC={'🧪':'lab','📚':'lib','🚀':'nav','🌊':'sub','🏺':'mus','🔦':'bun'},R=5,HT=3.4,H=h=>[1,3,5].map(i=>parseInt(h.substr(i,2),16)/255),rnd=(a,b)=>a+Math.random()*(b-a);
-const TK={lab:{a:'#00e5ff',L:[.8,.95,1],fog:[.02,.04,.06],am:.34},lib:{a:'#ffb347',L:[1,.78,.5],fog:[.05,.03,.02],am:.28},nav:{a:'#b388ff',L:[.72,.66,1],fog:[.02,.02,.06],am:.3},sub:{a:'#4df0c8',L:[.7,1,.95],fog:[.01,.04,.05],am:.28},mus:{a:'#ffd166',L:[1,.95,.8],fog:[.04,.04,.05],am:.34},bun:{a:'#9bff6a',L:[.9,1,.8],fog:[.03,.04,.02],am:.3}};
+const TC={'🧪':'lab','📚':'lib','🚀':'nav','🌊':'sub','🏺':'mus','🔦':'bun'};let R=5;const HT=3.4,H=h=>[1,3,5].map(i=>parseInt(h.substr(i,2),16)/255),rnd=(a,b)=>a+Math.random()*(b-a);
+const TK={lab:{a:'#00e5ff',L:[.8,.95,1],fog:[.055,.065,.075],am:.68},lib:{a:'#ffb347',L:[1,.78,.5],fog:[.09,.065,.045],am:.62},nav:{a:'#b388ff',L:[.72,.66,1],fog:[.055,.055,.09],am:.64},sub:{a:'#4df0c8',L:[.7,1,.95],fog:[.035,.075,.085],am:.62},mus:{a:'#ffd166',L:[1,.95,.8],fog:[.075,.075,.08],am:.68},bun:{a:'#9bff6a',L:[.9,1,.8],fog:[.065,.075,.055],am:.65}};
 const SN=['Caja fuerte','Panel de secuencia','Puerta de salida'];
 /* matrices (column-major) */
 const mul=(a,b)=>{const o=new Float32Array(16);for(let i=0;i<4;i++)for(let j=0;j<4;j++){let s=0;for(let k=0;k<4;k++)s+=a[k*4+j]*b[i*4+k];o[i*4+j]=s}return o};
@@ -9727,8 +9783,9 @@ nav:[(m,A,T)=>{m.box(0,.5,.45,2.4,1,.9,H('#2a2f55'));m.box(0,1.05,.4,2.4,.1,.7,M
  (m,A,T)=>{m.box(0,1.75,.05,2.4,1.4,.08,H('#2a2d28'),0,T.map);m.box(0,.55,.5,1.8,.1,.7,H('#6b5a3a'));[-.8,.8].forEach(x=>m.box(x,.28,.5,.08,.56,.6,DK));m.sph(0,.8,.5,.12,.12,.12,A,1)},
  (m,A)=>{[-.52,0,.52].forEach(x=>{m.box(x,1,.3,.5,2,.5,H('#56604a'));m.box(x,1.6,.56,.3,.05,.02,DK);m.box(x,1.5,.56,.3,.05,.02,DK);m.box(x+.17,1,.57,.04,.2,.03,MT)});m.box(.52,1.9,.56,.1,.06,.02,A,1)}]};
 const VERT='attribute vec3 aP,aN,aC;attribute vec2 aU;attribute float aE;uniform mat4 uVP,uM;varying vec3 vN,vC,vW;varying vec2 vU;varying float vE;void main(){vec4 w=uM*vec4(aP,1.);vW=w.xyz;vN=mat3(uM)*aN;vC=aC;vU=aU;vE=aE;gl_Position=uVP*w;}';
-const FRAG='precision mediump float;varying vec3 vN,vC,vW;varying vec2 vU;varying float vE;uniform sampler2D uT;uniform float uUT,uEs,uH,uAm;uniform vec3 uP[3],uK[3],uCam,uFog,uAc;void main(){vec3 c=vC;if(uUT>.5)c*=texture2D(uT,vU).rgb;vec3 n=normalize(vN);if(dot(n,uCam-vW)<0.)n=-n;vec3 l=vec3(uAm)*(.75+.25*n.y);for(int i=0;i<3;i++){vec3 d=uP[i]-vW;float r=length(d);l+=uK[i]*max(dot(n,d/r),0.)/(1.+.07*r*r);}vec3 o=mix(c*l,c,vE*uEs)+uAc*uH*.22;float f=clamp(length(uCam-vW)/17.,0.,1.);o=mix(o,uFog,f*f);gl_FragColor=vec4(o,1.);}';
+const FRAG='precision mediump float;varying vec3 vN,vC,vW;varying vec2 vU;varying float vE;uniform sampler2D uT;uniform float uUT,uEs,uH,uAm;uniform vec3 uP[3],uK[3],uCam,uFog,uAc;void main(){vec3 c=vC;if(uUT>.5)c*=texture2D(uT,vU).rgb;vec3 n=normalize(vN);if(dot(n,uCam-vW)<0.)n=-n;vec3 l=vec3(uAm)*(1.12+.12*n.y);for(int i=0;i<3;i++){vec3 d=uP[i]-vW;float r=length(d);l+=uK[i]*max(dot(n,d/r),0.)/(1.+.045*r*r);}vec3 o=(mix(c*l,c,vE*uEs)+uAc*uH*.28)*1.08;float f=clamp(length(uCam-vW)/34.,0.,1.);o=mix(o,uFog,f*f*.48);gl_FragColor=vec4(o,1.);}';
 let trans=false,vel=[0,0],look=null,shk=0,fv=1,pk=0,ov,el={},gl,pr,U={},ents=[],shown=null,key='',digs=[0,0,0],dial=0,val='',over=false,said=false,raf=0,last=0,pos=[0,1.62,3.6],yaw=0,pitch=0,bob=0,stick=[0,0],keys={},target=null,modal=false,walk=false,theme=null,doorA=0,safeA=0,exitEs=0,tk=null;
+let weapon='melee',unlockedWeapons=new Set(['melee']),health=100,armor=25,ammo={pistol:0,rifle:0,shotgun:0,smg:0,energy:0},reserve={pistol:0,rifle:0,shotgun:0,smg:0,energy:0},combatClock=0,reloadClock=0,kills=0,lastShot=0,mission={need:0,done:0,loot:0,goal:0},combatToast=0;const WEAPONS={pistol:{name:'Pistola',damage:34,rate:.32,mag:12,range:11},rifle:{name:'Rifle',damage:20,rate:.12,mag:30,range:15},shotgun:{name:'Escopeta',damage:58,rate:.72,mag:6,range:5.5},smg:{name:'Subfusil',damage:13,rate:.075,mag:36,range:9},energy:{name:'Arma de energía',damage:28,rate:.24,mag:18,range:12},melee:{name:'Cuerpo a cuerpo',damage:45,rate:.55,range:2.15,mag:0}};
 const sendChat=p=>{const i=$('#in'),g=$('#go');if(!i||!g)return;try{if(typeof busy!=='undefined'&&busy)return}catch(e){}i.value=p;i.dispatchEvent(new Event('input',{bubbles:true}));g.click()};
 function sh(t,s){const o=gl.createShader(t);gl.shaderSource(o,s);gl.compileShader(o);return o}
 function initGL(){gl=el.cv.getContext('webgl',{antialias:true})||el.cv.getContext('experimental-webgl');if(!gl)return false;
@@ -9741,7 +9798,7 @@ function upload(m){const parts=[],mk=(arr,tex)=>{if(!arr.length)return;const b=g
 function free(e){e.parts.forEach(p=>{gl.deleteBuffer(p.b);p.t&&gl.deleteTexture(p.t)})}
 const I4=tr(0,0,0);
 function add(id,m,o){const e=Object.assign({id,m,g:0,es:1,M:I4,solid:true,use:null},o);e.b=e.b||m.b;e.c=[(e.b[0]+e.b[3])/2,(e.b[1]+e.b[4])/2,(e.b[2]+e.b[5])/2];e.parts=upload(m);ents.push(e);return e}
-function world(s){ents.forEach(free);ents=[];el.pins.innerHTML='';const k=TC[s.th.ic],T=mkTex(k,TK[k].a),A=H(TK[k].a),m=new Mesh();theme=TK[k];
+function world(s){weapon='melee';unlockedWeapons=new Set(['melee']);ammo={pistol:0,rifle:0,shotgun:0,smg:0,energy:0};reserve={pistol:0,rifle:0,shotgun:0,smg:0,energy:0};health=100;armor=0;kills=0;ents.forEach(free);ents=[];el.pins.innerHTML='';const k=TC[s.th.ic];R=({lab:7.2,lib:6.4,nav:10.2,sub:8.1,mus:9.0,bun:8.8}[k]||7);const T=mkTex(k,TK[k].a),A=H(TK[k].a),m=new Mesh();theme=TK[k];
  const fl=[[0,0],[3,0],[3,3],[0,3]];m.q([[-R,0,R],[R,0,R],[R,0,-R],[-R,0,-R]],[0,1,0],[1,1,1],0,T.floor,fl);
  m.q([[-R,HT,-R],[R,HT,-R],[R,HT,R],[-R,HT,R]],[0,-1,0],H('#1b2026'));m.box(0,HT-.03,0,2.6,.06,1.4,[1,.98,.9],1);m.box(0,.01,.4,3.4,.02,2.4,H(k=='lib'?'#6a1f1f':k=='lab'?'#3b5560':'#2c2a66'));
  const W=(x0,z0,x1,z1,n,y0,y1)=>{const L=Math.hypot(x1-x0,z1-z0)/HT;m.q([[x0,y0,z0],[x1,y0,z1],[x1,y1,z1],[x0,y1,z0]],n,[1,1,1],0,T.wall,[[0,1-y0/HT],[L,1-y0/HT],[L,1-y1/HT],[0,1-y1/HT]])};
@@ -9749,8 +9806,102 @@ function world(s){ents.forEach(free);ents=[];el.pins.innerHTML='';const k=TC[s.t
  m.box(-.96,1.25,-R+.08,.14,2.5,.2,MT);m.box(.96,1.25,-R+.08,.14,2.5,.2,MT);m.box(0,2.47,-R+.08,2.06,.14,.2,MT);
  [[-3.6,3.6,.9],[3.3,-3.7,.8]].forEach(p=>m.box(p[0],p[2]/2,p[1],p[2],p[2],p[2],k=='lib'?H('#6a4426'):H('#4a5560')));m.box(-3.0,.25,4.3,.5,.5,.5,k=='lib'?H('#7a5230'):H('#3b4650'));
  add('room',m,{solid:false});
+ // Cada escenario tiene arquitectura y escala propias, no solo una textura diferente.
+ const deco=new Mesh();
+ if(k==='lib'){for(let z=-R+1.1;z<R-1;z+=2.1){deco.box(-R+.45,1.45,z,.55,2.9,1.55,H('#684326'));deco.box(R-.45,1.45,z,.55,2.9,1.55,H('#684326'));for(let y=.55;y<2.6;y+=.65){deco.box(-R+.15,y,z,.08,.045,1.45,H('#b8893f'));deco.box(R-.15,y,z,.08,.045,1.45,H('#b8893f'));}}}
+ else if(k==='nav'){for(let z=-R+1.5;z<R-1;z+=2.7){deco.box(-2.8,1.65,z,.28,3.3,.35,H('#273b73'));deco.box(2.8,1.65,z,.28,3.3,.35,H('#273b73'));deco.box(0,3.05,z,5.6,.12,.18,A,1);}deco.box(0,.08,0,2.8,.16,2.8,H('#1b2850'))}
+ else if(k==='sub'){for(let z=-R+1;z<R-1;z+=2.4){deco.cyl(-2.1,1.65,z,.12,.12,3.1,H('#4df0c8'),0,'y');deco.cyl(2.1,1.65,z,.12,.12,3.1,H('#4df0c8'),0,'y');deco.box(0,2.7,z,4.2,.12,.12,H('#315e65'));}deco.cyl(0,1.2,1.1,.48,.48,.25,H('#4df0c8'),1,'z')}
+ else if(k==='mus'){
+  // Galería de historia natural: vitrinas, fósiles a escala monumental y esqueletos de dinosaurios.
+  for(let x=-R+1.2;x<R-1;x+=2.1){deco.box(x,1.4,-R+2.0,.22,2.8,.22,H('#a58a5b'));deco.box(x,1.4,-R+2.0,.85,.12,.85,H('#6e5739'));deco.box(x,2.8,-R+2.0,.95,.12,.95,H('#c9a24a'));}
+  // Pedestales centrales con vitrinas iluminadas.
+  [-1.7,1.7].forEach(x=>{deco.box(x,.28,-4.7,1.65,.56,1.45,H('#514635'));deco.box(x,.78,-4.7,1.45,.035,1.25,H('#c9a24a'),.35);deco.box(x,1.25,-4.7,1.35,.9,1.15,H('#b6d9df'),.08);deco.box(x,1.25,-4.7,1.22,.77,1.02,H('#17212a'),.12);});
+  const bone=H('#e7d9b4'),boneHi=H('#fff0ce'),shadow=H('#897957');
+  // Gran esqueleto de T-rex sobre una plataforma, con cráneo, mandíbula, columna, costillas y patas.
+  const tx=-3.9,tz=-.4;deco.box(tx,.22,tz,2.5,.35,5.3,H('#49453c'));deco.box(tx,.42,tz,2.25,.08,5.0,H('#9b8559'));
+  for(let j=0;j<13;j++){const z=tz-1.75+j*.29;deco.sph(tx,.99,z,.22,.18,.2,j%3?bone:boneHi);if(j>2&&j<10){deco.box(tx-.28,.88,z,.11,.42,.13,bone);deco.box(tx+.28,.88,z,.11,.42,.13,bone);deco.box(tx-.20,.69,z,.12,.28,.12,shadow);deco.box(tx+.20,.69,z,.12,.28,.12,shadow);}}
+  // Cola larga segmentada.
+  for(let j=0;j<7;j++)deco.box(tx,.92,tz+2.0+j*.27,.34-j*.035,.16-j*.012,.32,bone);
+  // Cráneo y mandíbula del T-rex.
+  deco.sph(tx,.99,tz-2.05,.43,.31,.52,boneHi);deco.box(tx,.78,tz-2.45,.48,.12,.52,bone);deco.box(tx,.96,tz-2.32,.28,.08,.2,H('#1b1b19'));deco.sph(tx-.22,1.08,tz-2.25,.055,.055,.055,H('#171717'));deco.sph(tx+.22,1.08,tz-2.25,.055,.055,.055,H('#171717'));
+  // Patas robustas y brazos pequeños.
+  [-.72,.72].forEach(dx=>{deco.box(tx+dx,.67,tz-.55,.22,.72,.25,bone);deco.box(tx+dx,.32,tz-.55,.38,.16,.5,boneHi);deco.box(tx+dx*.7,1.0,tz-.95,.13,.28,.13,bone);});
+  // Segundo fósil: dinosaurio de cuello largo, con costillas, cuello elevado y cola.
+  const sx=3.8,sz=-.1;deco.box(sx,.2,sz,2.15,.3,5.1,H('#49453c'));deco.box(sx,.39,sz,1.95,.07,4.8,H('#9b8559'));
+  for(let j=0;j<12;j++){const z=sz+1.55-j*.28;deco.sph(sx,.92,z,.18,.15,.18,bone);if(j<8){deco.box(sx-.25,.82,z,.09,.34,.11,boneHi);deco.box(sx+.25,.82,z,.09,.34,.11,boneHi);}}
+  // Cuello inclinado por segmentos y cabeza pequeña.
+  for(let j=0;j<6;j++){deco.box(sx,.99+j*.19,sz-1.35-j*.2,.18,.17,.22,bone);}
+  deco.sph(sx,2.12,sz-2.48,.25,.18,.36,boneHi);deco.box(sx,2.0,sz-2.78,.18,.09,.3,bone);deco.sph(sx-.12,2.16,sz-2.62,.035,.035,.035,H('#171717'));deco.sph(sx+.12,2.16,sz-2.62,.035,.035,.035,H('#171717'));
+  [-.62,.62].forEach(dx=>{deco.box(sx+dx,.62,sz-.45,.17,.72,.2,bone);deco.box(sx+dx,.28,sz-.45,.28,.13,.42,boneHi);deco.box(sx+dx,.62,sz+1.25,.16,.7,.18,bone);});
+  // Costillas altas y focos de museo en el techo.
+  for(let z=-3.1;z<3.0;z+=1.25){deco.box(0,3.18,z,1.1,.08,.08,H('#c9a24a'),.5);deco.box(-4.9,2.95,z,.18,.08,.55,H('#ffd166'),.7);deco.box(4.9,2.95,z,.18,.08,.55,H('#ffd166'),.7);}
+  deco.box(0,.09,4.4,3.4,.18,1.1,H('#514635'));deco.box(0,.2,4.4,3.1,.08,.9,H('#c9a24a'),.25);
+}
+ else if(k==='bun'){for(let z=-R+1;z<R-1;z+=2.5){deco.box(-2.4,1.3,z,.85,2.6,.8,H('#414d4a'));deco.box(2.4,1.3,z,.85,2.6,.8,H('#414d4a'));deco.box(-2.4,2.2,z,.9,.08,.85,H('#9bff6a'),1);deco.box(2.4,2.2,z,.9,.08,.85,H('#9bff6a'),1);}deco.box(0,2.9,0,3.8,.12,.12,H('#9bff6a'),1)}
+ else {for(let x=-2.5;x<=2.5;x+=2.5){deco.box(x,1.25,-1.1,.8,2.5,.75,H('#354a54'));deco.box(x,2.55,-1.1,.85,.08,.8,A,1)}deco.box(0,.55,1.7,2.5,1.1,.65,H('#253941'))}
+ add('architecture',deco,{solid:false});
+ if(k==='bun'||k==='nav'){
+  const defs=k==='nav'?
+   [{type:'stalker',x:-2.2,z:-1.2,hp:72},{type:'gunner',x:2.3,z:-3.2,hp:58},{type:'brute',x:0,z:-5.2,hp:150}]:
+   [{type:'stalker',x:-2.2,z:-1.5,hp:78},{type:'gunner',x:2.2,z:-3.1,hp:62},{type:'brute',x:0,z:-4.6,hp:165}];
+  defs.forEach((d,idx)=>{const enemy=new Mesh(0,d.x,0,d.z),green=k==='bun';
+   const body=d.type==='brute'?H('#6d3434'):d.type==='gunner'?H('#d49a45'):(green?H('#9bff6a'):H('#b388ff'));
+   // Siluetas diferenciadas: extremidades, placas, máscara y detalles emisivos.
+   if(d.type==='stalker'){
+    enemy.sph(0,1.08,0,.29,.58,.25,body,1);                 // torso estrecho y encorvado
+    enemy.sph(0,1.77,.035,.25,.31,.23,H('#10151b'));
+    enemy.box(0,1.49,-.04,.22,.28,.2,H('#26303a'));
+    enemy.cyl(-.34,1.12,0,.105,.78,body,1,'y',9); enemy.cyl(.34,1.12,0,.105,.78,body,1,'y',9);
+    enemy.cyl(-.16,.43,0,.105,.72,H('#242b33'),.25,'y',9); enemy.cyl(.16,.43,0,.105,.72,H('#242b33'),.25,'y',9);
+    enemy.box(-.16,.08,.08,.13,.18,.32,H('#090d12')); enemy.box(.16,.08,.08,.13,.18,.32,H('#090d12'));
+    enemy.box(-.095,1.79,.235,.07,.055,.035,H('#ff303f'),1); enemy.box(.095,1.79,.235,.07,.055,.035,H('#ff303f'),1);
+    enemy.box(0,1.37,-.25,.11,.38,.12,body,1); enemy.box(-.12,1.27,-.28,.08,.17,.08,H('#dce8ed'),.5); enemy.box(.12,1.27,-.28,.08,.17,.08,H('#dce8ed'),.5);
+    for(let j=0;j<3;j++){enemy.box(-.18+j*.18,2.02,-.02,.09,.2,.1,H('#26303a'));}
+   } else if(d.type==='gunner'){
+    enemy.box(0,1.13,0,.64,.75,.38,body, .2); enemy.sph(0,1.76,0,.29,.3,.27,H('#1b242c'));
+    enemy.box(0,1.9,.06,.52,.12,.4,H('#202833')); enemy.box(0,1.69,.245,.36,.09,.06,H('#ffb74d'),1);
+    enemy.box(-.43,1.32,0,.28,.28,.36,H('#343e49'));enemy.box(.43,1.32,0,.28,.28,.36,H('#343e49'));
+    enemy.cyl(-.22,.49,0,.14,.75,H('#202833'),.1,'y',10);enemy.cyl(.22,.49,0,.14,.75,H('#202833'),.1,'y',10);
+    enemy.box(-.22,.08,.08,.22,.16,.35,H('#10151b'));enemy.box(.22,.08,.08,.22,.16,.35,H('#10151b'));
+    enemy.box(.53,1.08,.23,.62,.13,.13,H('#101820'));enemy.box(.84,1.08,.23,.16,.09,.09,H('#ffb347'),1);enemy.box(.35,1.18,.23,.12,.22,.12,H('#202833'));
+    enemy.box(-.13,1.1,.205,.09,.22,.04,H('#151b22'));enemy.box(.13,1.1,.205,.09,.22,.04,H('#151b22'));
+   } else {
+    enemy.sph(0,1.13,0,.66,.72,.49,body,1); enemy.box(0,1.25,.03,.92,.48,.66,H('#321b1b'));
+    enemy.sph(0,1.94,.015,.4,.36,.34,H('#171c23'));
+    enemy.box(0,1.79,.31,.48,.13,.08,H('#ff4545'),1);enemy.box(0,2.08,.05,.62,.13,.48,H('#3b2024'));
+    enemy.box(-.27,2.25,.02,.16,.27,.15,H('#d8d0c4'));enemy.box(.27,2.25,.02,.16,.27,.15,H('#d8d0c4'));
+    enemy.box(-.57,1.35,0,.35,.65,.46,H('#4a2428'));enemy.box(.57,1.35,0,.35,.65,.46,H('#4a2428'));
+    enemy.cyl(-.27,.43,0,.2,.72,H('#29262a'),.2,'y',10);enemy.cyl(.27,.43,0,.2,.72,H('#29262a'),.2,'y',10);
+    enemy.box(-.27,.08,.08,.32,.2,.42,H('#171b20'));enemy.box(.27,.08,.08,.32,.2,.42,H('#171b20'));
+    enemy.box(0,.93,-.31,.52,.28,.16,H('#9b3030'),.25);enemy.box(0,.57,-.32,.32,.12,.12,H('#ff4545'),1);
+   }
+   const foe=add('enemy_'+idx,enemy,{name:d.type==='stalker'?'Acechador':d.type==='gunner'?'Tirador':'Bruto blindado',solid:false,es:1});
+   foe.hp=d.hp;foe.maxHp=d.hp;foe.enemy=true;foe.kind=d.type;foe.alive=true;foe.lastAttack=0;foe.lastMove=0;foe.spawnX=d.x;foe.spawnZ=d.z;foe.speed=d.type==='stalker'?1.05:d.type==='brute'?.42:.28;foe.damage=d.type==='brute'?20:d.type==='gunner'?10:12;
+   foe.use=()=>{focus(foe);say(foe.name+' · '+foe.hp+'/'+foe.maxHp+' HP. Apunta al centro y pulsa F para atacar.');};
+  });
+  // Botín: se puede recoger tras limpiar la zona o explorar sus rincones.
+  const drops=[{id:'loot_med',x:-R+1.1,z:1.5,kind:'med',label:'Botiquín'},{id:'loot_armor',x:R-1.1,z:1.2,kind:'armor',label:'Placas de armadura'},{id:'loot_ammo',x:0,z:-R+1.25,kind:'ammo',label:'Caja de munición'},{id:'loot_key',x:0,z:2.2,kind:'key',label:'Tarjeta de acceso'}];
+  drops.forEach(d=>{const lm=new Mesh(0,d.x,0,d.z);const col=d.kind==='med'?H('#ff5263'):d.kind==='armor'?H('#46b5ff'):d.kind==='ammo'?H('#ffc857'):H('#9bff6a');lm.box(0,.35,0,.42,.42,.42,col,1);lm.box(0,.59,0,.24,.08,.24,H('#eaf5ff'),1);
+   const le=add(d.id,lm,{name:d.label,solid:false,es:.9});le.loot=true;le.kind=d.kind;le.used=false;le.use=()=>{if(le.used)return;say('Recogiste: '+d.label+'.');if(d.kind==='med'){health=Math.min(100,health+35);say('Botiquín recogido: +35 HP.')}else if(d.kind==='armor'){armor=Math.min(100,armor+35);say('Placas recogidas: +35 de armadura.')}else if(d.kind==='ammo'){reserve.pistol+=18;reserve.rifle+=45;reserve.shotgun+=6;reserve.smg+=36;reserve.energy+=18;say('Caja de munición: recibiste reservas para todas las armas.')}else{mission.key=true;say('Tarjeta de acceso obtenida. Busca el panel de salida para completar la misión.')}le.used=true;le.es=0;le.M=mul(tr(0,-100,0),I4);mission.loot++;combatHud();};
+  });
+  // Armas repartidas por la sala: no aparecen equipadas al iniciar.
+  const gunSpawns=[
+   {id:'weapon_pistol',kind:'pistol',x:-R+1.35,z:3.0,label:'Pistola de servicio'},
+   {id:'weapon_rifle',kind:'rifle',x:R-1.35,z:-.2,label:'Rifle táctico'},
+   {id:'weapon_shotgun',kind:'shotgun',x:-R+1.25,z:-2.0,label:'Escopeta de asalto'},
+   {id:'weapon_smg',kind:'smg',x:1.1,z:-R+1.25,label:'Subfusil compacto'},
+   {id:'weapon_energy',kind:'energy',x:R-1.2,z:2.7,label:'Prototipo de energía'}
+  ];
+  gunSpawns.forEach((d,idx)=>{const gm=new Mesh(0,d.x,0,d.z),col=d.kind==='energy'?'#69f0ff':d.kind==='shotgun'?'#e5a65a':d.kind==='rifle'?'#9bff6a':d.kind==='smg'?'#b388ff':'#e4e9f0';
+   gm.box(0,.3,0,.72,.16,.2,H('#20252c'));gm.box(.08,.34,.015,.43,.12,.23,H(col),1);gm.box(-.27,.25,0,.16,.22,.17,H('#363d48'));gm.box(.3,.32,0,.2,.08,.1,H('#151a20'));
+   const ge=add(d.id,gm,{name:d.label,solid:false,es:1});ge.loot=true;ge.weaponPickup=true;ge.weaponKind=d.kind;ge.used=false;ge.c=[d.x,.3,d.z];ge.b=[d.x-.45,.05,d.z-.3,d.x+.45,.65,d.z+.3];ge.use=()=>{if(ge.used)return;ge.used=true;unlockedWeapons.add(d.kind);ammo[d.kind]=WEAPONS[d.kind].mag;reserve[d.kind]=d.kind==='pistol'?36:d.kind==='rifle'?90:d.kind==='shotgun'?18:d.kind==='smg'?108:48;weapon=d.kind;ge.es=0;ge.M=mul(tr(0,-100,0),I4);mission.loot++;say('Encontraste '+d.label+'. Arma desbloqueada y equipada.');combatHud();};
+  });
+  // La tarjeta se coloca en un lugar diferente de las armas y suministros.
+  mission={need:defs.length,done:0,loot:0,goal:2,key:false};
+ }else{mission={need:0,done:0,loot:0,goal:0,key:false};}
+
  const mk=(id,fn,yaw,x,z,o)=>{const q=new Mesh(yaw,x,0,z);fn(q,A,T);return add(id,q,o)};
- const sl=[[Math.PI/2,-R,-.5],[0,-3.2,-R],[0,3.2,-R]];
+ const sl=[[Math.PI/2,-R+.2,-.5],[0,-Math.min(3.2,R-.8),-R+.2],[0,Math.min(3.2,R-.8),-R+.2]];
  s.th.o.forEach((o,i)=>{const e=mk('o'+i,OBJ[k][i],sl[i][0],sl[i][1],sl[i][2],{solid:i!=0&&k!='lab'||i!=0,name:o[0],i});e.solid=!['lab0','lib2','sub0','bun1'].includes(k+i);e.use=()=>act('examinar '+(i+1))});
  const sf=new Mesh(-Math.PI/2,R,0,2.4);sf.box(0,.3,.5,1.2,.6,1,H('#252b34'));sf.box(0,1.15,.5,1.1,1.1,.95,H('#3b4350'));sf.box(0,1.15,.99,.9,.9,.02,H('#080a0e'));sf.box(0,.92,1,.3,.15,.06,A,1);[[-.3,1.62],[.3,1.62]].forEach(p=>sf.box(p[0],p[1],.5,.06,.06,.96,H('#2a303a')));
  const se=add('safe',sf,{name:SN[0],es:.5});se.use=()=>s.ph=='p1'?openModal():say(s.ph=='p1'?'':'La caja fuerte ya está abierta.');
@@ -9760,11 +9911,27 @@ function world(s){ents.forEach(free);ents=[];el.pins.innerHTML='';const k=TC[s.t
  const pm=new Mesh(-Math.PI/2,R,0,-1.8);pm.box(0,1.55,.07,1.9,1.25,.14,H('#222a35'));pm.box(0,1.58,.145,1.7,.9,.01,[1,1,1],0,T.pan);for(let i=0;i<5;i++)pm.sph(-.6+.3*i,1.05,.16,.06,.06,.06,A,1);
  const pe=add('panel',pm,{solid:false,name:SN[1],es:.4});pe.use=()=>s.ph=='p2'?openModal():say(s.ph=='p1'?'El panel está apagado. Primero abre la caja fuerte.':'Este mecanismo ya está resuelto.');
  const dm=new Mesh(0,0,0,0);dm.box(.9,1.2,0,1.8,2.4,.1,[.8,.82,.86],0,T.door);dm.box(1.55,1.1,.1,.08,.25,.08,GD);
- const de=add('door',dm,{solid:false,name:SN[2],hinge:[-.9,0,-R+.02],b:[-.9,0,-R-.05,.9,2.4,-R+.1]});de.use=()=>s.ph=='p3'?openModal():say('La puerta está sellada. Resuelve la caja fuerte y el panel de secuencia.');
+ const de=add('door',dm,{solid:false,name:SN[2],hinge:[-.9,0,-R+.02],b:[-.9,0,-R-.05,.9,2.4,-R+.1]});de.use=()=>{if(s.ph!=='p3'){say('La puerta está sellada. Resuelve la caja fuerte y el panel de secuencia.');return}if(mission.need&&(mission.done<mission.need||!mission.key)){say('MISIÓN DE EXTRACCIÓN: elimina '+Math.max(0,mission.need-mission.done)+' enemigos restantes y recoge la tarjeta de acceso.');return}openModal()};
  const xm=new Mesh(0,0,0,0);xm.box(0,1.2,-R-.6,1.9,2.4,.1,[1,.96,.82],1);add('exit',xm,{solid:false,es:0});
- ents.filter(e=>e.i!=null).concat([se,pe,de]).forEach(e=>{const p=E('div','ne-pin');e.pin=p;el.pins.append(p)});
- pos=[0,1.62,4.3];yaw=.7;pitch=-.12;look={y:0,p:0,t:2.2};vel=[0,0];el.fade.className='ne-fade';void el.fade.offsetWidth;el.fade.className='ne-fade on';doorA=0;safeA=0;exitEs=0;walk=false;modal=false;el.modal.hidden=true}
+ ents.filter(e=>e.i!=null||e.enemy||e.loot||e.id==='sentinel').concat([se,pe,de]).forEach(e=>{const p=E('div','ne-pin');e.pin=p;e.pin.textContent=e.weaponPickup?'🔫':e.loot?'◆':e.enemy?'!':'';el.pins.append(p)});
+ pos=[0,1.62,Math.max(1.35,R-.8)];yaw=.7;pitch=-.12;look={y:0,p:0,t:2.2};vel=[0,0];el.fade.className='ne-fade';void el.fade.offsetWidth;el.fade.className='ne-fade on';doorA=0;safeA=0;exitEs=0;walk=false;modal=false;el.modal.hidden=true}
 const focus=e=>{const dx=e.c[0]-pos[0],dz=e.c[2]-pos[2];look={y:Math.atan2(-dx,-dz),p:Math.atan2(e.c[1]-pos[1],Math.hypot(dx,dz))*.8,t:1.1}},go=e=>{if(e.i!=null)e.pu=1;focus(e);e.use()};
+function combatHud(){if(!el.combat)return;const active=ctx.er&&['nav','bun'].includes(TC[ctx.er.th.ic]);el.combat.hidden=!active;el.hp.textContent='♥ '+health+' HP';el.arm.textContent='◆ '+armor;el.kills.textContent='☠ '+kills;el.weaponLabel.textContent=WEAPONS[weapon].name;el.ammo.textContent=weapon==='melee'?'∞ golpes':ammo[weapon]+' / '+reserve[weapon];if(el.mission)el.mission.textContent=mission.need?'Objetivo: '+mission.done+'/'+mission.need+' enemigos · botín '+mission.loot+' recogidos'+(mission.key?' · tarjeta ✓':' · busca tarjeta'):'Explora y encuentra pistas';el.combat.querySelectorAll('[data-weapon]').forEach(b=>{const owned=unlockedWeapons.has(b.dataset.weapon);b.disabled=!owned;b.classList.toggle('active',b.dataset.weapon===weapon);b.title=owned?WEAPONS[b.dataset.weapon].name:'Encuentra esta arma en la sala';b.style.opacity=owned?'1':'.42';b.textContent=(b.dataset.weapon==='pistol'?'1 Pistola':b.dataset.weapon==='rifle'?'2 Rifle':b.dataset.weapon==='shotgun'?'3 Escopeta':b.dataset.weapon==='smg'?'4 Subfusil':b.dataset.weapon==='energy'?'5 Energía':'6 Cuerpo a cuerpo')+(owned?'':' 🔒')});}
+function switchWeapon(w){if(!WEAPONS[w])return;if(!unlockedWeapons.has(w)){say('Todavía no tienes '+WEAPONS[w].name+'. Explora la sala y encuentra el arma.');return}weapon=w;combatHud();say('Arma equipada: '+WEAPONS[w].name+'.');}
+function reloadWeapon(){if(weapon==='melee'||reloadClock>0)return;const need=WEAPONS[weapon].mag-ammo[weapon],take=Math.min(need,reserve[weapon]);if(take<=0){say('No tienes munición de reserva.');return}reloadClock=1;setTimeout(()=>{ammo[weapon]+=take;reserve[weapon]-=take;reloadClock=0;combatHud();say('Recarga completada.');},1000);say('Recargando…');}
+function fireWeapon(){if(!ctx.er||!['nav','bun'].includes(TC[ctx.er.th.ic])){say('Esta sala no tiene amenazas armadas.');return}const now=performance.now()/1000,w=WEAPONS[weapon];if(now-lastShot<w.rate||reloadClock>0)return;lastShot=now;const gun=ov&&ov.querySelector('.ne-gun');if(gun){gun.classList.remove('shot');void gun.offsetWidth;gun.classList.add('shot');setTimeout(()=>gun.classList.remove('shot'),160)}
+ if(weapon!=='melee'){if(ammo[weapon]<=0){say('Cargador vacío. Pulsa R para recargar.');fx('shake');return}ammo[weapon]--;}
+ // La escopeta puede alcanzar a varios enemigos cercanos al punto de mira.
+ const hit=pick(camF()),foe=hit&&hit.e&&hit.e.enemy&&hit.e.alive?hit.e:null;let targets=[];
+ if(weapon==='melee'){if(foe&&hit.t<=w.range)targets=[foe];}
+ else if(weapon==='shotgun'){ents.filter(e=>e.enemy&&e.alive).forEach(e=>{const dx=e.c[0]-pos[0],dy=e.c[1]-pos[1],dz=e.c[2]-pos[2],dist=Math.hypot(dx,dy,dz),dir=camF(),dot=(dx*dir[0]+dy*dir[1]+dz*dir[2])/Math.max(.001,dist);if(dist<w.range&&dot>.86)targets.push(e)})}
+ else if(foe&&hit.t<=w.range)targets=[foe];
+ if(weapon==='melee'&&!targets.length){say('El golpe no alcanza. Acércate y apunta al enemigo.');combatHud();return}
+ if(weapon!=='melee'&&!targets.length){say('Disparo fallido: apunta al enemigo con el centro de la pantalla.');fx('shake')}
+ targets.forEach(e=>{const dmg=weapon==='shotgun'?Math.max(12,w.damage-Math.floor(Math.hypot(e.c[0]-pos[0],e.c[2]-pos[2])*5)):w.damage;e.hp=Math.max(0,e.hp-dmg);e.pu=.22;e.hitFlash=.16;fx('flash');if(e.hp<=0){e.alive=false;e.deathTimer=0.001;e.deathDuration=1.35;e.deathX=e.c[0];e.deathZ=e.c[2];e.es=1;if(e.pin)e.pin.style.display='none';kills++;mission.done++;dropOnKill(e);say('¡'+e.name+' derrotado! Su cuerpo cae y deja botín.');fx('flash');combatToast=1.2}else{say(e.name+': '+e.hp+'/'+e.maxHp+' HP.');}});
+ combatHud();}
+function dropOnKill(e){if(e.dropped)return;e.dropped=true;const x=Math.max(-R+1,Math.min(R-1,e.c[0]+.55)),z=Math.max(-R+1,Math.min(R-1,e.c[2]+.45)),lm=new Mesh(0,x,0,z);lm.box(0,.28,0,.3,.3,.3,H(Math.random()>.5?'#ffc857':'#46b5ff'),1);const le=add('drop_'+kills,lm,{name:'Botín enemigo',solid:false,es:1});le.loot=true;le.used=false;le.pin=E('div','ne-pin');le.pin.textContent='◆';el.pins.append(le.pin);le.use=()=>{if(le.used)return;le.used=true;const roll=Math.random();if(roll<.34){health=Math.min(100,health+25);say('Botín: +25 HP.')}else if(roll<.58){armor=Math.min(100,armor+25);say('Botín: +25 armadura.')}else if(roll<.82){const owned=[...unlockedWeapons].filter(w=>w!=='melee');if(owned.length){const w=owned[Math.random()*owned.length|0];reserve[w]=(reserve[w]||0)+(w==='shotgun'?4:w==='energy'?8:18);say('Botín: munición para '+WEAPONS[w].name+'.')}else{health=Math.min(100,health+15);say('No tienes armas de fuego todavía: +15 HP.')}}else{armor=Math.min(100,armor+10);health=Math.min(100,health+10);say('Botín raro: +10 HP y +10 armadura.')}le.es=0;le.M=mul(tr(0,-100,0),I4);mission.loot++;combatHud()};}
+
 function say(t){if(!t)return;el.sayT.innerHTML=md(t);el.say.hidden=false;el.say.style.animation='none';void el.say.offsetWidth;el.say.style.animation=''}
 function fx(c){if(c=='flash'){pk=1;el.flash.classList.remove('on');void el.flash.offsetWidth;el.flash.classList.add('on')}else{shk=1;[el.cv,el.panel].forEach(t=>{t.classList.remove('shake');void t.offsetWidth;t.classList.add('shake');setTimeout(()=>t.classList.remove('shake'),600)})}}
 function advance(){trans=true;over=true;walk=true;closeModal();ov.classList.add('win');fx('flash');setTimeout(()=>{el.fade.className='ne-fade out'},1700);setTimeout(()=>{trans=false;ov.classList.remove('win');over=false;walk=false;render()},2300)}
@@ -9795,10 +9962,10 @@ function panel(s){const P=el.panel;P.innerHTML='';const x=E('button','ne-btn mx'
   const dl=E('div','np-dial'),m=E('button',null,'◀'),lab=E('span'),p=E('button',null,'▶'),b=E('button','np-go','Enviar');m.type=p.type='button';m.setAttribute('aria-label','Menos');p.setAttribute('aria-label','Más');m.onclick=()=>{dial=(dial+25)%26;paint()};p.onclick=()=>{dial=(dial+1)%26;paint()};b.onclick=()=>act('responder '+dec(c,dial).toLowerCase());dl.append(m,lab,p);P.append(dl,b);paint()}
  P.append(x)}
 function render(){const s=ctx.er;if(!s||!ov)return;
- if(shown!==s){shown=s;key='';digs=[0,0,0];dial=0;val='';over=false;said=false;ov.classList.remove('win','lose');ov.querySelectorAll('.ne-conf').forEach(x=>x.remove());world(s);el.card.textContent='Sala '+s.camp.n+' de 3 · '+s.th.n;el.card.className='ne-card';void el.card.offsetWidth;el.card.className='ne-card on'}
+ if(shown!==s){shown=s;key='';digs=[0,0,0];dial=0;val='';combatClock=0;reloadClock=0;over=false;said=false;ov.classList.remove('win','lose');ov.querySelectorAll('.ne-conf').forEach(x=>x.remove());world(s);el.card.textContent='Sala '+s.camp.n+' de 3 · '+s.th.n;el.card.className='ne-card';void el.card.offsetWidth;el.card.className='ne-card on'}
  const k=TC[s.th.ic];ov.className=(ov.className.replace(/\b(lab|lib|nav|sub|mus|bun)\b/g,'').trim()+' '+k).trim();
  el.title.textContent=s.th.n+' · sala '+s.camp.n+'/3 · '+['Fácil','Medio','Difícil'][s.camp.d];el.tt.textContent=s.T+(s.T==1?' acción':' acciones')+' · fase '+({p1:1,p2:2,p3:3}[s.ph])+'/3';el.fill.style.width=Math.max(0,s.T/24*100)+'%';el.fill.classList.toggle('low',s.T<=6);
- el.inv.innerHTML=s.inv.length?'Inventario: '+s.inv.map(x=>'<span class="it">'+esc(strip(x))+'</span>').join(''):'<span>Inventario vacío</span>';
+ el.inv.innerHTML=s.inv.length?'Inventario: '+s.inv.map(x=>'<span class="it">'+esc(strip(x))+'</span>').join(''):'<span>Inventario vacío</span>';combatHud();
  ents.forEach((e,i)=>{if(e.i!=null&&e.pin)e.pin.classList.toggle('done',!!s.ex[e.i])});
  const kk=s.ph+s.ex.join('');if(kk!==key){const was=key;key=kk;if(was&&was[0]!=s.ph[0])closeModal();else if(modal&&!over)panel(s)}
  if(!said){said=true;say(s.th.i+'\n\nCamina por la sala y acércate a los objetos con punto brillante para examinarlos.')}}
@@ -9811,6 +9978,16 @@ function hide(){if(ov){ov.hidden=true;cancelAnimationFrame(raf);raf=0;keys={};st
 /* cámara, colisiones y selección */
 const camF=()=>{const c=Math.cos(pitch);return[-Math.sin(yaw)*c,Math.sin(pitch),-Math.cos(yaw)*c]};
 function blocked(x,z){if(Math.abs(x)>R-.45||z>R-.45||z<-R+.45)return true;return ents.some(e=>e.solid&&x>e.b[0]-.32&&x<e.b[3]+.32&&z>e.b[2]-.32&&z<e.b[5]+.32)}
+/* Enemigos usan el mismo mapa de colisiones que el jugador: no atraviesan muros,
+   estanterías, maquinaria ni otros enemigos. Se permite deslizarse por los bordes. */
+function enemyBlocked(enemy,x,z){
+ if(Math.abs(x)>R-.78||z>R-.78||z<-R+.78)return true;
+ return ents.some(o=>{
+  if(o===enemy||!o.solid||o.deathTimer>0||o.es<=0)return false;
+  const pad=o.enemy?.42:.34;
+  return x>o.b[0]-pad&&x<o.b[3]+pad&&z>o.b[2]-pad&&z<o.b[5]+pad;
+ });
+}
 function rayDir(nx,ny,asp){const f=camF(),s=Math.sin(yaw),c=Math.cos(yaw),sp=Math.sin(pitch),cp=Math.cos(pitch),t=Math.tan(.5),r=[c,0,-s],u=[s*sp,cp,c*sp];return[0,1,2].map(i=>f[i]+r[i]*nx*t*asp+u[i]*ny*t)}
 function pick(d){let best=null,bt=12;const o=[pos[0],pos[1],pos[2]];ents.forEach(e=>{if(!e.use)return;let t0=0,t1=bt;for(let i=0;i<3;i++){const lo=e.b[i]-.05,hi=e.b[i+3]+.05;if(Math.abs(d[i])<1e-6){if(o[i]<lo||o[i]>hi)return}else{let a=(lo-o[i])/d[i],b=(hi-o[i])/d[i];if(a>b)[a,b]=[b,a];t0=Math.max(t0,a);t1=Math.min(t1,b);if(t0>t1)return}}if(t0<bt){bt=t0;best=e}});return best?{e:best,t:bt}:null}
 let asp=1.6;
@@ -9825,46 +10002,76 @@ function update(dt,t){if(!modal&&!over||walk){let fw=0,st=0;if(walk){const dz=-4
  const s=ctx.er;if(!s&&!over)return;const ph=s?s.ph:'p3';
  const tgt=(!modal&&!over)?pick(camF()):null;target=tgt&&tgt.t<3.4?tgt.e:null;
  ents.forEach(e=>{const w=e===target?1:0;e.g+=(w-e.g)*Math.min(1,dt*10)});
- el.cross.classList.toggle('on',!!target);el.tag.hidden=!target;el.use.hidden=!target;if(target){const n=target.name||'';el.tag.textContent=n.charAt(0).toUpperCase()+n.slice(1);el.use.textContent='Examinar '+n}
+ el.cross.classList.toggle('on',!!target);el.tag.hidden=!target;el.use.hidden=!target;if(target){const n=target.name||'';el.tag.textContent=n.charAt(0).toUpperCase()+n.slice(1);el.use.textContent=target.enemy?'Atacar '+n:'Examinar '+n}
  doorA+=((over&&/win/.test(ov.className)?1.9:0)-doorA)*Math.min(1,dt*2.2);safeA+=((ph!='p1'?-1.9:0)-safeA)*Math.min(1,dt*3);exitEs+=((over&&/win/.test(ov.className)?1:0)-exitEs)*Math.min(1,dt*2);
- ents.forEach(e=>{if(e.pu>0){e.pu=Math.max(0,e.pu-dt*2.2);const k=1+Math.sin(e.pu*3.1416)*.05;e.M=mul(tr(e.c[0],e.c[1],e.c[2]),mul(new Float32Array([k,0,0,0,0,k,0,0,0,0,k,0,0,0,0,1]),tr(-e.c[0],-e.c[1],-e.c[2])))}else if(e.pu===0){e.M=I4;e.pu=-1}if(e.id=='door')e.M=mul(tr(e.hinge[0],0,e.hinge[2]),rY(doorA));if(e.id=='safeDoor')e.M=mul(tr(e.hinge[0],e.hinge[1],e.hinge[2]),rY(safeA));
+ if(s&&!modal&&!over&&['nav','bun'].includes(TC[s.th.ic])){combatClock+=dt;ents.filter(e=>e.enemy&&e.alive).forEach(e=>{const dx=pos[0]-e.c[0],dz=pos[2]-e.c[2],d=Math.hypot(dx,dz)||.001;
+  // Cada enemigo tiene patrón propio: acechador persigue, tirador mantiene distancia, bruto avanza lento.
+  let mx=0,mz=0;if(e.kind==='stalker'&&d>1.45){mx=dx/d*e.speed*dt;mz=dz/d*e.speed*dt}else if(e.kind==='brute'&&d>1.65){mx=dx/d*e.speed*dt;mz=dz/d*e.speed*dt}else if(e.kind==='gunner'&&d<4.2){mx=-dx/d*e.speed*dt;mz=-dz/d*e.speed*dt}else if(e.kind==='gunner'&&d>6){mx=dx/d*e.speed*dt;mz=dz/d*e.speed*dt}
+  if(mx||mz){
+   const ox=e.c[0],oz=e.c[2];let nx=ox,nz=oz;
+   // Resolver X y Z por separado para que el enemigo pueda bordear obstáculos.
+   if(!enemyBlocked(e,ox+mx,oz))nx=ox+mx;
+   if(!enemyBlocked(e,nx,oz+mz))nz=oz+mz;
+   // Si queda encajonado, intenta rodear la esquina en pequeños pasos laterales.
+   if(Math.abs(nx-ox)+Math.abs(nz-oz)<.0001&&d>1.5){
+    const sideX=-dz/d*e.speed*dt,sideZ=dx/d*e.speed*dt;
+    if(!enemyBlocked(e,ox+sideX,oz+sideZ)){nx=ox+sideX;nz=oz+sideZ}
+    else if(!enemyBlocked(e,ox-sideX,oz-sideZ)){nx=ox-sideX;nz=oz-sideZ}
+   }
+   if(nx!==ox||nz!==oz){
+    e.c[0]=nx;e.c[2]=nz;e.baseM=tr(nx-e.spawnX,0,nz-e.spawnZ);e.M=e.baseM;
+    e.b=[nx-.42,e.b[1],nz-.42,nx+.42,e.b[4],nz+.42];
+   }
+  }
+  const range=e.kind==='gunner'?7:e.kind==='brute'?1.9:1.6,cool=e.kind==='gunner'?2.4:e.kind==='brute'?2.8:1.8;if(d<range&&combatClock-e.lastAttack>cool){e.lastAttack=combatClock;const hit=e.damage+Math.floor(Math.random()*5),absorbed=Math.min(armor,Math.ceil(hit*.55));armor-=absorbed;health=Math.max(0,health-(hit-absorbed));e.pu=.1;combatHud();fx('shake');say(e.kind==='gunner'?'¡El tirador te alcanzó desde lejos! −'+(hit-absorbed)+' HP.':e.kind==='brute'?'¡El bruto te golpeó con fuerza! −'+(hit-absorbed)+' HP.':'¡El acechador te atacó! −'+(hit-absorbed)+' HP.');if(health<=0){health=100;armor=25;pos=[0,1.62,Math.max(1.35,R-.8)];say('Te replegaste al inicio de la sala. Recuperaste salud y armadura; los enemigos siguen activos.');combatHud()}}
+ });}else combatClock=0;
+ ents.forEach(e=>{if(e.deathTimer>0){e.deathTimer+=dt;const q=Math.min(1,e.deathTimer/e.deathDuration),sink=q*.9,sc=Math.max(.08,1-q*.88);const S=new Float32Array([sc,0,0,0,0,sc,0,0,0,0,sc,0,0,0,0,1]);e.M=mul(tr(e.deathX-e.spawnX,-sink,e.deathZ-e.spawnZ),mul(S,e.baseM||I4));e.es=Math.max(0,1-q);if(q>=1){e.deathTimer=0;e.es=0;e.M=mul(tr(0,-100,0),I4)}}if(e.pu>0){e.pu=Math.max(0,e.pu-dt*2.2);const k=1+Math.sin(e.pu*3.1416)*.05;e.M=mul(e.baseM||I4,mul(tr(e.c[0],e.c[1],e.c[2]),mul(new Float32Array([k,0,0,0,0,k,0,0,0,0,k,0,0,0,0,1]),tr(-e.c[0],-e.c[1],-e.c[2]))))}else if(e.pu===0){e.M=e.baseM||I4;e.pu=-1}if(e.id=='door')e.M=mul(tr(e.hinge[0],0,e.hinge[2]),rY(doorA));if(e.id=='safeDoor')e.M=mul(tr(e.hinge[0],e.hinge[1],e.hinge[2]),rY(safeA));
   if(e.id=='exit')e.es=exitEs;if(e.id=='panel')e.es=ph=='p2'?.55+.45*Math.sin(t*5):ph=='p3'?1:.3;if(e.id=='safe')e.es=ph=='p1'?.6+.4*Math.sin(t*3):1})}
 function proj(p,VP){const x=p[0],y=p[1],z=p[2],c=[0,1,2,3].map(i=>VP[i]*x+VP[4+i]*y+VP[8+i]*z+VP[12+i]);return[(c[0]/c[3]*.5+.5)*el.cv.clientWidth,(.5-c[1]/c[3]*.5)*el.cv.clientHeight,c[3]]}
 function draw(t){const cv=el.cv,dpr=Math.min(devicePixelRatio||1,2),w=cv.clientWidth,h=cv.clientHeight;if(cv.width!=(w*dpr|0)||cv.height!=(h*dpr|0)){cv.width=w*dpr|0;cv.height=h*dpr|0}asp=w/h;
  gl.viewport(0,0,cv.width,cv.height);const f=theme.fog;gl.clearColor(f[0],f[1],f[2],1);gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
  const sx=shk*Math.sin(t*60)*.02,sy=shk*Math.cos(t*47)*.025,V=mul(mul(rX(-pitch+sx),rY(-yaw+sy)),tr(-pos[0],-pos[1],-pos[2])),VP=mul(persp(fv,asp,.1,40),V),s=ctx.er,ph=s?s.ph:'p3';
  const fl=.92+.08*Math.sin(t*3)-(Math.sin(t*23.7)*Math.sin(t*5.3)>(.9-(s?s.camp.d:0)*.05)?.45:0),L=theme.L,A=H(theme.a),ok=over&&/win/.test(ov.className)||ph=='p3'&&false,ac=ph=='p3'?[.3,1,.55]:A;
- gl.uniformMatrix4fv(U.uVP,false,VP);gl.uniform3fv(U.uCam,pos);gl.uniform3fv(U.uFog,f);gl.uniform3fv(U.uAc,A);gl.uniform1f(U.uAm,theme.am*(1-.12*(s?s.camp.d:0)));gl.uniform1i(U.uT,0);
- gl.uniform3fv(U.uP,[0,3,0,0,2.4,-3.6,pos[0],pos[1]+.3,pos[2]]);gl.uniform3fv(U.uK,[L[0]*1.9*fl,L[1]*1.9*fl,L[2]*1.9*fl,ac[0]*(exitEs?3:1),ac[1]*(exitEs?3:1),ac[2]*(exitEs?3:1),.5,.5,.45]);
+ gl.uniformMatrix4fv(U.uVP,false,VP);gl.uniform3fv(U.uCam,pos);gl.uniform3fv(U.uFog,f);gl.uniform3fv(U.uAc,A);gl.uniform1f(U.uAm,Math.max(.58,theme.am*1.22)*(1-.07*(s?s.camp.d:0)));gl.uniform1i(U.uT,0);
+ gl.uniform3fv(U.uP,[0,3,0,0,2.4,-3.6,pos[0],pos[1]+.3,pos[2]]);gl.uniform3fv(U.uK,[L[0]*2.35*fl,L[1]*2.35*fl,L[2]*2.35*fl,ac[0]*(exitEs?3:1),ac[1]*(exitEs?3:1),ac[2]*(exitEs?3:1),.5,.5,.45]);
  ents.forEach(e=>{gl.uniformMatrix4fv(U.uM,false,e.M);gl.uniform1f(U.uEs,e.es);gl.uniform1f(U.uH,e.g);
   e.parts.forEach(p=>{gl.bindBuffer(gl.ARRAY_BUFFER,p.b);[[0,3,0],[1,3,12],[2,3,24],[3,1,36],[4,2,40]].forEach(a=>{const loc=a[0];gl.enableVertexAttribArray(loc);gl.vertexAttribPointer(loc,a[1],gl.FLOAT,false,48,a[2])});
    gl.uniform1f(U.uUT,p.t?1:0);if(p.t){gl.activeTexture(gl.TEXTURE0);gl.bindTexture(gl.TEXTURE_2D,p.t)}gl.drawArrays(gl.TRIANGLES,0,p.n)})});
  if(s&&!over&&!modal)ents.forEach(e=>{if(!e.pin)return;const c=[e.c[0],Math.min(e.b[4],2.2)-.15,e.c[2]],q=proj(c,VP),d=Math.hypot(c[0]-pos[0],c[2]-pos[2]);
-  const act=e.i!=null?!s.ex[e.i]:(e.id=='safe'&&s.ph=='p1'||e.id=='panel'&&s.ph=='p2'||e.id=='door'&&s.ph=='p3'),show=q[2]>0&&act&&d<8;e.pin.style.display=show?'block':'none';if(show){e.pin.style.left=q[0]+'px';e.pin.style.top=q[1]+'px'}});
+  const act=e.enemy?e.alive:e.loot?!e.used:(e.i!=null?!s.ex[e.i]:(e.id=='safe'&&s.ph=='p1'||e.id=='panel'&&s.ph=='p2'||e.id=='door'&&s.ph=='p3')),show=q[2]>0&&act&&d<8;e.pin.style.display=show?'block':'none';if(show){e.pin.style.left=q[0]+'px';e.pin.style.top=q[1]+'px'}});
  else ents.forEach(e=>{if(e.pin)e.pin.style.display='none'})}
 function frame(t){if(!ov||ov.hidden){raf=0;return}raf=requestAnimationFrame(frame);const dt=Math.min(.05,(t-last)/1000||0);last=t;if(shown&&gl){update(dt,t/1000);draw(t/1000)}}
 function build(){ov=E('div');ov.id='nxEsc';ov.hidden=true;ov.setAttribute('role','dialog');ov.setAttribute('aria-modal','true');ov.setAttribute('aria-label','Escape room 3D');
  const coarse=matchMedia('(pointer:coarse)').matches;
- ov.innerHTML='<canvas class="ne-cv" tabindex="0" aria-label="Sala en 3D"></canvas><div class="ne-dust"></div><div class="ne-vig"></div><div class="ne-fade"></div><div class="ne-card"></div><div class="ne-pins"></div><div class="ne-cross"></div><div class="ne-tag" hidden></div><div class="ne-flash"></div>'+
+ ov.innerHTML='<canvas class="ne-cv" tabindex="0" aria-label="Sala en 3D"></canvas><div class="ne-dust"></div><div class="ne-vig"></div><div class="ne-fade"></div><div class="ne-card"></div><div class="ne-pins"></div><div class="ne-cross"></div><div class="ne-gun" aria-hidden="true"><i></i><b></b></div><div class="ne-tag" hidden></div><div class="ne-flash"></div>'+
  '<div class="ne-top"><div class="ne-title"></div><div class="ne-time"><small></small><div class="ne-track"><div class="ne-fill"></div></div></div><button type="button" class="ne-btn" data-r>Ranking</button><button type="button" class="ne-btn" data-h>Pista (−100)</button><button type="button" class="ne-btn x" data-g>Rendirme</button><button type="button" class="ne-btn" data-c>Volver al chat</button></div>'+
- '<div class="ne-inv" aria-label="Inventario"></div><div class="ne-say" hidden aria-live="polite"><button type="button" class="sx" aria-label="Cerrar mensaje">×</button><div class="st"></div></div>'+
+ '<div class="ne-inv" aria-label="Inventario"></div><div class="ne-combat" hidden><span class="ne-hp"></span><span class="ne-arm"></span><span class="ne-kills"></span><span class="ne-weapon"></span><button type="button" data-weapon="pistol">1 Pistola</button><button type="button" data-weapon="rifle">2 Rifle</button><button type="button" data-weapon="shotgun">3 Escopeta</button><button type="button" data-weapon="smg">4 Subfusil</button><button type="button" data-weapon="energy">5 Energía</button><button type="button" data-weapon="melee">6 Cuerpo a cuerpo</button><span class="ne-ammo"></span><span class="ne-mission"></span><button type="button" data-reload>R Recargar</button><button type="button" data-fire>F ATACAR</button></div><div class="ne-say" hidden aria-live="polite"><button type="button" class="sx" aria-label="Cerrar mensaje">×</button><div class="st"></div></div>'+
  '<button type="button" class="ne-use np-go" hidden></button><div class="ne-help">'+(coarse?'Joystick izquierdo: caminar · desliza a la derecha: mirar · toca un objeto':'W A S D o flechas: caminar · arrastra: mirar · E o clic: examinar · Mayús: correr')+'</div><div class="ne-joy"><i></i></div><div class="ne-modal" hidden><div class="ne-panel"></div></div><div class="ne-modal ne-rank" hidden><div class="ne-panel"></div></div>';
- const q=s=>ov.querySelector(s);el={cv:q('.ne-cv'),pins:q('.ne-pins'),cross:q('.ne-cross'),tag:q('.ne-tag'),flash:q('.ne-flash'),fade:q('.ne-fade'),card:q('.ne-card'),title:q('.ne-title'),tt:q('.ne-time small'),fill:q('.ne-fill'),inv:q('.ne-inv'),say:q('.ne-say'),sayT:q('.ne-say .st'),use:q('.ne-use'),joy:q('.ne-joy'),modal:q('.ne-modal'),panel:q('.ne-panel'),rank:q('.ne-rank'),rp:q('.ne-rank .ne-panel')};
+ const q=s=>ov.querySelector(s);el={cv:q('.ne-cv'),pins:q('.ne-pins'),cross:q('.ne-cross'),tag:q('.ne-tag'),flash:q('.ne-flash'),fade:q('.ne-fade'),card:q('.ne-card'),title:q('.ne-title'),tt:q('.ne-time small'),fill:q('.ne-fill'),inv:q('.ne-inv'),combat:q('.ne-combat'),hp:q('.ne-hp'),arm:q('.ne-arm'),kills:q('.ne-kills'),weaponLabel:q('.ne-weapon'),ammo:q('.ne-ammo'),mission:q('.ne-mission'),say:q('.ne-say'),sayT:q('.ne-say .st'),use:q('.ne-use'),joy:q('.ne-joy'),modal:q('.ne-modal'),panel:q('.ne-panel'),rank:q('.ne-rank'),rp:q('.ne-rank .ne-panel')};
  {const du=q('.ne-dust');for(let i=0;i<22;i++){const d=E('i');d.style.cssText='--s:'+(2+Math.random()*3).toFixed(1)+'px;--x:'+(Math.random()*100|0)+'%;--t:'+(9+Math.random()*9).toFixed(1)+'s;--dl:-'+(Math.random()*14).toFixed(1)+'s;--dx:'+((Math.random()-.5)*120|0)+'px';du.append(d)}}
  q('[data-c]').onclick=hide;q('[data-r]').onclick=showRank;q('[data-h]').onclick=()=>act('pista');q('[data-g]').onclick=()=>{if(confirm('¿Seguro que quieres rendirte?'))act('salir')};q('.sx').onclick=()=>el.say.hidden=true;el.use.onclick=()=>target&&go(target);
+ q('.ne-combat').querySelectorAll('[data-weapon]').forEach(b=>b.onclick=()=>switchWeapon(b.dataset.weapon));q('[data-reload]').onclick=reloadWeapon;q('[data-fire]').onclick=fireWeapon;
  ov.addEventListener('keydown',e=>{if(e.key==='Escape'){e.stopPropagation();if(!el.rank.hidden){closeRank();return}modal&&!over?closeModal():hide()}});document.body.append(ov);
  if(!initGL()){el.cv.remove();say('Tu navegador no admite WebGL, necesario para la sala 3D. Puedes seguir jugando en el chat con texto.');return}
  const ptr={},cvs=el.cv;cvs.addEventListener('contextmenu',e=>e.preventDefault());
  cvs.onpointerdown=e=>{if(modal||over)return;cvs.setPointerCapture(e.pointerId);const j=e.pointerType!=='mouse'&&e.clientX<innerWidth*.4;ptr[e.pointerId]={x:e.clientX,y:e.clientY,sx:e.clientX,sy:e.clientY,t:performance.now(),j,mv:0};if(j){el.joy.style.left=Math.max(12,e.clientX-52)+'px';el.joy.style.bottom=Math.max(12,innerHeight-e.clientY-52)+'px'}};
  cvs.onpointermove=e=>{const p=ptr[e.pointerId];if(!p)return;const dx=e.clientX-p.x,dy=e.clientY-p.y;p.x=e.clientX;p.y=e.clientY;p.mv+=Math.abs(dx)+Math.abs(dy);
   if(p.j){const vx=(e.clientX-p.sx)/46,vy=(e.clientY-p.sy)/46,L=Math.max(1,Math.hypot(vx,vy));stick=[vx/L,vy/L];el.joy.firstChild.style.transform='translate('+stick[0]*34+'px,'+stick[1]*34+'px)'}else{yaw-=dx*.005;pitch=Math.max(-1.2,Math.min(1.2,pitch-dy*.005));look=null}};
- const up=e=>{const p=ptr[e.pointerId];if(!p)return;if(p.j){stick=[0,0];el.joy.firstChild.style.transform=''}else if(p.mv<10&&performance.now()-p.t<450&&e.type=='pointerup'){const r=cvs.getBoundingClientRect(),h=pick(rayDir((e.clientX-r.left)/r.width*2-1,1-(e.clientY-r.top)/r.height*2,asp));if(h){if(h.t<=3.6)go(h.e);else say('Acércate un poco más a '+(h.e.name||'ese objeto')+'.')}}delete ptr[e.pointerId]};cvs.onpointerup=up;cvs.onpointercancel=up;
+ const up=e=>{const p=ptr[e.pointerId];if(!p)return;if(p.j){stick=[0,0];el.joy.firstChild.style.transform=''}else if(p.mv<10&&performance.now()-p.t<450&&e.type=='pointerup'){const r=cvs.getBoundingClientRect(),h=pick(rayDir((e.clientX-r.left)/r.width*2-1,1-(e.clientY-r.top)/r.height*2,asp));if(h){if(h.e.enemy){if(h.t<=10)fireWeapon();else say('Acércate para poder atacar.')}else if(h.t<=3.6)go(h.e);else say('Acércate un poco más a '+(h.e.name||'ese objeto')+'.')}}delete ptr[e.pointerId]};cvs.onpointerup=up;cvs.onpointercancel=up;
  addEventListener('keydown',e=>{if(!ov||ov.hidden)return;const k=e.key.toLowerCase();if(/INPUT|TEXTAREA/.test(document.activeElement.tagName))return;if(modal)return;
-  if(k=='e'||k=='enter'||k==' '){if(target)go(target);e.preventDefault();return}if(['w','a','s','d','arrowup','arrowdown','arrowleft','arrowright','shift'].includes(k)){keys[k]=1;look=null;e.preventDefault()}});
+  if(['1','2','3','4','5','6','7'].includes(k)){switchWeapon(({1:'pistol',2:'rifle',3:'shotgun',4:'smg',5:'energy',6:'melee',7:'melee'})[k]);e.preventDefault();return}if(k==='f'){fireWeapon();e.preventDefault();return}if(k==='r'){reloadWeapon();e.preventDefault();return}if(k=='e'||k=='enter'||k==' '){if(target)go(target);e.preventDefault();return}if(['w','a','s','d','arrowup','arrowdown','arrowleft','arrowright','shift'].includes(k)){keys[k]=1;look=null;e.preventDefault()}});
  addEventListener('keyup',e=>{delete keys[e.key.toLowerCase()]});addEventListener('blur',()=>{keys={}})}
-window.nxEscOpen=function(){if(!ov)build();if(!ctx.er&&!over){return false}ov.hidden=false;if(ctx.er)render();if(gl&&!raf){last=performance.now();raf=requestAnimationFrame(frame)}return true};
+window.nxEscOpen=function(){if(!ov)build();if(!ctx.er&&!over){return false}ov.hidden=false;if(ctx.er)render();combatHud();if(gl&&!raf){last=performance.now();raf=requestAnimationFrame(frame)}return true};
 addEventListener('nx-er-start',()=>setTimeout(()=>{if(ctx.er){over=false;nxEscOpen()}},700));
 setInterval(()=>{if(!ov||ov.hidden)return;if(ctx.er){if(!trans&&(shown!==ctx.er||!over))render()}else if(!over&&shown){finish('Saliste de la sala.')}},600);
+})();
+</script>
+
+<script>
+/* Acceso directo al ranking de Escape Room desde Ajustes */
+(function(){
+ function wire(){const b=document.getElementById('s-esc-rank');if(!b||b.dataset.wired)return;b.dataset.wired='1';b.addEventListener('click',function(){const close=document.getElementById('setx');if(close)close.click();setTimeout(function(){if(typeof sendChat==='function')sendChat('ver ranking de escape room');else{const i=document.getElementById('in'),g=document.getElementById('go');if(i&&g){i.value='ver ranking de escape room';g.click()}}},120)});}
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',wire);else wire();setTimeout(wire,800);setTimeout(wire,1800);
 })();
 </script>
 </body>
