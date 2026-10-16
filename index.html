@@ -493,6 +493,80 @@ html,body{overscroll-behavior:none}#feed{overscroll-behavior:contain}
 :root[data-tt="l"] .tg{min-width:56px}:root[data-tt="l"] .tg::after{top:10px}
 @media (max-height:520px) and (orientation:landscape){.hero canvas{height:96px}.hero{padding-top:1vh}.hero h1{font-size:38px;margin:2px 0 6px}.hero p{margin-bottom:10px}.chips button{flex:0 1 auto!important}header{padding:6px 14px}}
 </style>
+
+<style>
+/* Teclado matemático local del laboratorio */
+.nl-math-keyboard{border:1px solid var(--line);border-radius:14px;padding:10px;background:color-mix(in srgb,var(--acc) 4%,var(--panel));margin:2px 0 12px}
+.nl-math-head{display:flex;gap:8px;align-items:baseline;justify-content:space-between;flex-wrap:wrap;margin-bottom:8px}
+.nl-math-head b{font-size:14px}.nl-math-head span{font-size:12px;color:var(--mute)}
+.nl-math-keys{display:grid;grid-template-columns:repeat(auto-fit,minmax(82px,1fr));gap:6px}
+.nl-math-keys button{border:1px solid var(--line);border-radius:9px;padding:7px 6px;background:var(--panel);font-size:13px;color:var(--ink)}
+.nl-math-keys button:hover,.nl-math-keys button:focus-visible{border-color:var(--acc);background:color-mix(in srgb,var(--acc) 12%,var(--panel))}
+.nl-photo-tool{border:1px solid var(--line);border-radius:14px;padding:12px;margin-top:10px;background:color-mix(in srgb,var(--acc2) 4%,var(--panel))}
+.nl-photo-tool input[type=file]{max-width:100%;font:inherit;font-size:13px}
+@media(max-width:520px){.nl-math-keys{grid-template-columns:repeat(3,minmax(0,1fr))}.nl-math-head{display:block}.nl-math-head span{display:block}}
+</style>
+
+<style id="noryx-lab-responsive-polish">
+/* NORYX LAB · interfaz adaptable para escritorio, tablet y móvil */
+#nxLab{padding:clamp(8px,2vw,24px)!important;overflow:auto!important;overscroll-behavior:contain}
+#nxLab .nl-card{max-width:1500px;margin:0 auto;gap:clamp(12px,1.5vw,20px);padding:clamp(12px,2vw,24px)!important;border-radius:22px!important;box-shadow:var(--sh,0 20px 50px rgba(0,0,0,.18))!important;background:color-mix(in srgb,var(--panel) 94%,transparent)!important;backdrop-filter:blur(16px)}
+#nxLab .nl-head{position:sticky;top:-1px;z-index:3;margin:-2px -2px 0;padding:8px 2px;background:color-mix(in srgb,var(--panel) 92%,transparent);backdrop-filter:blur(12px);border-bottom:1px solid var(--line);flex-wrap:wrap}
+#nxLab .nl-head b{font-size:clamp(18px,2vw,25px);letter-spacing:-.035em;line-height:1.25}
+#nxLab .nl-small{color:var(--mute);font-size:12px}
+#nxLab #nxLabClose{flex:0 0 auto;width:42px;height:42px;padding:0;border-radius:13px;font-size:18px}
+#nxLab .nl-tabs{display:flex;flex-wrap:nowrap;gap:8px;padding:4px 2px 10px;overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:thin;scroll-snap-type:x proximity}
+#nxLab .nl-tabs button{flex:0 0 auto;min-height:42px;padding:9px 14px;border-radius:999px;background:var(--bg);font-size:13px;white-space:nowrap;scroll-snap-align:start}
+#nxLab .nl-tabs button.active{background:var(--acc)!important;color:#fff!important;border-color:var(--acc)!important;box-shadow:0 5px 18px color-mix(in srgb,var(--acc) 24%,transparent)}
+#nxLab .nl-grid{grid-template-columns:minmax(280px,.82fr) minmax(0,1.5fr)!important;gap:clamp(12px,1.5vw,20px)!important;align-items:start}
+#nxLab .nl-box{padding:clamp(12px,1.5vw,20px)!important;border-radius:18px!important;background:color-mix(in srgb,var(--panel) 96%,var(--bg))}
+#nxLab #nxLabControls{display:flex;flex-direction:column;gap:10px}
+#nxLab .nl-box label{font-weight:600;line-height:1.4;margin:7px 0 5px}
+#nxLab input:not([type=checkbox]):not([type=radio]):not([type=file]),#nxLab select{width:100%;min-height:44px;padding:10px 12px;border-radius:12px;background:var(--bg);font-size:16px;}
+#nxLab button{min-height:40px;border-radius:12px;touch-action:manipulation}
+#nxLab button.primary{background:var(--acc)!important;color:#fff!important;border-color:var(--acc)!important;font-weight:700;padding:11px 16px;box-shadow:0 5px 16px color-mix(in srgb,var(--acc) 20%,transparent)}
+#nxLab button:hover{filter:brightness(1.06)}
+#nxLab .nl-row{gap:8px}
+#nxLab .nl-output{min-height:clamp(240px,35vw,440px);padding:clamp(8px,1.5vw,18px);border:1px solid var(--line);border-radius:16px;overflow:auto;overscroll-behavior:contain}
+#nxLab .nl-output svg,#nxLab .nl-output canvas{display:block;width:100%;height:auto;max-height:none;min-width:0}
+#nxLab .nl-explain{margin-top:14px;overflow-wrap:anywhere;word-break:normal;font-size:clamp(13px,1vw,15px);line-height:1.75}
+#nxLab .nl-step,#nxLab .nl-answer,#nxLab .nl-check{border-radius:12px;padding:clamp(10px,1.2vw,15px);overflow-wrap:anywhere}
+#nxLab .nl-integral-screen{max-width:100%;overflow-x:auto;overflow-wrap:anywhere}
+#nxLab .nl-integral-screen table{width:100%;border-collapse:collapse}
+#nxLab .nl-row button{max-width:100%}
+#nxLab .nl-photo-tool input[type=file]{width:100%;max-width:100%;font-size:14px}
+#nxLab .nl-card *{min-width:0}
+#nxLab .nl-card img{max-width:100%;height:auto}
+@media(max-width:900px){
+ #nxLab .nl-grid{grid-template-columns:minmax(0,1fr)!important}
+ #nxLab #nxLabControls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-content:start;gap:10px}
+ #nxLab #nxLabControls>*{min-width:0;max-width:100%}
+ #nxLab #nxLabControls>h3,#nxLab #nxLabControls>p,#nxLab #nxLabControls>.nl-wide,#nxLab #nxLabControls>button.primary{grid-column:1/-1}
+ #nxLab .nl-output{min-height:280px}
+}
+@media(max-width:560px){
+ #nxLab{padding:6px!important}
+ #nxLab .nl-card{padding:12px!important;border-radius:16px!important;gap:12px}
+ #nxLab .nl-head{gap:8px}
+ #nxLab .nl-head b{flex:1 1 170px;font-size:18px}
+ #nxLab .nl-tabs{margin:0 -2px;padding:3px 2px 9px;gap:6px}
+ #nxLab .nl-tabs button{min-height:40px;padding:8px 12px;font-size:12px}
+ #nxLab #nxLabControls{grid-template-columns:minmax(0,1fr)}
+ #nxLab #nxLabControls>h3,#nxLab #nxLabControls>p,#nxLab #nxLabControls>.nl-wide,#nxLab #nxLabControls>button.primary{grid-column:auto}
+ #nxLab .nl-box{padding:11px!important;border-radius:14px!important}
+ #nxLab .nl-output{min-height:220px;padding:6px}
+ #nxLab .nl-explain{font-size:13px;line-height:1.65}
+ #nxLab .nl-row{align-items:stretch}
+ #nxLab .nl-row button{width:100%}
+ #nxLab .nl-integral-screen{padding:10px;font-size:13px}
+ #nxLab .nl-integral-screen h3{font-size:16px}
+ #nxLab .nl-step{font-size:13px;padding:9px}
+ #nxLab .nl-frac{max-width:100%;overflow-wrap:anywhere}
+}
+@media(hover:none){#nxLab button:hover{filter:none}#nxLab button:active{transform:scale(.985)}}
+@media(prefers-reduced-motion:reduce){#nxLab *,#nxLab *::before,#nxLab *::after{scroll-behavior:auto!important;animation-duration:.01ms!important;transition-duration:.01ms!important}}
+</style>
+
 </head>
 <body>
 <div id="app">
@@ -564,7 +638,7 @@ html,body{overscroll-behavior:none}#feed{overscroll-behavior:contain}
 <div id="nxLab" hidden>
  <section class="nl-card" role="dialog" aria-modal="true" aria-label="Laboratorio visual de Noryx">
   <div class="nl-head"><b>Laboratorio visual · NORYX</b><span class="nl-small">motor local</span><button id="nxLabClose" aria-label="Cerrar">✕</button></div>
-  <div class="nl-tabs" id="nxLabTabs"><button data-mode="graph" class="active">Gráficas</button><button data-mode="chem">Química</button><button data-mode="geo">Geometría</button><button data-mode="physics">Física</button><button data-mode="integral">Cálculo diferencial e integral</button><button data-mode="photo">Fotografía</button></div>
+  <div class="nl-tabs" id="nxLabTabs"><button data-mode="graph" class="active">Gráficas</button><button data-mode="chem">Química</button><button data-mode="geo">Geometría</button><button data-mode="physics">Física</button><button data-mode="stats">Probabilidad y estadística</button><button data-mode="integral">Cálculo diferencial e integral</button><button data-mode="photo">Fotografía</button></div>
   <div class="nl-grid">
    <div class="nl-box" id="nxLabControls"></div>
    <div class="nl-box"><div class="nl-output" id="nxLabOut"><span class="nl-small">Elige una herramienta y pulsa Generar.</span></div><div class="nl-explain" id="nxLabExplain"></div></div>
@@ -5646,13 +5720,18 @@ function parse(s){const tk=s.match(new RegExp('\\d+\\.?\\d*|\\.\\d+|'+FR+'|inf|p
    return t=='sqrt'?pw(a,N(.5)):t=='sec'?pw(fn('cos',a),N(-1)):t=='csc'?pw(fn('sin',a),N(-1)):t=='cot'?mul(fn('cos',a),pw(fn('sin',a),N(-1))):t=='log'?mul(fn('ln',a),pw(fn('ln',N(10)),N(-1))):fn(t,a)}
   if(t=='inf')return N(Infinity);const id=t=='theta'?'θ':t=='pi'?'π':t;return id==V?X:S(id)};
  const v=E();if(i<tk.length)throw 0;return v}
-const pre=s=>s.replace(/[Σ∑]/g,' @sum ').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/^[¿\s]*(?:por favor|oye|noryx)[,\s]*/,'')
+const pre0=s=>s.replace(/[Σ∑]/g,' @sum ').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/^[¿\s]*(?:por favor|oye|noryx)[,\s]*/,'')
  .replace(/[−–]/g,'-').replace(/[×·]/g,'*').replace(/÷/g,'/').replace(/²/g,'^2').replace(/³/g,'^3').replace(/⁴/g,'^4').replace(/∞|infinito/g,'inf')
  .replace(/->|=>|tiende a(?:l)?|tiende hacia|tends to/g,'→').replace(/raiz cuadrada de|raiz cuadrada|raiz de|raiz|√/g,'sqrt ').replace(/al cuadrado/g,'^2').replace(/al cubo/g,'^3')
- .replace(/elevado a la|elevado al|elevado a|a la potencia/g,'^').replace(/\bseno\b|\bsen\b/g,'sin').replace(/\bcoseno\b/g,'cos').replace(/\btangente\b/g,'tan')
+ .replace(/elevado a la|elevado al|elevado a|a la potencia/g,'^').replace(/\bseno\b|\bsen\b/g,'sin').replace(/sen(?=\s*[(x\d])/g,'sin').replace(/\bcoseno\b/g,'cos').replace(/\btangente\b/g,'tan')
  .replace(/logaritmo natural|logaritmo neperiano/g,'ln').replace(/logaritmo/g,'log').replace(/\b(sin|cos|tan|ln|log|sqrt)\s+de\s+/g,'$1 ')
  .replace(/\bmultiplicado por\b|\bpor\b/g,'*').replace(/\bdividido (?:entre|por)\b|\bentre\b|\bsobre\b/g,'/').replace(/\bmas\b/g,'+').replace(/\bmenos\b/g,'-')
  .replace(/(\d),(\d)/g,'$1.$2').replace(/[{[]/g,'(').replace(/[}\]]/g,')').replace(/\s+/g,' ').trim();
+const fixPow=s=>{s=s.replace(/\b(sin|cos|tan)\s*\^\s*\(?-1\)?\s*(?=\()/g,'a$1');const re=/\b(asin|acos|atan|sinh|cosh|tanh|sin|cos|tan|sec|csc|cot|ln|log|exp)\s*\^\s*(-?\d+)\s*/;let m,g=0;
+ while((m=re.exec(s))&&g++<20){const i=m.index+m[0].length;let j=i,arg;
+  if(s[i]=='('){let dp=0;for(j=i;j<s.length;j++){if(s[j]=='(')dp++;else if(s[j]==')'&&--dp==0){j++;break}}arg=s.slice(i,j)}
+  else{const mm=s.slice(i).match(/^-?[a-z0-9.]+/);if(!mm)break;arg='('+mm[0]+')';j=i+mm[0].length}
+  s=s.slice(0,m.index)+'(('+m[1]+arg+')^'+m[2]+')'+s.slice(j)}return s},pre=s=>fixPow(pre0(s));
 const P=s=>parse(pre(s)),FNR=/asin|acos|atan|sinh|cosh|tanh|sin|cos|tan|sec|csc|cot|ln|log|exp|sqrt|abs|inf|pi|theta/g;
 const words=e=>/[a-z]{2,}/.test(e.replace(FNR,'')),pickV=e=>{const r=e.replace(FNR,'');return/x/.test(r)?'x':(r.match(/[a-df-z]/)||['x'])[0]};
 const out=(ti,St,res)=>({t:'**'+ti+'**\n\n'+St.map((p,i)=>'**Paso '+(i+1)+'.** '+p[0]).join('\n\n')+'\n\n**Resultado:** '+res,m:'Motor matemático',s:(ti+'. '+St.map((p,i)=>'Paso '+(i+1)+'. '+p[1]).join('. ')+'. Resultado. '+res).replace(/\*\*/g,'')});
@@ -5678,7 +5757,7 @@ function D(t,L){const i=L?L.length:0;L&&L.push(0);let r,ru;
  else{const u=t.a;r=mul(FD[t.n](u),D(u,L));ru=[u.k=='x'?'Derivada de '+t.n:'Regla de la cadena',u.k=='x'?'derivada directa de '+t.n+'(x)':'(f(u))′ = f′(u)·u′']}
  if(L)L[i]=ru?[ru[0],ru[1],t,r]:0;return r}
 /* ---- integrales ---- */
-const lin=u=>{if(!dep(u))return null;const a=ev(u,1)-ev(u,0),b=ev(u,0);if(!isFinite(a)||!isFinite(b)||Math.abs(a)<1e-12||Math.abs(ev(u,3)-(3*a+b))>1e-9)return null;return[a,b]};
+const lin=u=>{if(!dep(u))return null;const a=ev(u,1)-ev(u,0),b=ev(u,0);if(!isFinite(a)||!isFinite(b)||Math.abs(a)<1e-12)return null;for(const q of[3,.5,-1.7]){const e=ev(u,q);if(!isFinite(e)||Math.abs(e-(q*a+b))>1e-9*(1+Math.abs(e)))return null}return[a,b]};
 const IT={sin:u=>mul(N(-1),fn('cos',u)),cos:u=>fn('sin',u),exp:u=>fn('exp',u),sinh:u=>fn('cosh',u),cosh:u=>fn('sinh',u),tan:u=>mul(N(-1),fn('ln',fn('abs',fn('cos',u)))),ln:u=>add(mul(u,fn('ln',u)),mul(N(-1),u)),atan:u=>add(mul(u,fn('atan',u)),mul(N(-.5),fn('ln',add(N(1),pw(u,N(2))))))};
 const subs=(t,u)=>t.k=='x'?u:t.k=='+'?add(...t.a.map(v=>subs(v,u))):t.k=='*'?mul(...t.a.map(v=>subs(v,u))):t.k=='^'?pw(subs(t.a,u),subs(t.b,u)):t.k=='f'?fn(t.n,subs(t.a,u)):t;
 function usub(t){for(const f of t.a){const cs=[];
@@ -5722,23 +5801,36 @@ function derOut(T){const o=/segunda|\bd\^2/.test(T)?2:/tercera/.test(T)?3:1;
  let res='d'+(o>1?sup(o):'')+'/d'+V+(o>1?sup(o):'')+'('+show(f)+') = **'+show(g)+'**';
  if(pt!==null){const a=ev(P(pt)),val=ev(g,a);St.push(['Se evalúa en '+V+' = '+rv(a)+': '+rv(val),'Se evalúa en '+V+' igual a '+rv(a)+', y da '+rv(val)]);res+='; en '+V+' = '+rv(a)+' vale **'+rv(val)+'**'}
  return out('Derivada de '+show(f)+(o>1?' (orden '+o+')':''),St,res)}
-function intOut(T){let a,b,ex,m;
- if((m=T.match(/∫\s*_?\(?\s*(-?[\w.]+)\s*\)?\s*\^\s*\(?\s*(-?[\w.]+)\s*\)?\s*(.+)$/)))[a,b,ex]=[m[1],m[2],m[3]];
+function intCore(T){let a,b,ex,m;
+ if((m=T.match(/∫\s*_\(?\s*(-?[\w.]+)\s*\)?\s*\^\s*\(?\s*(-?[\w.]+)\s*\)?\s*(.+)$/)))[a,b,ex]=[m[1],m[2],m[3]];
  else if((m=T.match(/(?:integra\w*\b|∫)\s*(?:definida\s*)?(?:de\s+)?(.+?)\s*(?:desde|entre|de)\s+(-?[\w.]+)\s*(?:hasta|a|y)\s+(-?[\w.]+)$/)))[ex,a,b]=[m[1],m[2],m[3]];
  else if((m=T.match(/(?:integra\w*\b|∫)\s*(?:de\s+)?(.+)$/)))ex=m[1];else return null;
  ex=ex.replace(/(^|[\s)\d])d([a-z])\s*$/,'$1').trim();if(!ex||words(ex))return null;V=pickV(ex);
- const f=P(ex),L=[];let X2=null;try{X2=xi(f)}catch(e){}const F=X2?X2.F:I(f,L);
- const miss=()=>({t:'Todavía no encuentro la antiderivada de **'+show(f)+'** con las reglas que conozco (potencias, sumas, sustitución, sustitución trigonométrica, partes, fracciones parciales y potencias de seno/coseno; esta forma todavía se me escapa: prueba a simplificarla o dividirla).',m:'Motor matemático',s:'Todavía no encuentro la antiderivada de esa expresión.'});
+ const f=P(ex),L=[];let X2=null,X3=null;try{X2=xi(f)}catch(e){}
+ let F=X2?X2.F:I(f,L);if(!F){L.length=0;try{X3=xg(f)}catch(e){X3=null}if(X3)F=X3.F}
+ const miss=(msg)=>({miss:1,f,msg:msg||'Todavía no encuentro la antiderivada de **'+show(f)+'** con las reglas que conozco (potencias, sumas, sustitución general, sustitución trigonométrica, partes repetidas, fracciones parciales, reducciones de seno y coseno y sustitución de Weierstrass; esta forma se me escapa: prueba a simplificarla o dividirla).',s:'Todavía no encuentro la antiderivada de esa expresión.'});
  if(!F)return miss();
- const BL=X2?X2.St:L.filter(Boolean).map(r=>[r[0],['Regla: '+r[1],'Aquí: ∫ '+show(r[2])+' d'+V+' = '+show(r[3])]]);
-  if(!F)return miss();
-  const mt=X2?X2.title:'Método: '+(BL.length>1?'reglas básicas combinadas ('+[...new Set(BL.map(b=>b[0]))].join(', ')+')':BL[0]?BL[0][0]:'regla directa');
-  let dF=null;try{dF=show(D(F))}catch(e){}const ck=vf(F,f);
-  const VR=['Se deriva el resultado'+(dF?': d/d'+V+'('+show(F)+') = '+dF:'.'),ck===true?'Al derivar se recupera el integrando original ✔ (comprobado numéricamente).':'La comprobación numérica no fue concluyente en los puntos de prueba.'];
-  if(a===undefined){BL.push(['Comprobar el resultado',VR]);return out2('Integral indefinida de '+show(f),mt,BL,'∫ '+show(f)+' d'+V+' = **'+show(F)+' + C**')}
-  const A=ev(P(a)),B=ev(P(b)),Fb=ev(F,B),Fa=ev(F,A);if(!isFinite(Fb)||!isFinite(Fa))return miss();
-  BL.push(['Teorema fundamental del cálculo',['∫ₐᵇ f d'+V+' = F(b) − F(a), con F('+V+') = '+show(F),'F('+rv(B)+') = '+rv(Fb)+' y F('+rv(A)+') = '+rv(Fa),'F(b) − F(a) = '+rv(Fb)+' − ('+rv(Fa)+') = '+rv(Fb-Fa)]]);
-  const v=Fb-Fa;return out2('Integral definida de '+show(f)+' de '+rv(A)+' a '+rv(B),mt,BL,'∫_'+rv(A)+'^'+rv(B)+' '+show(f)+' d'+V+' = **'+rv(v)+'**')}
+ const BL=X2?X2.St:X3?X3.St:L.filter(Boolean).map(r=>[r[0],['Regla: '+r[1],'Aquí: ∫ '+show(r[2])+' d'+V+' = '+show(r[3])]]);
+ const mt=X2?X2.title:X3?X3.title:'Método: '+(BL.length>1?'reglas básicas combinadas ('+[...new Set(BL.map(b=>b[0]))].join(', ')+')':BL[0]?BL[0][0]:'regla directa');
+ let dF=null;try{dF=show(D(F))}catch(e){}if(dF&&dF.length>170)dF=null;const ck=vf(F,f);
+ const VR=['Se deriva el resultado'+(dF?': d/d'+V+'('+show(F)+') = '+dF:'.'),ck===true?'Al derivar se recupera el integrando original ✔ (comprobado numéricamente).':'La comprobación numérica no fue concluyente en los puntos de prueba.'];
+ if(a===undefined){BL.push(['Comprobar el resultado',VR]);return{ti:'Integral indefinida de '+show(f),mt,BL,res:'∫ '+show(f)+' d'+V+' = **'+show(F)+' + C**',F,f}}
+ const A=ev(P(a)),B=ev(P(b));if(!isFinite(A)&&Math.abs(A)!=Infinity||!isFinite(B)&&Math.abs(B)!=Infinity||A===B&&isFinite(A)){return miss('Los límites de integración no son válidos.')}
+ const lo=Math.min(A,B),hi=Math.max(A,B),w0=isFinite(lo)?lo:Math.min(-50,hi-1),w1=isFinite(hi)?hi:Math.max(50,lo+1);let bad=0;
+ for(let i=1;i<400;i++){const x=w0+(w1-w0)*i/400,y=ev(f,x);if(!isFinite(y)||Math.abs(y)>1e9){bad=1;break}}
+ if(bad)return miss('La función de **'+show(f)+'** no está definida o no es continua en todo el intervalo. Es una integral impropia con un punto problemático en el interior: hay que dividirla en ese punto y estudiar cada parte con límites.');
+ const cv=v=>v.every(isFinite)&&Math.abs(v[2]-v[1])<2e-4*(1+Math.abs(v[2]))&&Math.abs(v[1]-v[0])<5e-2*(1+Math.abs(v[1]))?v[2]:NaN,
+ endv=(x0,ins)=>{if(Math.abs(x0)==Infinity)return cv([1e5,1e8,1e11].map(h=>ev(F,Math.sign(x0)*h)));const v0=ev(F,x0);if(isFinite(v0))return v0;return cv([1e-6,1e-8,1e-10].map(h=>ev(F,x0+ins*h)))};
+ const ia=A<=B?1:-1,Fa=endv(A,ia),Fb=endv(B,-ia);
+ if(!isFinite(Fa)||!isFinite(Fb))return miss('La integral impropia **diverge**: la antiderivada no se acerca a un valor finito en uno de los extremos.');
+ let v=Fb-Fa,nota=null;const snp=z=>{for(let q=1;q<=12;q++){const p=Math.round(z/Math.PI*q);if(p&&Math.abs(z-p*Math.PI/q)<5e-7)return p*Math.PI/q}const r=Math.round(z*1e6)/1e6;return Math.abs(z-r)<5e-7?r:z};if(!isFinite(ev(F,A))||!isFinite(ev(F,B))||Math.abs(A)==Infinity||Math.abs(B)==Infinity)v=snp(v);
+ if(isFinite(lo)&&isFinite(hi)&&isFinite(ev(f,lo))&&isFinite(ev(f,hi))){const n=2000,h=(hi-lo)/n;let sm=ev(f,lo)+ev(f,hi);for(let i=1;i<n;i++)sm+=(i%2?4:2)*ev(f,lo+i*h);sm=sm*h/3*(A<=B?1:-1);
+  if(isFinite(sm)&&Math.abs(sm-v)>1e-5*(1+Math.abs(sm))){nota='La antiderivada tiene un salto dentro del intervalo, así que el valor se calcula numéricamente (Simpson): '+rv(sm)+'.';v=sm}}
+ const imp=Math.abs(A)==Infinity||Math.abs(B)==Infinity||!isFinite(ev(F,A))||!isFinite(ev(F,B));
+ BL.push([imp?'Integral impropia: límites':'Teorema fundamental del cálculo',['∫ₐᵇ f d'+V+' = F(b) − F(a), con F('+V+') = '+show(F),(imp?'Los valores en los extremos se obtienen con límites: ':'')+'F('+rv(B)+') = '+rv(Fb)+' y F('+rv(A)+') = '+rv(Fa),'F(b) − F(a) = '+rv(Fb)+' − ('+rv(Fa)+') = '+rv(Fb-Fa)].concat(nota?[nota]:[])]);
+ BL.push(['Comprobar el resultado',VR]);
+ return{ti:'Integral '+(imp?'impropia':'definida')+' de '+show(f)+' de '+rv(A)+' a '+rv(B),mt,BL,res:'∫_'+rv(A)+'^'+rv(B)+' '+show(f)+' d'+V+' = **'+rv(v)+'**',F,f,def:{A,B,val:v}}}
+function intOut(T){const c=intCore(T);if(!c)return null;if(c.miss)return{t:c.msg,m:'Motor matemático',s:c.s||c.msg.replace(/\*\*/g,'')};return out2(c.ti,c.mt,c.BL,c.res)}
 function limOut(f,a){const St=[],big=Math.abs(a)==Infinity,x0=big?a*1e9:a,as=rv(a),num=[],den=[];
  (f.k=='*'?f.a:[f]).forEach(u=>u.k=='^'&&u.b.k=='n'&&u.b.v<0?den.push(pw(u.a,N(-u.b.v))):num.push(u));
  let n=mul(...num),d=mul(...den),cur=den.length?mul(n,pw(d,N(-1))):f,lh=0;const inf=v=>v>0?Infinity:-Infinity;
@@ -5918,7 +6010,266 @@ function speech(s){
  s=s.replace(/∞/g,' infinito ').replace(/→|->/g,' tiende a ').replace(/≤/g,' menor o igual que ').replace(/≥/g,' mayor o igual que ').replace(/≠/g,' distinto de ').replace(/≈/g,' aproximadamente ').replace(/±/g,' más menos ').replace(/∂/g,' derivada parcial de ').replace(/∈/g,' pertenece a ').replace(/ℝ/g,' los números reales ').replace(/′/g,' prima ')
   .replace(/[αβγδΔλμσφωΩθπ]/g,c=>' '+GR[c]+' ').replace(/[()]/g,', ').replace(/(^|[^a-záéíóúñôü_])([xzfghk])(?![a-záéíóúñôü])/gi,(m,p,c)=>p+' '+LN[c.toLowerCase()]+' ');
  return s.replace(/(^|[^a-záéíóúñ_])y(?=\s*igual a)/g,'$1 ye ').replace(/\s+/g,' ').replace(/\s+,/g,',')}
-return{solve,speech}})();
+/* ===== Motor ampliado de integrales: sustitución general, partes anidadas, fracciones parciales completas, reducciones trigonométricas ===== */
+const cl=v=>{if(!isFinite(v))return v;for(let q=1;q<=120;q++){const p=Math.round(v*q);if(Math.abs(v-p/q)<1e-9)return p/q}return +v.toPrecision(12)};
+const dd=u=>{try{return D(u)}catch(e){return null}};
+const rkf=f=>f.k=='x'||(f.k=='^'&&f.a.k=='x')?0:(f.k=='f'&&f.n=='exp')||(f.k=='^'&&f.a.k=='f'&&f.a.n=='exp')?1:2;
+const can1=t=>{if(t.k!='*')return t;const c=t.a.filter(u=>u.k=='n'),r=t.a.filter(u=>u.k!='n').sort((p,q)=>rkf(p)-rkf(q)||(J(p)<J(q)?-1:J(p)>J(q)?1:0));return{k:'*',a:[...c,...r]}};
+const cano=t=>t.k=='+'?add(...t.a.map(can1)):can1(t);
+function xp(t,pe=true){
+ if(t.k=='+')return cano(add(...t.a.map(z=>xp(z,pe))));
+ if(t.k=='*'){let acc=[N(1)];for(const f of t.a){const g=xp(f,pe),ts=g.k=='+'?g.a:[g],nw=[];for(const p of acc)for(const q of ts)nw.push(mul(p,q));acc=nw;if(acc.length>80)return t}return cano(add(...acc))}
+ if(pe&&t.k=='^'&&t.b.k=='n'&&Number.isInteger(t.b.v)&&t.b.v>=2&&t.b.v<=8&&t.a.k=='+'){const a0=xp(t.a);let r=a0;for(let i=1;i<t.b.v;i++){r=xp(mul(r,a0))}return r}
+ return t}
+const rep=(t,u,w,ju)=>{ju=ju||J(u);if(J(t)==ju)return w;switch(t.k){case'+':return add(...t.a.map(v=>rep(v,u,w,ju)));case'*':return mul(...t.a.map(v=>rep(v,u,w,ju)));case'^':return pw(rep(t.a,u,w,ju),rep(t.b,u,w,ju));case'f':return fn(t.n,rep(t.a,u,w,ju));default:return t}};
+const evS=(t,W)=>{if(t.k=='x')return null;if(t.k=='^'&&t.a.k=='x')return t.b.k=='n'&&Number.isInteger(t.b.v)&&t.b.v%2==0?pw(W,N(t.b.v/2)):null;
+ if(t.k=='+'||t.k=='*'){const q=t.a.map(v=>evS(v,W));return q.some(v=>v===null)?null:(t.k=='+'?add(...q):mul(...q))}
+ if(t.k=='^'){const a=evS(t.a,W),b=evS(t.b,W);return a&&b?pw(a,b):null}
+ if(t.k=='f'){const a=evS(t.a,W);return a?fn(t.n,a):null}return t};
+const subn=()=>['u','w','z','s','r'].find(n=>n!=V);
+const pmul=(a,b)=>{const r=Array(a.length+b.length-1).fill(0);a.forEach((x,i)=>b.forEach((y,j)=>r[i+j]+=x*y));return r};
+const pT=c=>{while(c.length>1&&Math.abs(c[c.length-1])<1e-10)c.pop();return c};
+const pdiv=(n,d)=>{n=n.slice();const q=Array(Math.max(n.length-d.length+1,1)).fill(0);for(let i=n.length-d.length;i>=0;i--){const c=n[i+d.length-1]/d[d.length-1];q[i]=c;for(let j=0;j<d.length;j++)n[i+j]-=c*d[j]}return[q,pT(n.slice(0,Math.max(d.length-1,1)))]};
+const padp=(c,n)=>{const r=c.slice();while(r.length<n)r.push(0);return r.slice(0,n)};
+function gsol(M,b){const n=b.length;M=M.map(r=>r.slice());b=b.slice();for(let c=0;c<n;c++){let p=c;for(let r=c+1;r<n;r++)if(Math.abs(M[r][c])>Math.abs(M[p][c]))p=r;if(Math.abs(M[p][c])<1e-11)return null;[M[c],M[p]]=[M[p],M[c]];[b[c],b[p]]=[b[p],b[c]];for(let r=0;r<n;r++)if(r!=c){const f=M[r][c]/M[c][c];for(let k=c;k<n;k++)M[r][k]-=f*M[c][k];b[r]-=f*b[c]}}return b.map((v,i)=>cl(v/M[i][i]))}
+function roots(c){c=pT(c.slice());const n=c.length-1;if(n<1)return[];const a=c.map(v=>v/c[n]),R=1+Math.max(...a.slice(0,n).map(Math.abs)),z=[];
+ for(let i=0;i<n;i++){const g=2*Math.PI*i/n+.4;z.push([R*Math.cos(g),R*Math.sin(g)])}
+ const cm=(p,q)=>[p[0]*q[0]-p[1]*q[1],p[0]*q[1]+p[1]*q[0]],cd=(p,q)=>{const d=q[0]*q[0]+q[1]*q[1];return[(p[0]*q[0]+p[1]*q[1])/d,(p[1]*q[0]-p[0]*q[1])/d]};
+ for(let it=0;it<800;it++){let mx=0;for(let i=0;i<n;i++){let p=[1,0];for(let k=n-1;k>=0;k--){p=cm(p,z[i]);p[0]+=a[k]}let d=[1,0];for(let j=0;j<n;j++)if(j!=i)d=cm(d,[z[i][0]-z[j][0],z[i][1]-z[j][1]]);const dl=cd(p,d);z[i]=[z[i][0]-dl[0],z[i][1]-dl[1]];mx=Math.max(mx,Math.hypot(dl[0],dl[1]))}if(mx<1e-14)break}return z}
+const sqN=v=>{const s=Math.sqrt(v);for(let q=1;q<=120;q++){const p=Math.round(s*q);if(p&&Math.abs(s-p/q)<1e-9)return N(p/q)}
+ for(let q=1;q<=120;q++){const P=Math.round(v*q);if(P>0&&Math.abs(v*q-P)<1e-9){const M=P*q;let f=1;for(let g=2;g*g<=M;g++)while(M%(g*g*f*f)==0&&false);let ff=1,r=M;for(let g=2;g*g<=r;g++)while(r%(g*g)==0){r/=g*g;ff*=g}return r==1?N(ff/q):mul(N(ff/q),pw(N(r),N(.5)))}}
+ return pw(N(+v.toPrecision(12)),N(.5))};
+/* ---- tabla de integrales directas ---- */
+const TF={sin:['sen(u)','−cos(u)'],cos:['cos(u)','sen(u)'],exp:['eᵘ','eᵘ'],sinh:['senh(u)','cosh(u)'],cosh:['cosh(u)','senh(u)'],tan:['tan(u)','−ln|cos(u)|'],tanh:['tanh(u)','ln(cosh(u))'],ln:['ln(u)','u·ln(u) − u'],atan:['arctan(u)','u·arctan(u) − ½·ln(1 + u²)'],asin:['arcsen(u)','u·arcsen(u) + √(1 − u²)'],acos:['arccos(u)','u·arccos(u) − √(1 − u²)']};
+function tbl(t){const fm=(F,r,f,x)=>[F,r,f,x||''];
+ if(!dep(t))return fm(mul(t,X),'Integral de una constante','∫c d'+V+' = c·'+V);
+ if(t.k=='x')return fm(mul(N(.5),pw(X,N(2))),'Regla de la potencia','∫'+V+' d'+V+' = '+V+'²/2');
+ if(t.k=='f'){const l=lin(t.a);if(!l)return null;const n=t.n;let G;
+  if(IT[n])G=IT[n](t.a);else if(n=='tanh')G=fn('ln',fn('cosh',t.a));
+  else if(n=='asin')G=add(mul(t.a,fn('asin',t.a)),pw(add(N(1),mul(N(-1),pw(t.a,N(2)))),N(.5)));
+  else if(n=='acos')G=add(mul(t.a,fn('acos',t.a)),mul(N(-1),pw(add(N(1),mul(N(-1),pw(t.a,N(2)))),N(.5))));else return null;
+  return fm(mul(N(1/l[0]),G),'Integral de '+(TF[n]?TF[n][0]:n),'∫'+TF[n][0]+' du = '+TF[n][1],t.a.k=='x'?'':' (con u = '+show(t.a)+' y du = '+nm(l[0])+' d'+V+', se divide entre '+nm(l[0])+')')}
+ if(t.k=='^'){const{a,b}=t,l=lin(a);
+  if(b.k=='n'&&l){const n=b.v;if(n==-1)return fm(mul(N(1/l[0]),fn('ln',fn('abs',a))),'Integral de 1/u','∫du/u = ln|u|',a.k=='x'?'':' (con u = '+show(a)+', se divide entre '+nm(l[0])+')');
+   return fm(mul(N(1/(l[0]*(n+1))),pw(a,N(n+1))),a.k=='x'?'Regla de la potencia':'Potencia de una expresión lineal',a.k=='x'?'∫xⁿ dx = xⁿ⁺¹/(n+1), n ≠ −1':'∫uⁿ du = uⁿ⁺¹/(n+1), con u lineal',a.k=='x'?'':' (u = '+show(a)+', se divide entre '+nm(l[0])+')')}
+  if(!dep(a)&&lin(b)){const av=ev(a);if(isFinite(av)&&av>0&&av!=1){const l2=lin(b);return fm(mul(N(1/l2[0]),pw(fn('ln',a),N(-1)),t),'Exponencial aˣ','∫aᵘ du = aᵘ/ln(a)')}}
+  if(a.k=='f'&&b.k=='n'&&lin(a.a)&&(a.n=='cos'||a.n=='sin')&&(b.v==-1||b.v==-2)){const A=a.a,l2=lin(A),c=fn('cos',A),s=fn('sin',A);
+   if(a.n=='cos'&&b.v==-2)return fm(mul(N(1/l2[0]),fn('tan',A)),'Integral de sec²','∫sec²(u) du = tan(u)');
+   if(a.n=='sin'&&b.v==-2)return fm(mul(N(-1/l2[0]),c,pw(s,N(-1))),'Integral de csc²','∫csc²(u) du = −cot(u)');
+   if(a.n=='cos')return fm(mul(N(1/l2[0]),fn('ln',fn('abs',add(pw(c,N(-1)),mul(s,pw(c,N(-1))))))),'Integral de sec','∫sec(u) du = ln|sec(u) + tan(u)|');
+   return fm(mul(N(-1/l2[0]),fn('ln',fn('abs',add(pw(s,N(-1)),mul(c,pw(s,N(-1))))))),'Integral de csc','∫csc(u) du = −ln|csc(u) + cot(u)|')}}
+ return null}
+/* ---- registro de pasos con prueba y confirmación ---- */
+let DL=0,ANC=new Set(),MEMO=new Map(),FAILD=new Map();
+function ig(t,St,d){const key=J(t)+'|'+V;if(ANC.has(key)||d>12||Date.now()>DL)return null;
+ const mm=MEMO.get(key);if(mm){if(mm.u)St.push(['Resultado ya obtenido',['∫ '+show(t)+' d'+V+' = '+show(mm.F)+' (se calculó antes en este mismo ejercicio)']]);else{mm.u=1;St.push(...mm.L)}return mm.F}
+ const fd=FAILD.get(key);if(fd!==undefined&&fd<=d)return null;
+ ANC.add(key);let F=null;const L=[];try{F=ig0(t,L,d)}catch(e){F=null}ANC.delete(key);
+ if(F&&vf(F,t)===false)F=null;if(!F){FAILD.set(key,d);return null}
+ MEMO.set(key,{F,L,u:1});St.push(...L);return F}
+function ig0(t,L,d){let r;
+ r=tbl(t);if(r){L.push([r[1],['Fórmula: '+r[2],'Aquí: ∫ '+show(t)+' d'+V+' = '+show(r[0])+r[3]]]);return r[0]}
+ if(t.k=='+'){r=igSum(t,L,d);if(r)return r}
+ if(t.k=='*'){const c=t.a.filter(u=>!dep(u)),f=t.a.filter(dep);if(c.length&&f.length){const rest=mul(...f),L2=[],G=ig(rest,L2,d+1);if(G){L.push(['Sacar la constante',['∫c·f d'+V+' = c·∫f d'+V+', con c = '+show(mul(...c))+': queda '+show(mul(...c))+'·∫ '+show(rest)+' d'+V]]);L.push(...L2);return cano(mul(...c,G))}return null}}
+ {let x=null;try{x=xi(t)}catch(e){}if(x&&vf(x.F,t)!==false){L.push([x.title,['Se aplica este método a ∫ '+show(t)+' d'+V]]);L.push(...x.St);return x.F}}
+ for(const g of[xgSub,xgBin,xgRat,xgParts,xgTrig,xgLin,xgProd,xgWei,xgExp]){r=null;const n0=L.length;try{r=g(t,L,d)}catch(e){r=null}if(r&&vf(r,t)!==false)return r;L.length=n0}
+ return null}
+function igSum(t,L,d){const dir=[],hard=[];
+ t.a.forEach(u=>{const co=u.k=='*'?u.a.filter(v=>!dep(v)):[],re=u.k=='*'?mul(...u.a.filter(dep)):u,tb=co.length&&!u.a.some(dep)?null:tbl(re);tb?dir.push([u,cano(mul(...co,tb[0]))]):hard.push(u)});
+ const L2=[],Fs=dir.map(z=>z[1]);
+ for(const u of hard){const Lh=[],G=ig(u,Lh,d+1);if(!G)return null;L2.push(['Integral auxiliar',['Se resuelve aparte ∫ '+show(u)+' d'+V]]);L2.push(...Lh);Fs.push(G)}
+ L.push(['Linealidad de la integral',['∫(f + g + …) d'+V+' = ∫f d'+V+' + ∫g d'+V+' + …','Se separa en: '+t.a.map(u=>'∫ '+show(u,1)+' d'+V).join(' + ')]]);
+ if(dir.length)L.push(['Términos con regla directa',dir.map(z=>'∫ '+show(z[0])+' d'+V+' = '+show(z[1]))]);
+ L.push(...L2);const F=cano(add(...Fs));L.push(['Sumar los resultados',['Se suman las antiderivadas parciales: '+show(F)]]);return F}
+/* ---- sustitución general (con resto expresado en u) ---- */
+const er=t=>{if(t.k=='f'&&t.n=='exp'){const l=t.a.k=='x'?null:lin(t.a);if(l&&Number.isInteger(l[0])&&l[0]!=1&&Math.abs(l[0])<9)return mul(pw(fn('exp',X),N(l[0])),fn('exp',N(l[1])));return t}
+ return t.k=='+'?add(...t.a.map(er)):t.k=='*'?mul(...t.a.map(er)):t.k=='^'?pw(er(t.a),er(t.b)):t.k=='f'?fn(t.n,er(t.a)):t};
+function xgSub(t,L,d){const cs=[],seen=new Set([J(t)]),a1=u=>{const k=J(u);if(u.k=='x'||seen.has(k)||!dep(u))return;seen.add(k);cs.push(u)};
+ const fnodes=[],w1=n=>{if(n.k=='f'&&dep(n.a))a1(n.a);else if(n.k=='^'){if(dep(n.a)&&!dep(n.b))a1(n.a);else if(!dep(n.a)&&dep(n.b))a1(n.b)}if(n.k=='+'||n.k=='*')n.a.forEach(w1);else if(n.k=='^'){w1(n.a);w1(n.b)}else if(n.k=='f')w1(n.a)};
+ const w2=n=>{if(n.k=='f'&&dep(n.a)){const k=J(n);if(!seen.has(k)){seen.add(k);fnodes.push(n)}}else if(n.k=='^'&&!dep(n.a)&&dep(n.b)){const k=J(n);if(!seen.has(k)){seen.add(k);fnodes.push(n)}}if(n.k=='+'||n.k=='*')n.a.forEach(w2);else if(n.k=='^'){w2(n.a);w2(n.b)}else if(n.k=='f')w2(n.a)};
+ w1(t);w2(t);
+ for(const u of[...cs,...fnodes].slice(0,16)){const du=dd(u);if(!du)continue;if(!dep(du)&&!(Math.abs(ev(du))>0))continue;
+  const W=S('§u');let r=mul(t,pw(du,N(-1)));if(u.k=='f'&&u.n=='exp'&&u.a.k=='x')r=er(r);let r1=rep(r,u,W),how=0,inv=null;
+  if(dep(r1)){const l=lin(u),Pq=l?null:poly(x=>ev(u,x),2);
+   if(l){inv=mul(N(1/l[0]),add(X,N(-l[1])));r1=rep(r1,X,mul(N(1/l[0]),add(W,N(-l[1]))));how=1}
+   else if(Pq&&Pq.length==3&&Math.abs(Pq[1])<1e-12){inv=mul(N(1/Pq[2]),add(X,N(-Pq[0])));const e=evS(r1,mul(N(1/Pq[2]),add(W,N(-Pq[0]))));if(e===null)continue;r1=e;how=2}
+   else continue;if(dep(r1))continue}
+  const g=rep(r1,W,X);if(J(g)==J(t)||g.k=='s')continue;
+  const nm1=subn(),V0=V;V=nm1;const sg=show(g),L2=[];let G=null;try{G=ig(g,L2,d+1)}catch(e){}V=V0;if(!G)continue;
+  const F=cano(subs(G,u)),S1=['Se elige '+nm1+' = '+show(u)+'.','Entonces d'+nm1+' = '+show(du)+' d'+V+(dep(du)?', es decir d'+V+' = d'+nm1+'/('+show(du,3)+')':'')+'.'];
+  if(how==1)S1.push('Como todavía aparece '+V+', se despeja de u: '+V+' = '+sw(inv,nm1)+'.');if(how==2)S1.push('Como solo quedan potencias pares de '+V+', se usa '+V+'² = '+sw(inv,nm1)+'.');
+  S1.push('La integral queda ∫ '+sg+' d'+nm1+'.');L.push(['Sustitución',S1]);L.push(...L2);L.push(['Regresar a '+V,['Se reemplaza '+nm1+' = '+show(u)+' en el resultado: '+show(F)]]);return F}
+ return null}
+/* ---- potencias de un cuadrático: ∫ P(x)·(Cx²+bx+c)^p con p semientero ---- */
+function xgBin(t,L,d){const fs=cn(t);let g=null;const rest=[];
+ for(const u of fs){if(!g&&u.k=='^'&&u.b.k=='n'&&Number.isInteger(u.b.v*2)&&!Number.isInteger(u.b.v)&&dep(u.a))g=u;else rest.push(u)}
+ if(!g)return null;const q=poly(x=>ev(g.a,x),2);if(!q||q.length<3)return null;const Pr=poly(x=>ev(mul(...rest),x),6);if(!Pr)return null;
+ const p=g.b.v,C=q[2],h=cl(q[1]/(2*C)),k=cl(q[0]-C*h*h);if(Math.abs(p)>3.5||Math.abs(k)<1e-12)return null;
+ let Pw=[0];Pr.forEach((c,i)=>{let b=[1];for(let j=0;j<i;j++)b=pmul(b,[-h,1]);Pw=padp(Pw,Math.max(Pw.length,b.length)).map((v,j)=>v+c*(b[j]||0))});Pw=pT(Pw).map(cl);
+ const Q=add(mul(N(C),pw(X,N(2))),N(k)),w=X,lines=[],cache=new Map();let base0=null;
+ const rf=(s,sh)=>{if(cache.has(s))return cache.get(s);let R;
+  if(s==-.5){if(C>0){R=mul(N(1/Math.sqrt(C)),fn('ln',fn('abs',add(mul(N(Math.sqrt(C)),w),pw(Q,N(.5))))));lines.push('Caso base: ∫ dw/√('+show(Q)+') = (1/√'+nm(C)+')·ln|√'+nm(C)+'·w + √('+show(Q)+')|.')}
+   else if(k>0){R=mul(N(1/Math.sqrt(-C)),fn('asin',mul(N(Math.sqrt(-C/k)),w)));lines.push('Caso base: ∫ dw/√('+show(Q)+') = (1/√'+nm(-C)+')·arcsen(√'+nm(-C/k)+'·w).')}else return null}
+  else if(s>0){const a=rf(s-1);if(!a)return null;R=mul(N(1/(2*s+1)),add(mul(w,pw(Q,N(s))),mul(N(2*s*k),a)));lines.push('Reducción: I('+nm(s)+') = [w·Q^'+nm(s)+' + '+nm(2*s*k)+'·I('+nm(s-1)+')]/'+nm(2*s+1)+'.')}
+  else{const a=rf(s+1);if(!a)return null;R=mul(N(1/(2*(s+1)*k)),add(mul(N(2*(s+1)+1),a),mul(N(-1),w,pw(Q,N(s+1)))));lines.push('Reducción hacia arriba: I('+nm(s)+') = [('+nm(2*(s+1)+1)+')·I('+nm(s+1)+') − w·Q^'+nm(s+1)+']/'+nm(2*(s+1)*k)+'.')}
+  cache.set(s,R);return R};
+ const comb=(j,c)=>{let o=[];for(let i=0;i<=j;i++){let b=1;for(let m=0;m<i;m++)b=b*(j-m)/(m+1);o.push([i,c*b*Math.pow(-k,j-i)/Math.pow(C,j)])}return o};
+ let F=N(0);const Ls=[];
+ Pw.forEach((c,m)=>{if(Math.abs(c)<1e-12)return;const j=Math.floor(m/2);
+  if(m%2==0)comb(j,c).forEach(([i,cf])=>{const R=rf(p+i);if(!R)throw 0;F=add(F,mul(N(cf),R))});
+  else comb(j,c/(2*C)).forEach(([i,cf])=>{const s=p+i+1;F=add(F,mul(N(cf/s),pw(Q,N(s))))})});
+ const Fx=Math.abs(h)>1e-12?subs(F,add(X,N(h))):F,Lq=[];
+ L.push(['Reconocer el cuadrático bajo la potencia',['El integrando es '+show(t)+', con Q = '+show(g.a)+' elevado a '+nm(p)+'.'+(rest.length?' El resto es el polinomio '+show(mul(...rest))+'.':'')]]);
+ if(Math.abs(h)>1e-12)L.push(['Completar el cuadrado',[show(g.a)+' = '+nm(C)+'·('+V+(h<0?' − '+nm(-h):' + '+nm(h))+')² '+(k<0?'− '+nm(-k):'+ '+nm(k))+'.','Sea w = '+V+(h<0?' − '+nm(-h):' + '+nm(h))+', dw = d'+V+'; entonces Q = '+sw(Q,'w')+'.']]);
+ L.push(['Separar el numerador',['En w el numerador es '+sw(cof(Pw),'w')+'. Las potencias pares de w se reescriben con w² = (Q − ('+nm(k)+'))/'+nm(C)+'; las impares se integran con la sustitución v = Q (dv = '+nm(2*C)+'·w dw).']]);
+ L.push(['Fórmula de reducción para I(s) = ∫ Q^s dw',['Con integración por partes y Cw² = Q − ('+nm(k)+') se obtiene I(s) = [w·Q^s + 2s·('+nm(k)+')·I(s−1)]/(2s+1).',...lines]]);
+ F=cano(Fx);L.push(['Resultado',['Se combinan los términos y se regresa a '+V+': '+show(F)]]);return F}
+/* ---- fracciones racionales completas ---- */
+function fcz(bases){const lin=[],qd=[];let lead=1;
+ const aL=(r,k)=>{const h=lin.find(z=>Math.abs(z.r-r)<1e-6);h?h.k+=k:lin.push({r,k})},aQ=(p,q,s)=>{const h=qd.find(z=>Math.abs(z.p-p)<1e-6&&Math.abs(z.q-q)<1e-6);h?h.s+=s:qd.push({p,q,s})};
+ for(const b of bases){const c=b.q,n=c.length-1,ld=c[n];lead*=Math.pow(ld,b.m);const m=c.map(v=>v/ld);
+  if(n==1)aL(cl(-m[0]),b.m);
+  else if(n==2){const D2=m[1]*m[1]-4*m[0],tol=1e-10*(m[1]*m[1]+4*Math.abs(m[0])+1);if(D2>tol){const s=Math.sqrt(D2);aL(cl((-m[1]-s)/2),b.m);aL(cl((-m[1]+s)/2),b.m)}else if(D2>=-tol)aL(cl(-m[1]/2),2*b.m);else aQ(cl(m[1]),cl(m[0]),b.m)}
+  else if(n>=3&&n<=8){const z=roots(m),used=Array(n).fill(false);
+   for(let i=0;i<n;i++){if(used[i])continue;const cx=[i];for(let j=i+1;j<n;j++)if(!used[j]&&Math.hypot(z[i][0]-z[j][0],z[i][1]-z[j][1])<1e-4)cx.push(j);cx.forEach(j=>used[j]=true);
+    const re=cx.reduce((s,j)=>s+z[j][0],0)/cx.length,im=cx.reduce((s,j)=>s+z[j][1],0)/cx.length;
+    if(Math.abs(im)<1e-5)aL(cl(re),cx.length*b.m);else if(im>0)aQ(cl(-2*re),cl(re*re+im*im),cx.length*b.m)}}
+  else return null}
+ return{lead,lin,qd}}
+function xgRat(t,L,d){const fs=cn(t),num=[],bases=[];let c=1;
+ for(const u of fs){if(!dep(u)){c*=ev(u);continue}
+  if(u.k=='^'&&u.b.k=='n'&&Number.isInteger(u.b.v)&&u.b.v<0&&dep(u.a)){const q=poly(x=>ev(u.a,x),8);if(!q||q.length<2)return null;bases.push({q:pT(q.slice()),m:-u.b.v})}else num.push(u)}
+ if(!bases.length||!isFinite(c))return null;const Pn=poly(x=>ev(mul(N(c),...num),x),8);if(!Pn)return null;
+ const fz=fcz(bases);if(!fz)return null;const{lead,lin:LN,qd}=fz,
+ den0=ov=>{let P=[1];for(const z of LN){const k=ov&&ov.l===z?ov.k:z.k;for(let i=0;i<k;i++)P=pmul(P,[-z.r,1])}for(const z of qd){const s=ov&&ov.q===z?ov.s:z.s;for(let i=0;i<s;i++)P=pmul(P,[z.q,z.p,1])}return P};
+ const Dn=den0(),DD=Dn.length-1;if(DD<2||DD>8)return null;
+ const [Q0,R0]=pdiv(Pn.map(v=>v/lead),Dn),Qp=pT(Q0.map(cl)),Rm=R0.map(cl);
+ const fl=r=>Math.abs(r)<1e-12?V:'('+V+(r<0?' + '+nm(-r):' − '+nm(r))+')',qs=z=>show(add(pw(X,N(2)),mul(N(z.p),X),N(z.q)));
+ const unk=[],cols=[];
+ LN.forEach(z=>{for(let j=1;j<=z.k;j++){unk.push({t:'A',z,j});cols.push(padp(den0({l:z,k:z.k-j}),DD))}});
+ qd.forEach(z=>{for(let j=1;j<=z.s;j++){const b=den0({q:z,s:z.s-j});unk.push({t:'B',z,j});cols.push(padp(pmul(b,[0,1]),DD));unk.push({t:'C',z,j});cols.push(padp(b,DD))}});
+ if(unk.length!=DD)return null;
+ const M=Array.from({length:DD},(_,r)=>cols.map(cc=>cc[r])),sol=gsol(M,padp(Rm,DD));if(!sol)return null;
+ const nmn=(z,t0)=>t0=='A'?'A':t0,LET='ABCDEFGHIJKLMNOP';
+ const names=unk.map((u,i)=>LET[i]);let F=N(0);const lt=[],tm=[];
+ if(Qp.some(v=>Math.abs(v)>1e-12)&&(Q0.length>1||Math.abs(Q0[0])>1e-12)){const pq=add(...Qp.map((v,i)=>mul(N(v),pw(X,N(i))))),G=I(pq);if(G){F=add(F,G);tm.push('Parte polinómica: ∫ '+show(pq)+' d'+V+' = '+show(G))}}
+ let idx=0;const eqLine=[];
+ LN.forEach(z=>{for(let j=1;j<=z.k;j++){const A=sol[idx++];if(Math.abs(A)<1e-12)continue;
+   if(j==1){F=add(F,mul(N(A),fn('ln',fn('abs',add(X,N(-z.r))))));tm.push('∫ '+nm(A)+'/'+fl(z.r)+' d'+V+' = '+nm(A)+'·ln|'+V+(z.r<0?' + '+nm(-z.r):' − '+nm(z.r))+'|')}
+   else{F=add(F,mul(N(-A/(j-1)),pw(add(X,N(-z.r)),N(1-j))));tm.push('∫ '+nm(A)+'/'+fl(z.r)+'^'+j+' d'+V+' = '+nm(-A/(j-1))+'/'+fl(z.r)+'^'+(j-1))}}});
+ qd.forEach(z=>{const h=z.p/2,a2=z.q-h*h,a=Math.sqrt(a2),Qa=add(pw(X,N(2)),mul(N(z.p),X),N(z.q)),w=add(X,N(h)),sa=sqN(a2),Ij={};
+  const I1=mul(pw(sa,N(-1)),fn('atan',mul(pw(sa,N(-1)),w)));
+  const Ir=j=>{if(j==1)return I1;if(Ij[j])return Ij[j];return Ij[j]=add(mul(N(1/(2*a2*(j-1))),w,pw(Qa,N(1-j))),mul(N((2*j-3)/(2*a2*(j-1))),Ir(j-1)))};
+  for(let j=1;j<=z.s;j++){const B=sol[idx++],Cc=sol[idx++];if(Math.abs(B)<1e-12&&Math.abs(Cc)<1e-12)continue;const E=Cc-B*z.p/2;
+   if(Math.abs(B)>1e-12){F=add(F,j==1?mul(N(B/2),fn('ln',Qa)):mul(N(B/(2*(1-j))),pw(Qa,N(1-j))));tm.push('(B/2)·∫ (2'+V+(z.p<0?' − '+nm(-z.p):' + '+nm(z.p))+')/('+qs(z)+')'+(j>1?'^'+j:'')+' d'+V+' = '+(j==1?nm(B/2)+'·ln('+qs(z)+')':nm(B/(2*(1-j)))+'/('+qs(z)+')^'+(j-1)))}
+   if(Math.abs(E)>1e-12){F=add(F,mul(N(E),Ir(j)));tm.push(nm(E)+'·∫ d'+V+'/('+qs(z)+')'+(j>1?'^'+j:'')+' d'+V+' = '+nm(E)+'·['+(j==1?'(1/'+show(sa)+')·arctan(('+V+(h<0?' − '+nm(-h):h>0?' + '+nm(h):'')+')/'+show(sa)+')':'fórmula de reducción con a = '+show(sa))+']')}}});
+ F=cano(F);
+ const fact=LN.map(z=>fl(z.r)+(z.k>1?'^'+z.k:'')).concat(qd.map(z=>'('+qs(z)+')'+(z.s>1?'^'+z.s:''))).join('·');
+ L.push(['Reconocer una fracción racional',['Integrando: P('+V+')/Q('+V+') con P = '+show(cof(Pn.map(cl)))+' y Q = '+show(cof(Dn.map(v=>cl(v*lead))))+' (grados '+(Pn.length-1)+' y '+DD+').']]);
+ if(Qp.length>1||Math.abs(Qp[0])>1e-12)L.push(['División de polinomios',['Como grado(P) ≥ grado(Q) se divide: P/Q = '+show(cof(Qp))+' + ('+show(cof(Rm))+')/Q.','El cociente se integra con la regla de la potencia; el resto es una fracción propia.']]);
+ L.push(['Factorizar el denominador',['Q('+V+') = '+(Math.abs(lead-1)>1e-12?nm(lead)+'·':'')+fact+'.',qd.length?'Los factores cuadráticos tienen discriminante negativo: son irreducibles en los reales.':'Todos los factores son lineales.']]);
+ L.push(['Descomposición en fracciones parciales',['Se plantea (fracción propia) = '+unk.map((u,i)=>u.t=='A'?names[i]+'/'+fl(u.z.r)+(u.j>1?'^'+u.j:''):u.t=='B'?'('+names[i]+V+' + '+names[i+1]+')/('+qs(u.z)+')'+(u.j>1?'^'+u.j:''):null).filter(Boolean).join(' + ')+'.','Se multiplica por Q('+V+') y se igualan los coeficientes de cada potencia de '+V+' (sistema lineal).','Solución: '+unk.map((u,i)=>names[i]+' = '+nm(sol[i])).join(', ')+'.']]);
+ L.push(['Integrar cada término',tm.length?tm:['No hay términos adicionales.']]);
+ L.push(['Resultado',['Se suman todas las integrales: '+show(F)]]);return F}
+/* ---- integración por partes (LIATE) con recursión ---- */
+function rkL(f){
+ if(f.k=='f'&&f.n=='ln'&&dep(f.a))return 1;
+ if(f.k=='^'&&f.a.k=='f'&&f.a.n=='ln'&&dep(f.a.a)&&f.b.k=='n'&&Number.isInteger(f.b.v)&&f.b.v>=2)return 1;
+ if(f.k=='^'&&f.a.k=='f'&&(f.a.n=='asin'||f.a.n=='acos'||f.a.n=='atan')&&dep(f.a.a)&&f.b.k=='n'&&Number.isInteger(f.b.v)&&f.b.v>=2)return 2;
+ if(f.k=='f'&&(f.n=='asin'||f.n=='acos'||f.n=='atan')&&dep(f.a))return 2;
+ if(f.k=='x'||(f.k=='^'&&f.a.k=='x'&&f.b.k=='n'&&f.b.v!=-1))return 3;
+ if(f.k=='f'&&(f.n=='sin'||f.n=='cos'||f.n=='sinh'||f.n=='cosh')&&lin(f.a))return 4;
+ if(f.k=='f'&&f.n=='exp'&&lin(f.a))return 5;
+ if(f.k=='^'&&!dep(f.a)&&lin(f.b))return 5;return 9}
+function xgParts(t,L,d){const fs=cn(t),ds=fs.filter(dep);if(fs.some(u=>!dep(u))||!ds.length)return null;
+ const so=[...ds].sort((a,b)=>rkL(a)-rkL(b));let u=so[0],dv;if(rkL(u)==9)return null;
+ if(ds.length==1){if(rkL(u)!=1)return null;dv=N(1)}
+ else{if(rkL(u)>3)return null;if(rkL(u)==3&&!(u.k=='x'||(u.b.k=='n'&&Number.isInteger(u.b.v)&&u.b.v>0)))return null;dv=mul(...so.slice(1))}
+ const du=dd(u);if(!du)return null;let v,Lv=[];
+ if(dv.k=='n'&&dv.v==1)v=X;else{v=ig(dv,Lv,d+1);if(!v)return null}
+ const uv=cano(mul(u,v)),R=cano(xp(mul(v,du)));if(J(R)==J(t))return null;const L2=[],H=ig(R,L2,d+1);if(!H)return null;
+ const F=cano(add(uv,mul(N(-1),H))),sp=z=>z.k=='+'?'('+show(z)+')':show(z);
+ L.push(['Integración por partes',['Fórmula: ∫u dv = u·v − ∫v du','Se elige (regla LIATE: logaritmo, inversa, algebraica, trigonométrica, exponencial) u = '+show(u)+' y dv = '+show(dv)+' d'+V+'.','Se deriva u: du = '+show(du)+' d'+V+'.'+(dv.k=='n'?' Se integra dv: v = '+V+'.':' Se integra dv para obtener v.')]]);
+ if(Lv.length){L.push(['Calcular v = ∫ dv (integral auxiliar)',['Hay que resolver ∫ '+show(dv)+' d'+V+' para obtener v.']]);L.push(...Lv);L.push(['Valor de v',['v = '+show(v)]])}
+ L.push(['Aplicar la fórmula',['u·v = '+show(uv),'v·du = '+sp(R)+' d'+V,'∫ '+show(t)+' d'+V+' = '+show(uv)+' − ∫ '+sp(R)+' d'+V]]);
+ L.push(['Resolver la integral que queda',['Ahora hay que calcular ∫ '+sp(R)+' d'+V+'.']]);L.push(...L2);
+ L.push(['Combinar',['∫ '+show(t)+' d'+V+' = '+show(uv)+' − ('+show(H)+')','Simplificando: '+show(fin(F))]]);return F}
+/* ---- potencias de seno y coseno con cualquier exponente entero (fórmulas de reducción) ---- */
+const tn=t=>{switch(t.k){case'f':if(t.n=='tan'){const a=tn(t.a);return mul(fn('sin',a),pw(fn('cos',a),N(-1)))}return fn(t.n,tn(t.a));case'+':return add(...t.a.map(tn));case'*':return mul(...t.a.map(tn));case'^':return pw(tn(t.a),tn(t.b));default:return t}};
+function trRed(m,n,A,lines,depth){if(depth>40)return null;const s=fn('sin',A),c=fn('cos',A),T=(a,b)=>mul(pw(s,N(a)),pw(c,N(b))),R=(a,b)=>trRed(a,b,A,lines,depth+1),
+ sh=(a,b)=>(a?'sen^'+a+'(w)':'')+(a&&b?'·':'')+(b?'cos^'+b+'(w)':'')||'1';
+ if(m==0&&n==0)return A;
+ if(m+n==0){if(m>0){if(m==1){lines.push('∫ tan(w) dw = −ln|cos(w)|.');return mul(N(-1),fn('ln',fn('abs',c)))}const r=R(m-2,-(m-2));if(!r)return null;lines.push('Potencia de tangente: ∫ tan^'+m+'(w) dw = tan^'+(m-1)+'(w)/'+(m-1)+' − ∫ tan^'+(m-2)+'(w) dw (porque tan² = sec² − 1).');return add(mul(N(1/(m-1)),T(m-1,-(m-1))),mul(N(-1),r))}
+  const k=-m;if(k==1){lines.push('∫ cot(w) dw = ln|sen(w)|.');return fn('ln',fn('abs',s))}const r=R(m+2,-(m+2));if(!r)return null;lines.push('Potencia de cotangente: ∫ cot^'+k+'(w) dw = −cot^'+(k-1)+'(w)/'+(k-1)+' − ∫ cot^'+(k-2)+'(w) dw (porque cot² = csc² − 1).');return add(mul(N(-1/(k-1)),T(-(k-1),k-1)),mul(N(-1),r))}
+ if(m==0&&n==-1){lines.push('∫ sec(w) dw = ln|sec(w) + tan(w)|.');return fn('ln',fn('abs',add(pw(c,N(-1)),mul(s,pw(c,N(-1))))))}
+ if(m==-1&&n==0){lines.push('∫ csc(w) dw = −ln|csc(w) + cot(w)|.');return mul(N(-1),fn('ln',fn('abs',add(pw(s,N(-1)),mul(c,pw(s,N(-1)))))))}
+ if(m==-1&&n==-1){lines.push('∫ dw/(sen(w)·cos(w)) = ln|tan(w)|.');return fn('ln',fn('abs',fn('tan',A)))}
+ if(n==1){if(m==-1){lines.push('∫ cos(w)/sen(w) dw = ln|sen(w)|.');return fn('ln',fn('abs',s))}lines.push('Con v = sen(w): ∫ '+sh(m,1)+' dw = sen^'+(m+1)+'(w)/'+(m+1)+'.');return mul(N(1/(m+1)),T(m+1,0))}
+ if(m==1){lines.push('Con v = cos(w): ∫ '+sh(1,n)+' dw = −cos^'+(n+1)+'(w)/'+(n+1)+'.');return mul(N(-1/(n+1)),T(0,n+1))}
+ if(n>=2){const r=R(m,n-2);if(!r)return null;lines.push('Reducir cos: ∫ '+sh(m,n)+' dw = [sen^'+(m+1)+'(w)·cos^'+(n-1)+'(w) + '+(n-1)+'·∫ '+sh(m,n-2)+' dw]/'+(m+n)+'.');return mul(N(1/(m+n)),add(T(m+1,n-1),mul(N(n-1),r)))}
+ if(m>=2){const r=R(m-2,n);if(!r)return null;lines.push('Reducir sen: ∫ '+sh(m,n)+' dw = [−sen^'+(m-1)+'(w)·cos^'+(n+1)+'(w) + '+(m-1)+'·∫ '+sh(m-2,n)+' dw]/'+(m+n)+'.');return mul(N(1/(m+n)),add(mul(N(-1),T(m-1,n+1)),mul(N(m-1),r)))}
+ if(n<=-2){const r=R(m,n+2);if(!r)return null;lines.push('Reducción hacia exponentes mayores en cos: ∫ '+sh(m,n)+' dw = [('+(m+n+2)+')·∫ '+sh(m,n+2)+' dw − sen^'+(m+1)+'(w)·cos^'+(n+1)+'(w)]/('+(n+1)+').');return mul(N(1/(n+1)),add(mul(N(m+n+2),r),mul(N(-1),T(m+1,n+1))))}
+ if(m<=-2){const r=R(m+2,n);if(!r)return null;lines.push('Reducción hacia exponentes mayores en sen: ∫ '+sh(m,n)+' dw = [('+(m+n+2)+')·∫ '+sh(m+2,n)+' dw + sen^'+(m+1)+'(w)·cos^'+(n+1)+'(w)]/('+(m+1)+').');return mul(N(1/(m+1)),add(mul(N(m+n+2),r),T(m+1,n+1)))}
+ return null}
+function xgTrig(t,L,d){const tt=tn(t),fs=cn(tt);let c=1,m=0,n=0,A=null;
+ for(const u of fs){if(!dep(u)){c*=ev(u);continue}const b=u.k=='^'?u.a:u,e=u.k=='^'?(u.b.k=='n'?u.b.v:NaN):1;
+  if(b.k=='f'&&(b.n=='sin'||b.n=='cos')&&Number.isInteger(e)){if(A&&J(A)!=J(b.a))return null;A=b.a;b.n=='sin'?m+=e:n+=e}else return null}
+ if(!A||!isFinite(c))return null;const l=lin(A);if(!l)return null;const lines=[],R=trRed(m,n,A,lines,0);if(!R)return null;
+ const F=cano(mul(N(c/l[0]),R));
+ L.push(['Reconocer potencias de seno y coseno',['El integrando es '+(Math.abs(c-1)>1e-12?nm(c)+'·':'')+(m?'sen^'+m+'(w)':'')+(m&&n?'·':'')+(n?'cos^'+n+'(w)':'')+' con w = '+show(A)+(A.k=='x'?'':' (dw = '+nm(l[0])+' d'+V+', se divide entre '+nm(l[0])+' al final)')+'.','Se usan identidades y fórmulas de reducción hasta llegar a una integral directa.']]);
+ L.push(['Fórmulas de reducción',lines.length?lines:['Integral directa.']]);L.push(['Resultado',['Se vuelve a '+V+': '+show(F)]]);return F}
+function xgLin(t,L,d){const fs=cn(t);let c=1,m=0,n=0,A=null;const rest=[];
+ for(const u of fs){if(!dep(u)){c*=ev(u);continue}const b=u.k=='^'?u.a:u,e=u.k=='^'?(u.b.k=='n'?u.b.v:NaN):1;
+  if(b.k=='f'&&(b.n=='sin'||b.n=='cos')&&Number.isInteger(e)&&e>=1){if(A&&J(A)!=J(b.a))return null;A=b.a;b.n=='sin'?m+=e:n+=e}else rest.push(u)}
+ if(!A||!rest.length||m+n<2||m+n>8||!isFinite(c)||!lin(A))return null;
+ const dg0=m+n,M=2*dg0+2,g=th=>Math.pow(Math.sin(th),m)*Math.pow(Math.cos(th),n);let g2=N(0);const tr=[];
+ for(let k=0;k<=dg0;k++){let a=0,b=0;for(let j=0;j<M;j++){const th=2*Math.PI*j/M;a+=g(th)*Math.cos(k*th);b+=g(th)*Math.sin(k*th)}a=cl(a*(k?2:1)/M);b=cl(b*2/M);
+  if(Math.abs(a)>1e-9){g2=add(g2,mul(N(a),fn('cos',mul(N(k),A))));tr.push(nm(a)+'·cos('+(k==1?'':k)+'w)')}if(k&&Math.abs(b)>1e-9){g2=add(g2,mul(N(b),fn('sin',mul(N(k),A))));tr.push(nm(b)+'·sen('+(k==1?'':k)+'w)')}}
+ const e=cano(xp(mul(N(c),...rest,g2))),L2=[],G=ig(e,L2,d+1);if(!G)return null;
+ L.push(['Pasar las potencias trigonométricas a ángulos múltiples',['Con w = '+show(A)+', se usan las identidades de ángulo doble: sen^'+m+'(w)·cos^'+n+'(w) = '+tr.join(' + ').replace(/\+ −/g,'− ')+'.','Así el integrando es una suma de términos más simples: '+show(e)]]);L.push(...L2);return G}
+function xgProd(t,L,d){const fs=cn(t);let c=1;const tr=[];
+ for(const u of fs){if(!dep(u)){c*=ev(u);continue}if(u.k=='f'&&(u.n=='sin'||u.n=='cos')&&lin(u.a))tr.push(u);else return null}
+ if(tr.length!=2||!isFinite(c)||J(tr[0].a)==J(tr[1].a))return null;const[p,q]=tr,A=p.a,B=q.a,dif=add(A,mul(N(-1),B)),sm=add(A,B);let r,f;
+ if(p.n=='sin'&&q.n=='sin'){r=add(fn('cos',dif),mul(N(-1),fn('cos',sm)));f='sen A·sen B = ½[cos(A − B) − cos(A + B)]'}
+ else if(p.n=='cos'&&q.n=='cos'){r=add(fn('cos',dif),fn('cos',sm));f='cos A·cos B = ½[cos(A − B) + cos(A + B)]'}
+ else{const[s1,c1]=p.n=='sin'?[p,q]:[q,p];r=add(fn('sin',add(s1.a,c1.a)),fn('sin',add(s1.a,mul(N(-1),c1.a))));f='sen A·cos B = ½[sen(A + B) + sen(A − B)]'}
+ const g=cano(mul(N(c/2),r)),L2=[],G=ig(g,L2,d+1);if(!G)return null;
+ L.push(['Producto a suma',['Se usa '+f+', con A = '+show(A)+' y B = '+show(B)+'.','El integrando queda '+show(g)+'.']]);L.push(...L2);return G}
+function xgWei(t,L,d){const tt=tn(t);let bad=0;const has={s:0,c:0};
+ const w=n=>{if(n.k=='f'){if(n.a.k=='x'&&(n.n=='sin'||n.n=='cos'))n.n=='sin'?has.s=1:has.c=1;else bad=1}if(n.k=='+'||n.k=='*')n.a.forEach(w);else if(n.k=='^'){w(n.a);w(n.b)}else if(n.k=='f')w(n.a)};w(tt);
+ if(bad||!(has.s||has.c))return null;const S1=mul(N(2),X,pw(add(N(1),pw(X,N(2))),N(-1))),C1=mul(add(N(1),mul(N(-1),pw(X,N(2)))),pw(add(N(1),pw(X,N(2))),N(-1)));
+ let g=rep(rep(tt,fn('sin',X),S1),fn('cos',X),C1);g=mul(N(2),pw(add(N(1),pw(X,N(2))),N(-1)),g);
+ const rn=n=>{if(n.k=='n')return[[n.v],[1]];if(n.k=='x')return[[0,1],[1]];
+  if(n.k=='+'){let a=[[0],[1]];for(const z of n.a){const b=rn(z);if(!b)return null;a=[padp(pmul(a[0],b[1]),1).map((v,i)=>v),pmul(a[1],b[1])];const l=pmul(a[0].length?a[0]:[0],[1]);void l}return null}
+  return null};
+ const rn2=n=>{if(n.k=='n')return[[n.v],[1]];if(n.k=='x')return[[0,1],[1]];
+  if(n.k=='+'){let a=[[0],[1]];for(const z of n.a){const b=rn2(z);if(!b)return null;const p=pmul(a[0],b[1]),q=pmul(b[0],a[1]),m=Math.max(p.length,q.length);a=[padp(p,m).map((v,i)=>v+padp(q,m)[i]),pmul(a[1],b[1])]}return a}
+  if(n.k=='*'){let a=[[1],[1]];for(const z of n.a){const b=rn2(z);if(!b)return null;a=[pmul(a[0],b[0]),pmul(a[1],b[1])]}return a}
+  if(n.k=='^'&&n.b.k=='n'&&Number.isInteger(n.b.v)&&Math.abs(n.b.v)<=6){const b=rn2(n.a);if(!b)return null;let nu=[1],de=[1];for(let i=0;i<Math.abs(n.b.v);i++){nu=pmul(nu,b[0]);de=pmul(de,b[1])}return n.b.v>=0?[nu,de]:[de,nu]}
+  return null};
+ const rr=rn2(g);if(!rr)return null;g=mul(cof(pT(rr[0].map(cl))),pw(cof(pT(rr[1].map(cl))),N(-1)));
+ let o=0;const w2=n=>{if(n.k=='f')o=1;if(n.k=='+'||n.k=='*')n.a.forEach(w2);else if(n.k=='^'){w2(n.a);w2(n.b)}else if(n.k=='f')w2(n.a)};w2(g);if(o)return null;
+ const nm1=V=='t'?'u':'t',V0=V;V=nm1;const sg=show(g),L2=[];let G=null;try{G=ig(g,L2,d+1)}catch(e){}V=V0;if(!G)return null;
+ const F=cano(subs(G,fn('tan',mul(N(.5),X))));
+ L.push(['Sustitución universal de Weierstrass',['Se hace '+nm1+' = tan('+V+'/2): sen('+V+') = 2'+nm1+'/(1 + '+nm1+'²), cos('+V+') = (1 − '+nm1+'²)/(1 + '+nm1+'²) y d'+V+' = 2 d'+nm1+'/(1 + '+nm1+'²).','La integral queda ∫ '+sg+' d'+nm1+', una fracción racional.']]);L.push(...L2);L.push(['Regresar a '+V,['Se reemplaza '+nm1+' = tan('+V+'/2): '+show(F)]]);return F}
+/* ---- exponencial por polinomio o expansión como último recurso ---- */
+function xgExp(t,L,d){if(t.k!='*'&&!(t.k=='^'&&t.a.k=='+'))return null;const e=xp(t);if(e.k!='+'||J(e)==J(t))return null;const L2=[],G=ig(e,L2,d+1);if(!G)return null;
+ L.push(['Expandir el integrando',[show(t)+' = '+show(e)]]);L.push(...L2);return G}
+function grp(G){if(G.k!='+')return G;const mp=new Map();let ok=1;
+ for(const u of G.a){const fs=cn(u);let c=1,k=0;const rest=[];for(const f of fs){if(f.k=='n')c*=f.v;else if(f.k=='x')k+=1;else if(f.k=='^'&&f.a.k=='x'&&f.b.k=='n'&&Number.isInteger(f.b.v)&&f.b.v>0)k+=f.b.v;else rest.push(f)}
+  const key=J(rest),e=mp.get(key)||{rest,co:{}};e.co[k]=(e.co[k]||0)+c;mp.set(key,e)}
+ if(mp.size>=G.a.length)return G;
+ return add(...[...mp.values()].map(e=>{const mx=Math.max(...Object.keys(e.co).map(Number)),co=Array.from({length:mx+1},(_,i)=>e.co[i]||0);return mul(...e.rest,cof(co.map(cl)))}))}
+function fin(F){let G=F;try{const e=xp(F,false);if(e.k!='+'||e.a.length<=40)G=cano(e);
+ if(G.k=='+'&&G.a.length>1){const ex=G.a.map(u=>cn(u).find(z=>z.k=='f'&&z.n=='exp'));
+  if(ex.every(Boolean)&&ex.every(z=>J(z)==J(ex[0]))){const k=J(ex[0]),rest=G.a.map(u=>mul(...cn(u).filter(z=>J(z)!=k)));G=mul(ex[0],grp(cano(add(...rest))))}else G=grp(G)}
+ else if(G.k=='+')G=grp(G)}catch(e){G=F}return G}
+function xg(f){DL=Date.now()+2500;ANC=new Set();MEMO=new Map();FAILD=new Map();const St=[],F=ig(f,St,0);if(!F)return null;
+ return{F:fin(F),St,title:'Método: combinación de técnicas (sustitución, partes, fracciones parciales, reducciones)'}}
+
+const integrate=(ex,lo,up)=>{try{const hb=lo!==''&&lo!=null&&up!==''&&up!=null,T=pre('integral de '+String(ex).trim()+(hb?' desde '+lo+' hasta '+up:'')),c=intCore(T);if(!c)return{ok:false,msg:'No pude interpretar la función. Usa x, *, ^, sin(x), cos(x), e^x, ln(x), sqrt(x), etc.'};if(c.miss)return{ok:false,miss:1,msg:c.msg.replace(/\*\*/g,'')};
+ const plain=z=>String(z).replace(/\*\*/g,'');return{ok:true,title:plain(c.ti),method:c.mt,blocks:c.BL.map(b=>[b[0],b[1].map(plain)]),result:plain(c.res),expr:show(c.f),variable:V,evalF:x=>ev(c.F,x),evalf:x=>ev(c.f,x),def:c.def||null}}catch(e){return{ok:false,msg:'Error al resolver: '+(e&&e.message||e)}}};
+return{solve,speech,integrate}})();
 
 /* ===== Teclado matemático + conexión con el chat y la voz ===== */
 (()=>{
@@ -8005,12 +8356,12 @@ function mathTry(t){
 
 /* ---------- 4. Derivadas e integrales ---------- */
 const DEX=['3x^3 + 2x^2 - 5x + 7','x^2 + 3x','x^2 * sin(x)','e^(2x)','ln(x^2 + 1)','(x^2 + 1)^3','5x^4 - 3x'],
-      IEX=['3x^2 + 2x','x^3 - 4x + 1','cos(x)','e^(2x)','x * e^x','1/x'];
+      IEX=['3x^2 + 2x','x^3 - 4x + 1','cos(x)','e^(2x)','x * e^x','1/x','x^2 * e^x * sin(x)','x^3 / sqrt(1 + x^2)','x^2 / (1 + x^2)^2','ln(x)^2'];
 const OPS={deriv:{v:'derivar',vb:'deriva',nom:'derivadas',ex:DEX,
   cap:'Sí, sé **derivar**: polinomios, potencias, productos, cocientes, funciones trigonométricas, exponenciales y logaritmos, con la regla de la cadena y el procedimiento paso a paso. Envíame una función (por ejemplo `x² + 3x`) o pídeme un ejemplo.',
   how:'**Cómo se deriva, paso a paso**\n1. Identifica la forma de la función: suma, potencia, producto, cociente o función compuesta.\n2. Aplica la regla que corresponde: potencia (xⁿ)′ = n·xⁿ⁻¹, suma (f + g)′ = f′ + g′, constante por función (c·f)′ = c·f′, producto (f·g)′ = f′·g + f·g′, cadena (f(u))′ = f′(u)·u′.\n3. Deriva término a término y simplifica.\n4. Si piden el valor en un punto, sustituye x al final.\n\nPor ejemplo:\n\n'},
  integral:{v:'integrar',vb:'integra',nom:'integrales',ex:IEX,
-  cap:'Sí, sé **integrar**: polinomios, potencias, funciones trigonométricas y exponenciales, sustitución, partes, fracciones parciales e integrales definidas, con el procedimiento paso a paso. Envíame la función (por ejemplo `3x² + 2x`) o pídeme un ejemplo.',
+  cap:'Sí, sé **integrar**: polinomios, potencias, funciones trigonométricas y exponenciales, sustitución (también con resto en u), partes repetidas y cíclicas, fracciones parciales completas, sustitución trigonométrica, potencias de seno y coseno, integrales definidas e impropias, con el procedimiento paso a paso. Envíame la función (por ejemplo `3x² + 2x`) o pídeme un ejemplo.',
   how:'**Cómo se integra, paso a paso**\n1. Identifica la forma: potencia, suma, producto, cociente o función compuesta.\n2. Usa la regla básica: ∫xⁿ dx = xⁿ⁺¹/(n+1) (n ≠ −1), ∫(f + g) dx = ∫f dx + ∫g dx, ∫c·f dx = c·∫f dx.\n3. Si hay una función dentro de otra, prueba sustitución; si hay un producto, prueba partes.\n4. Suma la constante de integración C (en las definidas, evalúa F(b) − F(a)).\n\nPor ejemplo:\n\n'}};
 function calcOp(op,f){const r=NXM.solve(OPS[op].vb+' '+f);return r}
 function opHandle(op,ask,t,dom){const O=OPS[op];
@@ -8287,6 +8638,8 @@ try{NXR.healed=NXR.heal()}catch(e){}
 <script id="nx-lab-js">
 (()=>{'use strict';
 const $=id=>document.getElementById(id), panel=$('nxLab'), controls=$('nxLabControls'), out=$('nxLabOut'), explain=$('nxLabExplain');
+// Helper disponible en el mismo ámbito que el motor principal del laboratorio.
+const escapeHTML=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 let mode='graph', lastText='', chemQuiz=null, circuitPhotoUrl=null; const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 $('tbLab').addEventListener('click',()=>{panel.hidden=false;drawControls()});$('nxLabClose').addEventListener('click',()=>{if(typeof stTab==='function')stTab('up');else panel.hidden=true;});
 panel.addEventListener('click',e=>{if(e.target===panel&&typeof stTab==='function')stTab('up')});
@@ -8298,15 +8651,19 @@ function drawControls(){
  chem:`<b>Química · compuestos, ácidos y reacciones</b><label>Buscar por nombre o fórmula</label><input id="nlChemSearch" placeholder="Ej. nitrobenceno, ácido sulfúrico, C6H6…"><label>Biblioteca de compuestos</label><select id="nlChem" size="5" style="width:100%;max-height:145px"><option value="benzene">Benceno · C₆H₆</option></select><div class="nl-row"><button class="primary" id="nlRun">Ver estructura y datos</button><button id="nlChemExercise">Generar ejercicio</button></div><div id="nlChemQuiz"></div><div class="nl-box"><b>Reacciones</b><label>Tipo de reacción</label><select id="nlReaction"><option value="neutral">Neutralización ácido + base</option><option value="metal">Ácido + metal</option><option value="carbonate">Ácido + carbonato</option><option value="ester">Esterificación</option><option value="benzene">Sustitución aromática: nitración del benceno</option></select><button id="nlRunReaction" type="button">Mostrar reacción balanceada y explicación</button></div><div class="nl-box"><b>Resolver desde fotografía</b><label>Sube una foto del ejercicio de química</label><input id="nlChemPhoto" type="file" accept="image/*"><div id="nlChemPhotoPreview" class="nl-small">Sin fotografía seleccionada.</div><button id="nlAnalyzeChemPhoto" type="button">Abrir en el analizador de imágenes de NORYX</button><p class="nl-small">NORYX podrá responder usando su analizador de imágenes disponible. Revisa la transcripción de fórmulas y subíndices antes de aceptar el resultado.</p></div><p class="nl-small">Las estructuras esquemáticas y reacciones incluidas son ejemplos educativos; confirma condiciones y nomenclatura con tu material de clase.</p>`,
  geo:`<b>Figuras geométricas</b><label>Figura</label><select id="nlShape"><option value="triangle">Triángulo</option><option value="circle">Círculo</option><option value="rectangle">Rectángulo</option><option value="square">Cuadrado</option></select><div class="nl-row">${field('Base / ancho','nlA','6','number')}${field('Altura / alto','nlB','4','number')}</div><button class="primary" id="nlRun">Dibujar y calcular</button>`,
  physics:`<b>Física: estática, electrostática, vectores y circuitos</b><label>Situación</label><select id="nlPhys"><option value="incline">Bloque en plano inclinado</option><option value="vectors">Suma de vectores</option><option value="statics">Estática: equilibrio y momentos</option><option value="electrostatics">Electrostática: fuerza, campo y potencial</option><option value="circuit" selected>Circuito: simplificar y calcular</option><option value="forces">Diagrama de fuerzas</option></select>
-<div id="nlStaticsFields" style="display:none"><b>Datos de estática</b><div class="nl-row">${field('Fuerza 1 (N)','nlStF1','20','number')}${field('Distancia 1 al pivote (m)','nlStD1','2','number')}</div><div class="nl-row">${field('Fuerza 2 (N)','nlStF2','10','number')}${field('Distancia 2 al pivote (m)','nlStD2','3','number')}</div><label>Sentido de las fuerzas</label><select id="nlStSense"><option value="opposite">Momentos opuestos</option><option value="same">Momentos en el mismo sentido</option></select><p class="nl-small">Calcula τ = F·d y el momento resultante. Se supone que las fuerzas son perpendiculares al brazo.</p></div>
+<div id="nlForceFields" style="display:none"><b>Diagrama cartesiano de fuerzas</b><p class="nl-small">Ingresa magnitud en newtons y ángulo medido desde el eje +X en sentido antihorario. Los ángulos cardinales son 0°, 90°, 180° y 270°.</p><div class="nl-row">${field('Fuerza F₁ (N)','nlF1m','10','number')}${field('Ángulo F₁ (°)','nlF1a','0','number')}</div><div class="nl-row">${field('Fuerza F₂ (N)','nlF2m','10','number')}${field('Ángulo F₂ (°)','nlF2a','90','number')}</div><div class="nl-row">${field('Fuerza F₃ (N)','nlF3m','5','number')}${field('Ángulo F₃ (°)','nlF3a','180','number')}</div><div class="nl-row">${field('Fuerza F₄ (N)','nlF4m','0','number')}${field('Ángulo F₄ (°)','nlF4a','270','number')}</div><p class="nl-small">Puedes usar magnitud 0 si no necesitas una fuerza. El diagrama muestra cada vector desde el origen y la resultante.</p></div><div id="nlStaticsFields" style="display:none"><b>Datos de estática</b><div class="nl-row">${field('Fuerza 1 (N)','nlStF1','20','number')}${field('Distancia 1 al pivote (m)','nlStD1','2','number')}</div><div class="nl-row">${field('Fuerza 2 (N)','nlStF2','10','number')}${field('Distancia 2 al pivote (m)','nlStD2','3','number')}</div><label>Sentido de las fuerzas</label><select id="nlStSense"><option value="opposite">Momentos opuestos</option><option value="same">Momentos en el mismo sentido</option></select><p class="nl-small">Calcula τ = F·d y el momento resultante. Se supone que las fuerzas son perpendiculares al brazo.</p></div>
 <div id="nlElectroFields" style="display:none"><b>Datos de electrostática</b><div class="nl-row">${field('Carga q₁ (μC)','nlEq1','2','number')}${field('Carga q₂ (μC)','nlEq2','-3','number')}</div>${field('Distancia entre cargas (m)','nlEr','0.5','number')}<div class="nl-row">${field('Carga de prueba q (μC)','nlEtest','1','number')}${field('Distancia para potencial (m)','nlErp','0.5','number')}</div><p class="nl-small">Calcula fuerza de Coulomb, campo aproximado por F/q y potencial de q₁.</p></div><div id="nlCircuitFields"><label>Sube una foto del circuito (se procesa en esta herramienta; la foto no se envía a APIs)</label><input id="nlCircuitPhoto" type="file" accept="image/*"><div id="nlCircuitPreview" class="nl-small">Sin fotografía seleccionada.</div><button type="button" id="nlAnalyzeCircuitPhoto">Abrir foto en el analizador visual local de NORYX</button><label>Voltaje de la fuente (V)</label><input id="nlVolt" type="number" min="0" step="any" value="12"><label>Topología del circuito</label><select id="nlTopology"><option value="series">R1 + R2 + R3 (serie)</option><option value="parallel">R1 || R2 || R3 (paralelo)</option><option value="mix1">R1 + (R2 || R3)</option><option value="mix2">(R1 + R2) || R3</option><option value="mix3">R1 || (R2 + R3)</option><option value="mix4">(R1 || R2) + R3</option><option value="mix5">(R1 + R2) || (R3 + R4)</option><option value="mix6">R1 || R2 || (R3 + R4)</option><option value="mix7">(R1 || R2) || (R3 + R4)</option><option value="twoSeries">R1 + R2 (serie)</option><option value="twoParallel">R1 || R2 (paralelo)</option></select><div class="nl-row">${field('R1 (Ω)','nlR1','100','number')}${field('R2 (Ω)','nlR2','220','number')}${field('R3 (Ω)','nlR3','330','number')}${field('R4 (Ω)','nlR4','470','number')}</div><p class="nl-small">El motor calcula las topologías seleccionadas y explica cada reducción. La foto se envía al analizador de imágenes que ya existe en NORYX; verifica conexiones y valores detectados antes de calcular, porque no siempre se pueden reconocer automáticamente.</p></div><button class="primary" id="nlRun">Simplificar circuito / generar diagrama</button>`,
- integral:`<b>Cálculo diferencial e integral</b><label>Operación</label><select id="nlCalcOp"><option value="integral">Integración</option><option value="deriv">Derivación</option></select>${field('Función (ej. 3*x^2+2*x-4)','nlInt','3*x^2+2*x-4')}<label>Tipo de función / integral</label><select id="nlIntType"><option value="poly">Polinomios</option><option value="trig">Trigonométricas básicas</option><option value="exp">Exponenciales y 1/x</option></select><div class="nl-row">${field('Límite inferior (opcional)','nlLower','','number')}${field('Límite superior (opcional)','nlUpper','','number')}</div><button class="primary" id="nlRun">Resolver paso a paso</button><div class="nl-photo-tool"><b>Resolver desde una foto</b><label for="nlIntegralPhoto">Toma una foto o selecciona una imagen del ejercicio</label><input id="nlIntegralPhoto" type="file" accept="image/*" capture="environment"><div id="nlIntegralPreview" class="nl-small">Sin fotografía seleccionada.</div><button type="button" class="primary" id="nlIntegralAnalyze">Leer y resolver automáticamente</button><p class="nl-small">NORYX usará automáticamente su analizador visual local y enviará el ejercicio al chat con la petición de resolverlo paso a paso. Revisa cualquier símbolo dudoso.</p></div><p class="nl-small">Muestra la regla aplicada a cada término y, si completas ambos límites, evalúa la integral definida. Sintaxis: usa x, *, ^, sin(x), cos(x), e^x o 1/x según el tipo.</p>`,
+ stats:`<b>Probabilidad y estadística</b><label>Herramienta</label><select id="nlStatsOp"><option value="descriptive">Estadística descriptiva</option><option value="probability">Probabilidad simple</option><option value="conditional">Probabilidad condicional</option><option value="combinatorics">Combinatoria (nCr y nPr)</option><option value="binomial">Distribución binomial</option></select><div id="nlStatsData"><label>Datos separados por comas (ej. 4, 7, 7, 9, 13)</label><input id="nlStatsValues" value="4, 7, 7, 9, 13"><div class="nl-row"><label><input type="checkbox" id="nlSample"> Tratar los datos como muestra (n−1 para varianza)</label></div></div><div id="nlStatsProb" style="display:none"><div class="nl-row">${field('Casos favorables','nlFav','2','number')}${field('Casos posibles','nlTotal','6','number')}</div><div class="nl-row">${field('P(A ∩ B) para condicional','nlInter','0.2','number')}${field('P(B) > 0','nlPB','0.5','number')}</div></div><div id="nlStatsComb" style="display:none"><div class="nl-row">${field('n (total)','nlN','10','number')}${field('r (seleccionados)','nlR','3','number')}</div></div><div id="nlStatsBinom" style="display:none"><div class="nl-row">${field('n ensayos','nlBinN','10','number')}${field('k éxitos exactos','nlBinK','3','number')}</div>${field('Probabilidad de éxito p (0 a 1)','nlBinP','0.5','number')}</div><button class="primary" id="nlRun">Calcular y explicar</button><p class="nl-small">Incluye media, mediana, moda, rango, varianza, desviación estándar, probabilidad simple/condicional, permutaciones, combinaciones y distribución binomial. Verifica supuestos y si los datos son una muestra o población.</p>`,
+ integral:`<b>Cálculo diferencial e integral</b><label>Operación</label><select id="nlCalcOp"><option value="integral">Integración</option><option value="deriv">Derivación</option></select>${field('Función (ej. 3*x^2+2*x-4)','nlInt','3*x^2+2*x-4')}<div class="nl-math-keyboard" id="nlMathKeyboard"><div class="nl-math-head"><b>Teclado matemático</b><span>Inserta símbolos en el integrando</span></div><div class="nl-math-keys"><button type="button" data-insert="∫">∫ Integral</button><button type="button" data-insert="sqrt(|)">√ Raíz</button><button type="button" data-insert="^">xⁿ Potencia</button><button type="button" data-insert="(|)/()">a/b Fracción</button><button type="button" data-insert="pi">π Pi</button><button type="button" data-insert="infty">∞ Infinito</button><button type="button" data-insert="sin(|)">sin</button><button type="button" data-insert="cos(|)">cos</button><button type="button" data-insert="tan(|)">tan</button><button type="button" data-insert="ln(|)">ln</button><button type="button" data-insert="e^(|)">eˣ</button><button type="button" data-insert="*">× Multiplicar</button><button type="button" data-insert="+">＋</button><button type="button" data-insert="-">−</button><button type="button" data-insert="(">(</button><button type="button" data-insert=")">)</button><button type="button" data-insert="x">x</button><button type="button" data-insert="dx">dx</button></div></div><label>Tipo de función (opcional: se detecta automáticamente)</label><select id="nlIntType"><option value="poly">Polinomios</option><option value="trig">Trigonométricas básicas</option><option value="exp">Exponenciales y 1/x</option></select><div class="nl-row">${field('Límite inferior (opcional; acepta pi, inf)','nlLower','','text')}${field('Límite superior (opcional; acepta pi, inf)','nlUpper','','text')}</div><button class="primary" id="nlRun">Resolver paso a paso</button><div class="nl-photo-tool"><b>Resolver desde una foto</b><label for="nlIntegralPhoto">Toma una foto o selecciona una imagen del ejercicio</label><input id="nlIntegralPhoto" type="file" accept="image/*" capture="environment"><div id="nlIntegralPreview" class="nl-small">Sin fotografía seleccionada.</div><button type="button" class="primary" id="nlIntegralAnalyze">Leer y resolver automáticamente</button><p class="nl-small">NORYX procesará la fotografía con OCR local y mostrará la transcripción antes de resolver. Revisa cualquier símbolo dudoso; las potencias pequeñas pueden requerir corrección manual.</p></div><p class="nl-small">Muestra la regla aplicada a cada término y, si completas ambos límites, evalúa la integral definida. Sintaxis: x, *, ^, /, sin(x) o sen(x), cos(x), tan(x), e^x, ln(x), sqrt(x), atan(x)… Resuelve sustitución, partes (varias veces), fracciones parciales, potencias trigonométricas, sustitución trigonométrica e integrales impropias, siempre paso a paso. Ejemplos: x^2*e^x*sin(x), x^3/sqrt(1+x^2), x^2/(1+x^2)^2, ln(x)^2.</p>`,
  photo:`<b>Resolver ejercicio desde una fotografía</b><label>Selecciona o toma una foto del ejercicio</label><input id="nlPhoto" type="file" accept="image/*" capture="environment"><div id="nlPreview" class="nl-small">Sin fotografía seleccionada.</div><button class="primary" id="nlPhotoAnalyze" type="button">Leer y resolver automáticamente</button><p class="nl-small">NORYX utilizará automáticamente su analizador visual local, transcribirá lo que reconozca y resolverá el ejercicio paso a paso. Si algún símbolo no se distingue, lo indicará para evitar inventar datos.</p>`
  };
  controls.innerHTML=forms[mode];out.innerHTML='<span class="nl-small">Resultado visual</span>';explain.textContent='';lastText='';
  if(mode==='chem'){initChemistry();$('nlChemSearch').addEventListener('input',filterChem);$('nlChemExercise').addEventListener('click',newChemExercise);$('nlChem').addEventListener('change',()=>{if(chemQuiz)$('nlChemQuiz').innerHTML='';});}
  if(mode==='photo'&&$('nlPhoto')){$('nlPhoto').addEventListener('change',e=>{const f=e.target.files&&e.target.files[0];if(!f)return;const url=URL.createObjectURL(f);$('nlPreview').innerHTML=`<img alt="Fotografía del ejercicio" src="${url}" style="display:block;max-width:100%;max-height:220px;object-fit:contain;border-radius:10px;margin-top:6px">`;});$('nlPhotoAnalyze').addEventListener('click',async()=>{const f=$('nlPhoto').files&&$('nlPhoto').files[0];if(!f){$('nlPreview').textContent='Primero toma una foto o selecciona una imagen.';return;}if(typeof loadFiles!=='function'){$('nlPreview').textContent='El analizador visual de NORYX no está disponible en esta sesión.';return;}try{await loadFiles([f]);stTab('up');const auto=$('imauto');if(auto){auto.checked=true;S.set('nx-figauto',true);}const q=$('imq');if(q)q.value='Lee y resuelve este ejercicio de la fotografía paso a paso. Transcribe primero el enunciado, fórmulas, valores, unidades y símbolos. Explica el método y todos los cálculos. Si es matemáticas, muestra el desarrollo; si es química, identifica y balancea cuando corresponda; si es física, enumera datos, fórmulas, sustitución y resultado con unidades. Si algo no se distingue, indícalo y pide confirmación en lugar de inventarlo.';const go=$('imd');if(go)go.click();}catch(err){$('nlPreview').textContent='No se pudo cargar la fotografía: '+(err&&err.message||'error');}});}
- if(mode==='integral'&&$('nlIntegralPhoto')){$('nlIntegralPhoto').addEventListener('change',e=>{const f=e.target.files&&e.target.files[0];if(!f)return;const url=URL.createObjectURL(f);$('nlIntegralPreview').innerHTML=`<img alt="Foto del ejercicio de integral" src="${url}" style="display:block;max-width:100%;max-height:220px;object-fit:contain;border-radius:10px;margin-top:6px">`;});$('nlIntegralAnalyze').addEventListener('click',async()=>{const f=$('nlIntegralPhoto').files&&$('nlIntegralPhoto').files[0];if(!f){$('nlIntegralPreview').textContent='Primero toma una foto o selecciona una imagen.';return;}if(typeof loadFiles!=='function'){$('nlIntegralPreview').textContent='El analizador visual de NORYX no está disponible en esta sesión.';return;}try{await loadFiles([f]);stTab('up');const auto=$('imauto');if(auto){auto.checked=true;S.set('nx-figauto',true);}const q=$('imq');if(q)q.value='Resuelve esta integral de la fotografía paso a paso. Primero transcribe exactamente el integrando, límites, exponentes, fracciones y símbolos. Después identifica el método adecuado y desarrolla todos los pasos algebraicos sin saltarte operaciones. Si es definida, evalúa los límites y comprueba el resultado derivando la antiderivada cuando sea posible. Si algún símbolo no se distingue, indícalo y pide confirmación; no inventes datos.';const go=$('imd');if(go)go.click();}catch(err){$('nlIntegralPreview').textContent='No se pudo cargar la fotografía: '+(err&&err.message||'error');}});}
+ if(mode==='stats'){
+  const upd=()=>{const v=$('nlStatsOp').value;$('nlStatsData').style.display=v==='descriptive'?'block':'none';$('nlStatsProb').style.display=['probability','conditional'].includes(v)?'block':'none';$('nlStatsComb').style.display=v==='combinatorics'?'block':'none';$('nlStatsBinom').style.display=v==='binomial'?'block':'none';};$('nlStatsOp').addEventListener('change',upd);upd();
+ }
+ if(mode==='integral'&&$('nlIntegralPhoto')){$('nlIntegralPhoto').addEventListener('change',e=>{const f=e.target.files&&e.target.files[0];if(!f)return;const url=URL.createObjectURL(f);$('nlIntegralPreview').innerHTML=`<img alt="Foto del ejercicio de integral" src="${url}" style="display:block;max-width:100%;max-height:220px;object-fit:contain;border-radius:10px;margin-top:6px">`;});$('nlIntegralAnalyze').addEventListener('click',async()=>{const f=$('nlIntegralPhoto').files&&$('nlIntegralPhoto').files[0];if(!f){$('nlIntegralPreview').textContent='Primero toma una foto o selecciona una imagen.';return;}const btn=$('nlIntegralAnalyze');btn.disabled=true;const original=btn.textContent;try{const result=await ocrImage(f,msg=>{$('nlIntegralPreview').textContent=msg;});const recognized=String(result.text||'').trim();const expr=extractIntegral(recognized);if(expr){$('nlInt').value=expr;$('nlIntegralPreview').innerHTML='<div class="nl-small"><b>Expresión detectada:</b> <code>'+expr.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</code><br>Confianza OCR: '+Math.round(result.confidence||0)+'%. Si la transcripción no coincide con la foto, corrígela antes de resolver.</div>';$('nlRun').click();}else{$('nlIntegralPreview').innerHTML='<div class="nl-small"><b>No pude identificar una expresión válida.</b><br>Texto OCR: <code>'+recognized.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</code><br>Corrige manualmente el campo Integrando. El lector no enviará texto dudoso al solucionador.</div>';}}catch(err){$('nlIntegralPreview').textContent='No se pudo leer la imagen con el OCR local: '+(err&&err.message||'error');}finally{btn.disabled=false;btn.textContent=original;}});}
  if(mode==='physics'&&$('nlCircuitPhoto')){$('nlCircuitPhoto').addEventListener('change',e=>{const f=e.target.files&&e.target.files[0];if(!f)return;if(circuitPhotoUrl)URL.revokeObjectURL(circuitPhotoUrl);circuitPhotoUrl=URL.createObjectURL(f);$('nlCircuitPreview').innerHTML=`<img alt="Fotografía del circuito" src="${circuitPhotoUrl}" style="max-width:100%;max-height:190px;border-radius:8px;margin-top:6px">`;});$('nlAnalyzeCircuitPhoto').addEventListener('click',async()=>{const f=$('nlCircuitPhoto').files&&$('nlCircuitPhoto').files[0];if(!f){$('nlCircuitPreview').textContent='Primero selecciona una fotografía.';return;}if(typeof loadFiles!=='function'){$('nlCircuitPreview').textContent='No está disponible el analizador visual en esta sesión.';return;}stTab('up');await loadFiles([f]);const q=$('imq');if(q)q.value='Analiza esta foto de un circuito eléctrico paso a paso: transcribe los valores visibles de resistencias y fuente, identifica nodos y conexiones serie/paralelo, explica qué bloques se pueden reducir primero y señala cualquier parte dudosa. No inventes conexiones; si no puedes reconocer la topología, dilo. Después indica qué datos necesito confirmar para calcular la resistencia equivalente, la corriente y la potencia.';const ask=$('imd');if(ask)ask.click();});$('nlPhys').addEventListener('change',()=>{const v=$('nlPhys').value;$('nlCircuitFields').style.display=v==='circuit'?'block':'none';$('nlStaticsFields').style.display=v==='statics'?'block':'none';$('nlElectroFields').style.display=v==='electrostatics'?'block':'none';});}
  if(mode==='photo'){ $('nlPhoto').addEventListener('change',e=>{const f=e.target.files[0];if(!f)return;if(!f.type.startsWith('image/'))return;const u=URL.createObjectURL(f);$('nlPreview').innerHTML=`<img alt="Vista previa del ejercicio" src="${u}" style="max-width:100%;max-height:180px;border-radius:8px">`})}
  $('nlRun').addEventListener('click',run);
@@ -8390,16 +8747,49 @@ function integralSolve(src,type){
 function run(){
  try{
  let svg='',txt='',integralDisplay=null;
+ if(mode==='stats'){
+  const op=$('nlStatsOp').value,fmt=n=>Number(n).toLocaleString('es-MX',{maximumFractionDigits:8});
+  if(op==='descriptive'){
+   const vals=$('nlStatsValues').value.split(/[;,\s]+/).filter(Boolean).map(Number);if(!vals.length||vals.some(v=>!Number.isFinite(v)))throw Error('Escribe una lista de números válidos separados por comas.');
+   const a=[...vals].sort((x,y)=>x-y),n=a.length,mean=vals.reduce((x,y)=>x+y,0)/n,med=n%2?a[(n-1)/2]:(a[n/2-1]+a[n/2])/2,counts=new Map();a.forEach(x=>counts.set(x,(counts.get(x)||0)+1));const maxf=Math.max(...counts.values()),modes=maxf===1?[]:[...counts].filter(x=>x[1]===maxf).map(x=>x[0]);const variance=vals.reduce((s,x)=>s+(x-mean)**2,0)/( $('nlSample').checked&&n>1?n-1:n);const sd=Math.sqrt(variance),range=a[n-1]-a[0],q=(p)=>{const pos=(n-1)*p,lo=Math.floor(pos),hi=Math.ceil(pos);return a[lo]+(a[hi]-a[lo])*(pos-lo)};
+   txt=`Estadística descriptiva\nDatos ordenados: ${a.join(', ')}\nn = ${n}\nMedia = Σxᵢ/n = ${fmt(mean)}\nMediana = ${fmt(med)}\nModa = ${modes.length?modes.join(', '):'sin moda única (todos aparecen una vez o hay empate)'}\nMínimo = ${a[0]}\nMáximo = ${a[n-1]}\nRango = ${fmt(range)}\nQ1 (método interpolado) = ${fmt(q(.25))}\nQ3 (método interpolado) = ${fmt(q(.75))}\nVarianza ${$('nlSample').checked?'muestral':'poblacional'} = ${fmt(variance)}\nDesviación estándar = ${fmt(sd)}\nFórmula de varianza: ${$('nlSample').checked?'s² = Σ(xᵢ−x̄)²/(n−1)':'σ² = Σ(xᵢ−μ)²/n'}.`;
+  }else if(op==='probability'){
+   const f=+$('nlFav').value,t=+$('nlTotal').value;if(!(t>0&&f>=0&&f<=t))throw Error('Casos favorables debe estar entre 0 y los casos posibles, que debe ser mayor que cero.');const p=f/t;txt=`Probabilidad clásica\nP(A) = casos favorables / casos posibles = ${f}/${t} = ${fmt(p)} = ${fmt(p*100)} %.\nComplemento: P(Aᶜ) = 1 − P(A) = ${fmt(1-p)}.\nLa fórmula supone resultados equiprobables.`;
+  }else if(op==='conditional'){
+   const inter=+$('nlInter').value,pb=+$('nlPB').value;if(!(pb>0&&inter>=0&&inter<=pb&&pb<=1))throw Error('Revisa los valores: 0 < P(B) ≤ 1 y 0 ≤ P(A ∩ B) ≤ P(B).');txt=`Probabilidad condicional\nP(A|B) = P(A ∩ B) / P(B) = ${fmt(inter)} / ${fmt(pb)} = ${fmt(inter/pb)} = ${fmt(inter/pb*100)} %.\nInterpretación: se calcula la probabilidad de A sabiendo que B ya ocurrió.`;
+  }else if(op==='combinatorics'){
+   const n=+$('nlN').value,r=+$('nlR').value;if(!Number.isInteger(n)||!Number.isInteger(r)||n<0||r<0||r>n||n>170)throw Error('Usa enteros con 0 ≤ r ≤ n ≤ 170.');const fact=k=>{let v=1;for(let i=2;i<=k;i++)v*=i;return v};const perm=fact(n)/fact(n-r),comb=perm/fact(r);txt=`Combinatoria\nn = ${n}, r = ${r}.\nPermutaciones (importa el orden): P(n,r) = n!/(n−r)! = ${fmt(perm)}.\nCombinaciones (no importa el orden): C(n,r) = n!/[r!(n−r)!] = ${fmt(comb)}.`;
+  }else{
+   const n=+$('nlBinN').value,k=+$('nlBinK').value,p=+$('nlBinP').value;if(!Number.isInteger(n)||!Number.isInteger(k)||n<0||k<0||k>n||p<0||p>1)throw Error('Usa enteros 0 ≤ k ≤ n y una probabilidad p entre 0 y 1.');const fact=m=>{let z=1;for(let i=2;i<=m;i++)z*=i;return z};const choose=fact(n)/(fact(k)*fact(n-k)),prob=choose*p**k*(1-p)**(n-k);txt=`Distribución binomial\nSupuestos: ${n} ensayos independientes, probabilidad constante p = ${p}.\nP(X = ${k}) = C(${n},${k}) p^${k}(1−p)^(${n-k})\n= ${fmt(choose)} × ${fmt(p**k)} × ${fmt((1-p)**(n-k))} = ${fmt(prob)} (${fmt(prob*100)} %).\nMedia esperada μ = np = ${fmt(n*p)}; varianza = np(1−p) = ${fmt(n*p*(1-p))}.`;
+  }
+  out.innerHTML=`<section class="nl-integral-screen"><h3>Probabilidad y estadística</h3><div class="nl-step">${escapeHTML(txt).replace(/\n/g,'<br>')}</div><div class="nl-check"><b>Revisión</b><br>Comprueba que los datos, la definición de población/muestra y los supuestos probabilísticos correspondan al problema original.</div></section>`;explain.textContent='';lastText=txt;return;
+ }
  if(mode==='graph'){let f=safeFn($('nlFn').value),xmin=+$('nlMin').value,xmax=+$('nlMax').value;if(!(xmax>xmin)||xmax-xmin>1000)throw Error('Revisa el intervalo.');let vals=[];for(let i=0;i<=300;i++){let x=xmin+(xmax-xmin)*i/300,y=f(x);if(Number.isFinite(y)&&Math.abs(y)<1e5)vals.push([x,y])}if(!vals.length)throw Error('No hay valores finitos en ese intervalo.');let ymin=Math.min(...vals.map(p=>p[1])),ymax=Math.max(...vals.map(p=>p[1]));if(ymin===ymax){ymin-=1;ymax+=1}const X=x=>35+(x-xmin)/(xmax-xmin)*350,Y=y=>260-(y-ymin)/(ymax-ymin)*220;svg=line(35,260,390,260)+line(35,35,35,260);if(xmin<=0&&xmax>=0)svg+=line(X(0),35,X(0),260,'#8993a5',1);if(ymin<=0&&ymax>=0)svg+=line(35,Y(0),390,Y(0),'#8993a5',1);svg+=`<polyline fill="none" stroke="#08a6b8" stroke-width="2.5" points="${vals.map(p=>X(p[0]).toFixed(2)+','+Y(p[1]).toFixed(2)).join(' ')}"/>`;svg+=`<text x="35" y="20" fill="currentColor" font-size="12">y=${esc($('nlFn').value)}</text><text x="35" y="286" fill="currentColor" font-size="11">${xmin}</text><text x="380" y="286" fill="currentColor" font-size="11" text-anchor="end">${xmax}</text>`;svg=svgWrap(svg,'Gráfica de función');txt='Gráfica de y = '+$('nlFn').value+'\\nIntervalo: ['+xmin+', '+xmax+']\\nMuestras: 301 puntos.';
  } else if(mode==='chem'){let c=ALL_CHEM.find(x=>x.id===$('nlChem').value);if(!c)throw Error('Selecciona un compuesto de la biblioteca.');if(c.kind==='acid'){svg=svgWrap(`<rect x="65" y="75" width="290" height="115" rx="14" fill="#0a9bb0" fill-opacity=".10" stroke="#0a9bb0" stroke-width="2"/><text x="210" y="120" text-anchor="middle" font-size="21" font-weight="600" fill="currentColor">${esc(c.formula)}</text><text x="210" y="151" text-anchor="middle" font-size="13" fill="#0a9bb0">${esc(c.family)}</text>`,'Fórmula de '+c.name);txt='Compuesto: '+c.name+'\nFórmula: '+c.formula+'\nFamilia: '+c.family+'\nNota: la representación muestra la fórmula molecular/condensada, no una estructura de enlaces completa. Revisa la nomenclatura según tu curso.';}else{let subs=c.groups.map((g,i)=>({i:c.positions[i],t:g.label}));svg=svgWrap(ring(subs),'Estructura aromática de '+c.name);txt='Compuesto: '+c.name+'\nFórmula molecular: '+c.formula+'\nTipo: '+(c.groups.length===0?'hidrocarburo aromático base':c.groups.length===1?'benceno monosustituido':'benceno disustituido')+'\nSustituyentes: '+(c.groups.length?c.groups.map((g,i)=>g.name+' en posición '+(c.positions[i]+1)).join('; '):'ninguno')+'\nLa estructura es un esquema 2D orientativo; confirma nomenclatura y propiedades con tu material de clase.';}
  } else if(mode==='geo'){let a=+$('nlA').value,b=+$('nlB').value;if(!(a>0&&b>0))throw Error('Las medidas deben ser positivas.');let k=$('nlShape').value,shape='',calc='';if(k==='circle'){let r=a;shape=`<circle cx="210" cy="135" r="${Math.min(90,r*15)}" fill="#0a9bb0" fill-opacity=".13" stroke="#0a9bb0" stroke-width="2.5"/>`;calc=`Radio = ${a}; área = ${(Math.PI*a*a).toFixed(3)}; perímetro = ${(2*Math.PI*a).toFixed(3)}.`}else{let w=Math.min(260,a*25),h=Math.min(190,(k==='square'?a:b)*25),x=(420-w)/2,y=(270-h)/2;shape=k==='triangle'?`<polygon points="${x+w/2},${y} ${x+w},${y+h} ${x},${y+h}" fill="#0a9bb0" fill-opacity=".13" stroke="#0a9bb0" stroke-width="2.5"/>`:`<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="#0a9bb0" fill-opacity=".13" stroke="#0a9bb0" stroke-width="2.5"/>`;calc=k==='triangle'?`Base = ${a}, altura = ${b}; área = ${(a*b/2).toFixed(3)}.`:`Ancho = ${a}, alto = ${k==='square'?a:b}; área = ${(a*(k==='square'?a:b)).toFixed(3)}; perímetro = ${(2*(a+(k==='square'?a:b))).toFixed(3)}.`}svg=svgWrap(shape,'Figura geométrica');txt=calc;
- } else if(mode==='physics'){let k=$('nlPhys').value,c='';if(k==='electrostatics'){
+ } else if(mode==='physics'){let k=$('nlPhys').value,c='';if(k==='forces'){
+ const fs=[1,2,3,4].map(i=>({m:+$('nlF'+i+'m').value,a:+$('nlF'+i+'a').value}));
+ if(fs.some(f=>!Number.isFinite(f.m)||f.m<0||!Number.isFinite(f.a)))throw Error('Ingresa magnitudes no negativas y ángulos válidos.');
+ const comps=fs.map(f=>{const rad=((f.a%360)+360)%360*Math.PI/180;return {...f,x:Math.abs(Math.cos(rad))<1e-10?0:f.m*Math.cos(rad),y:Math.abs(Math.sin(rad))<1e-10?0:f.m*Math.sin(rad)}});
+ const rx=comps.reduce((a,f)=>a+f.x,0),ry=comps.reduce((a,f)=>a+f.y,0),R=Math.hypot(rx,ry),theta=R<1e-10?0:(Math.atan2(ry,rx)*180/Math.PI+360)%360;
+ const scale=Math.max(1,...comps.map(f=>f.m),R),ox=220,oy=180,unit=125/scale;
+ const arrow=(x,y,color,label)=>`<line x1="${ox}" y1="${oy}" x2="${ox+x*unit}" y2="${oy-y*unit}" stroke="${color}" stroke-width="2.8" marker-end="url(#arr)"/><text x="${ox+x*unit+5}" y="${oy-y*unit-6}" font-size="12" fill="${color}">${label}</text>`;
+ const colors=['#38bdf8','#f59e0b','#a78bfa','#fb7185'];
+ const vectors=comps.map((f,i)=>f.m>0?arrow(f.x,f.y,colors[i],'F'+(i+1)): '').join('');
+ const resvec=R>0?arrow(rx,ry,'#22c55e','R'):'';
+ const svg=`<svg viewBox="0 0 440 360" role="img" aria-label="Plano cartesiano de fuerzas"><defs><marker id="arr" markerWidth="7" markerHeight="7" refX="5" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#22c55e"/></marker></defs><rect width="440" height="360" rx="12" fill="#0b1220"/><g stroke="#334155" stroke-width="1">${Array.from({length:17},(_,i)=>`<line x1="${20+i*25}" y1="20" x2="${20+i*25}" y2="340"/><line x1="20" y1="${20+i*20}" x2="420" y2="${20+i*20}"/>`).join('')}</g><g stroke="#e2e8f0" stroke-width="1.6"><line x1="20" y1="${oy}" x2="420" y2="${oy}"/><line x1="${ox}" y1="340" x2="${ox}" y2="20"/></g><g fill="#e2e8f0" font-size="12"><text x="405" y="172">+X</text><text x="230" y="30">+Y</text><text x="25" y="${oy-8}">−X</text><text x="230" y="335">−Y</text><text x="225" y="195">0</text></g>${vectors}${resvec}<g fill="#cbd5e1" font-size="11"><text x="12" y="352">Escala visual ajustada a la fuerza mayor</text></g></svg>`;
+ const steps=[...comps.map((f,i)=>`F${i+1}: Fx = F cos(${f.a}°) = ${f.m} cos(${f.a}°) = ${f.x.toFixed(4)} N; Fy = F sin(${f.a}°) = ${f.m} sin(${f.a}°) = ${f.y.toFixed(4)} N.`),'Suma de componentes: ΣFx = '+rx.toFixed(4)+' N; ΣFy = '+ry.toFixed(4)+' N.','Magnitud resultante: R = √[(ΣFx)² + (ΣFy)²] = √[('+rx.toFixed(4)+')² + ('+ry.toFixed(4)+')²] = '+R.toFixed(4)+' N.','Dirección: θ = atan2(ΣFy, ΣFx) = '+theta.toFixed(2)+'° medida desde +X en sentido antihorario.'];
+ out.innerHTML=`<section class="nl-integral-screen"><h3>Diagrama cartesiano de fuerzas</h3>${svg}<div class="nl-answer"><b>Fuerza resultante</b><br>Rx = ${rx.toFixed(4)} N<br>Ry = ${ry.toFixed(4)} N<br>R = ${R.toFixed(4)} N<br>θ = ${theta.toFixed(2)}°</div>${steps.map((x,i)=>`<div class="nl-step"><b>Paso ${i+1}</b><br>${escapeHTML(x)}</div>`).join('')}<div class="nl-check">Convención: 0° apunta a la derecha, 90° arriba, 180° a la izquierda y 270° abajo. Comprueba los signos de las componentes según el cuadrante.</div></section>`;
+ txt='Diagrama de fuerzas\n'+steps.join('\n')+'\nR = '+R+' N; theta = '+theta+' grados';lastText=txt;explain.textContent=txt;return;
+ }else if(k==='electrostatics'){
  const q1=+$('nlEq1').value*1e-6,q2=+$('nlEq2').value*1e-6,r=+$('nlEr').value,qt=+$('nlEtest').value*1e-6,rp=+$('nlErp').value,K=8.9875517923e9;
  if(!(r>0)||!Number.isFinite(q1)||!Number.isFinite(q2))throw Error('Ingresa cargas válidas y una distancia mayor que cero.');
  const F=K*Math.abs(q1*q2)/(r*r),attract=q1*q2<0,E=K*Math.abs(q1)/(r*r),Ftest=qt!==0?Math.abs(qt)*E:null,Vp=rp>0?K*q1/rp:null;
  const steps=[`Convierte las cargas: q₁ = ${$('nlEq1').value} μC = ${q1.toExponential(4)} C; q₂ = ${$('nlEq2').value} μC = ${q2.toExponential(4)} C.`,`Ley de Coulomb: F = k·|q₁q₂|/r² = (8.98755×10⁹)·|${q1.toExponential(4)}·${q2.toExponential(4)}|/(${r})² = ${F.toExponential(5)} N.`,`Las cargas son ${attract?'de signos opuestos: la fuerza es atractiva':'del mismo signo: la fuerza es repulsiva'}.`];
  steps.push(`Campo eléctrico producido por q₁ a distancia r: E = k·|q₁|/r² = 8.98755×10⁹·${Math.abs(q1).toExponential(4)}/${r}² = ${E.toExponential(5)} N/C.`);if(Ftest!==null)steps.push(`Fuerza sobre la carga de prueba q = ${$('nlEtest').value} μC ubicada a esa distancia: F_prueba = |q|·E = ${Math.abs(qt).toExponential(4)}·${E.toExponential(5)} = ${Ftest.toExponential(5)} N.`);
  if(Vp!==null)steps.push(`Potencial debido únicamente a q₁: V = k·q₁/r = (8.98755×10⁹)·${q1.toExponential(4)}/${rp} = ${Vp.toExponential(5)} V.`);
+ const U=K*q1*q2/r;steps.push(`Energía potencial eléctrica del sistema de dos cargas: U = k·q₁q₂/r = ${U.toExponential(5)} J. El signo indica energía relativa al cero en el infinito.`);
+ const Vtotal=K*(q1+q2)/r;steps.push(`Potencial combinado en un punto a distancia r de ambas cargas (solo si las dos están a esa misma distancia): V_total = k(q₁+q₂)/r = ${Vtotal.toExponential(5)} V.`);
  out.innerHTML=`<section class="nl-integral-screen"><h3>Física · Electrostática</h3><div class="nl-check"><b>Datos</b><br>q₁ = ${$('nlEq1').value} μC; q₂ = ${$('nlEq2').value} μC; r = ${r} m.<br>k = 8.98755×10⁹ N·m²/C².</div><div class="nl-check"><b>Fórmula</b><br>F = k·|q₁q₂|/r². El signo determina si las cargas se atraen o se repelen.</div>${steps.map((x,i)=>`<div class="nl-step"><b>Paso ${i+1}</b><br>${escapeHTML(x)}</div>`).join('')}<div class="nl-answer"><b>Resultado</b><br>F = ${F.toExponential(5)} N · ${attract?'atractiva':'repulsiva'}<br>E(q₁ a r) = ${E.toExponential(5)} N/C${Ftest!==null?`<br>F sobre carga de prueba = ${Ftest.toExponential(5)} N`:''}${Vp!==null?`<br>V(q₁) = ${Vp.toExponential(5)} V`:''}</div><div class="nl-check"><b>Comprobación</b><br>Si duplicas la distancia, la fuerza queda en la cuarta parte. El valor absoluto da la magnitud; la dirección se determina con los signos de las cargas.</div></section>`;
  txt='Electrostática\n'+steps.join('\n')+'\nF = '+F+' N ('+(attract?'atractiva':'repulsiva')+')';lastText=txt;explain.textContent='';return;
  }else if(k==='statics'){
@@ -8409,13 +8799,19 @@ function run(){
  const steps=[`Momento de la fuerza 1: τ₁ = F₁·d₁ = ${f1}·${d1} = ${t1} N·m.`,`Momento de la fuerza 2: τ₂ = F₂·d₂ = ${f2}·${d2} = ${t2} N·m.`,`Como los momentos ${same?'tienen el mismo sentido, se suman':'tienen sentidos opuestos, se restan'}: τ_resultante = ${same?`${t1} + ${t2}`:`${t1} − ${t2}`} = ${res} N·m.`,`Condición de equilibrio rotacional: Στ = 0. ${eq!==null?'Para equilibrar el primer momento con una sola fuerza en d₂, F₂ = F₁·d₁/d₂ = '+eq+' N.':'No se puede calcular una fuerza de equilibrio en d₂ = 0.'}`];
  out.innerHTML=`<section class="nl-integral-screen"><h3>Física · Estática y momentos</h3><div class="nl-check"><b>Datos</b><br>F₁ = ${f1} N, d₁ = ${d1} m; F₂ = ${f2} N, d₂ = ${d2} m.</div><div class="nl-check"><b>Fórmula principal</b><br>τ = F·d⊥. La distancia debe ser perpendicular desde el pivote a la línea de acción de la fuerza.</div>${steps.map((x,i)=>`<div class="nl-step"><b>Paso ${i+1}</b><br>${escapeHTML(x)}</div>`).join('')}<div class="nl-answer"><b>Momento resultante: ${res} N·m</b><br>${Math.abs(res)<1e-9?'Los momentos están equilibrados.':'No hay equilibrio rotacional con estos valores.'}</div><div class="nl-check"><b>Importante</b><br>Si la fuerza forma un ángulo θ, usa τ = r·F·sin(θ). Para equilibrio completo también se necesita ΣFₓ = 0 y ΣFᵧ = 0.</div></section>`;
  txt='Estática y momentos\n'+steps.join('\n')+'\nMomento resultante = '+res+' N·m';lastText=txt;explain.textContent='';return;
- }else if(k==='circuit'){let V=+$('nlVolt').value,r1=+$('nlR1').value,r2=+$('nlR2').value,r3=+$('nlR3').value,r4=+$('nlR4').value,top=$('nlTopology').value;if(!(V>=0)||!(r1>0)||!(r2>0)||!(r3>0)||(['mix5','mix6','mix7'].includes(top)&&!(r4>0)))throw Error('Usa voltaje no negativo y resistencias mayores que cero; R4 solo se requiere en las topologías que la utilizan.');let steps=[],req=0,used=[];const par=(a,b)=>a*b/(a+b);if(top==='series'){req=r1+r2+r3;steps.push(`1. Serie: R_eq = R1 + R2 + R3 = ${r1} + ${r2} + ${r3} = ${req.toFixed(4)} Ω.`);used=[r1,r2,r3]}else if(top==='parallel'){req=1/(1/r1+1/r2+1/r3);steps.push(`1. Paralelo: 1/R_eq = 1/R1 + 1/R2 + 1/R3 = ${(1/r1+1/r2+1/r3).toFixed(6)} S.`);steps.push(`2. R_eq = ${req.toFixed(4)} Ω.`);used=[r1,r2,r3]}else if(top==='mix1'){let rp=par(r2,r3);req=r1+rp;steps.push(`1. Reduce R2 || R3: R_p = (R2·R3)/(R2+R3) = (${r2}·${r3})/(${r2}+${r3}) = ${rp.toFixed(4)} Ω.`);steps.push(`2. Suma en serie: R_eq = R1 + R_p = ${r1} + ${rp.toFixed(4)} = ${req.toFixed(4)} Ω.`);used=[r1,r2,r3]}else if(top==='mix2'){let rs=r1+r2;req=par(rs,r3);steps.push(`1. Reduce R1 + R2: R_s = ${r1} + ${r2} = ${rs.toFixed(4)} Ω.`);steps.push(`2. Reduce R_s || R3: R_eq = (${rs.toFixed(4)}·${r3})/(${rs.toFixed(4)}+${r3}) = ${req.toFixed(4)} Ω.`);used=[r1,r2,r3]}else if(top==='mix3'){let rs=r2+r3;req=par(r1,rs);steps.push(`1. Reduce R2 + R3 en serie: R_s = ${r2} + ${r3} = ${rs.toFixed(4)} Ω.`);steps.push(`2. Reduce R1 || R_s: R_eq = (${r1}·${rs.toFixed(4)})/(${r1}+${rs.toFixed(4)}) = ${req.toFixed(4)} Ω.`);used=[r1,r2,r3]}else if(top==='mix4'){let rp=par(r1,r2);req=rp+r3;steps.push(`1. Reduce R1 || R2: R_p = (${r1}·${r2})/(${r1}+${r2}) = ${rp.toFixed(4)} Ω.`);steps.push(`2. Suma R_p + R3 = ${rp.toFixed(4)} + ${r3} = ${req.toFixed(4)} Ω.`);used=[r1,r2,r3]}else if(top==='mix5'){let a=r1+r2,b=r3+r4;req=par(a,b);steps.push(`1. Rama izquierda en serie: R_a = ${r1} + ${r2} = ${a.toFixed(4)} Ω.`);steps.push(`2. Rama derecha en serie: R_b = ${r3} + ${r4} = ${b.toFixed(4)} Ω.`);steps.push(`3. Ramas en paralelo: R_eq = (${a.toFixed(4)}·${b.toFixed(4)})/(${a.toFixed(4)}+${b.toFixed(4)}) = ${req.toFixed(4)} Ω.`);used=[r1,r2,r3,r4]}else if(top==='mix6'){let b=r3+r4;req=1/(1/r1+1/r2+1/b);steps.push(`1. Rama R3 + R4: ${r3} + ${r4} = ${b.toFixed(4)} Ω.`);steps.push(`2. Tres ramas en paralelo: 1/R_eq = 1/${r1} + 1/${r2} + 1/${b.toFixed(4)}.`);steps.push(`3. R_eq = ${req.toFixed(4)} Ω.`);used=[r1,r2,r3,r4]}else if(top==='mix7'){let a=par(r1,r2),b=r3+r4;req=par(a,b);steps.push(`1. R1 || R2 = (${r1}·${r2})/(${r1}+${r2}) = ${a.toFixed(4)} Ω.`);steps.push(`2. R3 + R4 = ${r3} + ${r4} = ${b.toFixed(4)} Ω.`);steps.push(`3. Los dos bloques en paralelo: R_eq = (${a.toFixed(4)}·${b.toFixed(4)})/(${a.toFixed(4)}+${b.toFixed(4)}) = ${req.toFixed(4)} Ω.`);used=[r1,r2,r3,r4]}else if(top==='twoSeries'){req=r1+r2;steps.push(`1. Serie: R_eq = R1 + R2 = ${r1} + ${r2} = ${req.toFixed(4)} Ω.`);used=[r1,r2]}else{req=par(r1,r2);steps.push(`1. Paralelo: R_eq = (R1·R2)/(R1+R2) = (${r1}·${r2})/(${r1}+${r2}) = ${req.toFixed(4)} Ω.`);used=[r1,r2]}let I=V/req,P=V*I;steps.push(`${steps.length+1}. Ley de Ohm: I_total = V/R_eq = ${V}/${req.toFixed(4)} = ${I.toFixed(6)} A.`);steps.push(`${steps.length+1}. Potencia total: P = V·I = ${V}·${I.toFixed(6)} = ${P.toFixed(6)} W.`);let boxes=used.map((r,i)=>`<rect x="${54+i*78}" y="132" width="54" height="30" rx="5" fill="#f59e0b" fill-opacity=".16" stroke="#d97706" stroke-width="2"/><text x="${81+i*78}" y="151" text-anchor="middle" font-size="11" fill="currentColor">R${i+1}=${r}Ω</text>`).join('');let topLabel=({'series':'Serie: R1 + R2 + R3','parallel':'Paralelo: R1 || R2 || R3','mix1':'Serie-paralelo: R1 + (R2 || R3)','mix2':'Paralelo: (R1 + R2) || R3','mix3':'Paralelo: R1 || (R2 + R3)','mix4':'Serie: (R1 || R2) + R3','mix5':'Dos ramas: (R1 + R2) || (R3 + R4)','mix6':'Tres ramas: R1 || R2 || (R3 + R4)','mix7':'Paralelo: (R1 || R2) || (R3 + R4)','twoSeries':'Serie: R1 + R2','twoParallel':'Paralelo: R1 || R2'}[top]||top);c=`<text x="210" y="48" text-anchor="middle" font-size="12" fill="currentColor">${esc(topLabel)}</text>${boxes}<text x="210" y="205" text-anchor="middle" font-size="14" fill="currentColor">R_eq = ${req.toFixed(2)} Ω</text><text x="210" y="239" text-anchor="middle" font-size="13" fill="#0a9bb0">I = ${I.toFixed(4)} A · P = ${P.toFixed(3)} W</text>`;svg=svgWrap(c,'Simplificación de circuito resistivo');txt='Simplificación de circuito resistivo\nTopología seleccionada: '+({'series':'R1 + R2 + R3 en serie','parallel':'R1 || R2 || R3 en paralelo','mix1':'R1 + (R2 || R3)','mix2':'(R1 + R2) || R3','mix3':'R1 || (R2 + R3)','mix4':'(R1 || R2) + R3','mix5':'(R1 + R2) || (R3 + R4)','mix6':'R1 || R2 || (R3 + R4)','mix7':'(R1 || R2) || (R3 + R4)','twoSeries':'R1 + R2 en serie','twoParallel':'R1 || R2 en paralelo'}[top])+'\nValores: V = '+V+' V; R1 = '+r1+' Ω; R2 = '+r2+' Ω; R3 = '+r3+' Ω; R4 = '+r4+' Ω.\n'+steps.join('\n')+'\nNota: cálculos ideales de corriente continua; verifica que la topología elegida coincida con la fotografía.';}else if(k==='incline')c=`<polygon points="65,240 355,240 355,90" fill="#0a9bb0" fill-opacity=".1" stroke="currentColor" stroke-width="2"/><rect x="205" y="145" width="48" height="38" transform="rotate(-27 229 164)" fill="#d97706" fill-opacity=".35" stroke="#d97706" stroke-width="2"/><path d="M229 164 L229 230" stroke="#d33" stroke-width="2.5"/><path d="M229 230 l-6 -10 m6 10 l6 -10" stroke="#d33" stroke-width="2.5" fill="none"/><text x="238" y="210" fill="#d33" font-size="13">mg</text><text x="180" y="255" fill="currentColor" font-size="12">Plano inclinado</text>`;else if(k==='vectors')c=`<path d="M60 240 L210 240 L210 70" stroke="#0a9bb0" stroke-width="3" fill="none"/><path d="M210 70 l-7 12 m7 -12 l7 12 M210 240 l-12 -7 m12 7 l-12 7" stroke="#0a9bb0" stroke-width="3" fill="none"/><path d="M60 240 L210 70" stroke="#d97706" stroke-width="3"/><text x="130" y="260" fill="currentColor">A</text><text x="220" y="85" fill="currentColor">B</text><text x="150" y="145" fill="#d97706">R = A + B</text>`;else c=`<rect x="180" y="120" width="60" height="60" fill="#0a9bb0" fill-opacity=".15" stroke="#0a9bb0" stroke-width="2"/><path d="M210 150 V55 M210 150 L330 220 M210 150 L80 220" stroke="#d97706" stroke-width="2.5"/><text x="218" y="65" fill="#d97706">N</text><text x="330" y="235" fill="#d97706">F</text><text x="55" y="235" fill="#d97706">P</text><text x="190" y="198" fill="currentColor">Objeto</text>`;if(k!=='circuit'){svg=svgWrap(c,'Diagrama de física');txt='Diagrama conceptual de '+({'incline':'un bloque en plano inclinado','vectors':'suma de vectores','forces':'fuerzas sobre un objeto'}[k])+'. Las flechas son esquemáticas; agrega datos para realizar cálculos numéricos.';}
+ }else if(k==='circuit'){let V=+$('nlVolt').value,r1=+$('nlR1').value,r2=+$('nlR2').value,r3=+$('nlR3').value,r4=+$('nlR4').value,top=$('nlTopology').value;if(!(V>=0)||!(r1>0)||!(r2>0)||!(r3>0)||(['mix5','mix6','mix7'].includes(top)&&!(r4>0)))throw Error('Usa voltaje no negativo y resistencias mayores que cero; R4 solo se requiere en las topologías que la utilizan.');let steps=[],req=0,used=[];const par=(a,b)=>a*b/(a+b);if(top==='series'){req=r1+r2+r3;steps.push(`1. Serie: R_eq = R1 + R2 + R3 = ${r1} + ${r2} + ${r3} = ${req.toFixed(4)} Ω.`);used=[r1,r2,r3]}else if(top==='parallel'){req=1/(1/r1+1/r2+1/r3);steps.push(`1. Paralelo: 1/R_eq = 1/R1 + 1/R2 + 1/R3 = ${(1/r1+1/r2+1/r3).toFixed(6)} S.`);steps.push(`2. R_eq = ${req.toFixed(4)} Ω.`);used=[r1,r2,r3]}else if(top==='mix1'){let rp=par(r2,r3);req=r1+rp;steps.push(`1. Reduce R2 || R3: R_p = (R2·R3)/(R2+R3) = (${r2}·${r3})/(${r2}+${r3}) = ${rp.toFixed(4)} Ω.`);steps.push(`2. Suma en serie: R_eq = R1 + R_p = ${r1} + ${rp.toFixed(4)} = ${req.toFixed(4)} Ω.`);used=[r1,r2,r3]}else if(top==='mix2'){let rs=r1+r2;req=par(rs,r3);steps.push(`1. Reduce R1 + R2: R_s = ${r1} + ${r2} = ${rs.toFixed(4)} Ω.`);steps.push(`2. Reduce R_s || R3: R_eq = (${rs.toFixed(4)}·${r3})/(${rs.toFixed(4)}+${r3}) = ${req.toFixed(4)} Ω.`);used=[r1,r2,r3]}else if(top==='mix3'){let rs=r2+r3;req=par(r1,rs);steps.push(`1. Reduce R2 + R3 en serie: R_s = ${r2} + ${r3} = ${rs.toFixed(4)} Ω.`);steps.push(`2. Reduce R1 || R_s: R_eq = (${r1}·${rs.toFixed(4)})/(${r1}+${rs.toFixed(4)}) = ${req.toFixed(4)} Ω.`);used=[r1,r2,r3]}else if(top==='mix4'){let rp=par(r1,r2);req=rp+r3;steps.push(`1. Reduce R1 || R2: R_p = (${r1}·${r2})/(${r1}+${r2}) = ${rp.toFixed(4)} Ω.`);steps.push(`2. Suma R_p + R3 = ${rp.toFixed(4)} + ${r3} = ${req.toFixed(4)} Ω.`);used=[r1,r2,r3]}else if(top==='mix5'){let a=r1+r2,b=r3+r4;req=par(a,b);steps.push(`1. Rama izquierda en serie: R_a = ${r1} + ${r2} = ${a.toFixed(4)} Ω.`);steps.push(`2. Rama derecha en serie: R_b = ${r3} + ${r4} = ${b.toFixed(4)} Ω.`);steps.push(`3. Ramas en paralelo: R_eq = (${a.toFixed(4)}·${b.toFixed(4)})/(${a.toFixed(4)}+${b.toFixed(4)}) = ${req.toFixed(4)} Ω.`);used=[r1,r2,r3,r4]}else if(top==='mix6'){let b=r3+r4;req=1/(1/r1+1/r2+1/b);steps.push(`1. Rama R3 + R4: ${r3} + ${r4} = ${b.toFixed(4)} Ω.`);steps.push(`2. Tres ramas en paralelo: 1/R_eq = 1/${r1} + 1/${r2} + 1/${b.toFixed(4)}.`);steps.push(`3. R_eq = ${req.toFixed(4)} Ω.`);used=[r1,r2,r3,r4]}else if(top==='mix7'){let a=par(r1,r2),b=r3+r4;req=par(a,b);steps.push(`1. R1 || R2 = (${r1}·${r2})/(${r1}+${r2}) = ${a.toFixed(4)} Ω.`);steps.push(`2. R3 + R4 = ${r3} + ${r4} = ${b.toFixed(4)} Ω.`);steps.push(`3. Los dos bloques en paralelo: R_eq = (${a.toFixed(4)}·${b.toFixed(4)})/(${a.toFixed(4)}+${b.toFixed(4)}) = ${req.toFixed(4)} Ω.`);used=[r1,r2,r3,r4]}else if(top==='twoSeries'){req=r1+r2;steps.push(`1. Serie: R_eq = R1 + R2 = ${r1} + ${r2} = ${req.toFixed(4)} Ω.`);used=[r1,r2]}else{req=par(r1,r2);steps.push(`1. Paralelo: R_eq = (R1·R2)/(R1+R2) = (${r1}·${r2})/(${r1}+${r2}) = ${req.toFixed(4)} Ω.`);used=[r1,r2]}let I=V/req,P=V*I;steps.push(`${steps.length+1}. Ley de Ohm: I_total = V/R_eq = ${V}/${req.toFixed(4)} = ${I.toFixed(6)} A.`);steps.push(`${steps.length+1}. Potencia total: P = V·I = ${V}·${I.toFixed(6)} = ${P.toFixed(6)} W.`);steps.push(`${steps.length+1}. Comprobación energética: P = V²/R_eq = ${V}²/${req.toFixed(4)} = ${(V*V/req).toFixed(6)} W. La corriente total y la potencia calculadas corresponden a una fuente ideal de CC; las caídas por resistor requieren conocer la rama exacta.`);let boxes=used.map((r,i)=>`<rect x="${54+i*78}" y="132" width="54" height="30" rx="5" fill="#f59e0b" fill-opacity=".16" stroke="#d97706" stroke-width="2"/><text x="${81+i*78}" y="151" text-anchor="middle" font-size="11" fill="currentColor">R${i+1}=${r}Ω</text>`).join('');let topLabel=({'series':'Serie: R1 + R2 + R3','parallel':'Paralelo: R1 || R2 || R3','mix1':'Serie-paralelo: R1 + (R2 || R3)','mix2':'Paralelo: (R1 + R2) || R3','mix3':'Paralelo: R1 || (R2 + R3)','mix4':'Serie: (R1 || R2) + R3','mix5':'Dos ramas: (R1 + R2) || (R3 + R4)','mix6':'Tres ramas: R1 || R2 || (R3 + R4)','mix7':'Paralelo: (R1 || R2) || (R3 + R4)','twoSeries':'Serie: R1 + R2','twoParallel':'Paralelo: R1 || R2'}[top]||top);c=`<text x="210" y="48" text-anchor="middle" font-size="12" fill="currentColor">${esc(topLabel)}</text>${boxes}<text x="210" y="205" text-anchor="middle" font-size="14" fill="currentColor">R_eq = ${req.toFixed(2)} Ω</text><text x="210" y="239" text-anchor="middle" font-size="13" fill="#0a9bb0">I = ${I.toFixed(4)} A · P = ${P.toFixed(3)} W</text>`;svg=svgWrap(c,'Simplificación de circuito resistivo');txt='Simplificación de circuito resistivo\nTopología seleccionada: '+({'series':'R1 + R2 + R3 en serie','parallel':'R1 || R2 || R3 en paralelo','mix1':'R1 + (R2 || R3)','mix2':'(R1 + R2) || R3','mix3':'R1 || (R2 + R3)','mix4':'(R1 || R2) + R3','mix5':'(R1 + R2) || (R3 + R4)','mix6':'R1 || R2 || (R3 + R4)','mix7':'(R1 || R2) || (R3 + R4)','twoSeries':'R1 + R2 en serie','twoParallel':'R1 || R2 en paralelo'}[top])+'\nValores: V = '+V+' V; R1 = '+r1+' Ω; R2 = '+r2+' Ω; R3 = '+r3+' Ω; R4 = '+r4+' Ω.\n'+steps.join('\n')+'\nNota: cálculos ideales de corriente continua; verifica que la topología elegida coincida con la fotografía.';}else if(k==='incline')c=`<polygon points="65,240 355,240 355,90" fill="#0a9bb0" fill-opacity=".1" stroke="currentColor" stroke-width="2"/><rect x="205" y="145" width="48" height="38" transform="rotate(-27 229 164)" fill="#d97706" fill-opacity=".35" stroke="#d97706" stroke-width="2"/><path d="M229 164 L229 230" stroke="#d33" stroke-width="2.5"/><path d="M229 230 l-6 -10 m6 10 l6 -10" stroke="#d33" stroke-width="2.5" fill="none"/><text x="238" y="210" fill="#d33" font-size="13">mg</text><text x="180" y="255" fill="currentColor" font-size="12">Plano inclinado</text>`;else if(k==='vectors')c=`<path d="M60 240 L210 240 L210 70" stroke="#0a9bb0" stroke-width="3" fill="none"/><path d="M210 70 l-7 12 m7 -12 l7 12 M210 240 l-12 -7 m12 7 l-12 7" stroke="#0a9bb0" stroke-width="3" fill="none"/><path d="M60 240 L210 70" stroke="#d97706" stroke-width="3"/><text x="130" y="260" fill="currentColor">A</text><text x="220" y="85" fill="currentColor">B</text><text x="150" y="145" fill="#d97706">R = A + B</text>`;else c=`<rect x="180" y="120" width="60" height="60" fill="#0a9bb0" fill-opacity=".15" stroke="#0a9bb0" stroke-width="2"/><path d="M210 150 V55 M210 150 L330 220 M210 150 L80 220" stroke="#d97706" stroke-width="2.5"/><text x="218" y="65" fill="#d97706">N</text><text x="330" y="235" fill="#d97706">F</text><text x="55" y="235" fill="#d97706">P</text><text x="190" y="198" fill="currentColor">Objeto</text>`;if(k!=='circuit'){svg=svgWrap(c,'Diagrama de física');txt='Diagrama conceptual de '+({'incline':'un bloque en plano inclinado','vectors':'suma de vectores','forces':'fuerzas sobre un objeto'}[k])+'. Las flechas son esquemáticas; agrega datos para realizar cálculos numéricos.';}
  } else if(mode==='integral'){
  let src=$('nlInt').value.trim().replace(/\s+/g,''),type=$('nlIntType').value,steps=[],answer='';if(!src)throw Error('Escribe una función.');const operation=$('nlCalcOp')&&$('nlCalcOp').value==='deriv'?'deriv':'integral';
  if(operation==='deriv'){
   const d=derivativeSolve(src,type);const cards=d.steps.map((st,i)=>`<div class="nl-step"><b>Paso ${i+1}</b><br>${mathHTML(st)}</div>`).join('');out.innerHTML=`<section class="nl-integral-screen"><h3>Cálculo diferencial e integral · Derivadas</h3><div class="nl-check"><b>Datos</b><br>Función: f(x) = ${mathHTML(src)}<br>Objetivo: encontrar f'(x).</div><div class="nl-check"><b>Fórmula principal</b><br>Regla de la potencia: <span class="nl-frac"><span class="nl-num">d</span><span class="nl-den">dx</span></span>(c·xⁿ) = c·n·xⁿ⁻¹. La derivada de una suma es la suma de las derivadas.</div>${cards}<div class="nl-answer"><b>Resultado final</b><br>${mathHTML("f'(x) = "+d.answer)}</div></section>`;explain.textContent='';lastText=`Cálculo diferencial y derivadas\nFunción: ${src}\n${d.steps.map((st,i)=>'Paso '+(i+1)+': '+st).join('\n')}\nResultado: f'(x) = ${d.answer}`;return;
  }
- const solved=integralSolve(src,type);steps=solved.steps.slice();answer=solved.answer;let lower=$('nlLower').value,upper=$('nlUpper').value;
+   {const raw=$('nlInt').value.trim(),lw=$('nlLower').value,up=$('nlUpper').value,R=(typeof NXM!=='undefined'&&NXM.integrate)?NXM.integrate(raw,lw,up):null;
+  if(R&&R.ok){const fx=s=>esc(s).replace(/\n/g,'<br>'),hasB=lw!==''&&up!=='';
+   const cards=R.blocks.map((b,i)=>`<div class="nl-step"><b>Paso ${i+1} · ${esc(b[0])}</b><br>${b[1].map(fx).join('<br>')}</div>`).join('');
+   out.innerHTML=`<section class="nl-integral-screen"><h3>Cálculo diferencial e integral · Integrales</h3><div class="nl-check"><b>Datos</b><br>Integrando: ${esc(R.expr)}<br>${hasB?'Límites: a = '+esc(lw)+'; b = '+esc(up)+'<br>':''}${esc(R.method)}<br>Objetivo: encontrar la antiderivada con todos los pasos${hasB?' y evaluar la integral definida':''}.</div>${cards}<div class="nl-answer"><b>Resultado final</b><br>${esc(R.result)}</div></section>`;
+   explain.textContent='';lastText='Cálculo diferencial e integral — Integración\n'+R.title+'\n'+R.blocks.map((b,i)=>'Paso '+(i+1)+' · '+b[0]+': '+b[1].join(' ')).join('\n')+'\nResultado: '+R.result;return;}
+  if(R&&R.miss){out.innerHTML=`<section class="nl-integral-screen"><h3>Cálculo diferencial e integral · Integrales</h3><div class="nl-check"><b>No pude resolver esta integral con las reglas actuales</b><br>${esc(R.msg).replace(/\n/g,'<br>')}</div></section>`;explain.textContent='';lastText='';return;}}
+  const solved=integralSolve(src,type);steps=solved.steps.slice();answer=solved.answer;let lower=$('nlLower').value,upper=$('nlUpper').value;
  if(lower!==''&&upper!==''){
   const a=+lower,b=+upper;if(!Number.isFinite(a)||!Number.isFinite(b))throw Error('Límites inválidos.');if(a===b){steps.push(`Límites iguales: ${a} y ${b}. La integral definida vale 0 porque el intervalo tiene longitud cero.`);answer+='\nIntegral definida = 0';}
   else if(type==='poly'){
@@ -8464,30 +8860,37 @@ async function ocrImage(file,progress){
  try{
   const img=await new Promise((resolve,reject)=>{const im=new Image();im.onload=()=>resolve(im);im.onerror=()=>reject(Error('No pude abrir la fotografía. Prueba con JPG o PNG.'));im.src=url});
   // Escala suficiente para subíndices, etiquetas pequeñas y valores eléctricos.
-  const scale=Math.min(3.2,Math.max(1.35,2400/Math.max(img.width,img.height))),w=Math.round(img.width*scale),h=Math.round(img.height*scale);
+  const scale=Math.min(4.4,Math.max(1.8,3200/Math.max(img.width,img.height))),w=Math.round(img.width*scale),h=Math.round(img.height*scale);
   const makeCanvas=(variant)=>{const c=document.createElement('canvas');c.width=w;c.height=h;const x=c.getContext('2d',{willReadFrequently:true});if(!x)throw Error('El navegador no pudo preparar la imagen.');x.fillStyle='#fff';x.fillRect(0,0,w,h);x.imageSmoothingEnabled=true;x.imageSmoothingQuality='high';x.drawImage(img,0,0,w,h);if(variant){const im=x.getImageData(0,0,w,h),d=im.data;for(let i=0;i<d.length;i+=4){let gray=.299*d[i]+.587*d[i+1]+.114*d[i+2];if(variant===1){gray=gray<150?0:255;}else if(variant===2){gray=Math.max(0,Math.min(255,(gray-128)*1.65+128));}else if(variant===3){gray=255-gray;}else{gray=gray<190?0:255;}d[i]=d[i+1]=d[i+2]=gray;}x.putImageData(im,0,0);}return c;};
   // Distintas versiones ayudan con etiquetas pequeñas, estructuras dibujadas y fondos grises.
-  const candidates=[];const passes=[{variant:0,psm:6},{variant:2,psm:6},{variant:1,psm:6},{variant:0,psm:11},{variant:2,psm:11},{variant:3,psm:11},{variant:4,psm:6},{variant:0,psm:12},{variant:0,psm:7},{variant:2,psm:7},{variant:0,psm:13}];
+  const candidates=[];const passes=[{variant:0,psm:6},{variant:2,psm:6},{variant:1,psm:6},{variant:0,psm:11},{variant:2,psm:11},{variant:3,psm:11},{variant:4,psm:6},{variant:0,psm:12},{variant:0,psm:7},{variant:2,psm:7},{variant:0,psm:13},{variant:1,psm:6,math:true},{variant:2,psm:7,math:true},{variant:0,psm:11,math:true},{variant:0,psm:6,math:true},{variant:2,psm:6,math:true},{variant:1,psm:7,math:true},{variant:0,psm:13,math:true},{variant:2,psm:13,math:true},{variant:4,psm:7,math:true},{variant:1,psm:13,math:true},{variant:0,psm:8,math:true},{variant:2,psm:8,math:true},{variant:0,psm:6,math:true,high:true},{variant:2,psm:11,math:true,high:true},{variant:1,psm:11,math:true,high:true}];
   for(let i=0;i<passes.length;i++){
    const pass=passes[i];progress('Mejorando imagen y leyendo símbolos… pasada '+(i+1)+' de '+passes.length);
-   const r=await tess.recognize(makeCanvas(pass.variant),'spa+eng',{tessedit_pageseg_mode:pass.psm,preserve_interword_spaces:'1',logger:m=>{if(m.status==='recognizing text')progress('Leyendo ejercicio… '+Math.round((m.progress||0)*100)+' %');}});
+   const cfg={tessedit_pageseg_mode:pass.psm,preserve_interword_spaces:'1',logger:m=>{if(m.status==='recognizing text')progress('Leyendo ejercicio… '+Math.round((m.progress||0)*100)+' %');}};if(pass.math)cfg.tessedit_char_whitelist='0123456789xXabcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ+-−*/^()[]{}.=∫√π²³⁴⁵⁶⁷⁸⁹⁰ ';const r=await tess.recognize(makeCanvas(pass.variant),'spa+eng',cfg);
    const data=r&&r.data||{},text=String(data.text||'').trim();if(text)candidates.push({text,confidence:Number(data.confidence)||0,variant:pass.variant,psm:pass.psm});
   }
   if(!candidates.length)throw Error('El OCR terminó, pero no detectó texto. Usa una foto más nítida, derecha y con buena iluminación.');
   // Preferir el pase con confianza mayor y contenido útil; no inventar símbolos.
-  const useful=t=>(t.match(/[A-Za-z0-9]/g)||[]).length+(t.match(/[=+57a9Ω→∫√^]/g)||[]).length*2+(t.match(/CH\s*[₃3;:]|Br|Cl|OH|NH\s*2|NO\s*2|COOH|C\s*6\s*H\s*6/gi)||[]).length*5;
+  const useful=t=>(t.match(/[A-Za-z0-9]/g)||[]).length+(t.match(/[=+−*/^²³⁴⁵⁶⁷⁸⁹∫√]/g)||[]).length*2+(t.match(/\bx\s*\d|x\^[0-9]|[²³⁴⁵⁶⁷⁸⁹]/gi)||[]).length*5+(t.match(/CH\s*[₃3;:]|Br|Cl|OH|NH\s*2|NO\s*2|COOH|C\s*6\s*H\s*6/gi)||[]).length*5;
   candidates.sort((a,b)=>(b.confidence+useful(b.text)*.08)-(a.confidence+useful(a.text)*.08));
   const best=candidates[0];return {text:best.text,confidence:best.confidence,alternatives:candidates.slice(1).map(x=>({text:x.text,confidence:x.confidence})),passes:candidates.map(x=>({text:x.text,confidence:x.confidence,variant:x.variant,psm:x.psm}))};
  }finally{URL.revokeObjectURL(url)}
 }
 function normalizeMathOCR(t){return String(t||'')
- .replace(/[⁰¹²³⁴⁵⁶⁷⁸⁹]/g,c=>String('⁰¹²³⁴⁵⁶⁷⁸⁹'.indexOf(c)))
+ .replace(/[⁰¹²³⁴⁵⁶⁷⁸⁹]/g,c=>'^'+String('⁰¹²³⁴⁵⁶⁷⁸⁹'.indexOf(c)))
  .replace(/[−–—]/g,'-').replace(/[×·⋅]/g,'*')
  .replace(/[∫ʃ∮]/g,' integral ')
  .replace(/√\s*\(?\s*x\s*\)?/gi,' x^0.5 ')
  .replace(/\\sqrt\s*\(?\s*x\s*\)?/gi,' x^0.5 ')
  .replace(/ra[ií]z\s*(?:cuadrada\s*)?(?:de\s*)?x/gi,' x^0.5 ')
  .replace(/x([²³⁴⁵⁶⁷⁸⁹])/gi,(m,n)=>'x^'+({'²':2,'³':3,'⁴':4,'⁵':5,'⁶':6,'⁷':7,'⁸':8,'⁹':9}[n]))
+ // Recupera exponentes que el OCR coloca en la línea base: x4, x 4 o x^ 4.
+ .replace(/\bx\s*\^\s*([0-9])/gi,(m,n)=>'x^'+n)
+ // OCR sometimes flattens superscripts to baseline digits. Recover common forms
+ // only when the digit follows x and is separated from the next operator/term.
+ .replace(/\bx\s*([2-9])(?=\s*(?:[+\-−=*/)]|$))/gi,(m,n)=>'x^'+n)
+ .replace(/\bx([²³⁴⁵⁶⁷⁸⁹])/gi,(m,n)=>'x^'+({'²':2,'³':3,'⁴':4,'⁵':5,'⁶':6,'⁷':7,'⁸':8,'⁹':9}[n]))
+ // Normalize OCR-confused multiplication signs and retain explicit exponent markers.
  .replace(/\b(?:d\s*x|d\s*y|dx|dy|dr)\b/gi,' ')
  .replace(/\s+/g,' ').trim();}
 function extractIntegral(t){
@@ -8499,7 +8902,7 @@ function extractIntegral(t){
   line=line.replace(/\bintegral\b/g,' ').replace(/^(?:resuelve|integra|integrar|integral|calcula|halla|encuentra|ejercicio)\s*[:.-]?\s*/i,'');
   line=line.replace(/(?:desde|entre|l[ií]mites?\s*)\s*(-?\d+(?:[.,]\d+)?)\s*(?:a|hasta|y)\s*(-?\d+(?:[.,]\d+)?)/gi,' ');
   line=line.replace(/\b(?:de|con respecto a)\b/gi,' ').replace(/\s+/g,'').replace(/[,:;=]+$/g,'');
-  line=line.replace(/([0-9])x([0-9])/gi,'$1*x^$2').replace(/([0-9])(?=x)/gi,'$1*').replace(/([0-9])(?=\()/g,'$1*');
+  line=line.replace(/([0-9])x\s*\^?\s*([2-9])/gi,'$1*x^$2').replace(/([0-9])(?=x)/gi,'$1*').replace(/([0-9])(?=\()/g,'$1*');
   line=line.replace(/\^\s*/g,'^').replace(/\)x/gi,')*x').replace(/X/g,'x');
   // OCR commonly turns ∫ into '/', √x into 've' and dx into 'dr'.
   // This fallback is intentionally narrow and is marked as a probable reading in the UI.
@@ -8511,6 +8914,11 @@ function extractIntegral(t){
   if(/[x]/i.test(compact)&&/^[+\-*\/().x0-9^]+$/i.test(compact))candidates.push(compact);
  }
  const valid=candidates.map(x=>x.replace(/X/g,'x')).filter(x=>/x/.test(x)&&/^[+\-*\/().x0-9^]+$/.test(x));
+ // Integrales con funciones (sen, cos, tan, ln, e^x, sqrt…): se aceptan solo si el motor matemático las entiende.
+  const rich=[];
+  for(let source of all){let l=normalizeMathOCR(source).toLowerCase().replace(/\bintegral\b/g,' ').replace(/^(?:resuelve|integra|integrar|integral|calcula|halla|encuentra|ejercicio)\s*[:.-]?\s*/i,'').replace(/\s+/g,'').replace(/[,:;=]+$/g,'').replace(/d[xr]$/,'').replace(/sen/g,'sin').replace(/√/g,'sqrt').replace(/[^0-9a-z+*/^().-]/g,'');
+   if(/(sin|cos|tan|ln|log|sqrt|exp|atan|asin|acos|e\^)/.test(l)&&/x/.test(l)&&typeof NXM!=='undefined'&&NXM.integrate){try{const r=NXM.integrate(l,'','');if(r&&(r.ok||r.miss))rich.push(l)}catch(e){}}}
+  if(rich.length&&!valid.length)return rich.sort((a,b)=>b.length-a.length)[0];
  return valid.sort((a,b)=>b.length-a.length)[0]||'';
 }
 function parseFormula(formula){let s=String(formula||'').replace(/[₀-₉]/g,d=>String('₀₁₂₃₄₅₆₇₈₉'.indexOf(d))).replace(/\s/g,'');if(!/^[A-Z][A-Za-z0-9()]*$/.test(s))return null;let i=0;
@@ -8668,5 +9076,256 @@ document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest
 })();
 
 </script>
+<script>
+/* NORYX · Cálculo visual (problemario IPN): gráficas, área, entre curvas, volúmenes, arco, Riemann */
+(()=>{
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function compile(src){
+ const T=String(src).toLowerCase().replace(/π/g,'pi').replace(/−/g,'-').replace(/\s+/g,'').match(/\d+\.?\d*|\.\d+|[a-z]+|[-+*/^()]/g)||[];let i=0;
+ const F={sin:Math.sin,sen:Math.sin,cos:Math.cos,tan:Math.tan,sec:x=>1/Math.cos(x),csc:x=>1/Math.sin(x),cot:x=>1/Math.tan(x),ln:Math.log,log:Math.log10,sqrt:Math.sqrt,exp:Math.exp,abs:Math.abs,atan:Math.atan,arctan:Math.atan,asin:Math.asin,arcsin:Math.asin,acos:Math.acos,arccos:Math.acos,cbrt:Math.cbrt};
+ const pk=()=>T[i],st=t=>t!==undefined&&/[\d.a-z(]/.test(t[0]);
+ const expr=()=>{let v=term();while(pk()==='+'||pk()==='-'){const o=T[i++],r=term(),l=v;v=o==='+'?x=>l(x)+r(x):x=>l(x)-r(x)}return v};
+ const term=()=>{let v=unary();for(;;){const t=pk();if(t==='*'||t==='/'){i++;const r=unary(),l=v;v=t==='*'?x=>l(x)*r(x):x=>l(x)/r(x)}else if(st(t)){const r=unary(),l=v;v=x=>l(x)*r(x)}else return v}};
+ const unary=()=>{if(pk()==='-'){i++;const u=unary();return x=>-u(x)}if(pk()==='+'){i++;return unary()}return power()};
+ const power=()=>{const b=atom();if(pk()==='^'){i++;const e=unary();return x=>Math.pow(b(x),e(x))}return b};
+ const atom=()=>{const t=T[i++];if(t===undefined)throw Error('La expresión está incompleta.');
+  if(/^[\d.]/.test(t)){const n=parseFloat(t);return()=>n}
+  if(t==='('){const v=expr();if(T[i++]!==')')throw Error('Falta cerrar un paréntesis.');return v}
+  if(t==='x')return x=>x;if(t==='pi')return()=>Math.PI;if(t==='e')return()=>Math.E;
+  if(F[t]){let p=1;if(pk()==='^'){i++;p=parseFloat(T[i++])}let a;if(pk()==='('){i++;a=expr();if(T[i++]!==')')throw Error('Falta cerrar un paréntesis.')}else a=power();const f=F[t];return x=>Math.pow(f(a(x)),p)}
+  throw Error('No entiendo «'+t+'». Usa x, +, -, *, /, ^, sin, cos, tan, sec, ln, sqrt, e^x, pi…')};
+ const f=expr();if(i<T.length)throw Error('Sobra «'+T[i]+'» en la expresión.');return f}
+const simpson=(f,a,b,n=6000)=>{if(a===b)return 0;const h=(b-a)/n;let s=f(a)+f(b);for(let k=1;k<n;k++)s+=(k%2?4:2)*f(a+k*h);return s*h/3};
+function roots(h,lo,hi){const r=[],N=4800;let p=lo,hp=h(p);for(let k=1;k<=N;k++){const x=lo+(hi-lo)*k/N,hx=h(x);if(isFinite(hp)&&isFinite(hx)){if(hp===0)r.push(p);else if(hp*hx<0){let u=p,v=x;for(let j=0;j<60;j++){const m=(u+v)/2;if(h(u)*h(m)<=0)v=m;else u=m}r.push((u+v)/2)}}p=x;hp=hx}return r.filter((z,k)=>!k||Math.abs(z-r[k-1])>1e-7)}
+function absInt(h,a,b){const cuts=[a,...roots(h,a,b).filter(z=>z>a+1e-9&&z<b-1e-9),b],pieces=[];for(let k=0;k<cuts.length-1;k++)pieces.push({a:cuts[k],b:cuts[k+1],v:simpson(h,cuts[k],cuts[k+1])});return{total:pieces.reduce((s,p)=>s+Math.abs(p.v),0),pieces}}
+const frac=(v,t=1e-9)=>{for(let q=1;q<=240;q++){const p=Math.round(v*q);if(Math.abs(v-p/q)<t*(1+Math.abs(v)))return[p,q]}return null};
+const dec=v=>String(+v.toFixed(4)),rd=v=>String(Math.round(v*1e9)/1e9);
+const fmt=(v,u,pi)=>{let w=pi?v/Math.PI:v,f=frac(w);if(!f&&!pi&&frac(v/Math.PI,5e-6)){pi=true;w=v/Math.PI;f=frac(w,5e-6)}if(!f)return dec(v)+' '+u;const[p,q]=f,P=pi?(Math.abs(p)===1?(p<0?'-':'')+'π':p+'π'):String(p);return(q===1?P:P+'/'+q)+(f&&(q>1||pi)?' ≈ '+dec(v):'')+' '+u};
+function plot(o){
+ const W=640,H=340,m=32,fs=o.fs,a=o.a,b=o.b,pad=Math.max((b-a)*.25,.5),xa=a-pad,xb=b+pad,N=360,ys=[0];
+ const xs=Array.from({length:N+1},(_,k)=>xa+(xb-xa)*k/N);
+ fs.forEach(c=>xs.forEach(x=>{const y=c.f(x);if(isFinite(y)&&Math.abs(y)<1e6){ys.push(y);if(o.mirror)ys.push(-y)}}));
+ let ya=Math.min(...ys),yb=Math.max(...ys);if(yb-ya<1e-9){ya-=1;yb+=1}const py=(yb-ya)*.08;ya-=py;yb+=py;
+ const X=x=>m+(x-xa)/(xb-xa)*(W-2*m),Y=y=>H-m-(y-ya)/(yb-ya)*(H-2*m),n2=v=>(+v.toFixed(1)).toString();
+ const path=(f,sg=1)=>{let d='',pen=false,py0=null;for(const x of xs){const y=f(x)*sg;if(!isFinite(y)||Math.abs(y)>1e6){pen=false;continue}const yy=Y(y);d+=(pen&&Math.abs(yy-py0)<H?'L':'M')+X(x).toFixed(1)+' '+yy.toFixed(1);pen=true;py0=yy}return d};
+ let s=`<svg viewBox="0 0 ${W} ${H}" style="width:100%;height:auto;max-width:720px" role="img" aria-label="Gráfica de la función">`;
+ for(let k=0;k<=5;k++){const x=xa+(xb-xa)*k/5,y=ya+(yb-ya)*k/5;s+=`<line x1="${X(x)}" y1="${m}" x2="${X(x)}" y2="${H-m}" stroke="var(--line)"/><line x1="${m}" y1="${Y(y)}" x2="${W-m}" y2="${Y(y)}" stroke="var(--line)"/><text x="${X(x)}" y="${H-10}" font-size="11" fill="var(--mute)" text-anchor="middle">${n2(x)}</text><text x="${m-5}" y="${Y(y)+4}" font-size="11" fill="var(--mute)" text-anchor="end">${n2(y)}</text>`}
+ if(ya<0&&yb>0)s+=`<line x1="${m}" y1="${Y(0)}" x2="${W-m}" y2="${Y(0)}" stroke="var(--mute)" stroke-width="1.4"/>`;
+ if(xa<0&&xb>0)s+=`<line x1="${X(0)}" y1="${m}" x2="${X(0)}" y2="${H-m}" stroke="var(--mute)" stroke-width="1.4"/>`;
+ const lo=o.g||(()=>0),K=Array.from({length:241},(_,k)=>a+(b-a)*k/240);
+ if(!o.rects){const top=K.map(x=>X(x)+','+Y(fs[0].f(x))).join(' '),bot=K.slice().reverse().map(x=>X(x)+','+Y(lo(x))).join(' ');if(!/NaN|Infinity/.test(top+bot))s+=`<polygon points="${top} ${bot}" fill="var(--acc)" opacity=".28"/>`}
+ (o.rects||[]).forEach(r=>{const y0=Y(Math.max(r.h,0)),y1=Y(Math.min(r.h,0));s+=`<rect x="${X(r.x0)}" y="${y0}" width="${Math.max(X(r.x1)-X(r.x0),.5)}" height="${Math.max(y1-y0,.5)}" fill="var(--acc)" opacity=".3" stroke="var(--acc)" stroke-width=".8"/>`});
+ if(o.mirror)s+=`<path d="${path(fs[0].f,-1)}" fill="none" stroke="var(--acc)" stroke-width="1.6" stroke-dasharray="5 4" opacity=".7"/>`;
+ fs.forEach((c,k)=>{s+=`<path d="${path(c.f)}" fill="none" stroke="${k?'var(--acc2)':'var(--acc)'}" stroke-width="2.4"/>`});
+ [a,b].forEach(x=>{s+=`<line x1="${X(x)}" y1="${m}" x2="${X(x)}" y2="${H-m}" stroke="var(--acc2)" stroke-dasharray="4 4"/>`});
+ return s+`</svg><div class="nl-small">${fs.map((c,k)=>`<b style="color:${k?'var(--acc2)':'var(--acc)'}">${esc(c.name)}</b>`).join(' · ')} · región sombreada de x = ${rd(a)} a x = ${rd(b)}${o.mirror?' · línea punteada: perfil simétrico del sólido al girar sobre el eje x':''}</div>`}
+const BANK=`Integrales indefinidas|||||
+Raíces y potencias (2.8)|integral|x*sqrt(x)||||
+Cuadrado de un binomio (3a.8)|integral|(x+1)^2||||
+Seno y raíz (3b.3)|integral|3/(2*sqrt(x))+sin(x)||||
+Cambio de variable (4b.13)|integral|x*sqrt(x^2+4)||||
+Cambio de variable (4b.15)|integral|(4*x^3+2)*(x^4+2*x)^21||||
+Exponencial compuesta (4b.26)|integral|x*e^(x^2)||||
+Logarítmica (4b.39)|integral|(2*x+1)/(x^2+x)||||
+Arcoseno (4b.61)|integral|1/sqrt(9-(x+1)^2)||||
+Por partes (5.1)|integral|x*cos(x)||||
+Por partes (5.2)|integral|x*ln(x)||||
+Por partes (5.7)|integral|e^(3*x)*sin(2*x)||||
+Por partes (5.23)|integral|ln(x)^2||||
+Potencias trig. (6.1)|integral|cos(x)*sin(x)^4||||
+Potencias trig. (6.8)|integral|tan(x)^3*sec(x)^3||||
+Sust. trigonométrica (7.3)|integral|x^3/sqrt(x^2-4)||||
+Sust. trigonométrica (7.4)|integral|1/(x*sqrt(x^2+9))||||
+Fracciones parciales (8.1)|integral|(5-x)/(x^3-x^2-2*x)||||
+Fracciones parciales (8.9)|integral|(2*x^2+3)/(x^2+1)^2||||
+Fracciones parciales (8.15)|integral|(2*x^2+7)/(x^4-x)||||
+Integrales definidas|||||
+Teorema fundamental (10.1)|integral|x||0|3|
+Teorema fundamental (10.13)|integral|sin(x)^3*cos(x)^4||pi/2|pi|
+Teorema fundamental (10.15)|integral|(x-1)/(x*(x+1))||5|10|
+Área bajo la curva|||||
+Suma de Riemann, 5 rect. (9.2a)|riemann|x^2||0|1|5|izq
+Suma de Riemann por exceso (9.3b)|riemann|1+x^3||0|1|5|sup
+Área exacta (9.4)|area|x^2+x+1||0|1|
+Área de 1/x (11.1b)|area|1/x||1|2|
+Área de tan x (11.1d)|area|tan(x)||0|pi/4|
+Área con cambio de signo (11.1f)|area|x^3-1||0|3|
+Semicírculo (11.2)|area|sqrt(4-x^2)||-2|2|
+Área entre curvas|||||
+Entre x³ y x²−1 (12.1a)|area|x^3|x^2-1|1|3|
+Entre e^(−x) y x² (12.1b)|area|e^(-x)|x^2|1|4|
+Entre x² y 2−x², sin límites (12.1d)|area|x^2|2-x^2|||
+Parábolas, límites por cruces (12.1e)|area|x^2-1|7-x^2|||
+Raíz y parábola (12.2)|area|sqrt(x)|x^2|||
+Recta y cúbica (12.5)|area|3*x|x^3-x|||
+Volumen girando sobre el eje x|||||
+f = −1/x, x de 1 a 3 (13.1a)|volx|-1/x||1|3|
+f = x²−1, x de 0 a 2 (13.1b)|volx|x^2-1||0|2|
+Entre y = x y y = x² (13.1f)|volx|x|x^2|0|1|
+Elipsoide (13.3)|volx|2/3*sqrt(9-x^2)||-3|3|
+Esfera de radio 1 (13.8)|volx|sqrt(1-x^2)||-1|1|
+Volumen girando sobre el eje y (capas)|||||
+f = e^x, x de 0 a 1 (13.1j)|voly|e^x||0|1|
+f = 1/x, x de 1 a 3 (13.1i)|voly|1/x||1|3|
+f = 4x²+1, x de 0 a 1 (13.2)|voly|4*x^2+1||0|1|
+Longitud de arco|||||
+y = x², [0,1] (14.1)|arc|x^2||0|1|
+y = 4x², [0,1] (14.2)|arc|4*x^2||0|1|
+y = ln(cos x), [0,π/4] (14.4b)|arc|ln(cos(x))||0|pi/4|
+y = ⅔x^(3/2)+1, [0,1] (14.4c)|arc|2/3*x^(3/2)+1||0|1|`.split('\n').map(l=>l.split('|'));
+const OPS={area:'Área bajo la curva / entre curvas',volx:'Volumen de revolución · eje x (discos)',voly:'Volumen de revolución · eje y (capas)',arc:'Longitud de arco',riemann:'Suma de Riemann (rectángulos)'};
+const q=id=>document.getElementById(id);
+function card(t,lines){return`<div class="nl-step"><b>${esc(t)}</b><br>${lines.map(esc).join('<br>')}</div>`}
+function exact(e,a,b){try{const R=typeof NXM!=='undefined'&&NXM.integrate?NXM.integrate(e,a,b):null;return R&&R.ok?R:null}catch(_){return null}}
+function render(title,data,blocks,res,graph){const out=q('nxLabOut');out.innerHTML=`<section class="nl-integral-screen"><h3>${esc(title)}</h3><div class="nl-check"><b>Datos</b><br>${data.map(esc).join('<br>')}</div>${blocks.map(b=>card(b[0],b[1])).join('')}${graph?`<div class="nl-check"><b>Gráfica</b><br>${graph}</div>`:''}<div class="nl-answer"><b>Resultado final</b><br>${esc(res)}</div></section>`;const ex=q('nxLabExplain');if(ex)ex.textContent=''}
+function fail(msg){const out=q('nxLabOut');out.innerHTML=`<section class="nl-integral-screen"><h3>Revisa los datos</h3><div class="nl-check">${esc(msg)}</div></section>`}
+function solve(op){
+ const fs=q('nlInt').value.trim(),gs=(q('nlG')?q('nlG').value:'').trim(),as=q('nlLower').value.trim(),bs=q('nlUpper').value.trim();
+ if(!fs)return fail('Escribe la función f(x) en el campo Función.');
+ const f=compile(fs),g=gs?compile(gs):x=>0,h=x=>f(x)-g(x);let a,b,notes=[];
+ if(as&&bs){a=compile(as)(0);b=compile(bs)(0)}else if(gs&&op!=='riemann'&&op!=='arc'){const r=roots(h,-20,20);if(r.length<2)return fail('Las curvas no se cruzan en dos puntos; escribe los límites a y b.');a=r[0];b=r[r.length-1];notes.push('Límites hallados en los cruces de las curvas (f = g): a = '+rd(a)+', b = '+rd(b))}
+ else return fail('Escribe el límite inferior y el superior (acepta pi).');
+ if(!isFinite(a)||!isFinite(b)||a>=b)return fail('Los límites deben ser finitos y a < b.');
+ const A=String(+a.toPrecision(14)),B=String(+b.toPrecision(14)),data=['f(x) = '+fs,...(gs?['g(x) = '+gs]:[]),'Intervalo: ['+rd(a)+', '+rd(b)+']',...notes],names=[{f,name:'f(x) = '+fs},...(gs?[{f:g,name:'g(x) = '+gs}]:[])];
+ const draw=(o={})=>plot({fs:names,a,b,g:gs?g:null,...o});let blocks=[],res,title=OPS[op];
+ const tryExact=(expr,k,pi)=>{const R=exact(expr,A,B);if(R){blocks.push(['Cálculo exacto con el motor simbólico',['Integral planteada: ∫ '+expr+' dx de '+A+' a '+B,...R.blocks.flatMap(x=>x[1]).slice(-3),'Valor exacto de la integral: '+R.result.replace(/\*\*/g,'')]])}};
+ if(op==='area'){const I=absInt(h,a,b),one=I.pieces.length===1;
+  blocks.push(['Planteamiento',['A = ∫ₐᵇ |f(x) − g(x)| dx'+(gs?'':' con g(x) = 0 (eje x)'),I.pieces.length>1?'La función cambia de signo en: '+I.pieces.slice(0,-1).map(p=>'x = '+rd(p.b)).join(', ')+'; se integra por tramos con valor absoluto.':'Una curva queda siempre por encima de la otra en el intervalo.']]);
+  if(one)tryExact(I.pieces[0].v>=0?(gs?`(${fs})-(${gs})`:fs):(gs?`(${gs})-(${fs})`:`-(${fs})`));
+  else blocks.push(['Valor por tramos',I.pieces.map(p=>'['+rd(p.a)+', '+rd(p.b)+']: '+dec(Math.abs(p.v))+' u²')]);
+  res='A = '+fmt(I.total,'u²');return render(title,data,blocks,res,draw())}
+ if(op==='volx'){const I=absInt(x=>f(x)**2-g(x)**2,a,b),one=I.pieces.length===1;
+  blocks.push(['Planteamiento',['Método de discos/arandelas: V = π ∫ₐᵇ [f(x)² − g(x)²] dx'+(gs?'':' con g = 0')]]);
+  if(one)tryExact(I.pieces[0].v>=0?`(${fs})^2-(${gs||'0'})^2`:`(${gs})^2-(${fs})^2`);
+  blocks.push(['Multiplicar por π',['V = π · '+dec(I.total/Math.PI)+' = '+dec(I.total)]]);
+  res='V = '+fmt(Math.PI*I.total,'u³',true);return render(title,data,blocks,res,draw({mirror:true}))}
+ if(op==='voly'){if(a<0)notes.push('Aviso: el método de capas supone x ≥ 0; se usa |x|.');const I=absInt(x=>x*h(x),a,b),one=I.pieces.length===1;
+  blocks.push(['Planteamiento',['Método de capas cilíndricas: V = 2π ∫ₐᵇ x·|f(x) − g(x)| dx']]);
+  if(one)tryExact(I.pieces[0].v>=0?`x*((${fs})-(${gs||'0'}))`:`x*((${gs})-(${fs}))`);else blocks.push(['Valor por tramos',I.pieces.map(p=>'['+rd(p.a)+', '+rd(p.b)+']: '+dec(Math.abs(p.v)))]);
+  blocks.push(['Multiplicar por 2π',['V = 2π · '+dec(I.total)+' = '+dec(2*Math.PI*I.total)]]);
+  res='V = '+fmt(2*Math.PI*I.total,'u³',true);return render(title,data,blocks,res,draw())}
+ if(op==='arc'){const e0=1e-6,d=x=>{const p=f(x+e0),m=f(x-e0);return isFinite(m)&&isFinite(p)?(p-m)/(2*e0):isFinite(p)?(p-f(x))/e0:(f(x)-m)/e0},L=simpson(x=>Math.sqrt(1+d(x)**2),a,b,20000);
+  blocks.push(['Planteamiento',['L = ∫ₐᵇ √(1 + [f′(x)]²) dx','Se deriva f(x) y se integra la raíz; el valor se obtiene con la regla de Simpson (20 000 subintervalos).']]);
+  res='L ≈ '+dec(L)+' u';return render(title,data,blocks,res,draw())}
+ if(op==='riemann'){const n=Math.max(1,Math.min(400,Math.floor(+q('nlN').value||5))),rule=q('nlRule').value,dx=(b-a)/n,rects=[],rows=[];let S=0;
+  for(let k=0;k<n;k++){const x0=a+k*dx,x1=x0+dx;let hh,t;if(rule==='izq'){t=x0;hh=f(t)}else if(rule==='der'){t=x1;hh=f(t)}else if(rule==='med'){t=(x0+x1)/2;hh=f(t)}else{let best=null;for(let j=0;j<=40;j++){const v=f(x0+dx*j/40);if(best===null||(rule==='inf'?v<best:v>best))best=v}hh=best;t=null}
+   S+=hh*dx;rects.push({x0,x1,h:hh});if(k<8)rows.push('Rect. '+(k+1)+': ['+dec(x0)+', '+dec(x1)+'] · altura = '+dec(hh)+' · área = '+dec(hh*dx))}
+  blocks.push(['Planteamiento',['Δx = (b − a)/n = ('+rd(b)+' − '+rd(a)+')/'+n+' = '+dec(dx),'Regla: '+{izq:'extremo izquierdo',der:'extremo derecho',med:'punto medio',inf:'altura mínima (por defecto)',sup:'altura máxima (por exceso)'}[rule]]]);
+  blocks.push(['Rectángulos',rows.concat(n>8?['… y '+(n-8)+' más']:[])]);
+  blocks.push(['Suma',['S = Σ f(xᵢ*)·Δx = '+dec(S)]]);
+  const R=exact(fs,A,B);if(R)blocks.push(['Comparar con la integral exacta',['∫ₐᵇ f dx = '+R.result.replace(/\*\*/g,'')+(isFinite(R.def&&R.def.val)?'':''),'La suma de Riemann se acerca al valor exacto al aumentar n.']]);
+  res='S ≈ '+dec(S)+' u²'+(R?'  (exacta: '+R.result.replace(/\*\*/g,'').replace(/^.*= /,'')+')':'');return render(title,data,blocks,res,plot({fs:names.slice(0,1),a,b,rects}))}
+}
+function addPlot(){const out=q('nxLabOut'),sec=out&&out.querySelector('.nl-integral-screen');if(!sec||sec.querySelector('svg'))return;let a,b;const fs=q('nlInt').value.trim();try{const f=compile(fs),as=q('nlLower').value.trim(),bs=q('nlUpper').value.trim();let def=as&&bs;a=def?compile(as)(0):-5;b=def?compile(bs)(0):5;if(!isFinite(a)||!isFinite(b)||a>=b){def=false;a=-5;b=5}
+ const html=plot({fs:[{f,name:'f(x) = '+fs}],a,b,rects:def?null:[]});sec.insertAdjacentHTML('beforeend',`<div class="nl-check"><b>Gráfica${def?' del área':' del integrando'}</b><br>${html}</div>`)}catch(_){}}
+function inject(){const sel=q('nlCalcOp');if(!sel||q('nlX'))return;
+ Object.entries(OPS).forEach(([k,v])=>sel.insertAdjacentHTML('beforeend',`<option value="${k}">${v}</option>`));
+ const run=q('nlRun'),opts=BANK.map(r=>!r[1]?`</optgroup><optgroup label="${esc(r[0])}">`:`<option value="${esc(r.join('|'))}">${esc(r[0])}</option>`).join('').replace('</optgroup>','')+'</optgroup>';
+ run.insertAdjacentHTML('beforebegin',`<div id="nlX" class="nl-photo-tool"><b>Problemario de Cálculo Integral (IPN)</b><label for="nlBank">Elegir un ejercicio: se llena y se resuelve solo</label><select id="nlBank"><option value="">— Selecciona —</option>${opts}</select><div id="nlXg" style="display:none"><label for="nlG">Segunda función g(x) (vacía = eje x; sin límites se usan los cruces)</label><input id="nlG" placeholder="Ej. x^2-1"></div><div id="nlXr" class="nl-row" style="display:none"><div><label for="nlN">Rectángulos (n)</label><input id="nlN" type="number" min="1" max="400" value="5"></div><div><label for="nlRule">Altura</label><select id="nlRule"><option value="izq">Extremo izquierdo</option><option value="der">Extremo derecho</option><option value="med">Punto medio</option><option value="inf">Por defecto (mínima)</option><option value="sup">Por exceso (máxima)</option></select></div></div><p class="nl-small">Área, volumen y longitud de arco usan los límites inferior y superior de abajo. Acepta pi, sin(x), sqrt(x), e^x, ln(x)…</p></div>`);
+ const vis=()=>{const o=sel.value;q('nlXg').style.display=/^(area|volx|voly)$/.test(o)?'':'none';q('nlXr').style.display=o==='riemann'?'':'none'};sel.addEventListener('change',vis);
+ q('nlBank').addEventListener('change',e=>{if(!e.target.value)return;const[,op,f,g,a,b,n,r]=e.target.value.split('|');sel.value=op;q('nlInt').value=f;q('nlG').value=g||'';q('nlLower').value=a||'';q('nlUpper').value=b||'';if(n)q('nlN').value=n;if(r)q('nlRule').value=r;vis();run.click()})}
+if(typeof module!=='undefined')module.exports={solve,BANK,compile};if(typeof document==='undefined')return;window.__nxc=compile;
+document.addEventListener('click',e=>{const bt=e.target.closest&&e.target.closest('#nlRun');if(!bt||!q('nlCalcOp'))return;const op=q('nlCalcOp').value;
+ if(OPS[op]){e.preventDefault();e.stopImmediatePropagation();try{solve(op)}catch(err){fail(err.message||String(err))}}else if(op==='integral')setTimeout(addPlot,40)},true);
+const ctl=q('nxLabControls');if(ctl)new MutationObserver(inject).observe(ctl,{childList:true,subtree:true});inject();
+})();
+</script>
+<script>
+/* NORYX · Tipo de función/método: todas las opciones + detección automática */
+(()=>{
+const TL={auto:'Automático (detectar el tipo)',poly:'Polinomios y potencias',rad:'Raíces y radicales',trig:'Trigonométricas básicas',exp:'Exponenciales',log:'Logarítmicas y 1/x',sub:'Cambio de variable (sustitución)',parts:'Por partes',ptrig:'Potencias trigonométricas',strig:'Sustitución trigonométrica',frac:'Fracciones parciales',inv:'Inversas trigonométricas (arcsen, arctan, arcsec)',chain:'Regla de la cadena',prod:'Regla del producto',quot:'Regla del cociente',expl:'Exponenciales y logarítmicas'};
+const LI=['auto','poly','rad','trig','exp','log','sub','parts','ptrig','strig','frac','inv'],LD=['auto','poly','trig','expl','inv','prod','quot','chain'];
+const norm=e=>String(e).toLowerCase().replace(/\s+/g,'').replace(/−/g,'-').replace(/\bsen\(/g,'sin(').replace(/sen\(/g,'sin(').replace(/arcsin|asin/g,'asin').replace(/arctan|atan/g,'atan').replace(/arcsec/g,'asec');
+const lin=a=>!/\^|[a-z]{2,}|\(/.test(a.replace(/^\(|\)$/g,''))||/^[\d.]*\*?x$|^[\d.*+\-\/x]*$/.test(a)&&!/x\*x/.test(a);
+const args=s=>[...s.matchAll(/(?:sin|cos|tan|sec|csc|cot|ln|asin|atan|sqrt)\(((?:[^()]|\([^()]*\))*)\)|e\^\(((?:[^()]|\([^()]*\))*)\)|e\^([a-z0-9.]+)/g)].map(m=>m[1]??m[2]??m[3]);
+function top(s,ops){const r=[];let d=0,cur='';for(let i=0;i<s.length;i++){const c=s[i];if(c==='(')d++;if(c===')')d--;if(d===0&&ops.includes(c)&&i>0&&!'^*/(+-'.includes(s[i-1])){r.push([cur,c]);cur='';continue}cur+=c}r.push([cur,'']);return r}
+function detD(s){const t=top(s,'+-');if(t.length>1){const R={poly:0,trig:1,expl:2,inv:3,chain:4,prod:5,quot:6};return t.map(x=>detD(x[0].replace(/^[+-]/,''))).sort((a,b)=>R[b]-R[a])[0]}
+ s=s.replace(/^[+-]/,'');const f=top(s,'*/');const hasX=x=>/x/.test(x.replace(/exp|sec/g,''));
+ const den=f.filter((x,i)=>i>0&&f[i-1][1]==='/').map(x=>x[0]);if(den.some(hasX)&&f.length>1)return'quot';
+ if(f.filter(x=>hasX(x[0])).length>1)return'prod';
+ const a=f.find(x=>hasX(x[0]));if(!a)return'poly';const b=a[0].replace(/^\((.*)\)$/,'$1');
+ if(/asin|atan|asec/.test(b))return'inv';
+ const ar=args(b);if(ar.some(x=>x&&x!=='x'))return'chain';if(/\)\^/.test(b)&&!/^\([^()]*\)\^[\d.]+$/.test(b.replace(/^[\d.*]*/,''))||/\)\^/.test(b)&&!lin(b.match(/^[\d.*]*\((.*)\)\^/)?.[1]||'x'))return'chain';
+ if(/e\^|ln|\^x|exp/.test(b))return'expl';if(/sin|cos|tan|sec|csc|cot/.test(b))return'trig';return'poly'}
+function detI(s,c){
+ const rq=s.match(/sqrt\(([^()]*x\^2[^()]*|\d+-\(.*\)\^2)\)/),tr=/(sin|cos|tan|sec|csc|cot)/;
+ if(/^(asin|atan)\(x\)$/.test(s)||/^ln\(x\)(\^\d)?$/.test(s))return'parts';
+ if(rq){if(/^[\d.*]*x[*\/]\(?sqrt/.test(s))return'sub';if(/sqrt\(\d+-/.test(s)&&/^[\d.*]*1?\/\(?sqrt/.test(s))return'inv';return'strig'}
+ if(/\/\(?(\d+\+x\^2|x\^2\+\d+|\d+\+\(.*\)\^2|\(.*\)\^2\+\d+|e\^\(?2\*?x\)?\+\d+)\)?$/.test(s)&&/^[\d.*]*1?\/|^e\^x\//.test(s))return'inv';
+ const hasT=tr.test(s);
+ if(/\//.test(s)&&!hasT&&!/sqrt|\^\(?\d+\/\d/.test(s)&&!/e\^|\^x/.test(s)){const m=top(s,'/'),num=m[0][0],den=m.slice(1).map(x=>x[0]).join('/');
+  if(/^[\d.*]*1?$/.test(num)&&/^x$|^\(?x[+-]\d+\)?$/.test(den)||/^[\d.*]*1?\/(\(?[\d.*]*x[+-]?\d*\)?|\d*\*?\(\d*\*?x[+-]\d+\))$/.test(s)&&!/x\^|\)\(|\*/.test(den))return'log';
+  try{const N=c(num.replace(/^\((.*)\)$/,'$1')),D=c(den.replace(/^\((.*)\)$/,'$1')),dd=x=>(D(x+1e-6)-D(x-1e-6))/2e-6,r=[.7,1.3,2.1,3.4].map(x=>N(x)/dd(x));if(r.every(v=>isFinite(v)&&Math.abs(v-r[0])<1e-4*(1+Math.abs(r[0]))))return'sub'}catch(_){}
+  return'frac'}
+ if(hasT){const A=args(s);if(A.some(x=>x&&!lin(x)))return'sub';if(/^[\d.*]*(sec\([^)]*\)\^2|csc\([^)]*\)\^2|sec\([^)]*\)\*tan\([^)]*\)|csc\([^)]*\)\*cot\([^)]*\)|tan\([^)]*\)\*sec\([^)]*\)|cot\([^)]*\)\*csc\([^)]*\))$/.test(s))return'trig';
+  if(/e\^/.test(s)&&/(sin|cos)/.test(s))return'parts';if(/x\*?(sin|cos|tan|sec)|(sin|cos)\([^)]*\)\*x/.test(s))return'parts';
+  if(/\)\^\d|\)\*(sin|cos|tan|sec|csc|cot)|\^\d\*|(sin|cos|tan|sec|csc|cot)\([^)]*\)\^/.test(s)||top(s,'*').length>1)return'ptrig';return'trig'}
+ if(/e\^|\d+\^\(?[^)]*x|\^x/.test(s)){const A=args(s).concat([...s.matchAll(/\d+\^\(?([^*\/]*)/g)].map(m=>m[1]));if(A.some(x=>x&&!lin(x.replace(/\)$/,''))))return'sub';if(/^[\d.*]*x(\^\d)?\*/.test(s))return'parts';return'exp'}
+ if(/ln\(/.test(s))return/^[\d.*]*x(\^\d)?\*|\*x(\^\d)?$/.test(s)||/ln\(x\)\^\d/.test(s)?'parts':'sub';
+ if(/sqrt|\^\(?\d+\/\d+|cbrt|\^0\.5/.test(s)){return'rad'}
+ if(/\)\^/.test(s)){const bs=[...s.matchAll(/\(((?:[^()]|\([^()]*\))*)\)\^/g)].map(m=>m[1]);if(bs.some(b=>!/^[\d.*]*x[+-][\d.]+$|^[\d.]+[+-][\d.*]*x$/.test(b)))return'sub'}
+ if(/\)\*\(|\)\(/.test(s))return'sub';
+ return'poly'}
+function detect(e,op,c){let s=norm(e);if(!/x/.test(s.replace(/exp|sec/g,'')))s=s.replace(/\b[tuyzw]\b/g,'x');if(!s)return'poly';try{return op==='deriv'?detD(s):detI(s,c)}catch(_){return'poly'}}
+if(typeof module!=='undefined')module.exports={detect,TL};
+if(typeof document==='undefined')return;
+const q=id=>document.getElementById(id),esc=t=>String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const cmp=s=>window.__nxc?window.__nxc(s):()=>NaN,isD=()=>q('nlCalcOp').value==='deriv';
+function fill(){const sel=q('nlIntType'),keep=sel.value,L=isD()?LD:LI;sel.innerHTML=L.map(k=>`<option value="${k}">${TL[k]}</option>`).join('')+['poly','trig','exp'].filter(k=>!L.includes(k)).map(k=>`<option value="${k}" hidden>${TL[k]}</option>`).join('');sel.value=L.includes(keep)||['poly','trig','exp'].includes(keep)?keep:'auto';if(!sel.value)sel.value='auto';
+ const lb=sel.previousElementSibling;if(lb&&lb.tagName==='LABEL')lb.textContent='Tipo de función o método ('+(isD()?'derivadas':'integrales')+'): automático detecta solo';note()}
+function note(){const n=q('nlTypeNote'),sel=q('nlIntType');if(!n||!sel)return;const e=q('nlInt').value,d=detect(e,q('nlCalcOp').value,cmp),v=sel.value;
+ n.textContent=!e.trim()?'':v==='auto'?'Tipo detectado: '+TL[d]+'.':v===d||(v==='poly'&&d==='poly')?'Coincide con el tipo detectado: '+TL[d]+'.':'Elegiste «'+TL[v]+'», pero la expresión parece «'+TL[d]+'». El solucionador aplica el método que corresponde a la estructura de la función.'}
+const legacy=(v,e)=>['poly','trig','exp'].includes(v)?v:/sin|cos|tan|sec|csc|cot|sen/i.test(e)?'trig':/e\^|exp|ln|\^x|1\/x/i.test(e)?'exp':'poly';
+function deriv(){const e=q('nlInt').value.trim(),r=typeof NXM!=='undefined'&&NXM.solve?NXM.solve('deriva '+e):null;if(!r||!r.t)return false;
+ const P=r.t.replace(/\*\*/g,'').split('\n\n'),st=P.filter(p=>/^Paso/.test(p)),res=P.find(p=>/^Resultado/.test(p))||'';
+ q('nxLabOut').innerHTML=`<section class="nl-integral-screen"><h3>Cálculo diferencial e integral · Derivadas</h3><div class="nl-check"><b>Datos</b><br>Función: f(x) = ${esc(e)}<br>Tipo: ${esc(TL[detect(e,'deriv',cmp)])}<br>Objetivo: encontrar f′(x).</div>${st.map(p=>`<div class="nl-step"><b>${esc(p.split('.')[0])}</b><br>${esc(p.replace(/^Paso \d+\.\s*/,''))}</div>`).join('')}<div class="nl-answer"><b>Resultado final</b><br>${esc(res.replace(/^Resultado:\s*/,''))}</div></section>`;const x=q('nxLabExplain');if(x)x.textContent='';return true}
+function inject(){const sel=q('nlIntType');if(!sel||q('nlTypeNote'))return;sel.insertAdjacentHTML('afterend','<div id="nlTypeNote" class="nl-small"></div>');sel.value='x';fill();
+ q('nlCalcOp').addEventListener('change',fill);sel.addEventListener('change',note);q('nlInt').addEventListener('input',note);q('nlCalcOp').addEventListener('change',note)}
+document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('#nlRun'),sel=q('nlIntType');if(!b||!sel||!q('nlCalcOp'))return;note();const o=sel.value,e0=q('nlInt').value;
+ if(isD()&&deriv()){e.preventDefault();e.stopImmediatePropagation();return}
+ const lw=q('nlLower'),up=q('nlUpper'),L0=lw.value,U0=up.value,nz=v=>{v=v.trim();if(!v||/^-?(\d+\.?\d*|\.\d+|pi|inf)$/i.test(v))return v;try{const n=window.__nxc(v)(0);return isFinite(n)?String(n):v}catch(_){return v}};
+ lw.value=nz(L0);up.value=nz(U0);sel.value=legacy(o,e0);setTimeout(()=>{sel.value=o;lw.value=L0;up.value=U0;note()},80)},true);
+const ctl=q('nxLabControls');if(ctl)new MutationObserver(inject).observe(ctl,{childList:true,subtree:true});inject();
+})();
+</script>
+<script>
+/* NORYX · OCR local especializado en expresiones de cálculo; sin Pollinations */
+(()=>{
+ const q=id=>document.getElementById(id);
+ if(typeof document==='undefined')return;
+ const oldAnalyze= q('nlIntegralAnalyze');
+ if(!oldAnalyze)return;
+ // La lectura se realiza únicamente con el OCR local integrado; no se envían imágenes a servicios de IA.
+ const note=q('nlIntegralPreview');
+ if(note){const p=note.parentElement&&note.parentElement.querySelector('p.nl-small');if(p)p.textContent='Lectura local: NORYX mejora el contraste, busca exponentes y operadores en varias pasadas y muestra la transcripción para revisarla antes de resolver.';}
+})();
+</script>
+
+<script>
+/* NORYX: teclado matemático local para Cálculo diferencial e integral */
+(function(){
+ const root=document.getElementById('nxLab');
+ if(!root)return;
+ root.addEventListener('click',function(ev){
+  const key=ev.target.closest('button[data-insert]');
+  if(!key||!root.contains(key))return;
+  const input=document.getElementById('nlInt');
+  if(!input)return;
+  const token=key.getAttribute('data-insert')||'';
+  const a=Number.isInteger(input.selectionStart)?input.selectionStart:input.value.length;
+  const b=Number.isInteger(input.selectionEnd)?input.selectionEnd:a;
+  const marker=token.indexOf('|'),clean=token.replace('|','');
+  input.value=input.value.slice(0,a)+clean+input.value.slice(b);
+  const cursor=a+(marker<0?clean.length:marker);
+  input.focus();input.setSelectionRange(cursor,cursor);
+  input.dispatchEvent(new Event('input',{bubbles:true}));
+ });
+})();
+</script>
+
+<script>
+(function(){function toggleForceFields(){const sel=document.getElementById('nlPhys'),box=document.getElementById('nlForceFields');if(sel&&box)box.style.display=sel.value==='forces'?'block':'none';}document.addEventListener('change',function(e){if(e.target&&e.target.id==='nlPhys')toggleForceFields();});document.addEventListener('click',function(e){if(e.target&&e.target.id==='nlRun')setTimeout(toggleForceFields,0);});document.addEventListener('DOMContentLoaded',toggleForceFields);setTimeout(toggleForceFields,500);})();
+</script>
 </body>
 </html>
+
