@@ -802,6 +802,51 @@ html,body{overscroll-behavior:none}#feed{overscroll-behavior:contain}
  </div>
 </div></div>
 <input type="file" id="bkf" accept="application/json,.json" hidden>
+<style id="nx-ui2">
+/* ===== Noryx · pulido de interfaz v2 (solo estilo; no cambia la lógica) ===== */
+::selection{background:color-mix(in srgb,var(--acc) 35%,transparent)}
+*{scrollbar-width:thin;scrollbar-color:color-mix(in srgb,var(--mute) 45%,transparent) transparent}
+::-webkit-scrollbar{width:9px;height:9px}::-webkit-scrollbar-thumb{background:color-mix(in srgb,var(--mute) 40%,transparent);border-radius:9px;border:2px solid transparent;background-clip:padding-box}::-webkit-scrollbar-thumb:hover{background-color:color-mix(in srgb,var(--acc) 60%,transparent)}
+/* barra superior translúcida */
+header{position:relative;z-index:2;background:color-mix(in srgb,var(--bg) 82%,transparent);backdrop-filter:blur(10px) saturate(1.2);-webkit-backdrop-filter:blur(10px) saturate(1.2)}
+#chip{transition:border-color .2s,color .2s}#chip:hover{border-color:var(--acc);color:var(--ink)}
+/* barra lateral */
+.brand{background:linear-gradient(90deg,var(--ink),color-mix(in srgb,var(--acc) 70%,var(--ink)));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent}
+.brand i{-webkit-text-fill-color:initial;animation:nxbrand 3.2s ease-in-out infinite}
+@keyframes nxbrand{50%{box-shadow:0 0 20px var(--acc),0 0 4px var(--acc);transform:scale(1.15)}}
+#new{transition:transform .15s,border-color .2s,background .2s;background:color-mix(in srgb,var(--acc) 6%,transparent)}#new:hover{border-color:var(--acc);transform:translateY(-1px)}#new:active{transform:none}
+.ci{position:relative;transition:background .18s,color .18s}
+.ci.on::before{content:"";position:absolute;left:0;top:22%;bottom:22%;width:3px;border-radius:3px;background:var(--acc);box-shadow:0 0 8px var(--acc)}
+.foot button{transition:color .15s,border-color .15s,background .15s,transform .15s}.foot button:hover{background:color-mix(in srgb,var(--acc) 8%,transparent);transform:translateY(-1px)}
+/* mensajes */
+@keyframes nxin{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.msg{animation:nxin .28s cubic-bezier(.2,.7,.2,1) both}
+.msg.u .body{background:linear-gradient(135deg,color-mix(in srgb,var(--u) 100%,var(--acc) 0%),color-mix(in srgb,var(--u) 82%,var(--acc) 18%));border:1px solid color-mix(in srgb,var(--acc) 22%,transparent);box-shadow:0 2px 10px color-mix(in srgb,var(--acc) 10%,transparent);line-height:1.55}
+.msg.a .av{animation:nxav 4.5s ease-in-out infinite}
+@keyframes nxav{50%{box-shadow:0 0 22px color-mix(in srgb,var(--acc) 85%,transparent);transform:scale(1.07)}}
+.msg.a .body p{margin:.35em 0}
+.msg .meta{opacity:.55;transition:opacity .2s}.msg:hover .meta{opacity:1}
+.body pre{border-radius:14px;box-shadow:inset 0 1px 0 color-mix(in srgb,var(--ink) 6%,transparent)}
+.cp{opacity:0;transition:opacity .15s}.body pre:hover .cp,.cp:focus-visible{opacity:1}
+.body blockquote{margin:8px 0;padding:4px 14px;border-left:3px solid var(--acc);color:var(--mute);background:color-mix(in srgb,var(--acc) 5%,transparent);border-radius:0 10px 10px 0}
+.body table{border-collapse:collapse;margin:8px 0;max-width:100%;display:block;overflow-x:auto}.body th,.body td{border:1px solid var(--line);padding:5px 11px}.body th{background:color-mix(in srgb,var(--acc) 8%,transparent)}
+/* inicio */
+.hero h1{background:linear-gradient(100deg,var(--ink) 20%,var(--acc) 60%,var(--acc2) 100%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;filter:drop-shadow(0 4px 22px color-mix(in srgb,var(--acc) 22%,transparent))}
+.chips button{transition:transform .16s,border-color .2s,background .2s,box-shadow .2s}.chips button:hover{transform:translateY(-2px);box-shadow:0 6px 18px color-mix(in srgb,var(--acc) 14%,transparent)}.chips button:active{transform:none}
+.nx-hi-chip{border-color:color-mix(in srgb,var(--acc) 55%,var(--line))!important;background:color-mix(in srgb,var(--acc) 9%,transparent)!important}
+/* caja de escritura */
+.box{transition:border-color .2s,box-shadow .25s,background .2s;box-shadow:0 2px 14px color-mix(in srgb,var(--ink) 6%,transparent)}
+.box:focus-within{box-shadow:0 0 0 3px color-mix(in srgb,var(--acc) 18%,transparent),0 6px 26px color-mix(in srgb,var(--acc) 14%,transparent)}
+.ib{transition:background .15s,color .15s,transform .15s}.ib:hover:not(.on){background:color-mix(in srgb,var(--acc) 12%,transparent);color:var(--ink)}
+#go{transition:transform .15s,opacity .2s,box-shadow .2s}#go:hover:not(:disabled){transform:scale(1.07);box-shadow:0 0 16px color-mix(in srgb,var(--acc) 55%,transparent)}#go:active{transform:scale(.94)}
+#sdn{transition:transform .15s,border-color .2s,box-shadow .2s;box-shadow:0 4px 14px #0003}
+/* aviso emergente */
+#toast{transform:translate(-50%,12px);transition:opacity .25s,transform .25s;box-shadow:0 8px 28px #0004;backdrop-filter:blur(6px)}#toast.on{transform:translate(-50%,0)}
+/* indicador «Noryx escribe» más suave */
+.dots span{opacity:.85}
+@media (max-width:760px){.msg{padding:8px 14px;gap:10px}.msg.u .body{max-width:88%}.hero{padding-top:2vh}}
+@media (prefers-reduced-motion:reduce){.msg,.msg.a .av,.brand i{animation:none!important}}
+</style>
 <div id="toast"></div>
 <script>
 const $=s=>document.querySelector(s),sleep=ms=>new Promise(r=>setTimeout(r,ms));
@@ -1893,7 +1938,9 @@ const ints=Object.keys(DATA),ex=[],vocab={};let V=0;
 ints.forEach((k,c)=>DATA[k].split('|').forEach(p=>{const t=toks(p);t.forEach(w=>{if(!(w in vocab))vocab[w]=V++});ex.push([t.map(w=>vocab[w]),c])}));
 let NR=false;const NB=65536,D=256,H=448,C=ints.length,PARAMS=NB*D+D*H+H+H*C+C,PMS=(PARAMS/1e6).toFixed(2);let ACC=95;let sd=7;const rnd=()=>(sd=(sd*16807)%2147483647)/2147483647-.5;
 function paintNote(){const e=$('#nxnote');if(e)e.textContent='Noryx piensa en tu navegador con su propia red neuronal ('+PMS+' M parámetros · '+C+' temas'+(NR?' · '+ACC+' % de acierto':'')+'). Aprende de ti con «aprende: pregunta = respuesta».';const a=$('#nxabout');if(a)a.textContent='Piensa en tu navegador con su propia red neuronal de '+PMS+' millones de parámetros y '+C+' temas, y aprende de ti.'}paintNote();
-const vcw=Object.keys(vocab),E1=Float32Array.from({length:NB*D},()=>rnd()*2),Wa=Float32Array.from({length:D*H},()=>rnd()*.3),ba=new Float32Array(H),Wb=Float32Array.from({length:H*C},()=>rnd()*.3),bb=new Float32Array(C);
+const vcw=Object.keys(vocab),E1=new Float32Array(NB*D),Wa=new Float32Array(D*H),ba=new Float32Array(H),Wb=new Float32Array(H*C),bb=new Float32Array(C);
+/* relleno aleatorio inicial (solo se usa en el modo de respaldo sin Worker; el Worker hace el suyo) */
+function nxInitRand(){sd=7;for(let i=0;i<E1.length;i++)E1[i]=rnd()*2;for(let i=0;i<Wa.length;i++)Wa[i]=rnd()*.3;for(let i=0;i<Wb.length;i++)Wb[i]=rnd()*.3}
 const hs=s=>{let h=2166136261;for(let i=0;i<s.length;i++)h=Math.imul(h^s.charCodeAt(i),16777619);return(h>>>0)%NB};
 const feats=w=>{const f=w.map(hs);for(let i=1;i<w.length;i++)f.push(hs(w[i-1]+'_'+w[i]));return f};
 /* red de ~17 M de parámetros: embeddings hash (palabras+bigramas) 8192x120 -> capa oculta 256 (tanh) -> softmax de temas */
@@ -1913,15 +1960,55 @@ const arg=o=>o.indexOf(Math.max(...o));
 const FIL=[['oye'],['por','favor'],['me','puedes','explicar'],['quiero','saber','de'],['y','que','onda','con'],['dime','algo','de'],['una','pregunta','sobre'],['hola','noryx'],['necesito','saber','sobre'],['cuentame','todo','de']],FX=ints.map(k=>/^(x_|y_|z)/.test(k));
 const EP=14,DD=new Set(),exw=ex.map(([ix,y])=>[ix.map(i=>vcw[i]),y]).filter(r=>{const k=r[1]+':'+r[0].join(' ');if(DD.has(k))return false;DD.add(k);return true});
 const SIG=[NB,D,H,C,vcw.length,ints.join('').length].join('.'),idb=(m,k,v)=>new Promise(r=>{try{const q=indexedDB.open('nx-net',1);q.onupgradeneeded=()=>q.result.createObjectStore('w');q.onerror=()=>r(null);q.onsuccess=()=>{const st=q.result.transaction('w',m=='get'?'readonly':'readwrite').objectStore('w'),x=m=='get'?st.get(k):st.put(v,k);x.onsuccess=()=>r(x.result||null);x.onerror=()=>r(null)}}catch(e){r(null)}});
-const ready=(async()=>{const o=await idb('get','w'),ok=!!(o&&o.sig==SIG);
- if(ok){E1.set(o.E1);Wa.set(o.Wa);ba.set(o.ba);Wb.set(o.Wb);bb.set(o.bb)}
- else{const ev=()=>{const n=Math.min(300,exw.length);let h=0;for(let i=0;i<n;i++){const[w,y]=exw[(i*7919)%exw.length];if(arg(fwd(feats(w))[2])==y)h++}return h/n};let good=0;
+/* ---- Entrenamiento / carga de la red en un Web Worker: la interfaz nunca se traba ----
+   El Worker carga los pesos guardados (IndexedDB) o entrena desde cero, calcula el acierto y devuelve los pesos.
+   El hilo principal solo los copia por pedacitos. Si el navegador no permite Workers, entrena aquí mismo en rebanadas de 8 ms. */
+function nxWorkerMain(){
+ let sd=7;const rnd=()=>(sd=(sd*16807)%2147483647)/2147483647-.5;
+ onmessage=async ev=>{try{const{exw,FIL,FX,SIG}=ev.data;let acc=null;
+  const o=await idb('get','w');
+  if(o&&o.sig==SIG){E1.set(o.E1);Wa.set(o.Wa);ba.set(o.ba);Wb.set(o.Wb);bb.set(o.bb);if(typeof o.acc=='number')acc=o.acc}
+  else{
+   for(let i=0;i<E1.length;i++)E1[i]=rnd()*2;for(let i=0;i<Wa.length;i++)Wa[i]=rnd()*.3;for(let i=0;i<Wb.length;i++)Wb[i]=rnd()*.3;
+   const evl=()=>{const n=Math.min(300,exw.length);let h=0;for(let i=0;i<n;i++){const[w,y]=exw[(i*7919)%exw.length];if(arg(fwd(feats(w))[2])==y)h++}return h/n};let good=0,lastP=0;
+   for(let e=0;e<EP;e++){const lr=.15*Math.pow(.93,e)+.03;exw.sort(()=>rnd());let k=0;
+    for(const[w0,y]of exw){let w=w0;if(e>3&&w0.length>2){w=w0.filter(()=>rnd()>-.38);if(!w.length)w=w0}if(e>1&&FX[y]&&rnd()>-.35){const f=FIL[Math.floor((rnd()+.5)*FIL.length)%FIL.length];w=rnd()>-.2?f.concat(w):w.concat(['por','favor'])}step(feats(w),y,lr);
+     if((++k&255)==0){const t=Date.now();if(t-lastP>250){lastP=t;postMessage({p:Math.round((e+k/exw.length)/EP*100)})}}}
+    good=evl()>=.96?good+1:0;if(good>=1)break}}
+  if(acc==null){let h=0;for(const[w,y]of exw)if(arg(fwd(feats(w))[2])==y)h++;acc=Math.round(100*h/exw.length);
+   try{await idb('put','w',{sig:SIG,E1,Wa,ba,Wb,bb,acc})}catch(e){}}
+  postMessage({E1,Wa,ba,Wb,bb,acc},[E1.buffer,Wa.buffer,ba.buffer,Wb.buffer,bb.buffer])
+ }catch(err){postMessage({err:String(err&&err.message||err)})}}}
+function nxWorkerSrc(){return'const NB='+NB+',D='+D+',H='+H+',C='+C+',EP='+EP+';\n'+
+ 'const E1=new Float32Array(NB*D),Wa=new Float32Array(D*H),ba=new Float32Array(H),Wb=new Float32Array(H*C),bb=new Float32Array(C);\n'+
+ 'const hs='+hs.toString()+';\nconst feats='+feats.toString()+';\nconst arg='+arg.toString()+';\nconst idb='+idb.toString()+';\n'+
+ fwd.toString()+'\n'+step.toString()+'\n('+nxWorkerMain.toString()+')();'}
+const nxYield=()=>new Promise(r=>setTimeout(r,0));
+async function nxCopyIn(dst,src){const S=1<<19;for(let i=0;i<src.length;i+=S){dst.set(src.subarray(i,Math.min(i+S,src.length)),i);if(src.length>S)await nxYield()}}
+async function nxTrainHere(){ /* respaldo: entrenar en el hilo principal, pero en rebanadas de 8 ms para que la interfaz siga fluida */
+ const o=await idb('get','w'),ok=!!(o&&o.sig==SIG);
+ if(ok){E1.set(o.E1);Wa.set(o.Wa);ba.set(o.ba);Wb.set(o.Wb);bb.set(o.bb);if(typeof o.acc=='number')return o.acc}
+ else{nxInitRand();await nxYield();
+  const ev=()=>{const n=Math.min(300,exw.length);let h=0;for(let i=0;i<n;i++){const[w,y]=exw[(i*7919)%exw.length];if(arg(fwd(feats(w))[2])==y)h++}return h/n};let good=0;
   for(let e=0;e<EP;e++){const lr=.15*Math.pow(.93,e)+.03;exw.sort(()=>rnd());let tl=performance.now();
    for(const[w0,y]of exw){let w=w0;if(e>3&&w0.length>2){w=w0.filter(()=>rnd()>-.38);if(!w.length)w=w0}if(e>1&&FX[y]&&rnd()>-.35){const f=FIL[Math.floor((rnd()+.5)*FIL.length)%FIL.length];w=rnd()>-.2?f.concat(w):w.concat(['por','favor'])}step(feats(w),y,lr);
-    if(performance.now()-tl>25){$('#cs').textContent='aprendiendo '+Math.round((e+1)/EP*100)+' %';await sleep(0);tl=performance.now()}}
-   good=ev()>=.96?good+1:0;if(good>=1)break}
-  idb('put','w',{sig:SIG,E1,Wa,ba,Wb,bb})}
- NR=true;ACC=Math.round(100*exw.filter(([w,y])=>arg(fwd(feats(w))[2])==y).length/exw.length);$('#cs').textContent=(PARAMS/1e6).toFixed(2)+' M parámetros · '+C+' temas · '+ACC+' %';paintNote()})();
+    if(performance.now()-tl>8){$('#cs').textContent='aprendiendo '+Math.round((e+1)/EP*100)+' %';await nxYield();tl=performance.now()}}
+   good=ev()>=.96?good+1:0;if(good>=1)break}}
+ let h=0,t=performance.now();for(const[w,y]of exw){if(arg(fwd(feats(w))[2])==y)h++;if(performance.now()-t>8){await nxYield();t=performance.now()}}
+ const acc=Math.round(100*h/exw.length);if(!ok)idb('put','w',{sig:SIG,E1,Wa,ba,Wb,bb,acc});return acc}
+const ready=(async()=>{let acc=null;
+ try{
+  if(typeof Worker=='undefined'||typeof Blob=='undefined')throw new Error('sin Worker');
+  const url=URL.createObjectURL(new Blob([nxWorkerSrc()],{type:'text/javascript'})),w=new Worker(url);
+  acc=await new Promise((res,rej)=>{
+   w.onmessage=async ev=>{const d=ev.data;if(d.p!=null){$('#cs').textContent='aprendiendo '+d.p+' %';return}
+    if(d.err){rej(new Error(d.err));return}
+    try{$('#cs').textContent='cargando red…';await nxCopyIn(E1,d.E1);Wa.set(d.Wa);ba.set(d.ba);Wb.set(d.Wb);bb.set(d.bb);res(d.acc)}catch(e){rej(e)}};
+   w.onerror=ev=>rej(new Error(ev&&ev.message||'error en Worker'));
+   w.postMessage({exw,FIL,FX,SIG})});
+  w.terminate();URL.revokeObjectURL(url)
+ }catch(err){try{console.warn('Noryx: entrenamiento en segundo plano no disponible, uso el modo de respaldo',err)}catch(e){}acc=await nxTrainHere()}
+ NR=true;ACC=typeof acc=='number'?acc:95;$('#cs').textContent=(PARAMS/1e6).toFixed(2)+' M parámetros · '+C+' temas · '+ACC+' %';paintNote()})();
 const vk=Object.keys(vocab);
 function lev(a,b,m){if(Math.abs(a.length-b.length)>m)return m+1;let p=Array.from({length:b.length+1},(_,i)=>i);for(let i=1;i<=a.length;i++){const c=[i];for(let j=1;j<=b.length;j++)c[j]=Math.min(p[j]+1,c[j-1]+1,p[j-1]+(a[i-1]==b[j-1]?0:1));p=c}return p[b.length]}
 function fixTy(w){if(w in vocab||w.length<5||/\d/.test(w))return w;const m=w.length>=8?2:1;let r=null,bd=m+1;for(const v of vk){const d=lev(w,v,m);if(d<bd){bd=d;r=v}}return r||w}
@@ -3024,11 +3111,99 @@ function nxTalk(t){
  if(st){const r=cvState(st,t,n);if(r)return r}
  return cvFree(t,n)}
 
+/* ============ Saludos flexibles (v1) ============
+   Reconoce muchas formas de saludar: «holaa», «holiii», «wenas», «buenas», «hola estrellita», «hola noryx»,
+   «qué onda», «hey, ¿cómo estás?», «hello», «bonjour»… aunque tengan letras repetidas, apodos cariñosos o un
+   pequeño error de dedo. Solo responde si TODO el mensaje es saludo/apodo; si trae una pregunta, deja que
+   el resto del núcleo la conteste.
+   PARA AGREGAR MÁS: añade palabras a GR_HELLO (saludos), GR_HOW (¿cómo estás?) o GR_ADDR (apodos con los que te llaman). */
+const grC=s=>s.replace(/(.)\1+/g,'$1');            /* hoooola → hola (se compara todo ya «colapsado») */
+const GR_HELLO={
+ es:'hola|ola|holi|holis|holip|holap|holiwis|holiwi|holaa|holas|hla|wola|wenas|wuenas|buenas|buenass|buenas buenas|saludos|salu|saludines|ey|ei|hey|oie|que onda|que ondas|que onda wey|quiubo|quihubo|que hubo|que hay|que pasa|que paso|que rollo|que tranza|que tal|que cuentas|que me cuentas|que se cuenta|que hay de nuevo|epa|aloha|ahoy|buen dia|buenos dias|buenas tardes|buenas noches|buenas madrugadas|muy buenas|hoal|hol|hoa|jola|hpla|hllo|hlo',
+ en:'hello|helo|hi|hii|hey|heyy|heya|hiya|howdy|sup|wassup|whats up|whatsup|good morning|good afternoon|good evening|morning|evening|greetings|hey there|hi there|hello there',
+ fr:'bonjour|bonsoir|salut|coucou',
+ it:'ciao|buongiorno|buonasera|salve',
+ pt:'oi|oie|ola|bom dia|boa tarde|boa noite|e ai',
+ de:'hallo|guten tag|guten morgen|servus|moin',
+ ja:'konnichiwa|konichiwa|ohayo|konbanwa',
+ zh:'ni hao|nihao',
+ ar:'salam|salaam|marhaba'};
+const GR_HOW='como estas|como estas tu|como estas hoy|como andas|como andas hoy|como te va|como te va hoy|como vas|como has estado|como te encuentras|como te sientes|como amaneciste|como amanecio|como te trata la vida|que tal estas|que tal todo|que tal tu dia|como va todo|como esta todo|como va tu dia|todo bien|todo bien por ahi|como estamos|how are you|how are you doing|how r u|how are u|hru|how you doing|how is it going|hows it going|how do you do|whats good|comment ca va|como esta|como esta usted|como esta tu dia';
+const GR_ADDR='noryx|norix|noriks|norys|nory|norix|norick|noryxita|noryxito|noryxcita|noryxcito|mi noryx|estrellita|estrellitas|estrellota|estrellica|estrellis|estrella|estrellitaa|mi estrellita|mi estrella|amiga|amigui|amiguita|amix|amigo|mi amiga|mi amigo|bebe|bb|bebita|bebecita|mi bebe|mi vida|mi amor|amor|cielo|mi cielo|corazon|mi corazon|corazoncito|preciosa|hermosa|linda|lindura|bonita|guapa|reina|jefa|jefe|querida|cariño|carino|tesoro|cosita|princesa|campeona|crack|bro|bruh|wey|we|compa|compita|hermana|hermano|colega|ia|asistente|robot|robotita|maquina|genia|inteligencia artificial|friend|buddy|dear|honey|babe|star|starlight|pal|mate|sweetie|sweetheart|amiga mia|chula|chulis|chiquita|nena|mija|mijo|mamacita|jarvis|bot|sistema';
+const GR_FILL='oye|oiga|oigan|mira|pues|entonces|bueno|osea|o sea|eh|este|ah|ahh|ahi|hay|a|que|y|mi|muy|un|saludo|saludito|solo|nomas|vengo|venia|a saludar|a saludarte|saludarte|saludar|quiero|queria|te|decir|decirte|dar|las|los|el|la|todos|todas|de|parte|mia|para|ti|tambien|igual|a todos|a todas|por|aqui|aca|hoy|ahorita|por fin|otra|vez|again|just|came|say|to|you|so|well|oh|um';
+const GRK=(s)=>s.split('|').map(x=>grC(x)).sort((a,b)=>b.length-a.length);
+const GRH=Object.fromEntries(Object.entries(GR_HELLO).map(([l,s])=>[l,GRK(s)])),GRHOW=GRK(GR_HOW),GRADDR=GRK(GR_ADDR),GRFILL=GRK(GR_FILL);
+function grLev(a,b){if(Math.abs(a.length-b.length)>1)return 2;let p=Array.from({length:b.length+1},(_,i)=>i);for(let i=1;i<=a.length;i++){const c=[i];for(let j=1;j<=b.length;j++)c[j]=Math.min(p[j]+1,c[j-1]+1,p[j-1]+(a[i-1]==b[j-1]?0:1));p=c}return p[b.length]}
+const GR_NAME=/^(noryx|norix|noriks|norys|nory|norick|noryxit|noryxcit|mi noryx|estrel|mi estrel|jarvis|ia|asistente|robot|bot|inteligencia artificial)/;
+const GRFUZ=['noryx','estrellita','estrella'].map(grC);
+/* quita al inicio de «s» la frase más larga de la lista; devuelve el resto o null */
+function grEat(s,list){for(const k of list){if(s===k)return{r:'',k};if(s.startsWith(k+' '))return{r:s.slice(k.length+1),k}}return null}
+function grParse(raw){
+ let n=norm(String(raw||'').replace(/&/g,' y ')).replace(/\b(q|k)\b/g,'que').replace(/\bx\b/g,'por').replace(/\s+/g,' ').trim();
+ if(!n||n.split(' ').length>12)return null;
+ let s=grC(n),hello=null,how=false,addr=[],fill=0,safe=40;
+ while(s&&safe--){
+  let m=null,lang;
+  for(const l in GRH){const e=grEat(s,GRH[l]);if(e&&(!m||e.k.length>m.k.length)){m=e;lang=l}}
+  if(m){if(!hello)hello={lang,k:m.k};s=m.r;continue}
+  m=grEat(s,GRHOW);if(m){how=true;s=m.r;continue}
+  m=grEat(s,GRADDR);if(m){addr.push(m.k);s=m.r;continue}
+  m=grEat(s,GRFILL);if(m){fill++;s=m.r;continue}
+  /* error de dedo en el apodo (norys, estrelita, estrella…) */
+  const w=s.split(' ')[0];
+  if(w.length>=5){const f=GRFUZ.find(x=>grLev(w,x)<=1);if(f){addr.push(f);s=s.slice(w.length).trim();continue}}
+  return null}
+ if(!hello&&!addr.length)return null;
+ if(!hello&&!how&&!addr.some(a=>GR_NAME.test(a)))return null;   /* solo «apodos»: debe ser un nombre de Noryx (noryx, estrellita, ia…), no «amor» o «linda» */
+ /* una sola palabra suelta como «ola» o «hey» sí cuenta; frases de puro relleno no */
+ return{hello,how,addr,n,raw:String(raw)}}
+const GR_DAYPART=()=>{const h=new Date().getHours();return h<5?'noche':h<12?'dia':h<19?'tarde':'noche'};
+function nxGreet(t){
+ if(!t||t.length>120)return null;
+ const g=grParse(t);if(!g)return null;
+ const hr=new Date().getHours(),pa=lastA(),nick=g.addr.find(a=>/estrel|bebe|bb|vida|amor|cielo|corazon|preciosa|hermosa|linda|bonita|guapa|reina|tesoro|princesa|cosita|chula|nena|querida|carino|star|honey|babe|dear|sweet/.test(a));
+ const nickD=nick?(g.n.match(new RegExp('\\b'+nick.replace(/ /g,' ').split('').map(c=>c==' '?' ':c+'+').join('')+'\\b'))||[nick])[0].replace(/^mi /,'').replace(/(.)\1{2,}/g,'$1'):'';
+ const stretch=(()=>{const m=g.raw.toLowerCase().match(/(hol+a+|holi+|wena+s|buena+s|hey+|hello+|hi+i+)/);if(!m)return 0;const x=m[0].match(/(.)\1{1,}/g);return x?Math.min(4,Math.max(...x.map(z=>z.length))):0})();
+ const excl=/!{2,}/.test(t)?'!!':'!';
+ let out;
+ if(!g.hello){ /* solo lo llamaron: «noryx», «oye estrellita», «mi estrellita» */
+  out=pick(['Dime{n}, aquí estoy ✨','Aquí estoy{n} 👋 ¿Qué necesitas?','¿Sí? Te escucho{n} 😊','Presente{n} ✨ ¿En qué te ayudo?'])
+  if(nick)out=pick(['¡Aquí estoy{n}! ✨ Así me puedes llamar cuando quieras.','Dime{n} ✨ Me gusta que me llames así.','Presente{n} 🌟 ¿Qué se te ofrece?'])
+ }else{
+  const L=g.hello.lang,k=g.hello.k,_=0;
+  const dp=GR_DAYPART();
+  const ES_GEN=['¡Hola{n}! 😊 ¿Cómo vas?','¡Hey{n}! ¿Qué se cuenta?','¡Buenas{n}! Qué gusto verte por aquí.','¡Holi{n}! ✨ Aquí Noryx, ¿qué tal?','¡Hey{n}! ✨ Aquí Noryx, listo para platicar.'];
+  if(L=='en')out=pick(['Hello{n}! 😊 I\'m Noryx. How\'s it going?','Hey{n}! Noryx here. What\'s up?','Hi{n}! Good to see you. What can I do for you?']);
+  else if(L=='fr')out=pick(['Bonjour{n} ! 😊 Je comprends un peu le français, mais je suis meilleur en español. ¿Qué te cuento?','Salut{n} ! ✨ ¿En qué te ayudo?']);
+  else if(L=='it')out=pick(['Ciao{n}! 😊 ¿Cómo estás? Puedo seguir en español o en inglés.','Ciao{n}! ✨ Noryx a tu servicio.']);
+  else if(L=='pt')out=pick(['Oi{n}! 😊 Entendo um pouquinho de português, mas respondo melhor en español. ¿Qué necesitas?','Olá{n}! ✨ ¿En qué te ayudo?']);
+  else if(L=='de')out=pick(['Hallo{n}! 😊 Mi alemán es básico, pero con gusto platico en español. ¿Qué necesitas?']);
+  else if(L=='ja')out=pick(['¡Konnichiwa{n}! 🌸 Mi japonés es básico, pero aquí estoy. ¿Qué necesitas?']);
+  else if(L=='zh')out=pick(['¡Nǐ hǎo{n}! 🌸 Sé decir hola en chino, y lo demás en español. ¿Qué necesitas?']);
+  else if(L=='ar')out=pick(['¡Marhaba{n}! 🌙 Salam, amigo. ¿En qué te ayudo?']);
+  else if(/dia/.test(k))out=hr>=19?pick(['¡Buenos días{n}! Bueno, ya es de noche, pero me gusta tu energía 😄 ¿Qué cuentas?','Buenos días a esta hora… ¡me encanta! 🌙 ¿Qué se te ofrece{n}?']):pick(['¡Buenos días{n}! ☀️ ¿Cómo amaneciste?','¡Buen día{n}! ☀️ Que sea un día genial. ¿En qué te ayudo?','¡Buenos días{n}! Aquí Noryx, con las neuronas despiertas 😄']);
+  else if(/tarde/.test(k))out=pick(['¡Buenas tardes{n}! 🌤️ ¿Cómo va tu día?','¡Buenas tardes{n}! Qué gusto verte. ¿Qué platicamos?','¡Muy buenas tardes{n}! ✨ ¿En qué te ayudo?']);
+  else if(/noche|madrug/.test(k))out=pick(['¡Buenas noches{n}! 🌙 Si te vas a dormir, descansa; y si no, aquí sigo para platicar.','¡Buenas noches{n}! ✨ ¿Cómo estuvo tu día?','¡Muy buenas noches{n}! 🌙 ¿En qué te ayudo?']);
+  else if(/onda|quiubo|quihubo|hubo|pasa|paso|rollo|tranza|hay|cuentas|cuenta/.test(k))out=pick(['¡Qué onda{n}! Por aquí todo tranqui 😄 ¿Y tú, qué cuentas?','¡Quihubo{n}! Aquí andamos, con ganas de platicar. ¿Y tú?','Todo bien por acá{n} 😊 ¿Qué me cuentas?']);
+  else if(/tal/.test(k))out=pick(['¡Hola{n}! 😊 Todo bien por aquí. ¿Y tú qué tal?','¡Hey{n}! Muy bien, gracias por preguntar. ¿Y tú?']);
+  else if(/wenas|buenas/.test(k))out=pick(['¡Buenas{n}! 😊 ¿Qué se cuenta?','¡Wenas{n}! ✨ Aquí Noryx, ¿qué necesitas?','¡Muy buenas{n}! Qué gusto saludarte.']);
+  else if(/salud/.test(k))out=pick(['¡Saludos{n}! 🤝 ¿Cómo andas?','¡Saludos{n}! Un gusto platicar contigo. ¿En qué te ayudo?']);
+  else if(/^(hola|holi|holis|holip|holap|holiwi|holiwis|ola|wola|hoal|hla|hol|hoa|jola|hpla|hllo|hlo|holas)$/.test(k)||/^hol/.test(k)){
+   let w=/^holi|^holip|^holiw/.test(k)?'Holi':'Hola';if(stretch>1)w=w.slice(0,-1)+w.slice(-1).repeat(stretch);
+   out='¡'+w+'{n}! '+pick(['😊 ¿Cómo vas?','✨ Aquí Noryx, ¿qué tal?','¿Qué se cuenta?','Qué gusto verte por aquí.','👋 ¿En qué te ayudo hoy?'])}
+  else out=pick(ES_GEN);
+  if(nick&&!mem.name)out=out.replace('{n}',', '+nickD);
+  if(nick&&/estrel|star/.test(nick)&&L=='es'&&Math.random()<.6){const ap=nickD;out+=' '+pick(['Y qué bonito que me llames «'+ap+'» ✨','Me encanta que me digas «'+ap+'» 🌟','Me quedo con ese apodo, «'+ap+'» ✨'])}
+ }
+ if(g.how){out=out.replace(/\s*¿[^?]*\?\s*$/,'').replace(/\s*What can I do for you\?\s*$/,'');
+  out+=(/^[a-z ]*(how|hru)/.test(g.n)||g.hello&&g.hello.lang=='en'?' I\'m doing great, thanks for asking! And you?':' '+pick(['Yo muy bien, gracias por preguntar 😊 ¿Y tú cómo andas?','Funcionando a plena neurona 😄 ¿Y tú cómo vas?','Todo tranquilo por aquí, gracias. ¿Y tú qué tal estás?']))}
+ return{t:fxn(out.replace(/\s+/g,' ').trim()),m:'Saludo'}}
+
 function nxPre(t){
  if(ctx.pend)return null;
  if(/^\s*(\/|aprende|learn|ensena|teach)/i.test(t))return null;
  if(hasTaughtQ(t))return null;
- return nxCreator(t)||nxCode(t)||nxTalk(t)||nxChat(t)}
+ return nxGreet(t)||nxCreator(t)||nxCode(t)||nxTalk(t)||nxChat(t)}
 
 const LAWART={"1": ["Derechos humanos y garantías", "Todas las personas gozan de los derechos humanos reconocidos en la Constitución y en los tratados; se interpretan favoreciendo la protección más amplia (pro persona). Prohíbe la esclavitud y toda discriminación que atente contra la dignidad humana."], "2": ["Pueblos indígenas", "La Nación es única, indivisible y pluricultural. Reconoce la libre determinación y autonomía de pueblos y comunidades indígenas como sujetos de derecho público."], "3": ["Educación", "Toda persona tiene derecho a la educación. La básica y la media superior son obligatorias; la impartida por el Estado es universal, inclusiva, pública, gratuita y laica."], "4": ["Igualdad, familia, salud, ambiente y vivienda", "Igualdad de mujer y hombre ante la ley; decidir sobre el número de hijos; alimentación, salud, medio ambiente sano, agua, vivienda adecuada, identidad e interés superior de la niñez. Prohíbe el maltrato animal."], "5": ["Libertad de trabajo", "Nadie puede ser impedido de dedicarse a la profesión, industria, comercio o trabajo lícito que le acomode, ni privado del producto de su trabajo sino por resolución judicial. Nadie está obligado a trabajar sin justa retribución y consentimiento, salvo excepciones."], "6": ["Libertad de expresión y acceso a la información", "La manifestación de ideas no se inquisiciona salvo ataque a la moral, vida privada o derechos de terceros, provocación de delito o perturbación del orden público. Garantiza el derecho a la información, el acceso a internet y la transparencia."], "7": ["Libertad de difusión", "Es inviolable la libertad de difundir opiniones, información e ideas por cualquier medio. No hay previa censura ni restricciones por vías indirectas."], "8": ["Derecho de petición", "Se ejerce por escrito, de manera pacífica y respetuosa; la autoridad debe responder con acuerdo escrito en breve término. En materia política solo lo ejercen ciudadanos."], "9": ["Asociación y reunión", "No se puede coartar el derecho de asociarse o reunirse pacíficamente con objeto lícito. Una reunión para presentar una petición o protesta no puede disolverse si no hay violencia ni amenazas."], "10": ["Armas", "Los habitantes pueden poseer armas en su domicilio para seguridad y legítima defensa, salvo las prohibidas por la ley federal y las reservadas a las fuerzas armadas. La ley federal regula la portación."], "11": ["Libre tránsito y asilo", "Toda persona puede entrar y salir del país, viajar por su territorio y mudar de residencia sin pasaporte ni requisitos semejantes, con limitaciones legales. Toda persona tiene derecho a buscar y recibir asilo."], "12": ["Títulos de nobleza", "No se conceden títulos de nobleza, prerrogativas ni honores hereditarios."], "13": ["Leyes privativas y fuero", "Nadie puede ser juzgado por leyes privativas ni por tribunales especiales; nadie tiene fuero. Subsiste el fuero de guerra solo para delitos contra la disciplina militar."], "14": ["Irretroactividad y debido proceso", "Ninguna ley se aplica retroactivamente en perjuicio de alguien. Nadie puede ser privado de libertad, propiedades o derechos sin juicio con formalidades esenciales y conforme a leyes anteriores al hecho. En penal, no hay pena por analogía."], "15": ["Extradición y tratados", "No se autorizan tratados de extradición de reos políticos ni convenios que alteren los derechos humanos reconocidos por la Constitución y los tratados."], "16": ["Fundamentación, detención, cateo y datos", "Todo acto de molestia requiere mandamiento escrito de autoridad competente que funde y motive. Regula órdenes de aprehensión, flagrancia, caso urgente, cateo, inviolabilidad de comunicaciones privadas y protección de datos personales."], "17": ["Acceso a la justicia", "Nadie puede hacerse justicia por sí mismo. Tribunales expeditos, gratuitos y sin costas, resoluciones prontas, completas e imparciales, defensoría pública y mecanismos alternativos. No hay prisión por deudas civiles."], "18": ["Prisión preventiva y sistema penitenciario", "Solo hay prisión preventiva por delito con pena privativa de libertad. El sistema penitenciario se basa en derechos humanos, trabajo, capacitación, educación, salud y deporte para la reinserción."], "19": ["Vinculación a proceso y prisión preventiva", "Ninguna detención ante juez excede 72 horas sin auto de vinculación a proceso. Regula cuándo procede la prisión preventiva justificada y la oficiosa."], "20": ["Proceso penal acusatorio", "El proceso penal es acusatorio y oral (publicidad, contradicción, concentración, continuidad, inmediación). Reconoce los derechos de la persona imputada y de la víctima."], "21": ["Investigación, acción penal y sanciones administrativas", "El Ministerio Público conduce la investigación con policías y Guardia Nacional y ejerce la acción penal; imponer penas es exclusivo del juez. Las infracciones administrativas se sancionan con multa, arresto hasta 36 horas o trabajo comunitario."], "22": ["Penas prohibidas y extinción de dominio", "Prohíbe pena de muerte, mutilación, infamia, marca, azotes, tormento, multa excesiva y confiscación. La pena debe ser proporcional. Regula la extinción de dominio."], "23": ["Instancias y non bis in idem", "Un juicio criminal no tiene más de tres instancias; nadie puede ser juzgado dos veces por el mismo delito."], "24": ["Libertad religiosa", "Toda persona tiene libertad de convicciones éticas, de conciencia y de religión. Los actos de culto público se celebran ordinariamente en los templos y no se pueden usar con fines políticos."], "25": ["Rectoría económica", "El Estado tiene la rectoría del desarrollo nacional para que sea integral y sustentable y fortalezca la soberanía y el régimen democrático."], "26": ["Planeación democrática", "El Estado organiza un sistema de planeación democrática del desarrollo nacional."], "27": ["Propiedad de tierras y aguas", "Tierras y aguas son originariamente de la Nación, que puede transmitir su dominio a particulares. Expropiación solo por utilidad pública y con indemnización. Dominio directo de recursos del subsuelo, plataforma continental y aguas nacionales. Los extranjeros tienen restricciones (100 km en fronteras, 50 en playas). Se protegen ejidos y comunidades (fracc. VII)."], "28": ["Monopolios", "Prohíbe monopolios, prácticas monopólicas y estancos, y ordena castigar el acaparamiento que busque elevar precios."], "29": ["Suspensión de derechos", "En invasión, perturbación grave de la paz u otro peligro grave, el Presidente, con aprobación del Congreso, puede restringir derechos por tiempo limitado y de forma proporcional. Hay derechos que nunca se suspenden."], "30": ["Nacionalidad", "La nacionalidad mexicana se adquiere por nacimiento o por naturalización."], "31": ["Obligaciones de los mexicanos", "Entre ellas: que hijas e hijos menores de 18 años cursen la educación obligatoria, y contribuir a los gastos públicos de la Federación, estados, CDMX y municipio de manera proporcional y equitativa."], "33": ["Personas extranjeras", "Gozan de los derechos humanos y garantías de la Constitución. El Ejecutivo puede expulsarlas con fundamento en la ley, previa audiencia, y no pueden inmiscuirse en asuntos políticos."], "34": ["Ciudadanía", "Son ciudadanas y ciudadanos los mexicanos que tengan 18 años y un modo honesto de vivir."], "35": ["Derechos de la ciudadanía", "Votar, ser votada en condiciones de paridad, asociarse en asuntos políticos, iniciar leyes, participar en consultas populares y en la revocación de mandato, entre otros."], "36": ["Obligaciones de la ciudadanía", "Inscribirse en el catastro y en el Registro Nacional de Ciudadanos, votar en elecciones, consultas y revocación, y desempeñar cargos de elección popular y funciones electorales y de jurado."], "38": ["Suspensión de derechos ciudadanos", "Se suspenden por no cumplir las obligaciones del art. 36 (un año), por proceso criminal con pena corporal, durante la extinción de una pena, por estar prófugo, por sentencia que lo imponga y por ciertas sentencias firmes por delitos graves."], "39": ["Soberanía popular", "La soberanía reside esencial y originariamente en el pueblo; todo poder público dimana de él y el pueblo puede alterar o modificar la forma de su gobierno."], "40": ["Forma de gobierno", "República representativa, democrática, laica y federal. Rechaza intervenciones extranjeras lesivas de la integridad, independencia y soberanía de la Nación."], "41": ["Ejercicio de la soberanía y elecciones", "El pueblo ejerce su soberanía por los Poderes de la Unión y los de los estados. Regula elecciones libres, partidos políticos (3 % para conservar registro) y la función del INE."], "49": ["División de poderes", "El Supremo Poder de la Federación se divide en Legislativo, Ejecutivo y Judicial; no pueden reunirse dos o más en una persona o corporación."], "52": ["Cámara de Diputados", "500 integrantes: 300 de mayoría relativa y 200 de representación proporcional."], "54": ["Representación proporcional", "Un partido necesita al menos 3 % de la votación válida y registrar candidatos de mayoría en 200 distritos para obtener diputaciones de representación proporcional."], "56": ["Senado", "128 integrantes: dos de mayoría relativa y uno de primera minoría por entidad, más 32 de representación proporcional."], "65": ["Periodos de sesiones", "El Congreso se reúne desde el 1 de septiembre y desde el 1 de febrero de cada año."], "71": ["Iniciativa de leyes", "Pueden iniciar leyes el Presidente, diputados y senadores, las legislaturas de los estados y la CDMX, y la ciudadanía (al menos 0.13 % de la lista nominal)."], "72": ["Proceso legislativo", "Los proyectos se discuten en ambas cámaras y pasan al Ejecutivo, que tiene 30 días naturales para hacer observaciones; vencido el plazo se considera aprobado y tiene 10 días más para promulgar y publicar."], "73": ["Facultades del Congreso", "Admitir y formar estados, imponer contribuciones, deuda pública, legislar sobre hidrocarburos, minería, comercio, nacionalidad, salubridad, telecomunicaciones, leyes penales generales, legislación procesal civil y familiar única, Guardia Nacional, amnistías y declarar la guerra, entre muchas más."], "76": ["Facultades exclusivas del Senado", "Analizar la política exterior y aprobar tratados internacionales del Ejecutivo, entre otras."], "78": ["Comisión Permanente", "Durante los recesos funciona con 37 integrantes: 19 diputados y 18 senadores."], "80": ["Poder Ejecutivo", "Se deposita en un solo individuo, la Presidenta o Presidente de los Estados Unidos Mexicanos."], "82": ["Requisitos para la Presidencia", "Ciudadanía mexicana por nacimiento, hijo o hija de madre o padre mexicanos, sin otra nacionalidad y con 20 años de residencia en el país."], "83": ["Duración del cargo presidencial", "Asume el 1 de octubre y dura seis años. Quien ya fue Presidente, por cualquier vía, no puede volver a ocupar el cargo."], "84": ["Falta absoluta del Presidente", "El Secretario de Gobernación asume provisionalmente y el Congreso nombra interino o sustituto en un plazo no mayor a 60 días."], "89": ["Facultades del Presidente", "Promulgar y ejecutar las leyes, nombrar y remover secretarios de Estado, conceder indultos por delitos federales, entre otras."], "94": ["Poder Judicial de la Federación", "Se deposita en la Suprema Corte, el Tribunal Electoral, Plenos Regionales, Tribunales Colegiados y Juzgados de Distrito. La Corte tiene nueve integrantes con encargo de 12 años; la disciplina corresponde al Tribunal de Disciplina Judicial."], "96": ["Elección judicial", "Ministros, magistrados y jueces se eligen de manera libre, directa y secreta por la ciudadanía, con convocatoria del Senado."], "99": ["Tribunal Electoral", "Es la máxima autoridad jurisdiccional en materia electoral (salvo lo del art. 105-II) y órgano especializado del Poder Judicial; funciona con Sala Superior y salas regionales."], "100": ["Tribunal de Disciplina Judicial", "Órgano del Poder Judicial con independencia técnica y de gestión; cinco personas electas por la ciudadanía."], "102": ["Fiscalía General de la República", "El Ministerio Público de la Federación se organiza en una Fiscalía General de la República, órgano público autónomo con personalidad jurídica y patrimonio propios."], "103": ["Competencia del amparo", "Los tribunales de la Federación resuelven controversias por normas, actos u omisiones de autoridad que violen derechos humanos y sus garantías."], "105": ["Controversias y acciones de inconstitucionalidad", "La Suprema Corte conoce de controversias constitucionales y acciones de inconstitucionalidad (se ejercen dentro de 30 días naturales desde la publicación de la norma)."], "107": ["Bases del amparo", "Procede a instancia de parte agraviada con derecho o interés legítimo; las sentencias solo benefician a quien lo solicitó; no procede contra reformas a la Constitución; regula la suspensión."], "108": ["Servidores públicos", "Define quiénes son servidores públicos para efectos de responsabilidades."], "109": ["Responsabilidades", "Sanciones por juicio político, penales y administrativas; no hay juicio político por la mera expresión de ideas."], "110": ["Sujetos de juicio político", "Legisladores, ministros, magistrados, jueces federales, secretarios de Despacho, Fiscal General, consejeros del INE e integrantes de órganos autónomos, entre otros."], "115": ["Municipio libre", "Los estados adoptan el municipio libre como base de su división territorial; lo gobierna un ayuntamiento de elección popular directa."], "116": ["Poderes de los estados", "El poder público de los estados se divide en Ejecutivo, Legislativo y Judicial."], "117": ["Prohibiciones a los estados", "Los estados no pueden celebrar alianzas o tratados con otros estados o potencias extranjeras, acuñar moneda ni gravar el tránsito de personas o cosas por su territorio, entre otras."], "119": ["Protección a las entidades", "Los Poderes de la Unión deben proteger a las entidades federativas contra invasión o violencia exterior y, si lo solicitan, ante trastornos interiores."], "121": ["Entera fe y crédito", "Cada entidad da entera fe y crédito a los actos públicos, registros y procedimientos judiciales de las demás. Las leyes de una entidad solo tienen efecto en su territorio."], "122": ["Ciudad de México", "Es una entidad federativa con autonomía en su régimen interior y organización política y administrativa."], "123": ["Trabajo y previsión social", "Derecho al trabajo digno y socialmente útil. Jornada máxima de ocho horas, 40 horas semanales en los términos de ley, descanso semanal, salario mínimo, participación en utilidades y derecho de huelga."], "124": ["Facultades reservadas", "Las facultades no concedidas expresamente a los funcionarios federales se entienden reservadas a los estados y a la Ciudad de México."], "128": ["Protesta de los funcionarios", "Todo funcionario público, sin excepción, protesta guardar la Constitución y las leyes que de ella emanen antes de tomar posesión."], "133": ["Supremacía constitucional", "La Constitución, las leyes del Congreso que emanen de ella y los tratados acordes con ella son la Ley Suprema de toda la Unión."], "135": ["Reformas a la Constitución", "Se requiere el voto de dos terceras partes de los presentes en el Congreso y la aprobación de la mayoría de las legislaturas de los estados y de la CDMX."], "136": ["Inviolabilidad", "La Constitución no pierde fuerza aunque una rebelión interrumpa su observancia."]};
 function lawTry(t){const n=norm(t).replace(/\s+/g,' ');if(/ingles|english|gramatic/.test(n))return null;
@@ -7322,7 +7497,7 @@ const COLL={interested:'in',good:'at',bad:'at',afraid:'of',proud:'of',tired:'of'
 const UNC=new Set('water milk money time information advice bread rice sugar homework furniture news luggage traffic weather music coffee tea butter cheese juice work food sand hair paper salt oil luck fun progress'.split(' '));
 const MON=/^(january|february|march|april|may|june|july|august|september|october|november|december)/,WKD=/^(monday|tuesday|wednesday|thursday|friday|saturday|sunday)/;
 function art(n){return/^(hour|honest|honou?r|heir)/.test(n)?'an':/^(uni|use|usu|eu|one|once|ewe)/.test(n)?'a':/^[aeiou]/.test(n)?'an':'a'}
-function expect(pre,post,full,ans){const pw=pre.toLowerCase().replace(/[^a-z' ]/g,' ').trim().split(/\s+/).filter(Boolean),l=pw[pw.length-1]||'',l2=pw[pw.length-2]||'';const aw=post.toLowerCase().replace(/^[^a-z0-9]+/,'').replace(/[^a-z0-9' ]/g,' ').trim().split(/\s+/),a0=aw[0]||'',a1=aw[1]||'',ps=post.toLowerCase();const all=full.toLowerCase();
+function expect(pre,post,full,ans){const pw=pre.toLowerCase().replace(/[^a-z' ]/g,' ').trim().split(/\s+/).filter(Boolean),l=pw[pw.length-1]||'',l2=pw[pw.length-2]||'';const aw=post.toLowerCase().replace(/^[^a-z0-9]+/,'').replace(/[^a-z0-9' ]/g,' ').trim().split(/\s+/),a0=aw[0]||'',a1=aw[1]||'',ps=post.toLowerCase().replace(/^\s+/,'');const all=full.toLowerCase();
  if(!pw.length&&/\?/.test(full)){const A=ans||'';
   if(/^(old|many|much|long|often|far|tall|big|heavy|fast|expensive)\b/.test(a0))return['How','how + adjetivo/adverbio'];
   if(/^(time|colou?r|kind|sort|day|subject|sport|food|music|book|film|size)\b/.test(a0))return['What','what + sustantivo'];
@@ -11520,7 +11695,27 @@ paint()}
 window.nxMovie=()=>open(0);window.nxMovie2=()=>open(1);window.nxMovie3=()=>open(2);window.nxMovie4=()=>open(3);window.nxMovies=menu;
 })();
 </script>
+<script>
+/* ===== Noryx · extras de interfaz v2 ===== */
+(function(){
+ const $=s=>document.querySelector(s),inp=$('#in'),go=$('#go'),feed=$('#feed');
+ if(!inp||!go)return;
+ const fire=t=>{inp.value=t;inp.dispatchEvent(new Event('input',{bubbles:true}));go.click()};
+ /* 1) botón «Saluda a Noryx» en la pantalla de inicio */
+ const addHi=()=>{const c=feed&&feed.querySelector('.hero .chips');if(c&&!c.querySelector('.nx-hi-chip')){
+  const b=document.createElement('button');b.type='button';b.className='nx-hi-chip';b.textContent='👋 Saluda a Noryx';
+  const hi=['holaa estrellita','hola noryx, ¿cómo estás?','buenas','holiii','qué onda noryx'];
+  b.onclick=()=>fire(hi[Math.floor(Math.random()*hi.length)]);c.prepend(b)}};
+ if(feed){addHi();new MutationObserver(addHi).observe(feed,{childList:true,subtree:true})}
+ /* 2) ejemplos que rotan en la caja de escritura (solo si está vacía y sin foco, y nadie más cambió el texto) */
+ const base=inp.placeholder,ex=['Escribe a Noryx… (/ayuda para ver comandos)','Prueba: «hola estrellita»','Prueba: «derivada de x^3»','Prueba: «cuéntame un chiste»','Prueba: «¿qué clima hace en CDMX?»','Prueba: «/noryx» para el modo asistente'];let i=0;
+ setInterval(()=>{try{if(inp.hidden||inp.value||document.activeElement===inp)return;if(!(inp.placeholder===base||ex.includes(inp.placeholder)))return;i=(i+1)%ex.length;inp.placeholder=ex[i]}catch(e){}},6000);
+ /* 3) Esc devuelve el foco a la caja de escritura cuando estás en el chat */
+ addEventListener('keydown',e=>{if(e.key==='Escape'&&document.activeElement&&document.activeElement.tagName==='BODY')inp.focus()});
+})();
+</script>
 
 </body>
 </html>
+
 
