@@ -2706,7 +2706,7 @@ help:[['Sé de **{T} temas** y esto sé hacer:\n- **Matemáticas**: derivadas, i
 joke:[['¿Por qué las redes neuronales no pagan renta? Porque ya tienen muchas capas ocultas.','Mi red tiene {H} neuronas y ninguna sabe contar chistes. Yo tampoco.'],['Why did the neural net go to therapy? Too many hidden layers.']]};
 
 /* ============ Maestro externo: otra IA (estilo Gemini) sin API key; Noryx aprende de sus respuestas ============ */
-let MAESTRO=!!S.get('nx-maestro',true),busyAsk=0; /* IA activa por defecto para todos; /ia apagar la desactiva */
+let MAESTRO=!!S.get('nx-maestro2',true),busyAsk=0; /* IA activa por defecto para todos; /ia apagar la desactiva */
 const SYS='Eres Noryx, una asistente conversacional en español (responde en el idioma del usuario). Primero contesta la pregunta concreta; después explica lo necesario con lenguaje natural, preciso y respetuoso. Adapta la extensión a la petición: breve por defecto y más profunda cuando pidan detalles, pasos, ejemplos o comparación. Usa el historial reciente para resolver referencias como «eso», «más», «¿por qué?», «hazlo más simple» y «dame ejemplos»; no reinicies el tema sin motivo. Si una pregunta es ambigua, pregunta solo lo necesario. Distingue hechos, estimaciones e inferencias; no inventes citas, enlaces, búsquedas, cifras actuales ni acciones. Si no tienes evidencia suficiente, dilo y explica qué dato falta. Si te piden código, entrega un ejemplo ejecutable y explica sus supuestos. No afirmes que consultaste Internet ni una fuente salvo que realmente se haya hecho.';
 const clean=x=>x.replace(/\n*(?:---+\s*)?(?:\*\*)?(?:Powered by|Support) Pollinations[\s\S]*$/i,'').replace(/<think>[\s\S]*?<\/think>/g,'').trim();
 /* ===== Noryx API (Cloudflare Worker → Ollama) ===== */
@@ -2719,11 +2719,12 @@ async function askNoryxAPI(msgs){
   const rest=msgs.filter(m=>m.role!=='system'),last=rest.pop();
   if(!last)return null;
   const r=await fetch(NORYX_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({system:sys,history:rest.slice(-20),message:String(last.content)}),signal:c.signal});
-  if(r.status==429)return{err:'rate'};
-  if(!r.ok)return null;
+  if(r.status==429){window._nxApiDiag={ok:false,msg:'Límite de peticiones (HTTP 429)'};return{err:'rate'}}
+  if(!r.ok){let x='';try{x=(await r.json()).error||''}catch(e){}window._nxApiDiag={ok:false,msg:'HTTP '+r.status+(x?' · '+x:'')};return null}
   const d=await r.json();
-  return d&&d.answer?{t:clean(d.answer)}:null}
- catch(e){return null}finally{clearTimeout(t)}}
+  if(d&&d.answer){window._nxApiDiag={ok:true,msg:'ok'};return{t:clean(d.answer)}}
+  window._nxApiDiag={ok:false,msg:'La API respondió sin texto'};return null}
+ catch(e){window._nxApiDiag={ok:false,msg:(e&&e.name=='AbortError'?'Tiempo agotado':'No se pudo conectar (¿bloqueo CORS u origen no permitido?)')};return null}finally{clearTimeout(t)}}
 async function ask(msgs){
  {const o=await askNoryxAPI(msgs);if(o&&o.t)return o}
  const post=async m=>{const c=new AbortController(),t=setTimeout(()=>c.abort(),28000);try{const r=await fetch('https://text.pollinations.ai/openai',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:m,messages:msgs,private:true}),signal:c.signal});if(r.status==429)return{err:'rate'};if(!r.ok)return null;const d=await r.json(),x=d.choices&&d.choices[0]&&d.choices[0].message&&d.choices[0].message.content;return x?{t:clean(x)}:null}catch(e){return null}finally{clearTimeout(t)}};
@@ -4822,7 +4823,7 @@ async function send(t){t=(t||'').trim();if(!t||busy)return;{const k=t.toLowerCas
  let m;if((m=t.match(/^\/(\w+)\s*(.*)$/))){const k=m[1].toLowerCase();
   if(k=='mic'||k.startsWith('micr')){mdOpen();return}
   if(k=='noryx'||k=='puente'||k=='atajo'||k=='rutina'||k=='spotify'){if(k!='puente'&&k!='spotify')echoU(t);await noryxEntry(k,m[2]);return}
-  if(k=='ia'||k=='maestro'||k=='online'){const mode=norm(m[2]||'estado');if(/^(activar|activa|encender|on|enable|online)$/.test(mode)){MAESTRO=true;S.set('nx-maestro',true);sysMsg('🌐 **Modo en línea activado.** Para responder preguntas abiertas puedo enviar el mensaje y el contexto reciente a la API de Noryx (Cloudflare + Groq) y, si no responde, al servicio externo de respaldo (Pollinations). No envíes contraseñas ni información privada. Las fuentes o datos actuales no se dan por verificados solo porque los genere el modelo. Escribe `/ia apagar` para desactivarlo.','Noryx · modo en línea');return}if(/^(apagar|desactivar|desactiva|off|disable|local)$/.test(mode)){MAESTRO=false;S.set('nx-maestro',false);sysMsg('Modo en línea desactivado. Noryx seguirá usando su núcleo local y las consultas de conocimiento disponibles.','Noryx · modo local');return}sysMsg('**Modo de generación externa:** '+(MAESTRO?'activado':'desactivado')+'.\n\nUsa `/ia activar` para ampliar las respuestas con el servicio externo de generación de texto, o `/ia apagar` para mantener el procesamiento conversacional en el núcleo local. Al activarlo, algunos mensajes se enviarán a ese servicio.','Noryx · estado');return}
+  if(k=='ia'||k=='maestro'||k=='online'){const mode=norm(m[2]||'estado');if(/^(activar|activa|encender|on|enable|online)$/.test(mode)){MAESTRO=true;S.set('nx-maestro2',true);sysMsg('🌐 **Modo en línea activado.** Para responder preguntas abiertas puedo enviar el mensaje y el contexto reciente a la API de Noryx (Cloudflare + Groq) y, si no responde, al servicio externo de respaldo (Pollinations). No envíes contraseñas ni información privada. Las fuentes o datos actuales no se dan por verificados solo porque los genere el modelo. Escribe `/ia apagar` para desactivarlo.','Noryx · modo en línea');return}if(/^(apagar|desactivar|desactiva|off|disable|local)$/.test(mode)){MAESTRO=false;S.set('nx-maestro2',false);sysMsg('Modo en línea desactivado. Noryx seguirá usando su núcleo local y las consultas de conocimiento disponibles.','Noryx · modo local');return}if(/^(probar|prueba|test)$/.test(mode)){askNoryxAPI([{role:'system',content:'Responde solo con la palabra OK.'},{role:'user',content:'Di OK'}]).then(o=>{const d=window._nxApiDiag||{};sysMsg(o&&o.t?'✅ **La API responde.** Prueba: '+String(o.t).slice(0,120):'❌ **La API no respondió.** Detalle: '+(d.msg||'sin detalle')+'. Página: '+location.origin,'Noryx · prueba de API')});return}sysMsg('**Modo de generación externa:** '+(MAESTRO?'activado':'desactivado')+'.\n\nUsa `/ia activar` para ampliar las respuestas con el servicio externo de generación de texto, o `/ia apagar` para mantener el procesamiento conversacional en el núcleo local. Al activarlo, algunos mensajes se enviarán a ese servicio.','Noryx · estado');return}
   if(k=='jarvis'){echoU(t);sysMsg('El comando ahora es `/noryx`.','Noryx');return}
   if(k=='solicitar'){echoU(t);await requestAccess(m[2]);return}
   if(k=='acceso'){echoU(t);await showAccess();return}
@@ -13308,7 +13309,7 @@ window.nxMovie=()=>open(0);window.nxMovie2=()=>open(1);window.nxMovie3=()=>open(
  window.NXAI={
   version:'1.3.0',
   isOnlineEnabled:()=>!!MAESTRO,
-  setOnline:enabled=>{MAESTRO=!!enabled;S.set('nx-maestro',!!enabled);return !!MAESTRO},
+  setOnline:enabled=>{MAESTRO=!!enabled;S.set('nx-maestro2',!!enabled);return !!MAESTRO},
   shouldTryOnline:shouldTryExternal,
   summarize:text=>summaryOf(text),
   getLastAssistant:()=>{const m=lastAssistant();return m?String(m.t):null;}
