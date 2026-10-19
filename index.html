@@ -618,6 +618,18 @@ html,body{overscroll-behavior:none}#feed{overscroll-behavior:contain}
 }
 </style>
 
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css" onerror="this.onerror=null;this.href='https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.11/katex.min.css'">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js" onload="window.dispatchEvent(new Event('nx-katex'))" onerror="(function(){var s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.11/katex.min.js';s.onload=function(){window.dispatchEvent(new Event('nx-katex'))};document.head.appendChild(s)})()"></script>
+<style id="nx-math-css">
+.nx-md{display:block;margin:.55em 0;padding:2px 0;overflow-x:auto;overflow-y:hidden;text-align:center;max-width:100%}
+.nx-md .katex-display{margin:0}
+.nx-mi{display:inline-block;max-width:100%;vertical-align:middle;overflow-x:auto;overflow-y:hidden}
+.body .katex{font-size:1.08em;overflow-wrap:normal;word-break:normal;color:inherit}
+.nx-raw{font-family:'JetBrains Mono',monospace;font-size:.92em;opacity:.85}
+#nxLab .nx-mi{max-width:none;overflow:visible}
+#nxLab .nl-answer .katex{font-size:1.18em}
+.nx-mpend{font-family:'JetBrains Mono',monospace;font-size:.9em;opacity:.5}
+</style>
 </head>
 <body>
 <div id="app">
@@ -2709,7 +2721,7 @@ joke:[['¿Por qué las redes neuronales no pagan renta? Porque ya tienen muchas 
 
 /* ============ Maestro externo: otra IA (estilo Gemini) sin API key; Noryx aprende de sus respuestas ============ */
 let MAESTRO=!!S.get('nx-maestro2',true),busyAsk=0; /* IA activa por defecto para todos; /ia apagar la desactiva */
-const SYS='Eres Noryx, una asistente conversacional en español (responde en el idioma del usuario). Primero contesta la pregunta concreta; después explica lo necesario con lenguaje natural, preciso y respetuoso. Adapta la extensión a la petición: breve por defecto y más profunda cuando pidan detalles, pasos, ejemplos o comparación. Usa el historial reciente para resolver referencias como «eso», «más», «¿por qué?», «hazlo más simple» y «dame ejemplos»; no reinicies el tema sin motivo. Si una pregunta es ambigua, pregunta solo lo necesario. Distingue hechos, estimaciones e inferencias; no inventes citas, enlaces, búsquedas, cifras actuales ni acciones. Si no tienes evidencia suficiente, dilo y explica qué dato falta. Si te piden código, entrega un ejemplo ejecutable y explica sus supuestos. No afirmes que consultaste Internet ni una fuente salvo que realmente se haya hecho. Identidad: te llamas Noryx y te creó Orlando. Nunca digas que eres ChatGPT, GPT-4, un producto de OpenAI, Gemini ni Claude, y no inventes detalles técnicos de tu modelo. Si te preguntan en qué modelo te basas, qué modelo eres o si eres ChatGPT, responde que eres Noryx, el asistente que creó Orlando; que combinas un núcleo local propio con un modelo de lenguaje en la nube para las preguntas abiertas; y que no tienes más detalles técnicos del modelo. No afirmes ni niegues marcas o versiones concretas.';
+const SYS='Eres Noryx, una asistente conversacional en español (responde en el idioma del usuario). Primero contesta la pregunta concreta; después explica lo necesario con lenguaje natural, preciso y respetuoso. Adapta la extensión a la petición: breve por defecto y más profunda cuando pidan detalles, pasos, ejemplos o comparación. Usa el historial reciente para resolver referencias como «eso», «más», «¿por qué?», «hazlo más simple» y «dame ejemplos»; no reinicies el tema sin motivo. Si una pregunta es ambigua, pregunta solo lo necesario. Distingue hechos, estimaciones e inferencias; no inventes citas, enlaces, búsquedas, cifras actuales ni acciones. Si no tienes evidencia suficiente, dilo y explica qué dato falta. Si te piden código, entrega un ejemplo ejecutable y explica sus supuestos. No afirmes que consultaste Internet ni una fuente salvo que realmente se haya hecho. Identidad: te llamas Noryx y te creó Orlando. Nunca digas que eres ChatGPT, GPT-4, un producto de OpenAI, Gemini ni Claude, y no inventes detalles técnicos de tu modelo. Si te preguntan en qué modelo te basas, qué modelo eres o si eres ChatGPT, responde que eres Noryx, el asistente que creó Orlando; que combinas un núcleo local propio con un modelo de lenguaje en la nube para las preguntas abiertas; y que no tienes más detalles técnicos del modelo. No afirmes ni niegues marcas o versiones concretas. Matemáticas: escribe las fórmulas en LaTeX, en línea entre signos de dólar (por ejemplo $x^2+1$) y las importantes en bloque entre dobles signos de dólar (por ejemplo $$\\int_0^1 x\\,dx=\\frac{1}{2}$$). Los precios en dinero escríbelos como texto normal.';
 const clean=x=>x.replace(/\n*(?:---+\s*)?(?:\*\*)?(?:Powered by|Support) Pollinations[\s\S]*$/i,'').replace(/<think>[\s\S]*?<\/think>/g,'').trim();
 /* ===== Noryx API (Cloudflare Worker → Ollama) ===== */
 const NORYX_API='https://api-llama-proxy.orlandogeovanni519.workers.dev/v1/chat'; /* URL de tu Worker */
@@ -4772,8 +4784,71 @@ async function brain(t,_sub){
 
 /* ============ Render ============ */
 const esc=s=>s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+/* ============ Fórmulas (KaTeX) ============ */
+function nxTex(t,disp){const T=String(t).trim();if(!T)return'';
+ if(window.katex){try{return katex.renderToString(T,{displayMode:!!disp,throwOnError:false,strict:'ignore',trust:false,output:'htmlAndMathml',maxExpand:1000})}catch(e){}}
+ return'<span class="nx-raw">'+esc(T)+'</span>'}
+function nxMath(s,hold){
+ const D=t=>hold('<div class="nx-md">'+nxTex(t,true)+'</div>'),I=t=>hold('<span class="nx-mi">'+nxTex(t,false)+'</span>');
+ s=s.replace(/\n?\$\$([\s\S]+?)\$\$\n?/g,(m,t)=>D(t))
+  .replace(/\n?\\\[([\s\S]+?)\\\]\n?/g,(m,t)=>D(t))
+  .replace(/\n?\\begin\{(equation\*?|align\*?|gather\*?|aligned|cases|pmatrix|bmatrix|vmatrix)\}[\s\S]+?\\end\{\1\}\n?/g,m=>D(m.trim()))
+  .replace(/\\\(([\s\S]+?)\\\)/g,(m,t)=>I(t))
+  .replace(/(^|[^\\$])\$(?=[^\s$])((?:\\[\s\S]|[^$\\\n])*?(?:[^\s$\\]|\\[\s\S]))\$(?!\d)/g,(m,p,t)=>/^[\d.,]+$/.test(t)?m:p+I(t));
+ /* fórmula a medio escribir mientras la respuesta llega */
+ return s.replace(/\$\$[\s\S]*$/,m=>hold('<span class="nx-mpend">'+esc(m)+'</span>')).replace(/\\\[[\s\S]*$/,m=>hold('<span class="nx-mpend">'+esc(m)+'</span>'))}
+window.addEventListener('nx-katex',()=>{try{if(document.querySelector('.nx-raw')&&typeof renderAll=='function'&&!busy)renderAll()}catch(e){}});
+/* LaTeX -> texto hablado (para el botón "leer") */
+function nxSay(t){
+ const g=x=>{let s=' '+x+' ';
+  for(let i=0;i<4;i++)s=s.replace(/\\[dt]?frac\s*\{([^{}]*)\}\s*\{([^{}]*)\}/g,' $1 entre $2 ').replace(/\\sqrt\s*\[(\d+)\]\s*\{([^{}]*)\}/g,' raíz $1 de $2 ').replace(/\\sqrt\s*\{([^{}]*)\}/g,' raíz cuadrada de $1 ');
+  return s.replace(/\^\s*\{?2\}?/g,' al cuadrado ').replace(/\^\s*\{?3\}?/g,' al cubo ').replace(/\^\s*\{([^{}]*)\}/g,' elevado a $1 ').replace(/\^\s*(\w)/g,' elevado a $1 ')
+   .replace(/_\s*\{([^{}]*)\}/g,' sub $1 ').replace(/_\s*(\w)/g,' sub $1 ')
+   .replace(/\\int/g,' integral de ').replace(/\\sum/g,' suma de ').replace(/\\lim/g,' límite de ').replace(/\\infty/g,' infinito ').replace(/\\(?:cdot|times)/g,' por ').replace(/\\div/g,' entre ')
+   .replace(/\\(?:leq?)\b/g,' menor o igual que ').replace(/\\(?:geq?)\b/g,' mayor o igual que ').replace(/\\neq?\b/g,' distinto de ').replace(/\\(?:to|rightarrow)\b/g,' tiende a ').replace(/\\pm/g,' más menos ')
+   .replace(/\\(?:left|right|displaystyle|,|;|!|quad|qquad)/g,' ').replace(/\\([a-zA-Z]+)/g,' $1 ').replace(/[{}]/g,' ').replace(/\s+/g,' ').trim()};
+ return String(t).replace(/\$\$([\s\S]+?)\$\$/g,(m,x)=>' '+g(x)+' ').replace(/\\\[([\s\S]+?)\\\]/g,(m,x)=>' '+g(x)+' ').replace(/\\\(([\s\S]+?)\\\)/g,(m,x)=>' '+g(x)+' ')
+  .replace(/(^|[^\\$])\$(?=[^\s$])((?:\\[\s\S]|[^$\\\n])*?(?:[^\s$\\]|\\[\s\S]))\$(?!\d)/g,(m,p,x)=>/^[\d.,]+$/.test(x)?m:p+' '+g(x)+' ')}
+/* ============ Laboratorio: texto plano -> KaTeX ============ */
+function nxLabTex(s){
+ const sup={'⁰':'0','¹':'1','²':'2','³':'3','⁴':'4','⁵':'5','⁶':'6','⁷':'7','⁸':'8','⁹':'9','⁻':'-','⁺':'+','ⁿ':'n'};
+ let x=String(s).replace(/[⁰¹²³⁴⁵⁶⁷⁸⁹⁻⁺ⁿ]+/g,m=>'^{'+[...m].map(c=>sup[c]).join('')+'}')
+  .replace(/\^\(([^()]*)\)/g,'^{$1}').replace(/\^(-?\d+(?:\.\d+)?|[a-z])/g,'^{$1}')
+  .replace(/[−–]/g,'-').replace(/π/g,'\\pi ').replace(/∞/g,'\\infty ').replace(/√\(([^()]*)\)/g,'\\sqrt{$1}').replace(/≤/g,'\\le ').replace(/≥/g,'\\ge ').replace(/≠/g,'\\ne ')
+  .replace(/\bd\/d([a-z])\b/g,'\\frac{d}{d$1}').replace(/∫/g,'\\int ').replace(/\b(asin|acos|atan|sinh|cosh|tanh|sin|cos|tan|sec|csc|cot|ln|log|exp)(?![a-z])/g,'\\$1')
+  .replace(/(\d)\s*[*·]\s*(?=[a-z\\(])/g,'$1').replace(/\s*[*·]\s*/g,' \\cdot ');
+ const A='(?:\\d+(?:\\.\\d+)?[a-z]?(?:\\^\\{[^{}]*\\})?|[a-z](?:\\^\\{[^{}]*\\})?|\\([^()]*\\))';
+ x=x.replace(new RegExp('('+A+')\\s*\\/\\s*('+A+')','g'),(m,a,b,off,str)=>/[A-Za-z\\]/.test(str[off-1]||'')?m:'\\frac{'+a.replace(/^\(([^()]*)\)$/,'$1')+'}{'+b.replace(/^\(([^()]*)\)$/,'$1')+'}');
+ return x.replace(/\\int\s*\(([^()]*(?:\([^()]*\)[^()]*)*)\)\s*dx/g,'\\int \\left($1\\right)\\,dx').replace(/(^|[\s)\]])dx\b/g,'$1\\,dx').replace(/\\,\\,/g,'\\,')}
+function nxLabFmt(v){
+ const raw=String(v==null?'':v);
+ if(!window.katex)return esc(raw);
+ const FN='sin|cos|tan|sec|csc|cot|ln|log|exp|asin|acos|atan|sinh|cosh|tanh|dx|dy|pi|e';
+ const okWord=w=>new RegExp('^(?:'+FN+')$').test(w);
+ const cls=tok=>{
+  const m=tok.match(/^([^]*?)([.,;:]*)$/),b=m[1],p=m[2];
+  if(!b)return{c:'t',b,p};
+  const words=b.match(/[A-Za-zÁÉÍÓÚáéíóúñÑ]{2,}/g)||[];
+  if(words.some(w=>!okWord(w)))return{c:'t',b,p};
+  if(b==='=')return{c:'s',b,p};if(/^[+\-−]$/.test(b))return{c:'o',b,p};
+  if(/^\d+(?:\.\d+)?$/.test(b))return{c:'w',b,p};
+  if(/^[xnkcCfFFab]$|^dx$/.test(b))return{c:'w',b,p};
+  if(!/^[\w.^+\-−*·/()\[\]=∫√π∞'≤≥≠⁰¹²³⁴⁵⁶⁷⁸⁹⁻⁺ⁿ]+$/.test(b))return{c:'t',b,p};
+  if(/[\^∫√=⁰¹²³⁴⁵⁶⁷⁸⁹ⁿπ*·]/.test(b)||/(?:^|[+\-−(])(?:sin|cos|tan|sec|csc|cot|ln|log|exp)[(^]/.test(b)||/^[A-Za-z]'?\([a-z]\)$/.test(b)||/^[^/]+\/[^/]+$/.test(b)&&/[\d)(x]/.test(b))return{c:'s',b,p};
+  return{c:'t',b,p}};
+ return raw.split('\n').map(line=>{
+  const parts=line.split(/(\s+)/),T=parts.map((p,i)=>i%2?{c:'sp',b:p,p:''}:cls(p));let out='',i=0;
+  while(i<T.length){
+   if(!'owsb'.includes(T[i].c)||T[i].c==='sp'&&false){out+=(T[i].c==='sp'?T[i].b:esc(T[i].b+T[i].p));i++;continue}
+   let j=i,last=i,strong=false;
+   while(j<T.length){const c=T[j].c;if(c==='sp'){j++;continue}if(c==='o'||c==='w'||c==='s'){if(c==='s')strong=true;last=j;if(T[j].p){break}j++}else break}
+   if(!strong){out+=esc(T[i].b+T[i].p)+(T[i+1]&&T[i+1].c==='sp'?T[i+1].b:'');i+=(T[i+1]&&T[i+1].c==='sp')?2:1;continue}
+   const seg=T.slice(i,last+1).map(z=>z.b).join('');
+   out+='<span class="nx-mi">'+nxTex(nxLabTex(seg),false)+'</span>'+esc(T[last].p);i=last+1}
+  return out}).join('<br>')}
 function md(s){const B=[],hold=h=>'\u0000'+(B.push(h)-1)+'\u0000';
  s=s.replace(/```\w*\n?([\s\S]*?)(```|$)/g,(m,c)=>hold('<pre><button class="cp">copiar</button><code>'+esc(c.replace(/\n$/,''))+'</code></pre>')).replace(/`([^`\n]+)`/g,(m,c)=>hold('<code>'+esc(c)+'</code>'));
+ s=nxMath(s,hold);
  s=esc(s).replace(/\*\*([^*\n]+)\*\*/g,'<b>$1</b>').replace(/^#{1,4} (.+)$/gm,'<b>$1</b>').replace(/(^|[^*\w])\*([^*\n]+)\*(?!\w)/g,'$1<i>$2</i>').replace(/\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/g,'<a href="$2" target="_blank" rel="noopener">$1</a>')
  .replace(/(?:^|\n)((?:- .*(?:\n|$))+)/g,(m,l)=>'<ul>'+l.trim().split('\n').map(x=>'<li>'+x.slice(2)+'</li>').join('')+'</ul>').replace(/(?:^|\n)((?:\d+\. .*(?:\n|$))+)/g,(m,l)=>'<ol>'+l.trim().split('\n').map(x=>'<li>'+x.replace(/^\d+\.\s/,'')+'</li>').join('')+'</ol>').replace(/\n/g,'<br>');
  return s.replace(/\u0000(\d+)\u0000/g,(m,i)=>B[i])}
@@ -4792,6 +4867,7 @@ function msgEl(m,i){const d=document.createElement('div');d.className='msg '+m.r
  d.lastChild.style.cssText='flex:1;min-width:0';d.querySelector('.meta').onclick=e=>{const a=e.target.dataset.a;if(a=='c')navigator.clipboard&&navigator.clipboard.writeText(m.t).then(()=>toast('Copiado'));if(a=='r')regen();if(a=='s')say(m.s||speakable(m.t));if(a=='x'){mem.taught=mem.taught.filter(z=>z.q.toLowerCase()!=(m.q||'').replace(/[?!¿¡.]+$/g,'').trim().toLowerCase());save();toast('Olvidado, gracias por corregirme')}};return d}
 feed.addEventListener('click',e=>{if(e.target.className=='cp'){navigator.clipboard&&navigator.clipboard.writeText(e.target.nextSibling.textContent).then(()=>toast('Código copiado'))}});
 function speakable(t){
+ t=nxSay(t);
  const m=t.match(/=\s*\*\*([^*]+)\*\*\s*$/);if(m)return'El resultado es '+m[1];
  let s=t.replace(/```[\s\S]*?```/g,' Te dejo el código en pantalla. ').replace(/`([^`]*)`/g,'$1').replace(/\[([^\]]*)\]\([^)]*\)/g,'$1').replace(/·?\s*di «más» para seguir/g,' ').replace(/https?:\/\/\S+/g,' ')
  .replace(/\p{Extended_Pictographic}/gu,'').replace(/[*_#>|]/g,'').replace(/^\s*[-•]\s*/gm,'').replace(/\s*\n+\s*/g,'. ').replace(/([.:;!?])\s*\.\s*/g,'$1 ').replace(/\s+/g,' ').trim();
@@ -4840,7 +4916,7 @@ function sayChunks(x,max=170){const out=[],push=p=>{p=p.trim();if(p)out.push(p)}
  (x.match(/[^.!?…;:]+[.!?…;:]*\s*/g)||[x]).forEach(q=>{if((cur+q).length<=max){cur+=q;return}push(cur);cur='';if(q.length<=max){cur=q;return}
   let r=q;while(r.length>max){let k=Math.max(r.lastIndexOf(', ',max),r.lastIndexOf(' ',max));if(k<40)k=max;push(r.slice(0,k+1));r=r.slice(k+1)}cur=r});push(cur);return out}
 function say(t){if(!window.speechSynthesis)return;speechSynthesis.cancel();const en=isEn(t),
- x=pron(speechNums(String(t).replace(/\[([^\]]*)\]\([^)]*\)/g,'$1').replace(/[*`_·]/g,'').replace(/\s+/g,' '),en).replace(/\s+/g,' ').trim());if(!x)return;
+ x=pron(speechNums(nxSay(String(t)).replace(/\[([^\]]*)\]\([^)]*\)/g,'$1').replace(/[*`_·]/g,'').replace(/\s+/g,' '),en).replace(/\s+/g,' ').trim());if(!x)return;
  const v=voiceFor(en?'en':'es'),us=sayChunks(x).map(c=>{const u=new SpeechSynthesisUtterance(c);u.lang=en?'en-US':'es-MX';if(v){u.voice=v;u.lang=v.lang}u.pitch=S.get('nx-vp',1.12);u.rate=S.get('nx-vr',1.03);return u});
  window._nxUs=us;/* referencia viva: evita que el navegador descarte frases antes de leerlas */
  setTimeout(()=>{if(window._nxUs===us)us.forEach(u=>speechSynthesis.speak(u))},80)}
@@ -5288,7 +5364,7 @@ document.querySelectorAll('#imt [data-f]').forEach(b=>b.onclick=()=>{if(!orig)re
  else{const id=ictx.getImageData(0,0,imc.width,imc.height);PIX[f](id.data);ictx.putImageData(id,0,0)}
  if(f=='reset')analyze()});
 $('#imdl').onclick=()=>{if(orig)imc.toBlob(b=>b&&dl(b,'noryx-imagen.png'))};
-const SYSI='Eres Noryx, una IA amable con trato femenino, creada por Orlando. El usuario te muestra una imagen y te hace preguntas sobre ella. Responde en su idioma. Mira la imagen con cuidado. Si es un ejercicio o tarea (química, matemáticas, física, etc.), transcribe lo que ves, resuélvelo o corrige la respuesta del usuario paso a paso y explica el porqué. Si te piden música, recomienda 4 o 5 géneros, artistas o canciones concretas que combinen con el ambiente, los colores y la emoción de la imagen, con una razón breve para cada una. Si es una foto o un diseño, descríbelo y responde lo que pregunten. Si algo no se ve con claridad, dilo en vez de inventarlo. Usa markdown simple (**negritas** y listas con "- "). Máximo 250 palabras.';
+const SYSI='Eres Noryx, una IA amable con trato femenino, creada por Orlando. El usuario te muestra una imagen y te hace preguntas sobre ella. Responde en su idioma. Mira la imagen con cuidado. Si es un ejercicio o tarea (química, matemáticas, física, etc.), transcribe lo que ves, resuélvelo o corrige la respuesta del usuario paso a paso y explica el porqué. Si te piden música, recomienda 4 o 5 géneros, artistas o canciones concretas que combinen con el ambiente, los colores y la emoción de la imagen, con una razón breve para cada una. Si es una foto o un diseño, descríbelo y responde lo que pregunten. Si algo no se ve con claridad, dilo en vez de inventarlo. Usa markdown simple (**negritas** y listas con "- "). Máximo 250 palabras. Escribe las fórmulas en LaTeX entre signos de dólar ($...$ en línea, $$...$$ en bloque).';
 const IMQ=['¿Qué ves en la imagen?','Resuelve este ejercicio paso a paso','¿Está bien mi respuesta?','Transcribe el texto','¿Qué música le queda?','Ponle un título y un texto para redes','¿Qué colores combinan con esto?','Explícamelo fácil'];
 IMQ.forEach(q=>{const b=document.createElement('button');b.textContent=q;b.onclick=()=>imAsk(q);$('#imch').append(b)});
 const pKey=()=>(S.get('nx-pkey','')||'').trim();
@@ -9333,6 +9409,7 @@ function ring(subs=[]){
 }
 function safeFn(src){if(!/^[\d\s.xX+\-*/^().,a-zA-Z]+$/.test(src)||/[^0-9xX+\-*/^().,\s]|(?:window|document|constructor|prototype|eval|function)/i.test(src))throw Error('Función no válida. Usa x, números y operadores permitidos.');let z=src.toLowerCase().replace(/\bsin\b/g,'Math.sin').replace(/\bcos\b/g,'Math.cos').replace(/\btan\b/g,'Math.tan').replace(/\bsqrt\b/g,'Math.sqrt').replace(/\babs\b/g,'Math.abs').replace(/\^/g,'**').replace(/(\d)(x|Math\.)/g,'$1*$2').replace(/x(?=\()/g,'x*');if(!/^[\d\s.xX+\-*/^().,a-zA-Z]+$/.test(z))throw Error('No pude interpretar la función.');return new Function('x','"use strict";return ('+z+')')}
 function mathHTML(value){
+ if(window.katex&&window.nxLabFmt)return nxLabFmt(value);
  let x=esc(String(value));
  // Fracciones algebraicas habituales: x^n/n, coeficiente*x^n/n y fracciones numéricas.
  x=x.replace(/([+-]?(?:\d+(?:\.\d+)?\s*[·*]\s*)?x\^\{?-?\d+\}?|[+-]?\d+(?:\.\d+)?)\s*\/\s*(\d+(?:\.\d+)?)/g,(_,a,b)=>`<span class="nl-frac"><span class="nl-num">${a.replace(/\*/g,'·')}</span><span class="nl-den">${b}</span></span>`);
@@ -9435,7 +9512,7 @@ function run(){
    {const raw=$('nlInt').value.trim(),lw=$('nlLower').value,up=$('nlUpper').value,R=(typeof NXM!=='undefined'&&NXM.integrate)?NXM.integrate(raw,lw,up):null;
   if(R&&R.ok){const fx=s=>esc(s).replace(/\n/g,'<br>'),hasB=lw!==''&&up!=='';
    const cards=R.blocks.map((b,i)=>`<div class="nl-step"><b>Paso ${i+1} · ${esc(b[0])}</b><br>${b[1].map(fx).join('<br>')}</div>`).join('');
-   out.innerHTML=`<section class="nl-integral-screen"><h3>Cálculo diferencial e integral · Integrales</h3><div class="nl-check"><b>Datos</b><br>Integrando: ${esc(R.expr)}<br>${hasB?'Límites: a = '+esc(lw)+'; b = '+esc(up)+'<br>':''}${esc(R.method)}<br>Objetivo: encontrar la antiderivada con todos los pasos${hasB?' y evaluar la integral definida':''}.</div>${cards}<div class="nl-answer"><b>Resultado final</b><br>${esc(R.result)}</div></section>`;
+   out.innerHTML=`<section class="nl-integral-screen"><h3>Cálculo diferencial e integral · Integrales</h3><div class="nl-check"><b>Datos</b><br>Integrando: ${esc(R.expr)}<br>${hasB?'Límites: a = '+esc(lw)+'; b = '+esc(up)+'<br>':''}${esc(R.method)}<br>Objetivo: encontrar la antiderivada con todos los pasos${hasB?' y evaluar la integral definida':''}.</div>${cards}<div class="nl-answer"><b>Resultado final</b><br>${nxLabFmt(R.result)}</div></section>`;
    explain.textContent='';lastText='Cálculo diferencial e integral — Integración\n'+R.title+'\n'+R.blocks.map((b,i)=>'Paso '+(i+1)+' · '+b[0]+': '+b[1].join(' ')).join('\n')+'\nResultado: '+R.result;return;}
   if(R&&R.miss){out.innerHTML=`<section class="nl-integral-screen"><h3>Cálculo diferencial e integral · Integrales</h3><div class="nl-check"><b>No pude resolver esta integral con las reglas actuales</b><br>${esc(R.msg).replace(/\n/g,'<br>')}</div></section>`;explain.textContent='';lastText='';return;}}
   const solved=integralSolve(src,type);steps=solved.steps.slice();answer=solved.answer;let lower=$('nlLower').value,upper=$('nlUpper').value;
@@ -9804,7 +9881,7 @@ const OPS={area:'Área bajo la curva / entre curvas',volx:'Volumen de revolució
 const q=id=>document.getElementById(id);
 function card(t,lines){return`<div class="nl-step"><b>${esc(t)}</b><br>${lines.map(esc).join('<br>')}</div>`}
 function exact(e,a,b){try{const R=typeof NXM!=='undefined'&&NXM.integrate?NXM.integrate(e,a,b):null;return R&&R.ok?R:null}catch(_){return null}}
-function render(title,data,blocks,res,graph){const out=q('nxLabOut');out.innerHTML=`<section class="nl-integral-screen"><h3>${esc(title)}</h3><div class="nl-check"><b>Datos</b><br>${data.map(esc).join('<br>')}</div>${blocks.map(b=>card(b[0],b[1])).join('')}${graph?`<div class="nl-check"><b>Gráfica</b><br>${graph}</div>`:''}<div class="nl-answer"><b>Resultado final</b><br>${esc(res)}</div></section>`;const ex=q('nxLabExplain');if(ex)ex.textContent=''}
+function render(title,data,blocks,res,graph){const out=q('nxLabOut');out.innerHTML=`<section class="nl-integral-screen"><h3>${esc(title)}</h3><div class="nl-check"><b>Datos</b><br>${data.map(esc).join('<br>')}</div>${blocks.map(b=>card(b[0],b[1])).join('')}${graph?`<div class="nl-check"><b>Gráfica</b><br>${graph}</div>`:''}<div class="nl-answer"><b>Resultado final</b><br>${nxLabFmt(res)}</div></section>`;const ex=q('nxLabExplain');if(ex)ex.textContent=''}
 function fail(msg){const out=q('nxLabOut');out.innerHTML=`<section class="nl-integral-screen"><h3>Revisa los datos</h3><div class="nl-check">${esc(msg)}</div></section>`}
 function solve(op){
  const fs=q('nlInt').value.trim(),gs=(q('nlG')?q('nlG').value:'').trim(),as=q('nlLower').value.trim(),bs=q('nlUpper').value.trim();
@@ -9905,7 +9982,7 @@ function note(){const n=q('nlTypeNote'),sel=q('nlIntType');if(!n||!sel)return;co
 const legacy=(v,e)=>['poly','trig','exp'].includes(v)?v:/sin|cos|tan|sec|csc|cot|sen/i.test(e)?'trig':/e\^|exp|ln|\^x|1\/x/i.test(e)?'exp':'poly';
 function deriv(){const e=q('nlInt').value.trim(),r=typeof NXM!=='undefined'&&NXM.solve?NXM.solve('deriva '+e):null;if(!r||!r.t)return false;
  const P=r.t.replace(/\*\*/g,'').split('\n\n'),st=P.filter(p=>/^Paso/.test(p)),res=P.find(p=>/^Resultado/.test(p))||'';
- q('nxLabOut').innerHTML=`<section class="nl-integral-screen"><h3>Cálculo diferencial e integral · Derivadas</h3><div class="nl-check"><b>Datos</b><br>Función: f(x) = ${esc(e)}<br>Tipo: ${esc(TL[detect(e,'deriv',cmp)])}<br>Objetivo: encontrar f′(x).</div>${st.map(p=>`<div class="nl-step"><b>${esc(p.split('.')[0])}</b><br>${esc(p.replace(/^Paso \d+\.\s*/,''))}</div>`).join('')}<div class="nl-answer"><b>Resultado final</b><br>${esc(res.replace(/^Resultado:\s*/,''))}</div></section>`;const x=q('nxLabExplain');if(x)x.textContent='';return true}
+ q('nxLabOut').innerHTML=`<section class="nl-integral-screen"><h3>Cálculo diferencial e integral · Derivadas</h3><div class="nl-check"><b>Datos</b><br>Función: f(x) = ${esc(e)}<br>Tipo: ${esc(TL[detect(e,'deriv',cmp)])}<br>Objetivo: encontrar f′(x).</div>${st.map(p=>`<div class="nl-step"><b>${esc(p.split('.')[0])}</b><br>${esc(p.replace(/^Paso \d+\.\s*/,''))}</div>`).join('')}<div class="nl-answer"><b>Resultado final</b><br>${nxLabFmt(res.replace(/^Resultado:\s*/,''))}</div></section>`;const x=q('nxLabExplain');if(x)x.textContent='';return true}
 function inject(){const sel=q('nlIntType');if(!sel||q('nlTypeNote'))return;sel.insertAdjacentHTML('afterend','<div id="nlTypeNote" class="nl-small"></div>');sel.value='x';fill();
  q('nlCalcOp').addEventListener('change',fill);sel.addEventListener('change',note);q('nlInt').addEventListener('input',note);q('nlCalcOp').addEventListener('change',note)}
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('#nlRun'),sel=q('nlIntType');if(!b||!sel||!q('nlCalcOp'))return;note();const o=sel.value,e0=q('nlInt').value;
