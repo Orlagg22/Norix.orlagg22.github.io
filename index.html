@@ -675,12 +675,14 @@ html,body{overscroll-behavior:none}#feed{overscroll-behavior:contain}
  </div>
  <div id="pMk" class="pn" hidden>
   <textarea id="mkp" maxlength="400" placeholder="Describe lo que quieres ver: «un zorro astronauta sobre la luna, atardecer»"></textarea>
+  <label class="drop" id="mkdrop" style="padding:12px">📷 Opcional: agrega hasta 3 fotos para que Noryx las modifique o se base en ellas<input type="file" id="mkf" accept="image/*" multiple hidden></label>
+  <div id="mkth" style="display:flex;gap:10px;flex-wrap:wrap"></div>
   <div class="row"><select id="mks" aria-label="Estilo"><option value="real">Realista</option><option value="ilus">Ilustración</option><option value="anime">Anime</option><option value="oleo">Óleo</option><option value="pixel">Pixel art</option><option value="tres">3D</option><option value="boceto">Boceto</option></select>
   <select id="mkz" aria-label="Formato"><option value="sq">Cuadrada</option><option value="ho">Horizontal</option><option value="ve">Vertical</option></select>
   <button class="pri" id="mkb">Crear imagen</button></div>
   <div id="mkh"></div><div id="mkst"></div><div id="mko"></div>
   <div class="row" id="mka" hidden><button id="mkv">Otra variante</button><button id="mkd">Descargar</button></div>
-  <small>La imagen la genera un servicio externo (Pollinations) a partir de tu descripción; funciona mejor si la escribes con detalle. Si no responde, Noryx dibuja arte generativo local como respaldo.</small>
+  <small>La imagen la genera un servicio externo (Cloudflare; si falla, Pollinations) a partir de tu descripción; funciona mejor si la escribes con detalle. Si agregas fotos, se envían a Cloudflare para procesarlas (no subas fotos privadas). Con fotos, escribe qué cambiar: «ponle un sombrero», «conviértela en dibujo». Si no responde, Noryx dibuja arte generativo local como respaldo.</small>
  <details class="ed" id="pkd"><summary>Clave de Pollinations (solo para crear imágenes)</summary>
   <div class="qrow" style="margin-top:8px"><input type="password" id="pkey" placeholder="pk_…" autocomplete="off" spellcheck="false"><button id="pks">Guardar</button></div>
   <small>Si la creación de imágenes falla, el servicio ahora pide una clave. Créala gratis en <a href="https://enter.pollinations.ai" target="_blank" rel="noopener">enter.pollinations.ai</a> (elige tipo «publishable», pk_). Se guarda solo en este navegador y se envía únicamente a Pollinations. Usa una clave pk_, nunca una sk_.</small>
@@ -2725,11 +2727,13 @@ async function askNoryxAPI(msgs){
   if(d&&d.answer){window._nxApiDiag={ok:true,msg:'ok'};return{t:clean(d.answer)}}
   window._nxApiDiag={ok:false,msg:'La API respondió sin texto'};return null}
  catch(e){window._nxApiDiag={ok:false,msg:(e&&e.name=='AbortError'?'Tiempo agotado':'No se pudo conectar (¿bloqueo CORS u origen no permitido?)')};return null}finally{clearTimeout(t)}}
-async function askNoryxImage(prompt){
+async function askNoryxImage(prompt,refs,w,h){
  if(!NORYX_API||/TU-WORKER/.test(NORYX_API))return null;
- const c=new AbortController(),t=setTimeout(()=>c.abort(),60000);
+ const c=new AbortController(),t=setTimeout(()=>c.abort(),90000);
  try{
-  const r=await fetch(NORYX_API.replace(/\/v1\/chat$/,'')+'/v1/image',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt:String(prompt).slice(0,1000)}),signal:c.signal});
+  const body={prompt:String(prompt).slice(0,1000)};
+  if(refs&&refs.length){body.images=refs;body.width=w;body.height=h}
+  const r=await fetch(NORYX_API.replace(/\/v1\/chat$/,'')+'/v1/image',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body),signal:c.signal});
   if(!r.ok){let x='';try{const j=await r.json();x=[j.error,j.details].filter(Boolean).join(' · ')}catch(e){}window._nxImgDiag='HTTP '+r.status+(x?' · '+x:'');return null}
   const d=await r.json();
   if(d&&typeof d.image=='string'&&d.image.indexOf('data:image/')==0){window._nxImgDiag='ok';return d.image}
@@ -5362,10 +5366,17 @@ function mkArt(p,w,h){const k=768/Math.max(w,h),c=document.createElement('canvas
  x.globalAlpha=.5;x.lineWidth=2;for(let i=0;i<14;i++){x.strokeStyle='hsl('+(h0+R()*160)+',90%,75%)';x.beginPath();let px=R()*c.width,py=R()*c.height;x.moveTo(px,py);for(let j=0;j<30;j++){px+=(R()-.3)*28;py+=(R()-.5)*28;x.lineTo(px,py)}x.stroke()}
  x.globalAlpha=1;return c}
 const mkHist=()=>{const h=S.get('nx-imgp',[]);$('#mkh').innerHTML='';h.forEach(q=>{const b=document.createElement('button');b.textContent=q;b.title=q;b.onclick=()=>{$('#mkp').value=q};$('#mkh').append(b)})};mkHist();
+const mkRefs=[];
+function mkRefDraw(){const b=$('#mkth');b.innerHTML='';mkRefs.forEach((u,i)=>{const w=document.createElement('div');w.style.position='relative';const im=document.createElement('img');im.src=u;im.alt='Foto '+(i+1);im.style.cssText='height:64px;border-radius:8px;border:1px solid var(--line)';const x=document.createElement('button');x.textContent='✕';x.title='Quitar';x.style.cssText='position:absolute;top:-8px;right:-8px;padding:0 7px;border-radius:999px';x.onclick=()=>{mkRefs.splice(i,1);mkRefDraw()};w.append(im,x);b.append(w)})}
+function mkShrink(f){return new Promise(ok=>{const r=new FileReader();r.onerror=()=>ok(null);r.onload=()=>{const im=new Image();im.onerror=()=>ok(null);im.onload=()=>{const k=Math.min(1,768/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=Math.max(1,Math.round(im.width*k));c.height=Math.max(1,Math.round(im.height*k));const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);x.drawImage(im,0,0,c.width,c.height);ok(c.toDataURL('image/jpeg',.85))};im.src=r.result};r.readAsDataURL(f)})}
+async function mkAddFiles(fl){for(const f of [...fl]){if(mkRefs.length>=3){toast('Máximo 3 fotos');break}if(!/^image\//.test(f.type))continue;const u=await mkShrink(f);if(u)mkRefs.push(u)}mkRefDraw()}
+$('#mkf').onchange=e=>{mkAddFiles(e.target.files);e.target.value=''};
+{const dz=$('#mkdrop');['dragenter','dragover'].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.classList.add('over')}));['dragleave','drop'].forEach(ev=>dz.addEventListener(ev,e=>{e.preventDefault();dz.classList.remove('over')}));dz.addEventListener('drop',e=>{if(e.dataTransfer&&e.dataTransfer.files)mkAddFiles(e.dataTransfer.files)})}
 async function mkGo(){const p=$('#mkp').value.trim().slice(0,400);if(!p){toast('Describe la imagen que quieres');return}if(mkBusy)return;mkBusy=true;$('#mkb').disabled=$('#mkv').disabled=true;$('#mka').hidden=true;
  const [w,h]=MKZ[$('#mkz').value],seed=Math.floor(Math.random()*1e6),full=p+', '+MKS[$('#mks').value],out=$('#mko'),ms=$('#mkst');out.textContent='';let im=null,url='';
  const key=pKey(),qs=m=>'?width='+w+'&height='+h+'&seed='+seed+'&nologo=true&model='+m,P=encodeURIComponent(full),tries=[];if(key)tries.push('https://gen.pollinations.ai/image/'+P+qs('flux')+'&key='+encodeURIComponent(key));tries.push('https://image.pollinations.ai/prompt/'+P+qs('flux'),'https://image.pollinations.ai/prompt/'+P+qs('turbo'));
- ms.textContent='Creando tu imagen… puede tardar unos segundos.';try{const du=await askNoryxImage(full);if(du){im=await mkLoad(du,30000);url=du}}catch(e){im=null}
+ const refs=mkRefs.slice();ms.textContent=refs.length?'Modificando tu foto… puede tardar unos segundos.':'Creando tu imagen… puede tardar unos segundos.';try{const du=await askNoryxImage(refs.length?p:full,refs,w,h);if(du){im=await mkLoad(du,30000);url=du}}catch(e){im=null}
+ if(!im&&refs.length){ms.textContent='No pude procesar tu foto ('+(window._nxImgDiag||'sin detalle')+'). Inténtalo de nuevo en un momento.';mkBusy=false;$('#mkb').disabled=$('#mkv').disabled=false;return}
  for(let i=0;i<tries.length&&!im;i++){url=tries[i];ms.textContent=i==0?'Creando tu imagen… puede tardar unos segundos.':'Probando otro servidor…';try{im=await mkLoad(url,70000)}catch(e){}}
  if(im){im.alt=p;out.replaceChildren(im);mkLast={url,local:false};ms.textContent=''}
  else{const c=mkArt(p,w,h);out.replaceChildren(c);mkLast={local:true,canvas:c};ms.textContent='El generador externo no respondió'+(key?'.':' (ahora suele pedir una clave gratuita: pégala abajo en «Conexión con Pollinations»).')+' Te dejo arte generativo local inspirado en tu texto; no es una ilustración fiel.'}
