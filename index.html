@@ -2720,7 +2720,7 @@ async function askNoryxAPI(msgs){
   if(!last)return null;
   const r=await fetch(NORYX_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({system:sys,history:rest.slice(-20),message:String(last.content)}),signal:c.signal});
   if(r.status==429){window._nxApiDiag={ok:false,msg:'Límite de peticiones (HTTP 429)'};return{err:'rate'}}
-  if(!r.ok){let x='';try{x=(await r.json()).error||''}catch(e){}window._nxApiDiag={ok:false,msg:'HTTP '+r.status+(x?' · '+x:'')};return null}
+  if(!r.ok){let x='';try{const j=await r.json();x=[j.error,j.details,j.status?'Groq '+j.status:''].filter(Boolean).join(' · ')}catch(e){}window._nxApiDiag={ok:false,msg:'HTTP '+r.status+(x?' · '+x:'')};return null}
   const d=await r.json();
   if(d&&d.answer){window._nxApiDiag={ok:true,msg:'ok'};return{t:clean(d.answer)}}
   window._nxApiDiag={ok:false,msg:'La API respondió sin texto'};return null}
