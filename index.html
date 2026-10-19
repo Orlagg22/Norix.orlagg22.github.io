@@ -13267,8 +13267,20 @@ window.nxMovie=()=>open(0);window.nxMovie2=()=>open(1);window.nxMovie3=()=>open(
   try{const a=window.NXQ2&&window.NXQ2.retrieve?window.NXQ2.retrieve(t):[];return a[0]||null}catch(e){return null}
  }
  function currentContext(){try{return window.NXQ2&&window.NXQ2.getContext?window.NXQ2.getContext():null}catch(e){return null}}
+ /* Los modos de juego (abogado, psicología, detective, escape room) van primero al núcleo local:
+ si hay una partida activa, o el mensaje pide iniciar una, NO se manda a la IA externa. */
+ function gameBusy(t){
+  try{
+   if(typeof ctx!=='undefined'&&ctx&&(ctx.tr||ctx.ps||ctx.dt||ctx.er||ctx.erq))return true;
+   const n=fold(t);
+   const start=/(simul|practic|juego de rol|jugu?emos|jugar|sala de audiencias|ponme (como|de)|hazme|quiero (ser|actuar|jugar|practicar)|actua como|modo (abogado|psicolog|detective)|resolver (un )?(caso|misterio)|crea (un )?(juicio|caso)|genera (un )?(juicio|caso)|ranking)/.test(n);
+   const kind=/(abogad|litigante|juicio|audiencia|psicolog|terapeuta|terapia|paciente|consultorio|detective|caso|misterio|escape room|sala de escape|ranking)/.test(n);
+   return start&&kind;
+  }catch(e){return false}
+ }
  function shouldTryExternal(t){
   if(!MAESTRO||!navigator.onLine||!t||command.test(t)||/^\s*(?:aprende|learn|ensena|teach)\s*:/i.test(t))return false;
+  if(gameBusy(t))return false;
   const n=fold(t);if(tinyTalk.test(n)||deterministic.test(n))return false;
   // Las preguntas de precisión se resuelven con los motores locales ya existentes.
   const intent=window.NXQ2&&window.NXQ2.classifyIntent?window.NXQ2.classifyIntent(t):'general';
