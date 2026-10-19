@@ -9353,9 +9353,9 @@ function drawControls(){
  graph:`<b>Graficador de funciones</b>${field('Función de x (ej. x^2-3*x+2)','nlFn','x^2-3*x+2') }<div class="nl-row">${field('x mínimo','nlMin','-5','number')}${field('x máximo','nlMax','5','number')}</div><button class="primary" id="nlRun">Graficar</button><p class="nl-small">Operaciones admitidas: + − * / ^, x, paréntesis, sin, cos, tan, sqrt, abs.</p>`,
  chem:`<b>Química · compuestos, ácidos y reacciones</b><label>Buscar por nombre o fórmula</label><input id="nlChemSearch" placeholder="Ej. nitrobenceno, ácido sulfúrico, C6H6…"><label>Biblioteca de compuestos</label><select id="nlChem" size="5" style="width:100%;max-height:145px"><option value="benzene">Benceno · C₆H₆</option></select><div class="nl-row"><button class="primary" id="nlRun">Ver estructura y datos</button><button id="nlChemExercise">Generar ejercicio</button></div><div id="nlChemQuiz"></div><div class="nl-box"><b>Reacciones</b><label>Tipo de reacción</label><select id="nlReaction"><option value="neutral">Neutralización ácido + base</option><option value="metal">Ácido + metal</option><option value="carbonate">Ácido + carbonato</option><option value="ester">Esterificación</option><option value="benzene">Sustitución aromática: nitración del benceno</option></select><button id="nlRunReaction" type="button">Mostrar reacción balanceada y explicación</button></div><div class="nl-box"><b>Resolver desde fotografía</b><label>Sube una foto del ejercicio de química</label><input id="nlChemPhoto" type="file" accept="image/*"><div id="nlChemPhotoPreview" class="nl-small">Sin fotografía seleccionada.</div><button id="nlAnalyzeChemPhoto" type="button">Abrir en el analizador de imágenes de NORYX</button><p class="nl-small">NORYX podrá responder usando su analizador de imágenes disponible. Revisa la transcripción de fórmulas y subíndices antes de aceptar el resultado.</p></div><p class="nl-small">Las estructuras esquemáticas y reacciones incluidas son ejemplos educativos; confirma condiciones y nomenclatura con tu material de clase.</p>`,
  geo:`<b>Figuras geométricas</b><label>Figura</label><select id="nlShape"><option value="triangle">Triángulo</option><option value="circle">Círculo</option><option value="rectangle">Rectángulo</option><option value="square">Cuadrado</option></select><div class="nl-row">${field('Base / ancho','nlA','6','number')}${field('Altura / alto','nlB','4','number')}</div><button class="primary" id="nlRun">Dibujar y calcular</button>`,
- physics:`<b>Física: estática, electrostática, vectores y circuitos</b><label>Situación</label><select id="nlPhys"><option value="incline">Bloque en plano inclinado</option><option value="vectors">Suma de vectores</option><option value="statics">Estática: equilibrio y momentos</option><option value="electrostatics">Electrostática: fuerza, campo y potencial</option><option value="circuit" selected>Circuito: simplificar y calcular</option><option value="forces">Diagrama de fuerzas</option></select>
+ physics:`<b>Física: estática, electrostática, vectores y circuitos</b><label>Situación</label><select id="nlPhys"><option value="incline">Bloque en plano inclinado</option><option value="vectors">Suma de vectores</option><option value="statics">Estática: equilibrio y momentos</option><option value="electrostatics">Electrostática: fuerza, campo y potencial</option><option value="forces">Diagrama de fuerzas</option></select>
 <div id="nlForceFields" style="display:none"><b>Diagrama cartesiano de fuerzas</b><p class="nl-small">Ingresa magnitud en newtons y ángulo medido desde el eje +X en sentido antihorario. Los ángulos cardinales son 0°, 90°, 180° y 270°.</p><div class="nl-row">${field('Fuerza F₁ (N)','nlF1m','10','number')}${field('Ángulo F₁ (°)','nlF1a','0','number')}</div><div class="nl-row">${field('Fuerza F₂ (N)','nlF2m','10','number')}${field('Ángulo F₂ (°)','nlF2a','90','number')}</div><div class="nl-row">${field('Fuerza F₃ (N)','nlF3m','5','number')}${field('Ángulo F₃ (°)','nlF3a','180','number')}</div><div class="nl-row">${field('Fuerza F₄ (N)','nlF4m','0','number')}${field('Ángulo F₄ (°)','nlF4a','270','number')}</div><p class="nl-small">Puedes usar magnitud 0 si no necesitas una fuerza. El diagrama muestra cada vector desde el origen y la resultante.</p></div><div id="nlStaticsFields" style="display:none"><b>Datos de estática</b><div class="nl-row">${field('Fuerza 1 (N)','nlStF1','20','number')}${field('Distancia 1 al pivote (m)','nlStD1','2','number')}</div><div class="nl-row">${field('Fuerza 2 (N)','nlStF2','10','number')}${field('Distancia 2 al pivote (m)','nlStD2','3','number')}</div><label>Sentido de las fuerzas</label><select id="nlStSense"><option value="opposite">Momentos opuestos</option><option value="same">Momentos en el mismo sentido</option></select><p class="nl-small">Calcula τ = F·d y el momento resultante. Se supone que las fuerzas son perpendiculares al brazo.</p></div>
-<div id="nlElectroFields" style="display:none"><b>Datos de electrostática</b><div class="nl-row">${field('Carga q₁ (μC)','nlEq1','2','number')}${field('Carga q₂ (μC)','nlEq2','-3','number')}</div>${field('Distancia entre cargas (m)','nlEr','0.5','number')}<div class="nl-row">${field('Carga de prueba q (μC)','nlEtest','1','number')}${field('Distancia para potencial (m)','nlErp','0.5','number')}</div><p class="nl-small">Calcula fuerza de Coulomb, campo aproximado por F/q y potencial de q₁.</p></div><div id="nlCircuitFields"><label>Sube una foto del circuito (se procesa en esta herramienta; la foto no se envía a APIs)</label><input id="nlCircuitPhoto" type="file" accept="image/*"><div id="nlCircuitPreview" class="nl-small">Sin fotografía seleccionada.</div><button type="button" id="nlAnalyzeCircuitPhoto">Abrir foto en el analizador visual local de NORYX</button><label>Voltaje de la fuente (V)</label><input id="nlVolt" type="number" min="0" step="any" value="12"><label>Topología del circuito</label><select id="nlTopology"><option value="series">R1 + R2 + R3 (serie)</option><option value="parallel">R1 || R2 || R3 (paralelo)</option><option value="mix1">R1 + (R2 || R3)</option><option value="mix2">(R1 + R2) || R3</option><option value="mix3">R1 || (R2 + R3)</option><option value="mix4">(R1 || R2) + R3</option><option value="mix5">(R1 + R2) || (R3 + R4)</option><option value="mix6">R1 || R2 || (R3 + R4)</option><option value="mix7">(R1 || R2) || (R3 + R4)</option><option value="twoSeries">R1 + R2 (serie)</option><option value="twoParallel">R1 || R2 (paralelo)</option></select><div class="nl-row">${field('R1 (Ω)','nlR1','100','number')}${field('R2 (Ω)','nlR2','220','number')}${field('R3 (Ω)','nlR3','330','number')}${field('R4 (Ω)','nlR4','470','number')}</div><p class="nl-small">El motor calcula las topologías seleccionadas y explica cada reducción. La foto se envía al analizador de imágenes que ya existe en NORYX; verifica conexiones y valores detectados antes de calcular, porque no siempre se pueden reconocer automáticamente.</p></div><button class="primary" id="nlRun">Simplificar circuito / generar diagrama</button>`,
+<div id="nlElectroFields" style="display:none"><b>Datos de electrostática</b><div class="nl-row">${field('Carga q₁ (μC)','nlEq1','2','number')}${field('Carga q₂ (μC)','nlEq2','-3','number')}</div>${field('Distancia entre cargas (m)','nlEr','0.5','number')}<div class="nl-row">${field('Carga de prueba q (μC)','nlEtest','1','number')}${field('Distancia para potencial (m)','nlErp','0.5','number')}</div><p class="nl-small">Calcula fuerza de Coulomb, campo aproximado por F/q y potencial de q₁.</p></div><div id="nlCircuitFields"><label>Sube una foto del circuito (se procesa en esta herramienta; la foto no se envía a APIs)</label><input id="nlCircuitPhoto" type="file" accept="image/*"><div id="nlCircuitPreview" class="nl-small">Sin fotografía seleccionada.</div><button type="button" id="nlAnalyzeCircuitPhoto">Abrir foto en el analizador visual local de NORYX</button><p class="nl-small">Tras analizar la foto, dibuja el circuito en el editor visual para simplificarlo paso a paso sin errores.</p></div><button class="primary" id="nlRun">Simplificar circuito / generar diagrama</button>`,
  stats:`<b>Probabilidad y estadística</b><label>Herramienta</label><select id="nlStatsOp"><option value="descriptive">Estadística descriptiva</option><option value="probability">Probabilidad simple</option><option value="conditional">Probabilidad condicional</option><option value="combinatorics">Combinatoria (nCr y nPr)</option><option value="binomial">Distribución binomial</option></select><div id="nlStatsData"><label>Datos separados por comas (ej. 4, 7, 7, 9, 13)</label><input id="nlStatsValues" value="4, 7, 7, 9, 13"><div class="nl-row"><label><input type="checkbox" id="nlSample"> Tratar los datos como muestra (n−1 para varianza)</label></div></div><div id="nlStatsProb" style="display:none"><div class="nl-row">${field('Casos favorables','nlFav','2','number')}${field('Casos posibles','nlTotal','6','number')}</div><div class="nl-row">${field('P(A ∩ B) para condicional','nlInter','0.2','number')}${field('P(B) > 0','nlPB','0.5','number')}</div></div><div id="nlStatsComb" style="display:none"><div class="nl-row">${field('n (total)','nlN','10','number')}${field('r (seleccionados)','nlR','3','number')}</div></div><div id="nlStatsBinom" style="display:none"><div class="nl-row">${field('n ensayos','nlBinN','10','number')}${field('k éxitos exactos','nlBinK','3','number')}</div>${field('Probabilidad de éxito p (0 a 1)','nlBinP','0.5','number')}</div><button class="primary" id="nlRun">Calcular y explicar</button><p class="nl-small">Incluye media, mediana, moda, rango, varianza, desviación estándar, probabilidad simple/condicional, permutaciones, combinaciones y distribución binomial. Verifica supuestos y si los datos son una muestra o población.</p>`,
  integral:`<b>Cálculo diferencial e integral</b><label>Operación</label><select id="nlCalcOp"><option value="integral">Integración</option><option value="deriv">Derivación</option></select>${field('Función (ej. 3*x^2+2*x-4)','nlInt','3*x^2+2*x-4')}<div class="nl-math-keyboard" id="nlMathKeyboard"><div class="nl-math-head"><b>Teclado matemático</b><span>Inserta símbolos en el integrando</span></div><div class="nl-math-keys"><button type="button" data-insert="∫">∫ Integral</button><button type="button" data-insert="sqrt(|)">√ Raíz</button><button type="button" data-insert="^">xⁿ Potencia</button><button type="button" data-insert="(|)/()">a/b Fracción</button><button type="button" data-insert="pi">π Pi</button><button type="button" data-insert="infty">∞ Infinito</button><button type="button" data-insert="sin(|)">sin</button><button type="button" data-insert="cos(|)">cos</button><button type="button" data-insert="tan(|)">tan</button><button type="button" data-insert="ln(|)">ln</button><button type="button" data-insert="e^(|)">eˣ</button><button type="button" data-insert="*">× Multiplicar</button><button type="button" data-insert="+">＋</button><button type="button" data-insert="-">−</button><button type="button" data-insert="(">(</button><button type="button" data-insert=")">)</button><button type="button" data-insert="x">x</button><button type="button" data-insert="dx">dx</button></div></div><label>Tipo de función (opcional: se detecta automáticamente)</label><select id="nlIntType"><option value="poly">Polinomios</option><option value="trig">Trigonométricas básicas</option><option value="exp">Exponenciales y 1/x</option></select><div class="nl-row">${field('Límite inferior (opcional; acepta pi, inf)','nlLower','','text')}${field('Límite superior (opcional; acepta pi, inf)','nlUpper','','text')}</div><button class="primary" id="nlRun">Resolver paso a paso</button><div class="nl-photo-tool"><b>Resolver desde una foto</b><label for="nlIntegralPhoto">Toma una foto o selecciona una imagen del ejercicio</label><input id="nlIntegralPhoto" type="file" accept="image/*" capture="environment"><div id="nlIntegralPreview" class="nl-small">Sin fotografía seleccionada.</div><button type="button" class="primary" id="nlIntegralAnalyze">Leer y resolver automáticamente</button><p class="nl-small">NORYX procesará la fotografía con OCR local y mostrará la transcripción antes de resolver. Revisa cualquier símbolo dudoso; las potencias pequeñas pueden requerir corrección manual.</p></div><p class="nl-small">Muestra la regla aplicada a cada término y, si completas ambos límites, evalúa la integral definida. Sintaxis: x, *, ^, /, sin(x) o sen(x), cos(x), tan(x), e^x, ln(x), sqrt(x), atan(x)… Resuelve sustitución, partes (varias veces), fracciones parciales, potencias trigonométricas, sustitución trigonométrica e integrales impropias, siempre paso a paso. Ejemplos: x^2*e^x*sin(x), x^3/sqrt(1+x^2), x^2/(1+x^2)^2, ln(x)^2.</p>`,
  photo:`<b>Resolver ejercicio desde una fotografía</b><label>Selecciona o toma una foto del ejercicio</label><input id="nlPhoto" type="file" accept="image/*" capture="environment"><div id="nlPreview" class="nl-small">Sin fotografía seleccionada.</div><button class="primary" id="nlPhotoAnalyze" type="button">Leer y resolver automáticamente</button><p class="nl-small">NORYX utilizará automáticamente su analizador visual local, transcribirá lo que reconozca y resolverá el ejercicio paso a paso. Si algún símbolo no se distingue, lo indicará para evitar inventar datos.</p>`
@@ -9367,7 +9367,7 @@ function drawControls(){
   const upd=()=>{const v=$('nlStatsOp').value;$('nlStatsData').style.display=v==='descriptive'?'block':'none';$('nlStatsProb').style.display=['probability','conditional'].includes(v)?'block':'none';$('nlStatsComb').style.display=v==='combinatorics'?'block':'none';$('nlStatsBinom').style.display=v==='binomial'?'block':'none';};$('nlStatsOp').addEventListener('change',upd);upd();
  }
  if(mode==='integral'&&$('nlIntegralPhoto')){$('nlIntegralPhoto').addEventListener('change',e=>{const f=e.target.files&&e.target.files[0];if(!f)return;const url=URL.createObjectURL(f);$('nlIntegralPreview').innerHTML=`<img alt="Foto del ejercicio de integral" src="${url}" style="display:block;max-width:100%;max-height:220px;object-fit:contain;border-radius:10px;margin-top:6px">`;});$('nlIntegralAnalyze').addEventListener('click',async()=>{const f=$('nlIntegralPhoto').files&&$('nlIntegralPhoto').files[0];if(!f){$('nlIntegralPreview').textContent='Primero toma una foto o selecciona una imagen.';return;}const btn=$('nlIntegralAnalyze');btn.disabled=true;const original=btn.textContent;try{const result=await ocrImage(f,msg=>{$('nlIntegralPreview').textContent=msg;});const recognized=String(result.text||'').trim();const expr=extractIntegral(recognized);if(expr){$('nlInt').value=expr;$('nlIntegralPreview').innerHTML='<div class="nl-small"><b>Expresión detectada:</b> <code>'+expr.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</code><br>Confianza OCR: '+Math.round(result.confidence||0)+'%. Si la transcripción no coincide con la foto, corrígela antes de resolver.</div>';$('nlRun').click();}else{$('nlIntegralPreview').innerHTML='<div class="nl-small"><b>No pude identificar una expresión válida.</b><br>Texto OCR: <code>'+recognized.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')+'</code><br>Corrige manualmente el campo Integrando. El lector no enviará texto dudoso al solucionador.</div>';}}catch(err){$('nlIntegralPreview').textContent='No se pudo leer la imagen con el OCR local: '+(err&&err.message||'error');}finally{btn.disabled=false;btn.textContent=original;}});}
- if(mode==='physics'&&$('nlCircuitPhoto')){$('nlCircuitPhoto').addEventListener('change',e=>{const f=e.target.files&&e.target.files[0];if(!f)return;if(circuitPhotoUrl)URL.revokeObjectURL(circuitPhotoUrl);circuitPhotoUrl=URL.createObjectURL(f);$('nlCircuitPreview').innerHTML=`<img alt="Fotografía del circuito" src="${circuitPhotoUrl}" style="max-width:100%;max-height:190px;border-radius:8px;margin-top:6px">`;});$('nlAnalyzeCircuitPhoto').addEventListener('click',async()=>{const f=$('nlCircuitPhoto').files&&$('nlCircuitPhoto').files[0];if(!f){$('nlCircuitPreview').textContent='Primero selecciona una fotografía.';return;}if(typeof loadFiles!=='function'){$('nlCircuitPreview').textContent='No está disponible el analizador visual en esta sesión.';return;}stTab('up');await loadFiles([f]);const q=$('imq');if(q)q.value='Analiza esta foto de un circuito eléctrico paso a paso: transcribe los valores visibles de resistencias y fuente, identifica nodos y conexiones serie/paralelo, explica qué bloques se pueden reducir primero y señala cualquier parte dudosa. No inventes conexiones; si no puedes reconocer la topología, dilo. Después indica qué datos necesito confirmar para calcular la resistencia equivalente, la corriente y la potencia.';const ask=$('imd');if(ask)ask.click();});$('nlPhys').addEventListener('change',()=>{const v=$('nlPhys').value;$('nlCircuitFields').style.display=v==='circuit'?'block':'none';$('nlStaticsFields').style.display=v==='statics'?'block':'none';$('nlElectroFields').style.display=v==='electrostatics'?'block':'none';});}
+ if(mode==='physics'&&$('nlCircuitPhoto')){$('nlCircuitPhoto').addEventListener('change',e=>{const f=e.target.files&&e.target.files[0];if(!f)return;if(circuitPhotoUrl)URL.revokeObjectURL(circuitPhotoUrl);circuitPhotoUrl=URL.createObjectURL(f);$('nlCircuitPreview').innerHTML=`<img alt="Fotografía del circuito" src="${circuitPhotoUrl}" style="max-width:100%;max-height:190px;border-radius:8px;margin-top:6px">`;});$('nlAnalyzeCircuitPhoto').addEventListener('click',async()=>{const f=$('nlCircuitPhoto').files&&$('nlCircuitPhoto').files[0];if(!f){$('nlCircuitPreview').textContent='Primero selecciona una fotografía.';return;}if(typeof loadFiles!=='function'){$('nlCircuitPreview').textContent='No está disponible el analizador visual en esta sesión.';return;}stTab('up');await loadFiles([f]);const q=$('imq');if(q)q.value='Analiza esta foto de un circuito eléctrico paso a paso: transcribe los valores visibles de resistencias y fuente, identifica nodos y conexiones serie/paralelo, explica qué bloques se pueden reducir primero y señala cualquier parte dudosa. No inventes conexiones; si no puedes reconocer la topología, dilo. Después indica qué datos necesito confirmar para calcular la resistencia equivalente, la corriente y la potencia.';const ask=$('imd');if(ask)ask.click();});$('nlPhys').addEventListener('change',()=>{const v=$('nlPhys').value;$('nlCircuitFields').style.display=v==='cedit'?'block':'none';$('nlStaticsFields').style.display=v==='statics'?'block':'none';$('nlElectroFields').style.display=v==='electrostatics'?'block':'none';});}
  if(mode==='photo'){ $('nlPhoto').addEventListener('change',e=>{const f=e.target.files[0];if(!f)return;if(!f.type.startsWith('image/'))return;const u=URL.createObjectURL(f);$('nlPreview').innerHTML=`<img alt="Vista previa del ejercicio" src="${u}" style="max-width:100%;max-height:180px;border-radius:8px">`})}
  $('nlRun').addEventListener('click',run);
 }
@@ -9747,7 +9747,7 @@ function physicsSolve(text,confidence=0){
   const labeledKeys=Object.keys(labeled);if(labeledKeys.length){['nlR1','nlR2','nlR3','nlR4'].forEach((id,i)=>{const val=labeled['R'+(i+1)],el=$(id);if(el&&val!=null)el.value=val;});bodyParts.push(statusCard('Resistencias asociadas por etiqueta: '+labeledKeys.map(k=>k+' = '+labeled[k]+' Ω').join('; ')+'.'));}
   else if(allVals.length)bodyParts.push(statusCard('Valores de resistencia candidatos (sin etiqueta inequívoca): '+allVals.map(v=>v+' Ω').join(', ')+'. No se asignan automáticamente a R1/R2 porque el orden de lectura no garantiza la etiqueta.'));
   if(vm!==null&&$('nlVolt')){$('nlVolt').value=vm;bodyParts.push(statusCard('Posible fuente detectada: '+vm+' V. Confirma que el número corresponde a la fuente y no a otra anotación.'));}
-  bodyParts.push(statusCard('Para circuitos, la lectura de texto no basta para reconstruir nodos, cruces y ramas. No se calculará automáticamente usando una topología elegida al azar: confirma el esquema serie/paralelo y los valores en los campos.'));
+  bodyParts.push(statusCard('Para circuitos, la lectura de texto no basta para reconstruir nodos, cruces y ramas. No se calculará automáticamente usando una topología elegida al azar: dibuja el esquema en el editor visual de circuitos y confirma los valores.'));
  }
  if(!mentionsCoulomb&&!hasCircuit&&!/vector|vectores|componentes/i.test(norm))bodyParts.push(statusCard('Clasificación física no concluyente. Revisa el texto OCR y elige el tipo de ejercicio antes de calcular.'));
  if(confidence<65)bodyParts.push(statusCard('Confianza baja: vuelve a fotografiar perpendicular al papel, con buena luz y sin sombras. Comprueba signos negativos, exponentes, prefijos (m, µ, n), Ω, flechas y unidades.'));
@@ -13624,5 +13624,448 @@ window.nxMovie=()=>open(0);window.nxMovie2=()=>open(1);window.nxMovie3=()=>open(
 })();
 </script>
 
+<script id="nx-lab-circuits">
+(()=>{'use strict';
+const G=20,key=(x,y)=>x+','+y;
+/* ================= MOTOR ================= */
+const OR={h:[-2,0,2,0],e:[-2,-2,2,2],v:[0,-2,0,2],d:[-2,2,2,-2]};
+const ends=c=>{if(c.p)return [[c.p[0],c.p[1]],[c.p[2],c.p[3]]];const v=OR[c.o]||OR.h;return [[c.cx+v[0],c.cy+v[1]],[c.cx+v[2],c.cy+v[3]]]};
+const kOf=c=>c.type==='C'?c.val:1/c.val;
+function clone(S){return {wires:S.wires.map(w=>({...w})),comps:S.comps.map(c=>({...c})),A:{...S.A},B:{...S.B},V:S.V}}
+function inside(w,x,y){const dx=w.x2-w.x1,dy=w.y2-w.y1;if((x-w.x1)*dy!==(y-w.y1)*dx)return false;
+ return dx!==0?(x>Math.min(w.x1,w.x2)&&x<Math.max(w.x1,w.x2)):(y>Math.min(w.y1,w.y2)&&y<Math.max(w.y1,w.y2))}
+function netlist(S){
+ const par=new Map(),f=k=>{if(!par.has(k))par.set(k,k);while(par.get(k)!==k){par.set(k,par.get(par.get(k)));k=par.get(k)}return k},u=(a,b)=>par.set(f(a),f(b));
+ const P=[];S.wires.forEach(w=>{P.push([w.x1,w.y1],[w.x2,w.y2]);u(key(w.x1,w.y1),key(w.x2,w.y2))});
+ S.comps.forEach(c=>ends(c).forEach(p=>P.push(p)));P.push([S.A.x,S.A.y],[S.B.x,S.B.y]);
+ P.forEach(p=>S.wires.forEach(w=>{if(inside(w,p[0],p[1]))u(key(p[0],p[1]),key(w.x1,w.y1))}));
+ const net=(x,y)=>f(key(x,y));
+ return {items:S.comps.map(c=>{const e=ends(c);return {c,a:net(e[0][0],e[0][1]),b:net(e[1][0],e[1][1])}}),nA:net(S.A.x,S.A.y),nB:net(S.B.x,S.B.y)};
+}
+function prune(S){
+ for(let ch=true;ch;){ch=false;
+  const deg=new Map(),add=(x,y)=>deg.set(key(x,y),(deg.get(key(x,y))||0)+1);
+  S.wires.forEach(w=>{add(w.x1,w.y1);add(w.x2,w.y2)});S.comps.forEach(c=>ends(c).forEach(p=>add(p[0],p[1])));add(S.A.x,S.A.y);add(S.B.x,S.B.y);
+  const touched=(x,y)=>S.wires.some(w=>inside(w,x,y));
+  const dead=(x,y)=>deg.get(key(x,y))===1&&!touched(x,y);
+  for(let wi=0;wi<S.wires.length&&!ch;wi++){const w=S.wires[wi];
+   for(const [ex,ey,ox,oy,k1,k2] of [[w.x1,w.y1,w.x2,w.y2,'x1','y1'],[w.x2,w.y2,w.x1,w.y1,'x2','y2']]){
+    if(!dead(ex,ey))continue;
+    // puntos de enganche (otros elementos) sobre el interior del cable: se recorta hasta el más lejano de la otra punta
+    const pts=[];S.wires.forEach((v,vi)=>{if(vi!==wi)pts.push([v.x1,v.y1],[v.x2,v.y2])});S.comps.forEach(c=>ends(c).forEach(p=>pts.push(p)));pts.push([S.A.x,S.A.y],[S.B.x,S.B.y]);
+    const c=pts.filter(p=>inside(w,p[0],p[1]));
+    if(c.length){c.sort((a,b)=>(Math.abs(b[0]-ox)+Math.abs(b[1]-oy))-(Math.abs(a[0]-ox)+Math.abs(a[1]-oy)));w[k1]=c[0][0];w[k2]=c[0][1]}
+    else S.wires.splice(wi,1);
+    ch=true;break}}
+ }
+}
+function findGroup(S){
+ const N=netlist(S),L=N.items;
+ if(N.nA===N.nB)throw Error('Los terminales A y B están conectados entre sí (cortocircuito).');
+ L.forEach(it=>{if(it.a===it.b)throw Error('El componente '+it.c.name+' tiene sus dos extremos en el mismo nodo (cortocircuito).')});
+ const cnt=new Map();L.forEach(it=>[it.a,it.b].forEach(n=>cnt.set(n,(cnt.get(n)||0)+1)));
+ L.forEach(it=>[it.a,it.b].forEach(n=>{if(n!==N.nA&&n!==N.nB&&cnt.get(n)===1)throw Error('El componente '+it.c.name+' tiene un extremo sin conectar.')}));
+ [N.nA,N.nB].forEach(n=>{if(!cnt.get(n))throw Error('Un terminal (A o B) no está conectado a ningún componente.')});
+ const g=new Map();L.forEach(it=>{const k=it.a<it.b?it.a+'|'+it.b:it.b+'|'+it.a;if(!g.has(k))g.set(k,[]);g.get(k).push(it)});
+ for(const arr of g.values())if(arr.length>1)return {kind:'paralelo',items:arr};
+ const touch=n=>L.filter(i=>i.a===n||i.b===n),other=(i,n)=>i.a===n?i.b:i.a;
+ for(const it of L)for(const n of [it.a,it.b]){
+  if(n===N.nA||n===N.nB||cnt.get(n)!==2)continue;
+  const [p,q]=touch(n);if(p===q)continue;
+  const chain=[p,q];
+  const grow=(end,d)=>{while(end!==N.nA&&end!==N.nB&&cnt.get(end)===2){const t=touch(end).filter(i=>!chain.includes(i));if(t.length!==1)break;d>0?chain.push(t[0]):chain.unshift(t[0]);end=other(t[0],end)}};
+  grow(other(p,n),-1);grow(other(q,n),1);
+  return {kind:'serie',items:chain};
+ }
+ return null;
+}
+const harm=(kind,type)=>(kind==='serie')===(type==='C');
+function apply(S,grp,name,node){
+ const T=grp.items[0].c.type,ks=grp.items.map(i=>i.c.val);
+ const val=harm(grp.kind,T)?1/ks.reduce((a,b)=>a+1/b,0):ks.reduce((a,b)=>a+b,0);
+ const R=clone(S),ids=grp.items.map(i=>i.c.id);
+ const keepId=grp.kind==='serie'?ids[Math.floor(ids.length/2)]:ids[0];
+ const spans=[];
+ R.comps=R.comps.filter(c=>{if(!ids.includes(c.id))return true;if(c.id===keepId)return true;if(grp.kind==='serie'){const e=ends(c);spans.push({x1:e[0][0],y1:e[0][1],x2:e[1][0],y2:e[1][1]})}return false});
+ R.wires.push(...spans);
+ const k=R.comps.find(c=>c.id===keepId);k.name=name;k.val=val;k.node=node;k.fresh=true;
+ if(grp.kind==='paralelo')prune(R);
+ return R;
+}
+function sci(v){if(!isFinite(v)||v===0)return '0';let e=Math.floor(Math.log10(Math.abs(v)));let m=+(v/Math.pow(10,e)).toPrecision(4);if(Math.abs(m)>=10){m/=10;e++}
+ if(e>=-2&&e<=4)return String(+v.toPrecision(4));return m+'\\times10^{'+e+'}'}
+const uTex=T=>T==='C'?'\\mathrm{F}':'\\Omega',tv=(v,T)=>sci(v)+'\\,'+uTex(T);
+const tn=n=>{const m=String(n).match(/^([A-Za-z])(.+)$/);return m?m[1]+'_{'+m[2]+'}':n};
+const SI=[[1e6,'M'],[1e3,'k'],[1,''],[1e-3,'m'],[1e-6,'µ'],[1e-9,'n'],[1e-12,'p']];
+function si(v,u){if(!isFinite(v)||v===0)return '0 '+u;const a=Math.abs(v);for(const [f,p] of SI)if(a>=f*0.9995)return +(v/f).toPrecision(4)+' '+p+u;return v.toExponential(3)+' '+u}
+function stepFormulas(grp,name,val,T){
+ const ns=grp.items.map(i=>i.c.name),vs=grp.items.map(i=>i.c.val),h=harm(grp.kind,T),L=[];
+ if(h){L.push(tn(name)+'=\\dfrac{1}{'+ns.map(n=>'\\dfrac{1}{'+tn(n)+'}').join('+')+'}');L.push(tn(name)+'=\\dfrac{1}{'+vs.map(v=>'\\dfrac{1}{'+tv(v,T)+'}').join('+')+'}')}
+ else{L.push(tn(name)+'='+ns.map(tn).join('+'));L.push(tn(name)+'='+vs.map(v=>tv(v,T)).join('+'))}
+ L.push(tn(name)+'='+tv(val,T));return L;
+}
+function nodal(S0){
+ const N=netlist(S0),nets=[...new Set(N.items.flatMap(i=>[i.a,i.b]))],idx=new Map(),un=nets.filter(n=>n!==N.nA&&n!==N.nB);un.forEach((n,i)=>idx.set(n,i));
+ const n=un.length,M=Array.from({length:n},()=>new Array(n+1).fill(0)),Vn=new Map([[N.nA,S0.V],[N.nB,0]]);
+ N.items.forEach(it=>{const k=kOf(it.c);[[it.a,it.b],[it.b,it.a]].forEach(([p,q])=>{if(!idx.has(p))return;const r=idx.get(p);M[r][r]+=k;if(idx.has(q))M[r][idx.get(q)]-=k;else M[r][n]+=k*Vn.get(q)})});
+ for(let c=0;c<n;c++){let p=c;for(let r=c+1;r<n;r++)if(Math.abs(M[r][c])>Math.abs(M[p][c]))p=r;if(Math.abs(M[p][c])<1e-300)throw Error('El circuito tiene partes flotantes sin solución única.');[M[c],M[p]]=[M[p],M[c]];
+  for(let r=0;r<n;r++)if(r!==c){const f=M[r][c]/M[c][c];if(f)for(let j=c;j<=n;j++)M[r][j]-=f*M[c][j]}}
+ un.forEach((u,i)=>Vn.set(u,M[i][n]/M[i][i]));
+ const comp=new Map();let Ft=0;
+ N.items.forEach(it=>{const v=Vn.get(it.a)-Vn.get(it.b),f=kOf(it.c)*v;comp.set(it.c.id,{v,f});if(it.a===N.nA)Ft+=f;if(it.b===N.nA)Ft-=f});
+ return {comp,Ft};
+}
+function dropBalanced(S){
+ if(!(S.V>0))return null;let nd;try{nd=nodal(S)}catch(_){return null}
+ for(const c of S.comps){const d=nd.comp.get(c.id);if(d&&Math.abs(d.v)<=1e-9*S.V)return c}return null}
+function solve(S0){
+ const T=S0.comps[0]&&S0.comps[0].type;
+ if(!S0.comps.length)throw Error('Agrega al menos un componente.');
+ if(S0.comps.some(c=>c.type!==T))throw Error('Usa un solo tipo de componente por circuito (solo capacitores o solo resistencias).');
+ if(!S0.A||!S0.B)throw Error('Coloca los terminales A (+) y B (−).');
+ if(!(S0.V>=0))throw Error('El voltaje debe ser un número no negativo.');
+ let S=clone(S0);S.comps.forEach((c,i)=>{c.id=c.id||'k'+i;c.node={name:c.name,type:T,val:c.val,leaf:true};});
+ const steps=[],cnt={},pre=T;S0=clone(S);S0.comps.forEach((c,i)=>c.node=S.comps[i].node);
+ const nd=nodal(S0);let guard=0;
+ const gone=[];
+ for(;guard<300;guard++){
+  let g;try{g=findGroup(S)}catch(e){if(gone.length)break;throw e}
+  if(!g){const b=dropBalanced(S);if(!b)break;const nb=clone(S);nb.comps=nb.comps.filter(c=>c.id!==b.id);prune(nb);gone.push(b);
+   steps.push({kind:'puente equilibrado',names:[b.name],name:b.name+' (retirado)',val:0,type:T,formulas:['V_{'+tn(b.name)+'}=V_{a}-V_{b}=0\\;\\Rightarrow\\;'+(T==='C'?'Q':'I')+'_{'+tn(b.name)+'}=0'],state:nb,removed:true});S=nb;continue}
+  const key2=pre+(g.kind==='serie'?'s':'p');cnt[key2]=(cnt[key2]||0)+1;
+  let name=key2+cnt[key2];
+  const last=S.comps.length-g.items.length+1===1;if(last)name=pre+'eq';
+  const ks=g.items.map(i=>i.c.val),h=harm(g.kind,T),val=h?1/ks.reduce((a,b)=>a+1/b,0):ks.reduce((a,b)=>a+b,0);
+  const node={name,type:T,val,kind:g.kind,children:g.items.map(i=>i.c.node)};
+  steps.push({kind:g.kind,names:g.items.map(i=>i.c.name),name,val,type:T,formulas:stepFormulas(g,name,val,T)});
+  S=apply(S,g,name,node);steps[steps.length-1].state=S;
+ }
+ const reducible=S.comps.length===1;
+ const out={T,V:S0.V,start:S0,steps,reducible,nodal:nd};
+ if(reducible){
+  const root=S.comps[0].node;root.v=S0.V;root.f=kOf(root)*S0.V;
+  const rows=[];(function down(n){rows.push(n);if(n.children){n.children.forEach(ch=>{if(n.kind==='serie'){ch.f=n.f;ch.v=n.f/kOf(ch)}else{ch.v=n.v;ch.f=kOf(ch)*n.v}down(ch)})}})(root);
+  gone.forEach(b=>rows.push({name:b.name,val:b.val,leaf:true,v:0,f:0,removed:true}));out.root=root;out.rows=rows;out.Keq=root.val;
+  let err=0;S0.comps.forEach(c=>{if(gone.some(x=>x.id===c.id))return;const a=c.node,b=nd.comp.get(c.id);err=Math.max(err,Math.abs(Math.abs(a.v)-Math.abs(b.v))/(Math.abs(b.v)+1e-30))});out.err=err;
+ }else out.Keq=T==='C'?(S0.V?Math.abs(nd.Ft)/S0.V:0):(nd.Ft?S0.V/Math.abs(nd.Ft):Infinity);
+ return out;
+}
+const PRESET=()=>{const W=(x1,y1,x2,y2)=>({x1,y1,x2,y2}),C=(name,val,cx,cy,o)=>({id:name,name,type:'C',val,cx,cy,o});
+ return {V:12,A:{x:2,y:10},B:{x:2,y:22},wires:[W(2,10,5,10),W(5,10,5,4),W(9,4,9,10),W(9,10,14,10),W(14,10,16,10),W(14,10,14,14),W(14,18,14,22),W(2,22,5,22),W(9,22,14,22),W(14,22,18,22),W(22,22,26,22),W(26,22,30,22),W(26,18,26,22),W(26,14,26,10),W(20,10,26,10),W(26,10,30,10),W(34,10,38,10),W(38,10,38,14),W(38,18,38,22),W(34,22,38,22)],
+  comps:[C('C9',6e-6,7,10,'h'),C('C5',2e-6,7,4,'h'),C('C10',1e-6,14,16,'v'),C('C1',5e-6,18,10,'h'),C('C3',2e-6,32,10,'h'),C('C2',8e-9,38,16,'v'),C('C6',7e-9,26,16,'v'),C('C7',3e-6,20,22,'h'),C('C8',6e-9,7,22,'h'),C('C4',10e-6,32,22,'h')]}};
+const W=(x1,y1,x2,y2)=>({x1,y1,x2,y2}),CC=(name,val,cx,cy,o,type)=>({id:name,name,type:type||'C',val,cx,cy,o});
+function diamond(bridge){const w=[W(19,18,21,16),W(29,16,31,18),W(19,18,21,20),W(29,20,31,18)];
+ const c=[CC('C5',7e-6,23,14,'d'),CC('C6',5e-9,27,14,'e'),CC('C8',6e-6,23,22,'e'),CC('C9',4e-6,27,22,'d')];
+ if(bridge){w.push(W(25,12,25,16),W(25,20,25,24));c.push(CC('C11',2e-9,25,18,'v'))}return {w,c}}
+function photo(opt={}){const d=diamond(opt.bridge);
+ const w=[W(6,4,2,4),W(2,4,2,6),W(2,10,2,12),W(2,16,2,18),W(2,18,6,18),W(10,18,14,18),W(2,18,2,24),W(2,24,6,24),W(10,24,14,24),W(14,24,14,18),W(14,18,19,18),W(31,18,36,18),W(36,18,36,14),W(36,10,36,4),W(36,4,32,4),W(28,4,14,4),...d.w];
+ const c=[CC('C1',2e-6,2,8,'v'),CC('C2',5e-9,2,14,'v'),CC('C3',3e-9,8,18,'h'),CC('C4',1e-6,8,24,'h'),...d.c.filter(x=>x.name!=='C11'),CC('C7',8e-9,36,12,'v'),CC('C10',3e-9,30,4,'h'),...d.c.filter(x=>x.name==='C11')];
+ return {V:20,A:{x:6,y:4},B:{x:14,y:4},wires:w,comps:c}}
+function rombo(){const d=diamond(false);return {V:20,A:{x:2,y:18},B:{x:38,y:18},wires:[W(2,18,19,18),W(31,18,38,18),...d.w],comps:d.c}}
+function rank(){const w=[W(2,6,4,6),W(8,6,12,6),W(12,6,14,6),W(12,6,12,8),W(12,12,12,14),W(18,6,22,6),W(22,6,22,8),W(22,12,22,14),W(22,6,26,6),W(30,6,32,6),W(32,6,32,14),W(2,14,32,14)];
+ return {V:12,A:{x:2,y:6},B:{x:2,y:14},wires:w,comps:[CC('C1',4e-6,6,6,'h'),CC('C2',2e-6,12,10,'v'),CC('C3',6e-6,16,6,'h'),CC('C4',3e-6,22,10,'v'),CC('C5',5e-6,28,6,'h')]}}
+function serie4(){return {V:9,A:{x:2,y:4},B:{x:2,y:10},wires:[W(2,4,4,4),W(8,4,10,4),W(14,4,16,4),W(20,4,22,4),W(22,4,22,10),W(22,10,14,10),W(10,10,2,10)],comps:[CC('C1',2e-6,6,4,'h'),CC('C2',4e-6,12,4,'h'),CC('C3',6e-6,18,4,'h'),CC('C4',12e-6,12,10,'h')]}}
+function par3(){return {V:10,A:{x:2,y:6},B:{x:2,y:14},wires:[W(2,6,20,6),W(6,6,6,8),W(6,12,6,14),W(12,6,12,8),W(12,12,12,14),W(18,6,18,8),W(18,12,18,14),W(2,14,20,14)],comps:[CC('C1',2e-6,6,10,'v'),CC('C2',3e-6,12,10,'v'),CC('C3',5e-6,18,10,'v')]}}
+const PRESETS=[
+ {id:'foto',name:'Ejemplo 2: dibujo exacto de la foto (20 V, 10 capacitores)',make:()=>photo()},
+ {id:'fotop',name:'Ejemplo 3: foto con puente C11 entre C5–C6 y C8–C9 (Kirchhoff)',make:()=>photo({bridge:true})},
+ {id:'rombo',name:'Ejemplo 4: solo el rombo (C5+C6) ∥ (C8+C9)',make:rombo},
+ {id:'ejemplo12',name:'Ejemplo 5: mezcla serie/paralelo (12 V)',make:PRESET},
+ {id:'escalera',name:'Ejemplo 6: escalera de 5 capacitores (12 V)',make:rank},
+ {id:'serie',name:'Ejemplo 7: serie con 4 capacitores (9 V)',make:serie4},
+ {id:'paralelo',name:'Ejemplo 8: tres capacitores en paralelo (10 V)',make:par3}];
+globalThis.NoryxCircuits={solve,PRESET,PRESETS,netlist,sci,si};
+if(typeof document==='undefined')return;
+/* ================= INTERFAZ ================= */
+const $=id=>document.getElementById(id),esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const tex=(s,d)=>{if(window.katex){try{return katex.renderToString(s,{displayMode:!!d,throwOnError:false,strict:'ignore'})}catch(e){}}return '<code>'+esc(s)+'</code>'};
+const st=document.createElement('style');st.textContent=`.nc-panel{display:flex;flex-direction:column;gap:8px}.nc-tools,.nc-row{display:flex;flex-wrap:wrap;gap:6px}.nc-tools button.on{background:var(--acc)!important;color:#fff!important}
+#nxLab .nc-svg{width:100%;height:min(64vh,540px);background:color-mix(in srgb,var(--panel) 90%,var(--bg));border:1px solid var(--line);border-radius:14px;touch-action:none;cursor:crosshair;display:block}
+.nc-bar{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:8px}.nc-bar button.on{background:var(--acc)!important;color:#fff!important}
+.nc-split{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:12px}.nc-split.solo{grid-template-columns:1fr}.nc-split.solo .nc-calc{display:none}
+@media(max-width:820px){.nc-split{grid-template-columns:1fr}}
+.nc-calc{border:1px solid var(--line);border-radius:14px;padding:12px;overflow:auto;max-height:min(64vh,540px)}.nc-calc .katex,#ncAll .katex,#ncModal .katex{font-size:calc(var(--ncf,1)*1.12em)}
+.nc-calc .tx{overflow-x:auto;padding:4px 0}.nc-card{border:1px solid var(--line);border-radius:18px;margin-bottom:18px;overflow:hidden;background:var(--panel);box-shadow:0 6px 22px rgba(0,0,0,.07)}
+.nc-card>header{display:flex;align-items:center;gap:12px;padding:10px 14px;background:color-mix(in srgb,var(--acc) 10%,var(--panel));border-bottom:1px solid var(--line)}
+.nc-card>header>div{flex:1;min-width:0}.nc-card>header b{font-size:15px;display:block}.nc-card>header small{color:var(--mute);font-size:12px}
+.nc-n{flex:0 0 34px;height:34px;border-radius:50%;background:var(--acc);color:#fff;display:grid;place-items:center;font-weight:800}
+.nc-card .nc-split{padding:12px;gap:14px}.nc-card .nc-svg{height:min(52vh,440px)!important}
+.nc-card .nc-calc{max-height:none!important;border:0;padding:4px}.nc-card .tx{background:color-mix(in srgb,var(--acc) 6%,var(--panel));border:1px solid var(--line);border-radius:12px;padding:10px 14px;margin:8px 0;overflow-x:auto}
+#ncModal{position:fixed;inset:0;z-index:2147483000;background:var(--bg,#fff);display:flex;flex-direction:column;padding:12px;gap:10px}
+#ncModal .nc-split{flex:1;min-height:0;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr)}#ncModal .nc-svg{height:100%!important}#ncModal .nc-calc{max-height:none;height:100%}
+@media(max-width:820px){#ncModal .nc-split{grid-template-columns:1fr;grid-template-rows:55% 45%}}
+#nxLab .nc-svg.ed{height:min(72vh,640px)}.nc-tools button{flex:1 1 auto}.nc-leg{display:flex;flex-wrap:wrap;gap:12px;font-size:12px;color:var(--mute);margin-top:6px}
+.nc-row button.on{background:#c0392b!important;color:#fff!important}.nc-tab{width:100%;border-collapse:collapse;font-size:13px;margin-top:8px}.nc-tab td,.nc-tab th{border:1px solid var(--line);padding:5px 7px;text-align:right}.nc-tab td:first-child,.nc-tab th:first-child{text-align:left}
+#ncPanel .nc-tools button,#ncPanel .nc-row button{min-height:42px;padding:0 12px}#ncPanel input,#ncPanel select{min-height:42px;font-size:16px}
+.nc-hint{font-size:12.5px;color:var(--mute);line-height:1.4;padding:6px 8px;border-left:3px solid var(--acc);background:color-mix(in srgb,var(--acc) 7%,transparent);border-radius:6px}
+#ncProps{display:none;flex-direction:column;gap:6px;border:1px solid var(--acc);border-radius:12px;padding:8px 10px;background:color-mix(in srgb,var(--acc) 6%,var(--panel))}
+#ncProps .nc-row input{flex:1 1 90px;min-width:0}#ncProps .nc-row select{flex:0 0 90px}
+.nc-stat{margin-top:8px;padding:8px 10px;border-radius:10px;font-size:13px;line-height:1.45;border:1px solid var(--line)}.nc-stat.ok{border-color:#16a34a;background:#16a34a14}.nc-stat.bad{border-color:#dc2626;background:#dc262612}
+.nc-help summary{cursor:pointer;font-size:12.5px;color:var(--mute)}.nc-help p{margin:6px 0 0}`;
+document.head.appendChild(st);
+const ED={wires:[],comps:[],A:null,B:null,V:12,tool:'sel',sel:null,start:null,hover:null,n:{C:0,R:0}};
+let lastCirc='',view=null,res=null,stepI=0;
+const col={wire:'#6b8a82',comp:'#0f766e',acc:'#d97706'};
+function symbol(c,hl,cen){
+ const e=ends(c),cl=hl?col.acc:col.comp,dx=e[1][0]-e[0][0],dy=e[1][1]-e[0][1],L=Math.hypot(dx,dy)*G/2,ang=Math.atan2(dy,dx)*180/Math.PI,X=c.cx*G,Y=c.cy*G;
+ const body=c.type==='C'?`<path d="M${-L} 0H-4M4 0H${L}M-4-12V12M4-12V12" stroke="${cl}" stroke-width="4" fill="none"/>`:`<path d="M${-L} 0H-26L-20-11L-8 11L4-11L16 11L22 0H${L}" stroke="${cl}" stroke-width="3.5" fill="none" stroke-linejoin="round"/>`;
+ const nm=esc(c.name),vl=esc(si(c.val,c.type==='C'?'F':'Ω')),T=(x,y,an,t,b)=>`<text x="${x}" y="${y}" text-anchor="${an}" font-size="${b?14:12}" ${b?`font-weight="700" fill="${cl}"`:'fill="#556"'}>${t}</text>`;
+ let lab;
+ if(dx&&dy){const n0=dy>0?[1,-1]:[1,1],c0=cen?{x:cen.x*G,y:cen.y*G}:{x:X,y:Y},sg=((X-c0.x)*n0[0]+(Y-c0.y)*n0[1])>=0?1:-1,nx=n0[0]*sg,ny=n0[1]*sg,an=nx>0?'start':'end',ty=Y+ny*24+(ny>0?6:-4);
+  lab=T(X+nx*24,ty,an,nm,1)+T(X+nx*24,ty+14,an,vl)}
+ else if(dy===0)lab=T(X,Y-20,'middle',nm,1)+T(X,Y+32,'middle',vl);
+ else lab=T(X-22,Y-2,'end',nm,1)+T(X-22,Y+14,'end',vl);
+ return `<g><g transform="translate(${X},${Y}) rotate(${ang})">${body}</g>${lab}</g>`;
+}
+function drawScene(S,opt={}){
+ let s=S.wires.map((w,i)=>`<line x1="${w.x1*G}" y1="${w.y1*G}" x2="${w.x2*G}" y2="${w.y2*G}" stroke="${opt.sel&&opt.sel.t==='w'&&opt.sel.i===i?col.acc:col.wire}" stroke-width="4" stroke-linecap="round"/>`).join('');
+ const bb=bounds(S),cen={x:(bb.x+bb.w/2)/G,y:(bb.y+bb.h/2)/G};s+=S.comps.map((c,i)=>symbol(c,c.fresh||(opt.sel&&opt.sel.t==='c'&&opt.sel.i===i),cen)).join('');
+ if(S.A&&S.B&&S.A.y===S.B.y&&Math.abs(S.A.x-S.B.x)>=6){const d=Math.sign(S.B.x-S.A.x),mx=Math.round((S.A.x+S.B.x)/2)*G,y=S.A.y*G;
+  s+=`<path d="M${S.A.x*G} ${y}H${mx-d*5}M${mx+d*5} ${y}H${S.B.x*G}" stroke="${col.wire}" stroke-width="4"/><path d="M${mx-d*5} ${y-16}V${y+16}" stroke="#334" stroke-width="5"/><path d="M${mx+d*5} ${y-9}V${y+9}" stroke="#334" stroke-width="5"/><text x="${mx}" y="${y-26}" text-anchor="middle" font-size="15" font-weight="700" fill="#334">${S.V} V</text><text x="${mx-d*16}" y="${y-8}" text-anchor="middle" font-size="14" fill="#c0392b">+</text><text x="${mx+d*16}" y="${y-8}" text-anchor="middle" font-size="16" fill="#2563eb">−</text>`}
+ if(S.A&&S.B&&S.A.x===S.B.x&&Math.abs(S.A.y-S.B.y)>=6){const d=Math.sign(S.B.y-S.A.y),x=S.A.x*G,my=Math.round((S.A.y+S.B.y)/2)*G;
+  s+=`<path d="M${x} ${S.A.y*G}V${my-d*18}M${x} ${my+d*18}V${S.B.y*G}" stroke="${col.wire}" stroke-width="4" fill="none"/><circle cx="${x}" cy="${my}" r="18" fill="none" stroke="#334" stroke-width="4"/><text x="${x}" y="${my-d*6+5}" text-anchor="middle" font-size="16" font-weight="700" fill="#c0392b">+</text><text x="${x}" y="${my+d*7+5}" text-anchor="middle" font-size="18" font-weight="700" fill="#2563eb">−</text><text x="${x-26}" y="${my+5}" text-anchor="end" font-size="15" font-weight="700" fill="#334">${S.V} V</text>`}
+ [['A','A (+)',S.A],['B','B (−)',S.B]].forEach(([k,t,p])=>{if(p)s+=`<circle cx="${p.x*G}" cy="${p.y*G}" r="6" fill="${col.comp}"/><text x="${p.x*G+(S.A&&S.B&&S.A.y===S.B.y?0:-12)}" y="${p.y*G+(S.A&&S.B&&S.A.y===S.B.y?24:-10)}" text-anchor="${S.A&&S.B&&S.A.y===S.B.y?'middle':'end'}" font-size="14" font-weight="700" fill="#334">${t}</text>`});
+ return s;
+}
+function bounds(S){let xs=[],ys=[];S.wires.forEach(w=>{xs.push(w.x1,w.x2);ys.push(w.y1,w.y2)});S.comps.forEach(c=>ends(c).forEach(p=>{xs.push(p[0]);ys.push(p[1])}));[S.A,S.B].forEach(p=>{if(p){xs.push(p.x);ys.push(p.y)}});
+ if(!xs.length)return {x:0,y:0,w:880,h:560};const x0=Math.min(...xs)*G-90,y0=Math.min(...ys)*G-70,x1=Math.max(...xs)*G+60,y1=Math.max(...ys)*G+70;return {x:x0,y:y0,w:x1-x0,h:y1-y0}}
+function makeViewer(svg,vb0,o={}){
+ let vb={...vb0};const set=()=>svg.setAttribute('viewBox',`${vb.x} ${vb.y} ${vb.w} ${vb.h}`);set();
+ const zoom=(f,cx,cy)=>{const r=svg.getBoundingClientRect();const p=cx==null?{x:vb.x+vb.w/2,y:vb.y+vb.h/2}:{x:vb.x+(cx-r.left)/r.width*vb.w,y:vb.y+(cy-r.top)/r.height*vb.h};const nw=Math.min(vb0.w*5,Math.max(vb0.w/10,vb.w/f)),k=nw/vb.w;vb={x:p.x-(p.x-vb.x)*k,y:p.y-(p.y-vb.y)*k,w:nw,h:vb.h*k};set();o.onzoom&&o.onzoom(Math.round(vb0.w/vb.w*100))};
+ svg.addEventListener('wheel',e=>{e.preventDefault();zoom(e.deltaY<0?1.15:1/1.15,e.clientX,e.clientY)},{passive:false});
+ svg.addEventListener('contextmenu',e=>e.preventDefault());
+ const P=new Map();let pan=false,pd=0;
+ svg.addEventListener('pointerdown',e=>{P.set(e.pointerId,{x:e.clientX,y:e.clientY});pan=e.button===2||e.button===1||(o.left&&e.button===0);if(P.size===2){const a=[...P.values()];pd=Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y)}if(pan||P.size===2)try{svg.setPointerCapture(e.pointerId)}catch(_){}});
+ svg.addEventListener('pointermove',e=>{const q=P.get(e.pointerId);if(!q)return;const r=svg.getBoundingClientRect();
+  if(P.size===2){const a=[...P.values()],cx0=(a[0].x+a[1].x)/2,cy0=(a[0].y+a[1].y)/2;P.set(e.pointerId,{x:e.clientX,y:e.clientY});const b=[...P.values()],d=Math.hypot(b[0].x-b[1].x,b[0].y-b[1].y);vb.x-=((b[0].x+b[1].x)/2-cx0)/r.width*vb.w;vb.y-=((b[0].y+b[1].y)/2-cy0)/r.height*vb.h;set();if(pd)zoom(d/pd,(b[0].x+b[1].x)/2,(b[0].y+b[1].y)/2);pd=d;return}
+  if(pan){vb.x-=(e.clientX-q.x)/r.width*vb.w;vb.y-=(e.clientY-q.y)/r.height*vb.h;set();P.set(e.pointerId,{x:e.clientX,y:e.clientY})}});
+ const up=e=>{P.delete(e.pointerId);pan=false};svg.addEventListener('pointerup',up);svg.addEventListener('pointercancel',up);
+ return {fit:b=>{vb0={...b};vb={...b};set();o.onzoom&&o.onzoom(100)},zoom,reset:()=>{vb={...vb0};set();o.onzoom&&o.onzoom(100)},pt:(cx,cy)=>{const r=svg.getBoundingClientRect();return {x:vb.x+(cx-r.left)/r.width*vb.w,y:vb.y+(cy-r.top)/r.height*vb.h}}};
+}
+/* ---- parseo de valores ---- */
+function parseVal(s,T){const m=String(s).trim().replace(/μ/g,'µ').match(/^([\d.]+(?:e[-+]?\d+)?)\s*([pnuµmkM]?)\s*(?:[FfΩ]|ohm|ohms)?$/);if(!m)return null;const f={p:1e-12,n:1e-9,u:1e-6,'µ':1e-6,m:1e-3,k:1e3,M:1e6,'':1}[m[2]];const v=+m[1]*f;return v>0?v:null}
+/* ---- editor ---- */
+const FIT=32,H={u:[],r:[]},vopt={left:false};let gs=null;
+const coarse=()=>!!(window.matchMedia&&matchMedia('(pointer:coarse)').matches);
+const snapState=()=>JSON.stringify({wires:ED.wires,comps:ED.comps,A:ED.A,B:ED.B});
+function restore(B){ED.wires=B.wires.map(w=>({...w}));ED.comps=B.comps.map(c=>({...c}));ED.A=B.A&&{...B.A};ED.B=B.B&&{...B.B}}
+function loadState(s){restore(JSON.parse(s));ED.sel=null;ED.start=null}
+function commit(){H.u.push(snapState());if(H.u.length>100)H.u.shift();H.r=[]}
+function undo(){if(!H.u.length)return msg('No hay nada que deshacer.');H.r.push(snapState());loadState(H.u.pop());refresh()}
+function redo(){if(!H.r.length)return msg('No hay nada que rehacer.');H.u.push(snapState());loadState(H.r.pop());refresh()}
+function refresh(){drawEditor();syncProps()}
+const UN={C:[['pF',1e-12],['nF',1e-9],['µF',1e-6],['mF',1e-3],['F',1]],R:[['mΩ',1e-3],['Ω',1],['kΩ',1e3],['MΩ',1e6]]};
+const bestU=(v,T)=>{let b=UN[T][0];for(const u of UN[T])if(v>=u[1]*0.9995)b=u;return b};
+const uniq=t=>{const used=new Set(ED.comps.map(c=>c.name));let i=1;while(used.has(t+i))i++;return t+i};
+const clen=(a,b)=>Math.max(Math.abs(b.x-a.x),Math.abs(b.y-a.y));
+const mk=(t,a,b)=>({id:'u'+Date.now()+Math.random().toString(36).slice(2,6),name:uniq(t),type:t,val:t==='C'?1e-6:1e3,cx:(a.x+b.x)/2,cy:(a.y+b.y)/2,p:[a.x,a.y,b.x,b.y]});
+function lineTo(a,b){const dx=b.x-a.x,dy=b.y-a.y,ax=Math.abs(dx),ay=Math.abs(dy);if(ax>=2*ay)return {x:b.x,y:a.y};if(ay>=2*ax)return {x:a.x,y:b.y};const d=Math.round((ax+ay)/2);return {x:a.x+Math.sign(dx)*d,y:a.y+Math.sign(dy)*d}}
+function snap(p){return {x:Math.round(p.x/G),y:Math.round(p.y/G)}}
+function route(a,b){return (a.x===b.x||a.y===b.y||Math.abs(b.x-a.x)===Math.abs(b.y-a.y))?[a,b]:(Math.abs(b.x-a.x)>=Math.abs(b.y-a.y)?[a,{x:b.x,y:a.y},b]:[a,{x:a.x,y:b.y},b])}
+function addRoute(a,b){const r=route(a,b);for(let k=0;k<r.length-1;k++){const u=r[k],v=r[k+1];if(u.x!==v.x||u.y!==v.y)ED.wires.push({x1:u.x,y1:u.y,x2:v.x,y2:v.y})}}
+/* ---- diagnóstico en vivo: evita errores antes de calcular ---- */
+function diag(){const E=[],pts=[],S=ED,add=(m,ps)=>{if(!E.includes(m))E.push(m);(ps||[]).forEach(p=>pts.push(p))};
+ if(!S.comps.length)return {E:['Agrega al menos un componente (capacitor o resistencia).'],pts,ok:false,nets:0};
+ if(new Set(S.comps.map(c=>c.type)).size>1)add('Hay capacitores y resistencias mezclados: usa un solo tipo por circuito.');
+ const nm=new Map();S.comps.forEach(c=>nm.set(c.name,(nm.get(c.name)||0)+1));nm.forEach((n,k)=>{if(n>1)add('Nombre repetido «'+k+'»: cada componente necesita un nombre único.')});
+ if(!S.A)add('Falta colocar el terminal A (+).');if(!S.B)add('Falta colocar el terminal B (−).');
+ const N=netlist({wires:S.wires,comps:S.comps,A:S.A||{x:-999,y:-999},B:S.B||{x:-998,y:-998}});
+ const cnt=new Map();N.items.forEach(it=>[it.a,it.b].forEach(n=>cnt.set(n,(cnt.get(n)||0)+1)));
+ if(S.A&&S.B&&N.nA===N.nB)add('Los terminales A y B están unidos por cables (cortocircuito).',[[S.A.x,S.A.y],[S.B.x,S.B.y]]);
+ const open=[];
+ N.items.forEach(it=>{const e=ends(it.c);if(it.a===it.b)add(it.c.name+' tiene sus dos extremos unidos (cortocircuito).',e);
+  [[it.a,e[0]],[it.b,e[1]]].forEach(([n,p])=>{if(n!==N.nA&&n!==N.nB&&cnt.get(n)===1){open.push(it.c.name);pts.push(p)}})});
+ if(open.length)add('Extremos sin conectar (círculos rojos): '+[...new Set(open)].join(', ')+'. Únelos con un cable a otro componente o a A/B.');
+ if(S.A&&!cnt.get(N.nA))add('El terminal A no toca ningún componente: únelo con un cable.',[[S.A.x,S.A.y]]);
+ if(S.B&&!cnt.get(N.nB))add('El terminal B no toca ningún componente: únelo con un cable.',[[S.B.x,S.B.y]]);
+ if(S.A&&S.B&&N.nA!==N.nB){const seen=new Set([N.nA]);for(let ch=true;ch;){ch=false;N.items.forEach(it=>{if(seen.has(it.a)!==seen.has(it.b)){seen.add(it.a);seen.add(it.b);ch=true}})}
+  if(!seen.has(N.nB))add('No hay un camino de cables y componentes entre A y B.');
+  N.items.forEach(it=>{if(!seen.has(it.a)){add(it.c.name+' no está conectado al resto del circuito.',ends(it.c))}})}
+ return {E,pts,ok:!E.length,nets:new Set(N.items.flatMap(i=>[i.a,i.b])).size};
+}
+function junctions(){const m=new Map(),P=new Map(),add=(x,y,n)=>{const k=key(x,y);m.set(k,(m.get(k)||0)+n);P.set(k,[x,y])};
+ ED.wires.forEach(w=>{add(w.x1,w.y1,1);add(w.x2,w.y2,1)});ED.comps.forEach(c=>ends(c).forEach(p=>add(p[0],p[1],1)));
+ [...P.values()].forEach(p=>ED.wires.forEach(w=>{if(inside(w,p[0],p[1]))add(p[0],p[1],2)}));
+ let s='';m.forEach((n,k)=>{if(n>=3){const p=P.get(k);s+=`<circle cx="${p[0]*G}" cy="${p[1]*G}" r="5.5" fill="${col.wire}"/>`}});return s}
+function drawEditor(){const sv=$('ncEd');if(!sv)return;const D=diag();ED.diag=D;
+ let s=`<defs><pattern id="ncg" width="${G}" height="${G}" patternUnits="userSpaceOnUse"><circle cx="1" cy="1" r="1.2" fill="#99a5"/></pattern></defs><rect x="-4000" y="-4000" width="9000" height="9000" fill="url(#ncg)"/>`+drawScene(ED,{sel:ED.sel})+junctions();
+ const bad=new Set(D.pts.map(p=>key(p[0],p[1])));
+ ED.comps.forEach(c=>ends(c).forEach(p=>{const b=bad.has(key(p[0],p[1]));s+=`<circle cx="${p[0]*G}" cy="${p[1]*G}" r="${b?8:4}" fill="${b?'#dc262633':col.comp}" stroke="${b?'#dc2626':'none'}" stroke-width="3"/>`}));
+ D.pts.forEach(p=>{if(!ED.comps.some(c=>ends(c).some(e=>e[0]===p[0]&&e[1]===p[1])))s+=`<circle cx="${p[0]*G}" cy="${p[1]*G}" r="11" fill="none" stroke="#dc2626" stroke-width="3" stroke-dasharray="4 3"/>`});
+ if(ED.drag){const d=ED.drag;if(d.t==='w')s+=`<polyline points="${route(d.a,d.b).map(q=>q.x*G+','+q.y*G).join(' ')}" stroke="${col.acc}" stroke-width="3.5" fill="none" stroke-dasharray="6 5"/>`;
+  else{const e=lineTo(d.a,d.b),ok=clen(d.a,e)>=3;s+=`<g opacity="${ok?.6:.3}">${symbol({type:d.t,name:'',val:1,cx:(d.a.x+e.x)/2,cy:(d.a.y+e.y)/2,p:[d.a.x,d.a.y,e.x,e.y]})}</g><circle cx="${d.a.x*G}" cy="${d.a.y*G}" r="6" fill="${col.acc}"/><circle cx="${e.x*G}" cy="${e.y*G}" r="6" fill="${ok?col.acc:'#dc2626'}"/>`}}
+ else if(ED.start&&ED.hover)s+=`<polyline points="${route(ED.start,ED.hover).map(q=>q.x*G+','+q.y*G).join(' ')}" stroke="${col.acc}" stroke-width="3" fill="none" stroke-dasharray="6 5"/><circle cx="${ED.start.x*G}" cy="${ED.start.y*G}" r="6" fill="${col.acc}"/>`;
+ else if(ED.hover&&!coarse()&&(ED.tool==='C'||ED.tool==='R'))s+=`<g opacity=".4">${symbol({type:ED.tool,name:'',val:1,cx:ED.hover.x+2,cy:ED.hover.y,o:'h'})}</g>`;
+ sv.querySelector('#ncScene').innerHTML=s;sv.style.cursor=ED.tool==='sel'?'default':ED.tool==='pan'?'grab':ED.tool==='del'?'not-allowed':'crosshair';
+ const st=$('ncStat');if(st){st.className='nc-stat '+(D.ok?'ok':'bad');st.innerHTML=D.ok?`✓ <b>Circuito listo</b> · ${ED.comps.length} componentes, ${D.nets} nodos. Pulsa «Simplificar y calcular».`:'⚠ '+D.E.slice(0,3).map(esc).join('<br>⚠ ')+(D.E.length>3?'<br>… y '+(D.E.length-3)+' aviso(s) más.':'')}
+ const eb=$('ncEnd');if(eb)eb.style.display=ED.start?'':'none';
+ const ub=$('ncUndo'),rb=$('ncRedo');if(ub)ub.disabled=!H.u.length;if(rb)rb.disabled=!H.r.length;}
+const HINT={sel:'Toca un componente, cable o terminal para seleccionarlo. Arrástralo para moverlo (los cables simples conectados lo siguen). Arrastrar el fondo mueve la vista.',pan:'Arrastra con un dedo o con el mouse para mover la vista. Pellizca o usa la rueda para acercar o alejar.',C:'Toca para colocar un capacitor, o arrastra de un punto a otro para elegir su largo y dirección. Luego escribe su valor abajo.',R:'Toca para colocar una resistencia, o arrastra de un punto a otro para elegir su largo y dirección. Luego escribe su valor abajo.',w:'Arrastra de un punto a otro, o toca inicio y fin (toca más puntos para seguir). Al terminar pulsa «Terminar cable».',A:'Toca el punto donde empieza la fuente: terminal A (+).',B:'Toca el punto donde termina la fuente: terminal B (−).',del:'Toca el elemento que quieras borrar.'};
+function mountEditor(){const o=$('nxLabOut');if(!o)return;res=null;
+ o.innerHTML=`<svg id="ncEd" class="nc-svg ed"><g id="ncScene"></g></svg><div class="nc-stat" id="ncStat"></div><div class="nc-leg"><span>🟩 componente</span><span>▬ cable</span><span>● punto = unión</span><span>⭕ rojo = conexión pendiente</span><span>🟧 seleccionado</span></div><div class="nl-small" id="ncMsg" style="margin-top:6px">Elige una herramienta y dibuja, o pulsa «Cargar ejemplo».</div><details class="nc-help nl-small"><summary>¿Cómo se conectan las cosas?</summary><p>Un componente se conecta cuando su extremo (punto verde) toca un cable, otro extremo o un terminal. Dos cables que solo se cruzan <b>no</b> se conectan; para unirlos, termina un cable sobre el otro y verás un punto. El aviso verde/rojo bajo el dibujo te dice al instante si falta algo.</p></details>`;
+ const sv=$('ncEd'),has=ED.comps.length||ED.wires.length,W=sv.clientWidth||360,Hh=sv.clientHeight||420;
+ view=makeViewer(sv,has?bounds(ED):{x:-2*G,y:-G,w:W/FIT*G,h:Hh/FIT*G},vopt);
+ const ptrs=new Set(),cancelG=()=>{if(gs&&gs.mv)restore(gs.mv.B);gs=null;ED.drag=null;drawEditor()};
+ sv.addEventListener('pointerdown',e=>{ptrs.add(e.pointerId);if(ptrs.size>1){if(gs)cancelG();return}
+  const q=view.pt(e.clientX,e.clientY),qg={x:q.x/G,y:q.y/G},h=ED.tool==='sel'?hit(qg):null;
+  vopt.left=ED.tool==='pan'||(ED.tool==='sel'&&!(h&&(h.t==='c'||h.t==='m')));
+  if(e.button!==0||ED.tool==='pan')return;
+  const p=snap(q);ED.hover=p;gs={id:e.pointerId,p0:p,q:qg,moved:false,t:ED.tool};
+  if(h&&(h.t==='c'||h.t==='m'))gs.mv=startMove(h);
+  try{sv.setPointerCapture(e.pointerId)}catch(_){}},true);
+ sv.addEventListener('pointermove',e=>{const p=snap(view.pt(e.clientX,e.clientY)),hv=!ED.hover||p.x!==ED.hover.x||p.y!==ED.hover.y;if(hv)ED.hover=p;
+  if(gs&&gs.id===e.pointerId){if(hv&&(gs.moved||p.x!==gs.p0.x||p.y!==gs.p0.y)){gs.moved=true;
+    if(gs.mv)applyMove(gs.mv,{x:p.x-gs.p0.x,y:p.y-gs.p0.y});else if(gs.t==='w'||gs.t==='C'||gs.t==='R')ED.drag={t:gs.t,a:gs.p0,b:p};
+    drawEditor()}}
+  else if(hv&&!gs&&(ED.start||ED.tool==='C'||ED.tool==='R'))drawEditor()});
+ sv.addEventListener('pointerup',e=>{ptrs.delete(e.pointerId);if(!gs||gs.id!==e.pointerId)return;const g=gs;gs=null;ED.drag=null;const p=snap(view.pt(e.clientX,e.clientY));
+  if(g.mv){if(g.moved){H.u.push(g.mv.base);if(H.u.length>100)H.u.shift();H.r=[]}else onClick(g.p0,g.q);refresh();return}
+  if(!g.moved){onClick(g.p0,g.q);return}
+  if(g.t!=='sel'&&(p.x!==g.p0.x||p.y!==g.p0.y))finishDrag(g,p);refresh()});
+ sv.addEventListener('pointercancel',e=>{ptrs.delete(e.pointerId);if(gs&&gs.id===e.pointerId)cancelG()});
+ sv.addEventListener('dblclick',()=>{ED.start=null;drawEditor()});
+ refresh();}
+function msg(t){const m=$('ncMsg');if(m)m.textContent=t}
+function dseg(q,x1,y1,x2,y2){const dx=x2-x1,dy=y2-y1,l=dx*dx+dy*dy;let t=l?((q.x-x1)*dx+(q.y-y1)*dy)/l:0;t=Math.max(0,Math.min(1,t));return Math.hypot(q.x-(x1+t*dx),q.y-(y1+t*dy))}
+function hit(q){let best=null,bd=1e9;
+ for(const k of ['A','B']){const m=ED[k];if(m&&Math.hypot(q.x-m.x,q.y-m.y)<0.8)return {t:'m',k}}
+ ED.comps.forEach((c,i)=>{const e=ends(c),d=dseg(q,e[0][0],e[0][1],e[1][0],e[1][1]);if(d<0.9&&d<bd){bd=d;best={t:'c',i}}});if(best)return best;
+ ED.wires.forEach((w,i)=>{const d=dseg(q,w.x1,w.y1,w.x2,w.y2);if(d<0.6&&d<bd){bd=d;best={t:'w',i}}});return best}
+function delSel(s){commitOnce();if(s.t==='c')ED.comps.splice(s.i,1);else if(s.t==='w')ED.wires.splice(s.i,1);else ED[s.k]=null;ED.sel=null}
+let _co=false;function commitOnce(){}
+/* mover con "goma elástica": los cables que solo tocan ese extremo se redibujan */
+function startMove(h){const at=[],used=new Set(),pts=h.t==='c'?ends(ED.comps[h.i]).map(e=>({x:e[0],y:e[1]})):[{x:ED[h.k].x,y:ED[h.k].y}];
+ pts.forEach(q=>{let others=0,wi=-1;
+  ED.wires.forEach((w,i)=>{if((w.x1===q.x&&w.y1===q.y)||(w.x2===q.x&&w.y2===q.y)){if(wi<0)wi=i;else others++}else if(inside(w,q.x,q.y))others++});
+  ED.comps.forEach((c,i)=>{if(h.t==='c'&&i===h.i)return;ends(c).forEach(e=>{if(e[0]===q.x&&e[1]===q.y)others++})});
+  ['A','B'].forEach(k=>{if(!(h.t==='m'&&h.k===k)&&ED[k]&&ED[k].x===q.x&&ED[k].y===q.y)others++});
+  if(wi>=0&&!others&&!used.has(wi)){used.add(wi);const w=ED.wires[wi];at.push({wi,q,which:(w.x1===q.x&&w.y1===q.y)?1:2})}});
+ ED.sel=h.t==='c'?{t:'c',i:h.i}:null;
+ return {h,B:JSON.parse(snapState()),base:snapState(),at}}
+function applyMove(m,d){restore(m.B);const h=m.h;
+ if(h.t==='c'){const c=ED.comps[h.i];if(c.p)c.p=[c.p[0]+d.x,c.p[1]+d.y,c.p[2]+d.x,c.p[3]+d.y];c.cx+=d.x;c.cy+=d.y}else ED[h.k]={x:m.B[h.k].x+d.x,y:m.B[h.k].y+d.y};
+ const att=new Map(m.at.map(a=>[a.wi,a])),nw=[];
+ ED.wires.forEach((w,wi)=>{const a=att.get(wi);if(!a){nw.push(w);return}
+  const mv={x:a.q.x+d.x,y:a.q.y+d.y},ot=a.which===1?{x:w.x2,y:w.y2}:{x:w.x1,y:w.y1},r=route(ot,mv);
+  for(let k=0;k<r.length-1;k++)if(r[k].x!==r[k+1].x||r[k].y!==r[k+1].y)nw.push({x1:r[k].x,y1:r[k].y,x2:r[k+1].x,y2:r[k+1].y})});
+ ED.wires=nw}
+function finishDrag(g,p){const a=g.p0;
+ if(g.t==='w'){commit();addRoute(a,p);ED.start=null}
+ else if(g.t==='C'||g.t==='R'){const b=lineTo(a,p);if(clen(a,b)<3)return msg('Muy corto: arrastra al menos 3 casillas.');commit();ED.comps.push(mk(g.t,a,b));ED.sel={t:'c',i:ED.comps.length-1};focusVal()}}
+function focusVal(){if(coarse())return;setTimeout(()=>{const v=$('ncPV');if(v&&v.offsetParent){v.focus();v.select()}},30)}
+function onClick(p,q){q=q||{x:p.x,y:p.y};const t=ED.tool;
+ if(t==='C'||t==='R'){commit();ED.comps.push(mk(t,p,{x:p.x+4,y:p.y}));ED.sel={t:'c',i:ED.comps.length-1};focusVal();msg('Colocado. Escribe su valor abajo; para otra longitud arrastra de un punto a otro.')}
+ else if(t==='w'){if(!ED.start)ED.start=p;else{const a=ED.start;commit();addRoute(a,p);ED.start=(p.x===a.x&&p.y===a.y)?null:p}}
+ else if(t==='A'||t==='B'){commit();ED[t]={x:p.x,y:p.y};msg('Terminal '+t+' colocado. Únelo con un cable al circuito.')}
+ else if(t==='del'){const h=hit(q);if(h){commit();delSel(h);msg('Eliminado. Sigue tocando para borrar más o elige otra herramienta.')}else msg('Ahí no hay nada que borrar.')}
+ else{ED.sel=hit(q);msg(!ED.sel?'Nada seleccionado.':ED.sel.t==='c'?'Seleccionado '+ED.comps[ED.sel.i].name+': edita su nombre y valor abajo, gíralo o bórralo.':ED.sel.t==='w'?'Cable seleccionado: pulsa «Borrar» para quitarlo.':'Terminal seleccionado: arrástralo para moverlo.')}
+ refresh()}
+/* ---- panel de propiedades (reemplaza los cuadros emergentes) ---- */
+let propPre=null,propPushed=false;
+function syncProps(){const p=$('ncProps');if(!p)return;const s=ED.sel,c=s&&s.t==='c'&&ED.comps[s.i];if(!c){p.style.display='none';return}
+ if(document.activeElement&&p.contains(document.activeElement)&&p.dataset.id===c.id)return;
+ p.style.display='flex';p.dataset.id=c.id;const u=bestU(c.val,c.type);$('ncPT').textContent=(c.type==='C'?'Capacitor ':'Resistencia ')+c.name;
+ $('ncPN').value=c.name;$('ncPV').value=+(c.val/u[1]).toPrecision(6);$('ncPU').innerHTML=UN[c.type].map(x=>`<option${x===u?' selected':''}>${x[0]}</option>`).join('')}
+function applyProps(){const s=ED.sel,c=s&&s.t==='c'&&ED.comps[s.i];if(!c)return;
+ if(!propPushed){H.u.push(propPre||snapState());H.r=[];propPushed=true}
+ const nm=$('ncPN').value.trim().slice(0,8),u=UN[c.type].find(x=>x[0]===$('ncPU').value),v=+$('ncPV').value*(u?u[1]:1);
+ if(v>0&&isFinite(v))c.val=v;
+ if(nm&&!ED.comps.some((o,i)=>i!==s.i&&o.name===nm))c.name=nm;else if(nm)msg('Ese nombre ya existe: elige otro distinto.');
+ drawEditor()}
+function rotSel(){const s=ED.sel;if(!(s&&s.t==='c')){if(!$('ncEd'))mountEditor();return msg('Selecciona un componente para girarlo.')}
+ commit();const c=ED.comps[s.i];
+ if(c.p){const dx=c.p[2]-c.p[0],dy=c.p[3]-c.p[1];c.p=[c.p[0],c.p[1],c.p[0]-dy,c.p[1]+dx];c.cx=(c.p[0]+c.p[2])/2;c.cy=(c.p[1]+c.p[3])/2}
+ else c.o={h:'e',e:'v',v:'d',d:'h'}[c.o||'h'];refresh()}
+/* ---- resultado ---- */
+function summaryText(r){let t='Circuito de '+(r.T==='C'?'capacitores':'resistencias')+' · V_T = '+r.V+' V\n';r.steps.forEach((s,i)=>{t+='Paso '+(i+1)+' · '+s.kind+' · '+s.names.join(' — ')+' → '+s.name+' = '+si(s.val,r.T==='C'?'F':'Ω')+'\n'});
+ t+=(r.T==='C'?'C_eq = ':'R_eq = ')+si(r.Keq,r.T==='C'?'F':'Ω')+'\n';
+ if(r.rows)r.rows.filter(n=>n.leaf).forEach(n=>{t+=n.name+': V = '+si(n.v,'V')+(r.T==='C'?', Q = '+si(n.f,'C'):', I = '+si(n.f,'A'))+'\n'});return t}
+function showResult(r){
+ res=r;const o=$('nxLabOut'),U=r.T==='C'?'F':'Ω',N=r.steps.length;
+ const calcOf=i=>{const s=i?r.steps[i-1]:null;return s?`<b>${s.removed?'Puente equilibrado':'Cálculo de la reducción'}</b><div class="nl-small">Paso ${i} · ${esc(s.kind)} · ${esc(s.names.join(' — '))} → <b>${esc(s.name)}</b></div><b style="display:block;margin-top:8px">Reducción equivalente</b>${s.formulas.map(f=>`<div class="tx">${tex(f,true)}</div>`).join('')}<div class="nl-small">${s.removed?'Sin diferencia de potencial no circula carga ni corriente: el componente se retira sin cambiar el resultado.':'El equivalente aparece resaltado; solo se reduce este grupo.'}</div>`
+   :`<b>Circuito original</b><p class="nl-small">V<sub>T</sub> = ${r.V} V · ${r.start.comps.length} componentes.</p><div class="tx" style="font-size:14px">${r.start.comps.map(c=>`<b>${esc(c.name)}</b> = ${esc(si(c.val,U))}`).join(' &nbsp;·&nbsp; ')}</div><p class="nl-small">Debajo se reduce un grupo por paso, redibujando el circuito cada vez.</p>`};
+ const title=i=>i?`Paso ${i} de ${N} · ${r.steps[i-1].kind}`:'Circuito inicial',sub=i=>i?r.steps[i-1].names.join(' — ')+' → '+r.steps[i-1].name:'Antes de simplificar';
+ const card=i=>`<section class="nc-card"><header><span class="nc-n">${i}</span><div><b>${esc(title(i))}</b><small>${esc(sub(i))}</small></div><button class="nc-exp" data-i="${i}">⤢ Ampliar</button></header><div class="nc-split"><svg class="nc-svg ncRv" style="cursor:grab"><g class="ncRs"></g></svg><div class="nc-calc">${calcOf(i)}</div></div></section>`;
+ o.innerHTML=`<div class="nc-bar"><button id="ncZm">−</button><span id="ncZp" class="nl-small">100%</span><button id="ncZpl">+</button><button id="ncZr">Restablecer</button><button id="ncHide">Ocultar cálculo</button><label class="nl-small" style="margin:0 0 0 6px">Tamaño de fórmulas <input id="ncF" type="range" min="0.8" max="2.6" step="0.05" value="1.3" style="width:110px;min-height:0"></label><button id="ncBack">Volver al editor</button><button id="ncSend" class="primary">Enviar al chat</button></div>
+<div id="ncAll" style="--ncf:1.3">${Array.from({length:N+1},(_,i)=>card(i)).join('')}</div><div id="ncFinal"></div>`;
+ const svs=[...o.querySelectorAll('.ncRv')],B=bounds(r.start);
+ const vs=svs.map((sv,i)=>{sv.querySelector('.ncRs').innerHTML=drawScene(i?r.steps[i-1].state:r.start);return makeViewer(sv,B,{left:true,onzoom:z=>{if(i===0)$('ncZp').textContent=z+'%'}})});
+ $('ncZm').onclick=()=>vs.forEach(v=>v.zoom(1/1.25));$('ncZpl').onclick=()=>vs.forEach(v=>v.zoom(1.25));$('ncZr').onclick=()=>vs.forEach(v=>v.reset());
+ $('ncHide').onclick=()=>{const a=document.querySelectorAll('#ncAll .nc-split');a.forEach(x=>x.classList.toggle('solo'));$('ncHide').textContent=a[0].classList.contains('solo')?'Mostrar cálculo':'Ocultar cálculo'};
+ $('ncF').oninput=e=>{$('ncAll').style.setProperty('--ncf',e.target.value)};
+ $('ncAll').onclick=e=>{const b=e.target.closest('.nc-exp');if(!b)return;const i=+b.dataset.i,m=document.createElement('div');m.id='ncModal';
+  m.innerHTML=`<div class="nc-bar" style="margin:0"><b style="flex:1">${esc(title(i))} · ${esc(sub(i))}</b><label class="nl-small" style="margin:0">Fórmulas <input id="ncMF" type="range" min="0.8" max="3" step="0.05" value="1.6" style="width:120px;min-height:0"></label><button id="ncMX" class="primary">✕ Cerrar</button></div><div class="nc-split"><svg class="nc-svg" style="cursor:grab"><g id="ncMS"></g></svg><div class="nc-calc" id="ncMC" style="--ncf:1.6">${calcOf(i)}</div></div>`;
+  document.body.appendChild(m);m.querySelector('#ncMS').innerHTML=drawScene(i?r.steps[i-1].state:r.start);makeViewer(m.querySelector('.nc-svg'),B,{left:true});
+  const close=()=>{m.remove();document.removeEventListener('keydown',kd)},kd=ev=>{if(ev.key==='Escape')close()};document.addEventListener('keydown',kd);
+  m.querySelector('#ncMX').onclick=close;m.querySelector('#ncMF').oninput=ev=>m.querySelector('#ncMC').style.setProperty('--ncf',ev.target.value)};
+ $('ncBack').onclick=()=>mountEditor();
+ $('ncSend').onclick=()=>{const i=$('in');if(!i)return;i.value=lastCirc;i.dispatchEvent(new Event('input',{bubbles:true}));$('nxLab').hidden=true;i.focus()};
+ lastCirc=summaryText(r);
+ const kind=r.T==='C'?'C':'R';
+ let f=`<div class="nl-check" style="margin-top:12px"><b>Resultado</b><div class="tx">${tex(tn(kind+'eq')+'='+tv(r.Keq,r.T)+(r.T==='C'?'\\;\\Rightarrow\\;Q_T=C_{eq}V_T='+sci(r.Keq*r.V)+'\\,\\mathrm{C}':'\\;\\Rightarrow\\;I_T=\\dfrac{V_T}{R_{eq}}='+sci(r.V/r.Keq)+'\\,\\mathrm{A}'),true)}</div></div>`;
+ if(r.rows){f+=`<table class="nc-tab"><tr><th>Componente</th><th>Valor</th><th>V</th><th>${r.T==='C'?'Q':'I'}</th><th>${r.T==='C'?'Energía ½CV²':'Potencia VI'}</th></tr>`+r.rows.map(n=>`<tr><td>${n.leaf?'<b>'+esc(n.name)+'</b>'+(n.removed?' <span class="nl-small">(puente equilibrado: V = 0)</span>':''):esc(n.name)+' <span class="nl-small">(equiv.)</span>'}</td><td>${esc(si(n.val,U))}</td><td>${esc(si(n.v,'V'))}</td><td>${esc(si(n.f,r.T==='C'?'C':'A'))}</td><td>${esc(si(r.T==='C'?.5*n.val*n.v*n.v:n.v*n.f,r.T==='C'?'J':'W'))}</td></tr>`).join('')+`</table><p class="nl-small">En serie, ${r.T==='C'?'la carga Q':'la corriente I'} es la misma y el voltaje se reparte; en paralelo, el voltaje es el mismo y ${r.T==='C'?'la carga':'la corriente'} se reparte. Se recorre de arriba hacia abajo desde el equivalente total. Comprobación con análisis nodal (Kirchhoff): diferencia relativa máx. ${r.err.toExponential(1)} ${r.err<1e-6?'✓':'⚠'}.</p>`}
+ else f+=`<p class="nl-small">Este circuito no se reduce solo con serie/paralelo (p. ej. un puente). Se resolvió con análisis nodal; el equivalente se obtuvo de ${r.T==='C'?'Q_T/V_T':'V_T/I_T'}.</p><table class="nc-tab"><tr><th>Componente</th><th>V</th><th>${r.T==='C'?'Q':'I'}</th></tr>${r.start.comps.map(c=>{const d=r.nodal.comp.get(c.id);return `<tr><td>${esc(c.name)}</td><td>${esc(si(d.v,'V'))}</td><td>${esc(si(d.f,r.T==='C'?'C':'A'))}</td></tr>`}).join('')}</table>`;
+ $('ncFinal').innerHTML=f;}
+/* ---- integración con el laboratorio ---- */
+function ladder(str,V){const w=[],c=[],top=4,bot=14;let n=0,cur=2,lastPar=true;
+ const wr=(a,b,e,f)=>{if(a!==e||b!==f)w.push(W(a,b,e,f))},add=(v,cx,cy,o)=>c.push(CC('R'+(++n),v,cx,cy,o,'R'));
+ str.split(';').map(t=>t.trim()).filter(Boolean).slice(0,10).forEach(st=>{const [a,b]=st.split('|'),sv=parseVal((a||'').trim(),'R'),ps=(b||'').trim().split(/\s+/).map(t=>parseVal(t,'R')).filter(Boolean).slice(0,4);
+  if(sv){wr(cur,top,cur+1,top);add(sv,cur+3,top,'h');cur+=5;lastPar=false}
+  if(ps.length){wr(cur,top,cur+2,top);cur+=2;ps.forEach((v,i)=>{if(i){wr(cur,top,cur+4,top);cur+=4}wr(cur,top,cur,top+3);add(v,cur,9,'v');wr(cur,11,cur,bot)});lastPar=true}});
+ if(!lastPar)wr(cur,top,cur,bot);wr(2,bot,cur,bot);
+ return {V:V||12,A:{x:2,y:top},B:{x:2,y:bot},wires:w,comps:c}}
+PRESETS.unshift({id:'imagen',name:'Ejemplo 1: escalera de resistencias (1Ω, 12Ω∥4Ω, 1Ω, 10Ω, 2Ω, 8Ω)',make:()=>ladder('1 | 12 4 ; 1 | 10 ; 2 | 8',12)});
+function ctrlHTML(){return `<div class="nc-panel" id="ncPanel"><b>Editor visual de circuitos (capacitores o resistencias)</b>
+<div class="nc-tools" id="ncTools"><button data-t="sel">☝ Seleccionar / mover</button><button data-t="pan">✋ Mover vista</button><button data-t="C">+ Capacitor</button><button data-t="R">+ Resistencia</button><button data-t="w">〰 Cable</button><button data-t="A">Terminal A (+)</button><button data-t="B">Terminal B (−)</button></div>
+<div class="nc-hint" id="ncHint"></div>
+<div class="nc-row"><button id="ncUndo">↶ Deshacer</button><button id="ncRedo">↷ Rehacer</button><button id="ncRot">⟳ Girar</button><button id="ncDel">🗑 Borrar</button><button id="ncEnd" style="display:none">✓ Terminar cable</button></div>
+<div class="nc-row"><button id="ncEZm">− Alejar</button><button id="ncEZp">+ Acercar</button><button id="ncEFit">⤢ Ajustar vista</button></div>
+<div id="ncProps"><b id="ncPT"></b><div class="nc-row"><input id="ncPN" maxlength="8" placeholder="Nombre" aria-label="Nombre"><input id="ncPV" type="number" min="0" step="any" inputmode="decimal" placeholder="Valor" aria-label="Valor"><select id="ncPU" aria-label="Unidad"></select></div></div>
+<label>Voltaje V_T (V)</label><input id="ncV" type="number" min="0" step="any" inputmode="decimal" value="${ED.V}">
+<label>Ejemplos cargados</label><select id="ncPre">${PRESETS.map(p=>`<option value="${p.id}">${esc(p.name)}</option>`).join('')}</select>
+<div class="nc-row"><button id="ncEx">Cargar ejemplo</button><button id="ncClr">Limpiar todo</button></div>
+<label>Generar escalera de resistencias (como la de la imagen)</label><input id="ncLad" value="1 | 12 4 ; 1 | 10 ; 2 | 8" aria-label="Escalera"><p class="nl-small">Cada etapa = resistencia en serie | resistencias en paralelo (separadas por espacio). Etapas separadas por «;». Acepta k y M (ej. 2.2k). Después puedes editar todo en el dibujo.</p><button id="ncLadGo">Generar escalera</button>
+<button class="primary" id="ncGo">Simplificar y calcular</button></div>`}
+function sync(){
+ const sel=$('nlPhys'),cc=$('nxLabControls');if(!sel||!cc)return;
+ if(!sel.querySelector('option[value="cedit"]')){const op=document.createElement('option');op.value='cedit';op.textContent='Circuito: editor visual (capacitores / resistencias, paso a paso)';sel.insertBefore(op,sel.firstChild);sel.value='cedit'}
+ if(!$('ncPanel')){const d=document.createElement('div');d.innerHTML=ctrlHTML();cc.appendChild(d.firstChild);bind()}
+ show(sel.value==='cedit')}
+function show(on){
+ const p=$('ncPanel');if(!p)return;p.style.display=on?'flex':'none';
+ ['nlStaticsFields','nlElectroFields','nlForceFields'].forEach(id=>{const e=$(id);if(e&&on)e.style.display='none'});
+ const cf=$('nlCircuitFields');if(cf)cf.style.display=on?'block':'none';
+ const run=$('nlRun');if(run)run.style.display=on?'none':'';
+ if(on&&!$('ncEd')&&!res)mountEditor();else if(on&&res&&!$('ncRv'))mountEditor()}
+function bind(){
+ const paint=()=>{document.querySelectorAll('#ncTools button').forEach(b=>b.classList.toggle('on',b.dataset.t===ED.tool));$('ncDel').classList.toggle('on',ED.tool==='del');vopt.left=ED.tool==='pan';const h=$('ncHint');if(h)h.textContent=HINT[ED.tool]||'';if(!$('ncEd'))mountEditor();drawEditor()};
+ $('ncTools').onclick=e=>{const b=e.target.closest('[data-t]');if(!b)return;ED.tool=b.dataset.t;ED.start=null;paint()};
+ ED.tool=ED.tool||'sel';paint();
+ $('ncUndo').onclick=()=>{if(!$('ncEd'))mountEditor();undo()};$('ncRedo').onclick=()=>{if(!$('ncEd'))mountEditor();redo()};
+ $('ncRot').onclick=rotSel;
+ $('ncDel').onclick=()=>{if(!$('ncEd'))mountEditor();const s=ED.sel;if(s){commit();delSel(s);refresh();return msg('Eliminado.')}ED.tool='del';ED.start=null;paint();msg('Modo borrar: toca el componente, cable o terminal que quieras quitar.')};
+ $('ncEnd').onclick=()=>{ED.start=null;drawEditor()};
+ $('ncEZm').onclick=()=>{if($('ncEd')&&view)view.zoom(1/1.3)};$('ncEZp').onclick=()=>{if($('ncEd')&&view)view.zoom(1.3)};
+ $('ncEFit').onclick=()=>{if(!$('ncEd')||!view)return;const sv=$('ncEd');view.fit(ED.comps.length||ED.wires.length?bounds(ED):{x:-2*G,y:-G,w:sv.clientWidth/FIT*G,h:sv.clientHeight/FIT*G})};
+ const pp=$('ncProps');pp.addEventListener('focusin',()=>{propPre=snapState();propPushed=false});['input','change'].forEach(ev=>pp.addEventListener(ev,applyProps));
+ $('ncV').oninput=e=>{ED.V=+e.target.value};
+ $('ncEx').onclick=()=>{const p=(PRESETS.find(x=>x.id===$('ncPre').value)||PRESETS[0]).make();commit();Object.assign(ED,{wires:p.wires,comps:p.comps,A:p.A,B:p.B,V:p.V,sel:null,start:null});$('ncV').value=p.V;mountEditor();msg('Ejemplo cargado: pulsa «Simplificar y calcular» (o edítalo antes).')};
+ $('ncLadGo').onclick=()=>{const p=ladder($('ncLad').value,+$('ncV').value||12);if(!p.comps.length)return(!$('ncEd')&&mountEditor(),msg('Escribe al menos una resistencia, ej. «1 | 12 4 ; 2 | 8»'));commit();Object.assign(ED,{wires:p.wires,comps:p.comps,A:p.A,B:p.B,sel:null,start:null});mountEditor();msg('Escalera generada: edítala o pulsa «Simplificar y calcular».')};
+ $('ncClr').onclick=()=>{if((ED.comps.length||ED.wires.length)&&!confirm('¿Borrar todo el dibujo? (puedes recuperarlo con Deshacer)'))return;commit();Object.assign(ED,{wires:[],comps:[],A:null,B:null,sel:null,start:null});mountEditor()};
+ $('ncGo').onclick=()=>{ED.V=+$('ncV').value;if(!$('ncEd'))mountEditor();const D=diag();if(!D.ok){drawEditor();return msg('⚠ No se puede calcular todavía: '+D.E[0])}
+  try{showResult(solve({wires:ED.wires,comps:ED.comps,A:ED.A,B:ED.B,V:ED.V}))}catch(e){if(!$('ncEd'))mountEditor();msg('⚠ '+e.message)}};
+ document.addEventListener('keydown',e=>{if(!$('ncEd')||$('nxLab').hidden)return;const typing=/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName);
+  if(e.key==='Escape'){ED.start=null;drawEditor()}
+  else if((e.ctrlKey||e.metaKey)&&!typing&&e.key.toLowerCase()==='z'){e.preventDefault();e.shiftKey?redo():undo()}
+  else if((e.ctrlKey||e.metaKey)&&!typing&&e.key.toLowerCase()==='y'){e.preventDefault();redo()}
+  else if(typing)return;
+  else if(e.key==='r'||e.key==='R')rotSel();
+  else if(e.key==='Delete'||e.key==='Backspace'){if(ED.sel){commit();delSel(ED.sel);refresh()}}});
+}
+globalThis.NoryxCircuits._t={ED,onClick,hit};
+const cc=$('nxLabControls');
+if(cc){new MutationObserver(()=>sync()).observe(cc,{childList:true});document.addEventListener('change',e=>{if(e.target&&e.target.id==='nlPhys')show(e.target.value==='cedit')});sync()}
+})();
+</script>
 </body>
 </html>
