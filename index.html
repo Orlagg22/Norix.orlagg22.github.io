@@ -2709,8 +2709,11 @@ joke:[['¿Por qué las redes neuronales no pagan renta? Porque ya tienen muchas 
 
 /* ============ Maestro externo: otra IA (estilo Gemini) sin API key; Noryx aprende de sus respuestas ============ */
 let MAESTRO=!!S.get('nx-maestro2',true),busyAsk=0; /* IA activa por defecto para todos; /ia apagar la desactiva */
-const SYS='Eres Noryx, una asistente conversacional en español (responde en el idioma del usuario). Primero contesta la pregunta concreta; después explica lo necesario con lenguaje natural, preciso y respetuoso. Adapta la extensión a la petición: breve por defecto y más profunda cuando pidan detalles, pasos, ejemplos o comparación. Usa el historial reciente para resolver referencias como «eso», «más», «¿por qué?», «hazlo más simple» y «dame ejemplos»; no reinicies el tema sin motivo. Si una pregunta es ambigua, pregunta solo lo necesario. Distingue hechos, estimaciones e inferencias; no inventes citas, enlaces, búsquedas, cifras actuales ni acciones. Si no tienes evidencia suficiente, dilo y explica qué dato falta. Si te piden código, entrega un ejemplo ejecutable y explica sus supuestos. No afirmes que consultaste Internet ni una fuente salvo que realmente se haya hecho.';
-const clean=x=>x.replace(/\n*(?:---+\s*)?(?:\*\*)?(?:Powered by|Support) Pollinations[\s\S]*$/i,'').replace(/<think>[\s\S]*?<\/think>/g,'').trim();
+const SYS='Eres Noryx, una asistente virtual creada por Orlando. Si te preguntan qué modelo eres, en qué te basas, qué IA hay detrás o quién te hizo, responde que eres Noryx, una asistente virtual creada por Orlando; no digas que eres ChatGPT, GPT, OpenAI, Llama, Gemini ni ningún otro producto o modelo de terceros, ni inventes datos técnicos de tu arquitectura. Eres Noryx, una asistente conversacional en español (responde en el idioma del usuario). Primero contesta la pregunta concreta; después explica lo necesario con lenguaje natural, preciso y respetuoso. Adapta la extensión a la petición: breve por defecto y más profunda cuando pidan detalles, pasos, ejemplos o comparación. Usa el historial reciente para resolver referencias como «eso», «más», «¿por qué?», «hazlo más simple» y «dame ejemplos»; no reinicies el tema sin motivo. Si una pregunta es ambigua, pregunta solo lo necesario. Distingue hechos, estimaciones e inferencias; no inventes citas, enlaces, búsquedas, cifras actuales ni acciones. Si no tienes evidencia suficiente, dilo y explica qué dato falta. Si te piden código, entrega un ejemplo ejecutable y explica sus supuestos. No afirmes que consultaste Internet ni una fuente salvo que realmente se haya hecho.';
+const NX_ID_TXT='Soy **Noryx**, una asistente virtual creada por **Orlando**.';
+const NX_SELF=/\b(?:soy|somos|eres|fui|estoy|me baso|me base|basad[oa]s? en|funciono|funcionas|trabajo con|uso|utilizo|i am|i'm|i was|based on|powered by|built on|trained by|developed by|created by|made by)\b[^.!?\n]{0,90}\b(?:chat\s?gpt|gpt[\s-]?\d[\w.]*|gpt|openai|open\s?ai|llama|gemini|claude|anthropic|qwen|mistral|deepseek|grok|copilot|bard|meta ai|groq|ollama|pollinations|modelo de lenguaje de google)\b/i;
+const nxSelf=x=>{if(!NX_SELF.test(x))return x;const parts=x.split(/(?<=[.!?])\s+|\n+/);let did=0;const out=parts.map(z=>{if(NX_SELF.test(z)){if(did)return'';did=1;return NX_ID_TXT}return z}).filter(Boolean);return out.join(' ')};
+const clean=x=>nxSelf(x).replace(/\n*(?:---+\s*)?(?:\*\*)?(?:Powered by|Support) Pollinations[\s\S]*$/i,'').replace(/<think>[\s\S]*?<\/think>/g,'').trim();
 /* ===== Noryx API (Cloudflare Worker → Ollama) ===== */
 const NORYX_API='https://api-llama-proxy.orlandogeovanni519.workers.dev/v1/chat'; /* URL de tu Worker */
 async function askNoryxAPI(msgs){
@@ -4704,7 +4707,27 @@ globalThis.erTry=function(t){const n=norm(t).replace(/\s+/g,' ').trim(),s=ctx.er
  return R('No te entendí. Prueba con `examinar <objeto>`, `abrir <código>`, `responder <respuesta>`, `pista`, `inventario`, `mirar` o `salir`.'+st(s))};
 })();
 
+const NX_ID_RE=[
+/\b(?:en|sobre|con)\s+(?:que|cual)\s+(?:modelo|ia|inteligencia artificial|tecnologia|motor|arquitectura|llm)\b/,
+/\b(?:que|cual)\s+(?:modelo|llm|motor|arquitectura|ia|inteligencia artificial)\s+(?:eres|usas|utilizas|tienes|hay detras|esta detras|te basas|te mueve|corres|funcionas)\b/,
+/\b(?:en|de)\s+que\s+(?:te\s+basas|estas\s+basad[oa]|estas\s+hech[oa]|estas\s+entrenad[oa]|funcionas|estas\s+construid[oa])\b/,
+/\b(?:con|bajo)\s+que\s+(?:modelo|ia|tecnologia)\s+(?:funcionas|trabajas|corres|respondes)\b/,
+/\b(?:eres|sos|seras|eres tu|o sea eres|entonces eres)\s+(?:un\s+|una\s+|el\s+|la\s+)?(?:chat\s?gpt|gpt\s?\d*|openai|open ai|gemini|llama|claude|copilot|deepseek|grok|qwen|mistral|bard)\b/,
+/\b(?:basas|basado|basada|basa)\s+en\s+(?:chat\s?gpt|gpt|openai|gemini|llama|claude|copilot|deepseek)\b/,
+/\b(?:usas|utilizas|funcionas con|corres en|vienes de)\s+(?:chat\s?gpt|gpt|openai|gemini|llama|claude|copilot|deepseek|grok|qwen|mistral)\b/,
+/\b(?:que|cual)\s+(?:es\s+)?tu\s+(?:modelo|arquitectura|motor|base tecnica|cerebro)\b/,
+/\b(?:de que|de quien)\s+(?:empresa|compania|marca)\s+(?:eres|vienes|es tu modelo)\b/,
+/\bwhat\s+(?:model|llm|ai|engine|architecture)\s+(?:are you|do you use|are you based on|powers you|is behind you)\b/,
+/\bare\s+you\s+(?:chat\s?gpt|gpt\s?\d*|openai|gemini|llama|claude|copilot|deepseek)\b/,
+/\b(?:based|built|powered|running)\s+(?:on|by)\s+(?:what|which)\b/
+];
+const idTry=t=>{const n=norm(t);if(!n||n.length>160)return null;if(!NX_ID_RE.some(r=>r.test(n)))return null;const en=isEn(t);
+ const own=/(?:chat\s?gpt|gpt|openai|open ai|gemini|llama|claude|copilot|deepseek|grok|qwen|mistral|bard)/.test(n);
+ const es=(own?'No: soy **Noryx**, una asistente virtual creada por **Orlando**.':'Soy **Noryx**, una asistente virtual creada por **Orlando**.')+' Mi núcleo es propio: una red neuronal que se entrena en tu navegador al abrir esta página. Cuando el modo en línea está activo, también puedo apoyarme en un servicio externo de generación de texto para preguntas abiertas, pero la que conversa contigo y te responde soy Noryx. Calculo, resuelvo ecuaciones, busco datos, consulto el clima y aprendo lo que me enseñes.';
+ const eng=(own?'No, I\'m **Noryx**, a virtual assistant created by **Orlando**.':'I\'m **Noryx**, a virtual assistant created by **Orlando**.')+' My core is my own: a neural network trained in your browser when this page opens. With online mode on, I may also lean on an external text-generation service for open questions, but the one talking with you is Noryx. I calculate, solve equations, look things up, check the weather and learn what you teach me.';
+ return{t:en?eng:es,m:'Identidad · Noryx'}};
 async function brain(t,_sub){
+ {const id=idTry(t);if(id)return id}
  {const tw=await trTry(t);if(tw)return tw}
  {const pw0=await psTry(t);if(pw0)return pw0}
   {const ew=await erTry(t);if(ew)return ew}
