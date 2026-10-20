@@ -136,6 +136,29 @@ textarea{flex:1;resize:none;border:0;outline:0;background:none;color:var(--ink);
 .jvrow{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}.jvrow .end{background:#c0392b;color:#fff;border-color:#c0392b}
 #jvn{font-size:12.5px;color:var(--mute);max-width:560px}
 @media (max-width:640px){.jvgrid{grid-template-columns:1fr}}
+#jv{background:radial-gradient(ellipse at 50% 18%,color-mix(in srgb,var(--acc) 17%,var(--bg)),var(--bg) 72%)}
+.jvtop{align-items:center}.jvtop>span:last-child{display:flex;gap:10px;align-items:center}
+.jvpill{display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border:1px solid var(--line);border-radius:999px;font-size:11px;letter-spacing:.08em}
+.jvpill i{width:7px;height:7px;border-radius:50%;background:var(--mute)}.jvpill.on{border-color:#1db95488;color:var(--ink)}.jvpill.on i{background:#1db954;box-shadow:0 0 8px #1db954}
+.jvwave{display:flex;gap:4px;height:22px;align-items:center;justify-content:center}.jvwave i{width:4px;height:5px;border-radius:3px;background:var(--acc);opacity:.3;transition:opacity .3s}
+#jv[data-st=listen] .jvwave i,#jv[data-st=speak] .jvwave i{opacity:1;animation:jvw .9s ease-in-out infinite}
+#jv[data-st=think] .jvwave i{opacity:.7;animation:jvw 1.6s ease-in-out infinite}
+.jvwave i:nth-child(2n){animation-delay:.15s!important}.jvwave i:nth-child(3n){animation-delay:.3s!important}.jvwave i:nth-child(5n){animation-delay:.45s!important}
+@keyframes jvw{50%{height:22px}}
+#jvu{max-width:680px;min-height:1.3em;font-size:13.5px;color:var(--mute)}#jvu:not(:empty):before{content:'TÚ  ';font:500 10px 'JetBrains Mono',monospace;letter-spacing:.14em;color:var(--acc)}
+#jvt{color:var(--ink);font-size:17px;line-height:1.45}
+#jvnp{width:100%;max-width:900px;display:flex;gap:14px;align-items:center;text-align:left;border:1px solid var(--line);border-radius:18px;padding:12px;background:color-mix(in srgb,var(--panel) 78%,transparent);backdrop-filter:blur(10px)}#jvnp[hidden]{display:none}
+#jvnp img{width:70px;height:70px;border-radius:10px;object-fit:cover;flex:none;background:var(--line)}
+.npi{flex:1;min-width:0}.npt{font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.npa{color:var(--mute);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.npbar{height:5px;background:var(--line);border-radius:5px;margin:9px 0 2px;overflow:hidden;cursor:pointer}.npbar i{display:block;height:100%;width:0;background:var(--acc)}
+.npc{display:flex;gap:6px;flex:none}.npc button{width:38px;height:38px;border-radius:50%;border:1px solid var(--line);font-size:15px;line-height:1}.npc button:hover,.npc .act{border-color:var(--acc);color:var(--acc)}
+#jvl div{padding:3px 0;border-bottom:1px dashed color-mix(in srgb,var(--line) 70%,transparent)}#jvl .t{color:var(--acc);opacity:.75;margin-right:8px}#jvl .u{color:var(--ink)}#jvl .b{color:var(--acc)}
+.jtm{display:flex;align-items:center;gap:8px;margin:5px 0}.jtm>div{flex:1;min-width:0}.jtm .bar{height:3px;background:var(--line);border-radius:3px;overflow:hidden;margin-top:3px}.jtm .bar i{display:block;height:100%;background:var(--acc)}.jtm button{width:22px;height:22px;border:1px solid var(--line);border-radius:50%;font-size:11px;line-height:1}
+.jvc button,.jvc a{backdrop-filter:blur(6px);transition:transform .15s,background .15s}.jvc button:hover,.jvc a:hover{transform:translateY(-1px)}
+.jvin input:focus,#jv button:focus-visible{box-shadow:0 0 0 3px color-mix(in srgb,var(--acc) 30%,transparent)}
+@media (max-width:640px){#jvnp{flex-wrap:wrap}.npc{width:100%;justify-content:center}.jvc a,.jvc button{padding:9px 14px}}
+@media (prefers-reduced-motion:reduce){.rx i,.jvwave i{animation:none!important}}
+
 #md{position:fixed;inset:0;z-index:50;background:#000a;display:grid;place-items:center}#md[hidden]{display:none}
 #md .card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:18px;width:min(580px,96vw);max-height:92vh;overflow:auto;display:flex;flex-direction:column;gap:12px}
 #md .sh{display:flex;align-items:center;gap:12px}#md .sh b{font:800 20px 'Bricolage Grotesque',sans-serif;flex:1}
@@ -708,10 +731,11 @@ html,body{overscroll-behavior:none}#feed{overscroll-behavior:contain}
 
 </div></div>
 <div id="jv" hidden role="dialog" aria-label="Modo Noryx">
- <div class="jvtop"><span><b>Noryx</b> · asistente de voz</span><span id="jvclk"></span></div>
+ <div class="jvtop"><span><b>Noryx</b> · asistente de voz</span><span><span class="jvpill" id="jvsp"><i></i>Spotify</span><span id="jvclk"></span></span></div>
  <button class="rx" id="jvo" aria-label="Interrumpir a Noryx"><i class="r1"></i><i class="r2"></i><i class="r3"></i><i class="core"></i></button>
- <div id="jvs">Te escucho…</div><div id="jvt" aria-live="polite"></div>
+ <div id="jvs">Te escucho…</div><div class="jvwave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><div id="jvu"></div><div id="jvt" aria-live="polite"></div>
  <div id="jvc" class="jvc"></div>
+ <div id="jvnp" hidden><img id="npi" alt=""><div class="npi"><div class="npt" id="npt"></div><div class="npa" id="npa"></div><div class="npbar" id="npbar"><i id="npf"></i></div></div><div class="npc"><button id="npl" title="Me gusta" aria-label="Me gusta">♡</button><button id="nps" title="Aleatorio" aria-label="Aleatorio">🔀</button><button id="npv" title="Anterior" aria-label="Anterior">⏮</button><button id="npp" title="Play/Pausa" aria-label="Play o pausa">▶</button><button id="npn" title="Siguiente" aria-label="Siguiente">⏭</button><button id="npr" title="Repetir" aria-label="Repetir">🔁</button></div></div>
  <div id="jvq" class="jvc jvq"></div>
  <div class="jvgrid"><div class="jvp"><h4>Registro</h4><div id="jvl"></div></div><div class="jvp"><h4>Temporizadores</h4><div id="jvtm">Ninguno</div></div></div>
  <div class="jvin"><input id="jvi" type="text" placeholder="…o escríbeme una orden" autocomplete="off" aria-label="Orden por texto"><button id="jvsend">Enviar</button></div>
@@ -5316,7 +5340,7 @@ function imRemove(i){if(imBusy){toast('Espera a que Noryx termine de responder')
  if(!imList.length){imSel=-1;orig=null;imMeta=null;imCache={};$('#imw').hidden=true;$('#imo').textContent='';imThumbs();return}
  imShow(Math.min(i<imSel?imSel-1:imSel,imList.length-1))}
 function loadFile(f){return new Promise(res=>{const u=URL.createObjectURL(f),im=new Image();
- im.onload=()=>{const k=Math.min(1,1280/Math.max(im.width,im.height)),w=Math.max(1,Math.round(im.width*k)),h=Math.max(1,Math.round(im.height*k)),
+ im.onload=()=>{const k=Math.min(1,1600/Math.max(im.width,im.height)),w=Math.max(1,Math.round(im.width*k)),h=Math.max(1,Math.round(im.height*k)),
    c=document.createElement('canvas');c.width=w;c.height=h;const x=c.getContext('2d',{willReadFrequently:true});x.drawImage(im,0,0,w,h);
   const tk=96/Math.max(w,h),t=document.createElement('canvas');t.width=Math.max(1,Math.round(w*tk));t.height=Math.max(1,Math.round(h*tk));t.getContext('2d').drawImage(c,0,0,t.width,t.height);
   const it={orig:x.getImageData(0,0,w,h),cur:null,cache:{},th:t.toDataURL('image/jpeg',.7),meta:{name:f.name,w:im.width,h:im.height,kb:Math.round(f.size/1024)}};URL.revokeObjectURL(u);res(it)};
@@ -5478,10 +5502,10 @@ $('#mkd').onclick=async()=>{if(!mkLast)return;if(mkLast.local){mkLast.canvas.toB
 var JV={on:false,rec:null,mute:false,st:'',wake:false,proc:false,h:[],last:'',timers:[],seq:0,wl:null,pin:false,music:S.get('nx-jmusic','spotify')};
 const jvEl=$('#jv'),jvs=$('#jvs'),jvt=$('#jvt'),jvl=$('#jvl'),jvc=$('#jvc'),jvtm=$('#jvtm'),jvi=$('#jvi');
 const JST={listen:'Te escucho…',think:'Procesando…',speak:'Hablando… toca el reactor para interrumpir',mute:'Micrófono en pausa'};
-const jvSet=x=>{JV.st=x;$('#jvo').className='rx '+x;jvs.textContent=JST[x]||''},jvText=t=>{jvt.textContent=t||''},jvWho=()=>mem.name||'señor';
+const jvSet=x=>{JV.st=x;jvEl.dataset.st=x;$('#jvo').className='rx '+x;jvs.textContent=JST[x]||''},jvText=t=>{jvt.textContent=t||''},jvWho=()=>mem.name||'señor';
 const jvPad=x=>String(x).padStart(2,'0'),jvPlain=s=>s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
 const jvR=(say,o)=>Object.assign({say,m:'Noryx · acción'},o||{});
-const jvLog=t=>{const d=document.createElement('div'),n=new Date();d.textContent=jvPad(n.getHours())+':'+jvPad(n.getMinutes())+'  '+t;jvl.prepend(d);while(jvl.children.length>40)jvl.lastChild.remove()};
+const jvLog=t=>{const d=document.createElement('div'),n=new Date(),a=document.createElement('span'),b=document.createElement('span');a.className='t';a.textContent=jvPad(n.getHours())+':'+jvPad(n.getMinutes());b.textContent=t;d.className=t[0]=='»'?'u':/^Noryx:/.test(t)?'b':'';d.append(a,b);jvl.prepend(d);while(jvl.children.length>40)jvl.lastChild.remove()};
 function jvChips(l){jvc.replaceChildren();(l||[]).forEach(c=>{let e;if(c.href){e=document.createElement('a');e.href=c.href;if(/^https?:/i.test(c.href)){e.target='_blank';e.rel='noopener'}}else{e=document.createElement('button');e.onclick=c.fn}e.textContent=c.label;jvc.append(e)})}
 const jvOpen=u=>{const w=window.open(u,'_blank');if(w){try{w.opener=null}catch(e){}return true}return false};
 const jvUri=u=>{const a=document.createElement('a');a.href=u;a.style.display='none';document.body.appendChild(a);a.click();a.remove()};
@@ -5505,10 +5529,11 @@ function jvDur(s){const W='\\d+(?:\\.\\d+)?|un|una|uno|dos|tres|cuatro|cinco|sei
 
 /* ---- temporizadores ---- */
 function jvBeep(){try{const a=new (window.AudioContext||window.webkitAudioContext)();[0,.25,.5].forEach(d=>{const o=a.createOscillator(),g=a.createGain(),t=a.currentTime+d;o.frequency.value=880;o.connect(g);g.connect(a.destination);g.gain.setValueAtTime(.001,t);g.gain.exponentialRampToValueAtTime(.25,t+.02);g.gain.exponentialRampToValueAtTime(.001,t+.2);o.start(t);o.stop(t+.22)});setTimeout(()=>a.close&&a.close(),1500)}catch(e){}}
-function jvTick(){const now=Date.now();jvtm.textContent=JV.timers.length?JV.timers.map(t=>(t.label||'Temporizador')+'  '+jvFmt((t.end-now)/1000)).join('\n'):'Ninguno'}
+function jvTick(){const now=Date.now();jvtm.replaceChildren();if(!JV.timers.length){jvtm.textContent='Ninguno';return}
+ JV.timers.forEach(t=>{const d=document.createElement('div'),l=Math.max(0,t.end-now),p=t.dur?Math.min(100,100-l/(t.dur*10)):0;d.className='jtm';d.innerHTML='<div><span></span><div class="bar"><i></i></div></div><button title="Cancelar" aria-label="Cancelar">✕</button>';d.querySelector('span').textContent=(t.label||'Temporizador')+'  '+jvFmt(l/1000);d.querySelector('i').style.width=p+'%';d.querySelector('button').onclick=()=>{clearTimeout(t.to);JV.timers=JV.timers.filter(x=>x!==t);jvSave();jvTick()};jvtm.append(d)})}
 async function jvAlert(t){let k=0;while(window.speechSynthesis&&speechSynthesis.speaking&&k<100){await sleep(200);k++}say(t)}
 function jvFire(id){const t=JV.timers.find(x=>x.id==id);if(!t)return;JV.timers=JV.timers.filter(x=>x.id!=id);jvSave();jvBeep();const w=jvWho(),msg=t.label=='pomodoro'?w[0].toUpperCase()+w.slice(1)+', terminó el pomodoro. Tome un descanso de cinco minutos.':t.label?'Recordatorio, '+w+': '+t.label+'.':'Su temporizador ha terminado, '+w+'.';toast('⏰ '+msg);jvNotify(msg);jvLog('⏰ '+msg);jvAlert(msg);jvTick()}
-function jvTimer(sec,label){const id=++JV.seq,t={id,end:Date.now()+sec*1000,label,to:setTimeout(()=>jvFire(id),sec*1000)};JV.timers.push(t);jvSave();jvAskNotif();jvTick();return t}
+function jvTimer(sec,label){const id=++JV.seq,t={id,end:Date.now()+sec*1000,dur:sec,label,to:setTimeout(()=>jvFire(id),sec*1000)};JV.timers.push(t);jvSave();jvAskNotif();jvTick();return t}
 
 /* ---- música, web y dispositivos ---- */
 const JMUS={spotify:{n:'Spotify',app:q=>q?'spotify:search:'+encodeURIComponent(q):'spotify:',web:q=>q?'https://open.spotify.com/search/'+encodeURIComponent(q):'https://open.spotify.com'},
@@ -5550,7 +5575,7 @@ async function jvBrief(n){const d=new Date(),h=d.getHours(),b=await jvBatt(),tk=
 async function jvRoutine(name,steps){const ch=[],out=[];for(const s of steps.slice(0,10)){const r=await jvCmd(s,jvPlain(s).replace(/[^a-z0-9 ]/g,' ').trim(),true);if(r){(r.chips||[]).forEach(c=>ch.push(c));out.push('• '+(r.show||r.say))}else out.push('• ?'+s);await sleep(400)}
  return jvR('Rutina '+name+' ejecutada, '+jvWho()+'.',{chips:ch,show:'Rutina «'+name+'»:\n'+out.join('\n'),m:'Noryx · rutina'})}
 
-const JHELP='Esto puedo hacer en modo Noryx:\n• Sitios: «abre YouTube», «abre github.com»\n• Música: «pon música de Soda Stereo», «reproduce jazz en YouTube», «abre Spotify y pon lofi»\n• Spotify directo (con /spotify): «pon Bohemian Rhapsody», «pausa», «siguiente canción», «sube el volumen», «qué suena»\n• Buscar: «busca recetas de pozole», «cómo llego a la Torre Eiffel»\n• Tiempo: «temporizador de 10 minutos», «recuérdame en 20 minutos que saque la ropa», «pomodoro»\n• Notas y tareas: «anota que compré leche», «agrega pan a mi lista», «qué tengo pendiente», «completa la tarea 2»\n• Sistema: «diagnóstico», «batería», «mantén la pantalla encendida», «pantalla completa», «modo claro»\n• Aparatos: «enciende el monitor» (con /puente)\n• Rutinas: «buenos días», «modo trabajo» (con /rutina)\n• Extras: tira un dado, lanza una moneda, copia un texto, habla más rápido\n• Y charlamos de lo que quieras.';
+const JHELP='Esto puedo hacer en modo Noryx:\n• Sitios: «abre YouTube», «abre github.com»\n• Música: «pon música de Soda Stereo», «reproduce jazz en YouTube», «abre Spotify y pon lofi»\n• Spotify directo (con /spotify): «pon a Soda Stereo», «pon Bohemian Rhapsody», «pausa», «siguiente», «sube el volumen», «qué suena»\n• Spotify biblioteca: «reproduce mis me gusta» (o «…en aleatorio»), «agrega esta canción a mis me gusta», «guarda Yellow en mis me gusta», «quita esta canción de mis me gusta», «pon mi playlist gym», «mis playlists»\n• Spotify extra: «pon al DJ Livi», «agrega Creep a la cola», «activa el aleatorio», «repite la canción»\n• Buscar: «busca recetas de pozole», «cómo llego a la Torre Eiffel»\n• Tiempo: «temporizador de 10 minutos», «recuérdame en 20 minutos que saque la ropa», «pomodoro»\n• Notas y tareas: «anota que compré leche», «agrega pan a mi lista», «qué tengo pendiente», «completa la tarea 2»\n• Sistema: «diagnóstico», «batería», «mantén la pantalla encendida», «pantalla completa», «modo claro»\n• Aparatos: «enciende el monitor» (con /puente)\n• Rutinas: «buenos días», «modo trabajo» (con /rutina)\n• Extras: tira un dado, lanza una moneda, copia un texto, habla más rápido\n• Y charlamos de lo que quieras.';
 
 /* ---- intérprete de órdenes: devuelve null si no es una orden (entonces se charla) ---- */
 const JSPLIT=/\s+(?:y\s+)?(?:luego|despues|ademas|y despues)\s+|\s+y\s+(?=(?:abre|abrir|pon|ponme|reproduce|toca|busca|enciende|prende|apaga|activa|desactiva|anota|apunta|recuerdame|avisame|temporizador|cambia|dime|cuentame|agrega|manten|tira|lanza)\b)/;
@@ -5623,13 +5648,11 @@ async function jvCmd(raw,pm,ns){
  if(T(/^(?:(?:tira|lanza|echa|vuela|tirame)\s+(?:una\s+)?moneda|cara o cruz)$/))return R(Math.random()<.5?'Cara.':'Cruz.');
  if(m=n.match(/^(?:dame\s+)?(?:un\s+)?numero aleatorio(?:\s+entre\s+(\d+)\s+y\s+(\d+))?$/)){let a=+m[1]||1,b=+m[2]||100;if(a>b)[a,b]=[b,a];return R('El número es '+(a+Math.floor(Math.random()*(b-a+1)))+'.')}
  if(q=X(/^(?:copia|copiame)\s+(?:esto\s*|al portapapeles\s*)?(.+)$/)){const tx=q[1];let ok=false;try{await navigator.clipboard.writeText(tx);ok=true}catch(e){}return ok?R('Copiado al portapapeles.'):R('El navegador no me deja copiar sin un toque suyo. Use el botón.',{chips:[{label:'📋 Copiar',fn:()=>navigator.clipboard.writeText(tx).then(()=>toast('Copiado'),()=>toast('No se pudo copiar'))}]})}
- if(T(/^(?:pausa|pausar|pausa la musica|reanuda|reanuda la musica|continua la musica|siguiente cancion|cancion siguiente|cancion anterior|salta (?:la )?cancion|sube el volumen|baja el volumen|sube volumen|baja volumen|mutea|silencia la musica|(?:pon |ponle |sube |baja )?(?:el )?volumen (?:al|a|en) \d{1,3}(?: por ciento)?|que suena|que cancion es esta|que estoy escuchando|que esta sonando)$/)){
-  if(spReady()){const r=await spControl(n);if(r)return r}
-  else return R('Para controlar la música (pausa, siguiente, volumen) necesito que conectes tu cuenta de Spotify con /spotify, '+who+'. Sin eso no puedo tocar otras aplicaciones desde el navegador.',{m:'Noryx · límite honesto'})}
+ {const sr=await spNLU(n);if(sr)return sr}
  /* música */
  if(m=n.match(/^(reproduce|reproduceme|toca|tocame|quiero escuchar|quiero oir|play|escuchar|pon|ponme|pones)\s+(.+)$/)){let rest=m[2],pv=null;const pm2=rest.match(/\s+(?:en|on|por|con|desde)\s+(spotify|youtube music|yt music|youtube|apple music|deezer)$/);if(pm2){pv=pm2[1]=='yt music'?'youtube music':pm2[1];rest=rest.slice(0,pm2.index)}
-  const soft=/^(?:pon|ponme|pones)$/.test(m[1]),musical=/\b(?:musica|cancion|canciones|playlist|album|disco|algo de|algo para|tema de|temazo|rola|rolas|lofi|jazz|rock|salsa|cumbia|reggaeton|clasica|pop|rap)\b/.test(rest);
-  if(!soft||pv||musical){const F=/^(?:algo de|algo para|un poco de|musica de|musica para|musica|la musica de|una cancion de|la cancion|cancion de|cancion|el album|la playlist|playlist de|playlist|mi musica|rolas de|un tema de|temazos de)\s+/;let s=rest.trim();s=s.replace(F,'').replace(F,'').replace(/^(?:musica|cancion|canciones)$/,'').trim();return jvPlay(pv||JV.music,s,rest)}}
+  const soft=/^(?:pon|ponme|pones)$/.test(m[1]),musical=/^(?:a|al|de|del|algo|unas?|lo nuevo|lo ultimo|lo mejor|la de|el de)\b/.test(rest)||(spReady()&&!/^(?:el |la |los |las |un |una )?(?:modo|tema|volumen|alarma|temporizador|cronometro|recordatorio|pomodoro|nota|lista|tarea|pantalla|luz|luces|monitor|dado|moneda|brillo|hora|fecha)\b/.test(rest))||/\b(?:musica|cancion|canciones|playlist|album|disco|algo de|algo para|tema de|temazo|rola|rolas|lofi|jazz|rock|salsa|cumbia|reggaeton|clasica|pop|rap)\b/.test(rest);
+  if(!soft||pv||musical){const F=/^(?:a la|a los|a las|al|a|lo nuevo de|lo ultimo de|lo mejor de|unas rolas de|unas canciones de|las canciones de|canciones de|el disco de|el disco|algo de|algo para|un poco de|musica de|musica para|musica|la musica de|una cancion de|la cancion|cancion de|cancion|el album|la playlist|playlist de|playlist|mi musica|rolas de|un tema de|temazos de)\s+/;let s=rest.trim();s=s.replace(F,'').replace(F,'').replace(/^(?:musica|cancion|canciones)$/,'').trim();return jvPlay(pv||JV.music,s,rest)}}
  /* mapas y búsqueda */
  if(q=X(/^(?:como llego a|como llegar a|ruta a|ruta hacia|llevame a|navega a|direcciones a|how do i get to)\s+(.+)$/))return jvWeb('https://www.google.com/maps/dir/?api=1&destination='+encodeURIComponent(q[1]),'la ruta a '+q[1],'Google Maps');
  if(q=X(/^(?:mapa de|muestrame el mapa de|muestrame en el mapa)\s+(.+)$/))return jvWeb('https://www.google.com/maps/search/'+encodeURIComponent(q[1]),'el mapa de '+q[1],'Google Maps');
@@ -5660,7 +5683,7 @@ function jvStart(){
  if(!jvAllowed()){sysMsg('El modo Noryx requiere acceso. Escribe /solicitar para pedírselo al creador.','Noryx');return}
  if(!window.speechSynthesis){toast('Tu navegador no admite voz. Prueba Chrome, Edge o Safari.');return}
  if(typeof VL!='undefined'&&VL.on)vlStop();
- closeMenu();creatorAct=Date.now();JV.on=true;JV.mute=!HAS_EAR;JV.proc=false;JV.h=[];JV.last='';jvEl.hidden=false;jvl.replaceChildren();jvChips([]);jvTick();jvWake(true);if(spReady())spInitPlayer().catch(()=>{});
+ closeMenu();creatorAct=Date.now();JV.on=true;JV.mute=!HAS_EAR;JV.proc=false;JV.h=[];JV.last='';jvEl.hidden=false;jvl.replaceChildren();jvUser('');jvChips([]);jvTick();jvWake(true);if(spReady())spInitPlayer().catch(()=>{});
  $('#jvm').textContent=JV.mute?'Activar micrófono':'Silenciar micrófono';$('#jvm').hidden=!HAS_EAR;
  const h=new Date().getHours(),g=(h<12?'Buenos días':h<20?'Buenas tardes':'Buenas noches')+', '+jvWho()+'. Noryx a sus órdenes.'+(HAS_EAR?'':' Su equipo no permite usar el micrófono: escríbame las órdenes.');
  const full=creator&&!JV_INTRO_DONE;if(full)JV_INTRO_DONE=true;
@@ -5705,7 +5728,7 @@ async function jvTurn(raw0,typed){
   if(JV.wake&&!typed&&!woke&&!/\b(?:noryx|jarvis)\b/.test(pm.slice(0,40)))return;
   const cut=sm?sm[0].length:0;raw=raw.slice(cut);pm=pm.slice(cut);
   const e=pm.length-pm.trimEnd().length;if(e){raw=raw.slice(0,raw.length-e);pm=pm.slice(0,pm.length-e)}
-  creatorAct=Date.now();jvSet('think');jvText('Tú: '+raw0);jvChips([]);jvLog('» '+raw0);
+  creatorAct=Date.now();jvSet('think');jvUser(raw0);jvText('…');jvChips([]);jvLog('» '+raw0);
   const n=pm.replace(/\s+/g,' ').trim(),who=jvWho();
   if(JBYE.test(n)){const b='Hasta luego, '+who+'. Quedo en espera.';jvText(b);jvSet('speak');say(b);await jvWait();jvStop();return}
   let out=null;
@@ -5748,9 +5771,10 @@ $('#jvh').onclick=()=>jvInput('que puedes hacer');
 const jvSendTxt=()=>{const t=jvi.value.trim();jvi.value='';jvInput(t)};
 jvi.addEventListener('keydown',e=>{if(e.key=='Enter'){e.preventDefault();jvSendTxt()}});$('#jvsend').onclick=jvSendTxt;
 addEventListener('keydown',e=>{if(e.key=='Escape'&&JV.on)jvStop()});
+addEventListener('keydown',e=>{if(JV.on&&mdEl.hidden&&e.key.length==1&&!e.ctrlKey&&!e.metaKey&&!e.altKey&&!/^(?:INPUT|TEXTAREA|SELECT)$/.test((document.activeElement||{}).tagName||''))jvi.focus()});
 setInterval(()=>{const b=$('#jvb');if(b)b.hidden=!jvAllowed();const gb=$('#gxb');if(gb)gb.hidden=!creator;
  if(tester&&!creator&&!grantActive('ensenar')){lock(false);toast('Tu acceso de tester terminó')}
- if(JV.on){if(!jvAllowed()){jvStop();sysMsg('⏳ Tu acceso al modo Noryx terminó.','Noryx');return}const d=new Date(),gl=creator?'':grantLeft('noryx');$('#jvclk').textContent=jvPad(d.getHours())+':'+jvPad(d.getMinutes())+':'+jvPad(d.getSeconds())+(gl?' · acceso: '+gl:'');jvTick()}},1000);
+ if(JV.on){if(!jvAllowed()){jvStop();sysMsg('⏳ Tu acceso al modo Noryx terminó.','Noryx');return}const d=new Date(),gl=creator?'':grantLeft('noryx');$('#jvclk').textContent=jvPad(d.getHours())+':'+jvPad(d.getMinutes())+':'+jvPad(d.getSeconds())+(gl?' · acceso: '+gl:'');$('#jvsp').classList.toggle('on',spReady());jvTick()}},1000);
 
 /* ============ Detector de micrófono ============
    Comprueba contexto seguro, permiso, dispositivos, nivel de señal real y reconocimiento de voz,
@@ -5982,16 +6006,16 @@ setInterval(()=>{refreshSess()},30000);
 setInterval(()=>{if(sess&&!creator)loadGrants()},60000);
 
 /* ---- temporizadores que sobreviven a recargar, avisos del sistema y alarmas «a las 7:30» ---- */
-function jvSave(){S.set('nx-jtimers',JV.timers.map(t=>({end:t.end,label:t.label})))}
+function jvSave(){S.set('nx-jtimers',JV.timers.map(t=>({end:t.end,dur:t.dur,label:t.label})))}
 function jvRestore(){const L=S.get('nx-jtimers',[]);S.set('nx-jtimers',[]);const now=Date.now(),late=[];
- (Array.isArray(L)?L:[]).forEach(t=>{if(t&&t.end>now){const id=++JV.seq;JV.timers.push({id,end:t.end,label:String(t.label||'').slice(0,120),to:setTimeout(()=>jvFire(id),t.end-now)})}else if(t)late.push(t)});
+ (Array.isArray(L)?L:[]).forEach(t=>{if(t&&t.end>now){const id=++JV.seq;JV.timers.push({id,end:t.end,dur:t.dur||Math.round((t.end-now)/1000),label:String(t.label||'').slice(0,120),to:setTimeout(()=>jvFire(id),t.end-now)})}else if(t)late.push(t)});
  jvSave();if(late.length)toast('⏰ Mientras no estabas terminó: '+late.map(t=>t.label||'un temporizador').join(', '))}
 function jvNotify(m){try{if('Notification' in window&&Notification.permission=='granted')new Notification('Noryx',{body:m})}catch(e){}}
 function jvAskNotif(){try{if('Notification' in window&&Notification.permission=='default')Notification.requestPermission()}catch(e){}}
 function jvAt(s){const m=s.match(/\ba las?\s+(\d{1,2})(?:[: ](\d{2}))?\s*(am|pm|a m|p m|de la manana|de la tarde|de la noche|de la madrugada)?/);if(!m)return 0;let h=+m[1],mi=+(m[2]||0);const p=m[3]||'';if(h>24||mi>59)return 0;
  if(/^(pm|p m|de la tarde|de la noche)/.test(p)&&h<12)h+=12;if(/^(am|a m|de la manana|de la madrugada)/.test(p)&&h==12)h=0;
  const d=new Date();d.setHours(h%24,mi,0,0);if(d<=new Date())d.setDate(d.getDate()+1);return Math.round((d-Date.now())/1000)}
-[['⏱ Pomodoro','pomodoro'],['♪ Lofi','pon musica de lofi'],['📋 Pendientes','que tengo pendiente'],['🔋 Estado','diagnostico'],['☀ Resumen','buenos dias'],['❔ Comandos','que puedes hacer']].forEach(([l,c])=>{const b=document.createElement('button');b.textContent=l;b.onclick=()=>jvInput(c);$('#jvq').append(b)});
+[['♥ Mis Me gusta','reproduce mis me gusta'],['🎧 DJ Livi','pon al dj livi'],['＋ Guardar canción','agrega esta cancion a mis me gusta'],['⏭ Siguiente','siguiente cancion'],['⏱ Pomodoro','pomodoro'],['♪ Lofi','pon musica de lofi'],['📋 Pendientes','que tengo pendiente'],['🔋 Estado','diagnostico'],['☀ Resumen','buenos dias'],['❔ Comandos','que puedes hacer']].forEach(([l,c])=>{const b=document.createElement('button');b.textContent=l;b.onclick=()=>jvInput(c);$('#jvq').append(b)});
 jvRestore();
 
 /* ---- sugerencias al escribir «/» ---- */
@@ -6026,7 +6050,7 @@ const SP_CLIENT_ID='923a1c8bee7e47e292f7c0450eb72a84';
 const spCid=()=>S.get('nx-spcid','')||(/^[0-9a-f]{32}$/i.test(SP_CLIENT_ID)?SP_CLIENT_ID.toLowerCase():'');
 const SP={player:null,dev:null,initing:null,err:''};
 SP.redir=()=>location.origin+location.pathname;
-SP.scopes='streaming user-read-email user-read-private user-read-playback-state user-modify-playback-state';
+SP.scopes='streaming user-read-email user-read-private user-read-playback-state user-modify-playback-state user-library-read user-library-modify playlist-read-private playlist-read-collaborative';
 const spReady=()=>!!spCid()&&!!S.get('nx-sptok',null);
 const spB64=b=>btoa(String.fromCharCode(...new Uint8Array(b))).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
 const spRand=n=>spB64(crypto.getRandomValues(new Uint8Array(n)));
@@ -6049,14 +6073,14 @@ async function spCallback(){
  S.set('nx-spst','');const pop=!!window.opener;
  if(err){if(pop){window.close();return}sysMsg('Spotify no dio el permiso ('+err+'). Si quieres, vuelve a intentarlo con `/spotify conectar`.','Noryx');return}
  try{const j=await spTokenReq({grant_type:'authorization_code',code,redirect_uri:SP.redir(),client_id:spCid(),code_verifier:S.get('nx-spv','')});
-  S.set('nx-sptok',{access:j.access_token,refresh:j.refresh_token,exp:Date.now()+j.expires_in*1000});S.set('nx-spv','');
+  S.set('nx-sptok',{access:j.access_token,refresh:j.refresh_token,exp:Date.now()+j.expires_in*1000,scope:j.scope||''});S.set('nx-spv','');
   if(pop){document.title='Spotify conectado';try{window.close()}catch(e){}return}
   sysMsg('✅ Spotify conectado. Abre `/noryx` y di «pon música de Soda Stereo». Necesitas Spotify Premium para que suene dentro de Noryx.','Noryx');spInitPlayer().catch(()=>{})}
  catch(e){sysMsg('No pude completar la conexión con Spotify: '+(e&&e.message||e)+'. Revisa que el Redirect URI en tu app de Spotify sea exactamente `'+SP.redir()+'`.','Noryx')}}
 addEventListener('storage',e=>{if(e.key=='nx-sptok'&&e.newValue&&e.newValue!='null'){sysMsg('✅ Spotify conectado. Abre `/noryx` y di «pon música de Soda Stereo». Necesitas Spotify Premium.','Noryx');spInitPlayer().catch(()=>{})}});
 async function spToken(){let t=S.get('nx-sptok',null);if(!t)return null;if(Date.now()<t.exp-60000)return t.access;
  try{const j=await spTokenReq({grant_type:'refresh_token',refresh_token:t.refresh,client_id:spCid()});
-  t={access:j.access_token,refresh:j.refresh_token||t.refresh,exp:Date.now()+j.expires_in*1000};S.set('nx-sptok',t);return t.access}
+  t={access:j.access_token,refresh:j.refresh_token||t.refresh,exp:Date.now()+j.expires_in*1000,scope:j.scope||t.scope||''};S.set('nx-sptok',t);return t.access}
  catch(e){S.set('nx-sptok',null);return null}}
 async function spApi(method,path,body){const tk=await spToken();if(!tk)throw{code:'auth'};
  const r=await fetch('https://api.spotify.com/v1'+path,{method,headers:Object.assign({Authorization:'Bearer '+tk},body?{'Content-Type':'application/json'}:{}),body:body?JSON.stringify(body):undefined});
@@ -6072,7 +6096,7 @@ function spInitPlayer(){if(SP.dev)return Promise.resolve(SP.dev);if(SP.initing)r
   return new Promise(res=>{let done=false;const fin=v=>{if(done)return;done=true;if(!v){SP.initing=null;try{SP.player&&SP.player.disconnect()}catch(e){}SP.player=null}res(v)};
    const p=new Spotify.Player({name:'Noryx',getOAuthToken:cb=>spToken().then(t=>cb(t||'')),volume:.8});
    p.addListener('ready',({device_id})=>{SP.dev=device_id;fin(device_id)});
-   p.addListener('not_ready',()=>{SP.dev=null;SP.initing=null});
+   p.addListener('not_ready',()=>{SP.dev=null;SP.initing=null});p.addListener('player_state_changed',npSDK);
    ['initialization_error','authentication_error','account_error','playback_error'].forEach(ev=>p.addListener(ev,e=>{SP.err=ev+(e&&e.message?': '+e.message:'');if(ev!='playback_error')fin(null)}));
    SP.player=p;try{p.activateElement&&p.activateElement()}catch(e){}
    p.connect().then(ok=>{if(!ok)fin(null)}).catch(()=>fin(null));setTimeout(()=>fin(null),12000)})})();
@@ -6084,6 +6108,7 @@ async function spStart(body){const id=await spDevice();if(!id)throw{code:404,rea
  try{await go()}catch(e){if(e.code==404||e.code==502){await spApi('PUT','/me/player',{device_ids:[id],play:false}).catch(()=>{});await sleep(700);await go()}else throw e}
  return id}
 function spErrText(e){const who=jvWho(),c=e&&e.code;
+ if(c=='scope')return'Para eso falta un permiso de Spotify (Me gusta y playlists), '+who+'. Escribe /spotify conectar una vez y acepta los permisos nuevos.';
  if(c=='auth')return'La conexión con Spotify caducó, '+who+'. Escribe /spotify conectar para entrar otra vez.';
  if(c=='rate')return'Spotify me pide esperar un momento, '+who+'. Intente de nuevo en unos segundos.';
  if(e&&e.reason=='PREMIUM_REQUIRED'||(c==403&&/premium/i.test(e&&e.msg||'')))return'Spotify solo deja controlar la reproducción desde aquí con una cuenta Premium, '+who+'.';
@@ -6132,7 +6157,123 @@ function spCmd(a){const J='Noryx',cid=spCid(),shared=!S.get('nx-spcid','')&&!!ci
   +'2. En **Redirect URIs** agrega exactamente: `'+SP.redir()+'` (debe ser https, o http://127.0.0.1 en local).\n'
   +'3. En «APIs used» marca **Web API** y **Web Playback SDK**. Si la app está en modo desarrollo, agrega tu cuenta en User Management.\n'
   +'4. Aquí: `/spotify id TU_CLIENT_ID` y luego `/spotify conectar`.\n\n'
-  +'Hace falta Spotify Premium. Después, en `/noryx` di «pon música de Soda Stereo», «pausa», «siguiente canción», «sube el volumen» o «qué suena». `/spotify desconectar` borra todo.',J)}
+  +'Hace falta Spotify Premium. Después, en `/noryx` di «pon música de Soda Stereo», «pausa», «siguiente canción», «sube el volumen», «qué suena», «reproduce mis me gusta», «pon al DJ Livi» o «agrega esta canción a mis me gusta». Si ya estabas conectado, escribe `/spotify conectar` una vez más para autorizar Me gusta y playlists. `/spotify desconectar` borra todo.',J)}
+
+/* ===== Noryx · extensión Spotify (Me gusta, DJ, cola, playlists, «pon a…») + tarjeta «sonando ahora» ===== */
+function jvUser(t){$('#jvu').textContent=t||''}
+const SPV='(?:reproduce|reproduceme|reproducir|toca|tocame|pon|ponme|ponla|ponlo|pones|quiero escuchar|quiero oir|escuchar|escucha|dale play a|dale play|play)';
+const spNeed=sc=>{const t=S.get('nx-sptok',null);if(!t||!t.scope||!(' '+t.scope+' ').includes(' '+sc+' '))throw{code:'scope'}};
+const spCur=async()=>{const c=await spApi('GET','/me/player/currently-playing');return c&&c.item&&c.item.type!='episode'?c.item:null};
+async function spSave(uris,on){spNeed('user-library-modify');const m=on?'PUT':'DELETE';
+ try{await spApi(m,'/me/library?uris='+encodeURIComponent(uris.join(',')))}
+ catch(e){if(e.code==404||e.code==405||e.code==410)await spApi(m,'/me/'+uris[0].split(':')[1]+'s',{ids:uris.map(u=>u.split(':')[2])});else throw e}}
+async function spHas(uri){try{spNeed('user-library-read');const j=await spApi('GET','/me/library/contains?uris='+encodeURIComponent(uri));return Array.isArray(j)?!!j[0]:null}
+ catch(e){try{const j=await spApi('GET','/me/tracks/contains?ids='+uri.split(':')[2]);return Array.isArray(j)?!!j[0]:null}catch(x){return null}}}
+async function spFind(q,type){const j=await spApi('GET','/search?type='+type+'&limit=5&q='+encodeURIComponent(q));return((j[type+'s']||{}).items||[]).filter(Boolean)}
+const spClean=q=>{const F=/^(?:a la|a los|a las|al|a|la cancion de|la cancion|cancion de|cancion|el tema|la rola|el album|el disco)\s+/;return q.trim().replace(F,'').replace(F,'')};
+async function spPlayLiked(sh){spNeed('user-library-read');
+ try{if(!SP.uid){const me=await spApi('GET','/me');SP.uid=me.id}await spStart({context_uri:'spotify:user:'+SP.uid+':collection'})}
+ catch(e){if(e.code=='auth'||e.code=='rate'||e.code=='scope')throw e;
+  const j=await spApi('GET','/me/tracks?limit=50'),L=(j.items||[]).map(x=>x.track&&x.track.uri).filter(Boolean);if(!L.length)return false;
+  if(sh)L.sort(()=>Math.random()-.5);await spStart({uris:L})}
+ if(sh!=null)try{await spApi('PUT','/me/player/shuffle?state='+sh)}catch(e){}
+ return true}
+async function spMyPl(q){spNeed('playlist-read-private');const nq=norm(q);let L=[];
+ for(const off of[0,50]){const j=await spApi('GET','/me/playlists?limit=50&offset='+off);L=L.concat((j.items||[]).filter(Boolean));if(!j.next)break}
+ const p=nq&&(L.find(x=>norm(x.name)==nq)||L.find(x=>norm(x.name).includes(nq))||L.find(x=>norm(x.name).length>3&&nq.includes(norm(x.name))));
+ return{p,L}}
+
+async function spNLU(n){
+ const s=n.replace(/\b(?:por favor|porfa)\b/g,'').replace(/\s+/g,' ').trim(),who=jvWho(),M={m:'Noryx · Spotify'},R=jvR,
+ hasV=new RegExp('^'+SPV+'\\b').test(s),V='(?:'+SPV+'\\s+)?',
+ LK='(?:me gustan?|me gusta|me guste|me han gustado|favorit[ao]s|guardad[ao]s|liked songs|likes)',
+ NOW='(?:esta|esa|este|ese|esta cancion|esa cancion|esta rola|esa rola|este tema|la que suena|lo que suena|la cancion que suena|la que esta sonando|la actual)',
+ LIB='(?:mis?\\s+)?(?:lista de\\s+|playlist de\\s+|canciones\\s+|canciones que\\s+)?'+LK,
+ isNow=q=>new RegExp('^'+NOW+'$').test(q),
+ nf=q=>R('No encontré «'+q+'» en Spotify, '+who+'.',M),
+ vol=async d=>{const c=await spApi('GET','/me/player'),cur=c.device&&typeof c.device.volume_percent=='number'?c.device.volume_percent:50,v=Math.max(0,Math.min(100,cur+d));await spApi('PUT','/me/player/volume?volume_percent='+v);return R('Volumen al '+v+' por ciento.',M)},
+ setv=async v=>{await spApi('PUT','/me/player/volume?volume_percent='+v);return R('Volumen al '+v+' por ciento.',M)},
+ rate=x=>/mucho/.test(x)?30:/poco/.test(x)?8:15,
+ likeCur=async on=>{const it=await spCur();if(!it)return R('No hay nada sonando, '+who+'.',M);
+  if(on){if(await spHas(it.uri)===true){if(NP.uri==it.uri){NP.liked=true;npHeart()}return R('«'+it.name+'» ya estaba en tus Me gusta, '+who+'.',M)}await spSave([it.uri],true)}else await spSave([it.uri],false);
+  if(NP.uri==it.uri){NP.liked=on;npHeart()}
+  return R(on?'Listo, agregué «'+it.name+'» a tus Me gusta, '+who+'.':'Quité «'+it.name+'» de tus Me gusta, '+who+'.',{m:'Noryx · Spotify',log:(on?'♥ ':'♡ ')+it.name})},
+ pl=async mm=>{const q=mm[1],{p}=await spMyPl(q);if(!p)return spPlayCmd(q,'playlist '+q);await spStart({context_uri:p.uri});
+  return R('Reproduciendo tu playlist '+p.name+', '+who+'.',{log:'♪ '+p.name,m:'Noryx · Spotify',chips:p.external_urls&&p.external_urls.spotify?[{label:'♪ Abrir en Spotify',href:p.external_urls.spotify}]:[]})},
+ A=[
+ [/^(?:pausa|pausar|pon pausa|pon en pausa|(?:pausa|pausar|deten|detener|para|calla) (?:la )?(?:musica|cancion))$/,async()=>{await spApi('PUT','/me/player/pause');return R('Música en pausa, '+who+'.',M)}],
+ [/^(?:reanuda|reanudar|continua|continuar|dale play|play|reproduce|pon play|despausa|quita la pausa|(?:reanuda|continua|sigue con) (?:la )?(?:musica|cancion))$/,async()=>{await spStart(undefined);return R('Continuando, '+who+'.',M)}],
+ [/^(?:(?:la )?siguiente(?: cancion| rola| tema)?|(?:cancion|rola|tema) siguiente|next|skip|salta(?: la)?(?: cancion| rola| tema)?|pasa(?: la)?(?: cancion| rola| tema)?|cambia(?: de| la)? (?:cancion|rola|tema)|otra (?:cancion|rola))$/,async()=>{await spApi('POST','/me/player/next');return R('Siguiente canción.',M)}],
+ [/^(?:(?:la )?anterior(?: cancion| rola| tema)?|(?:cancion|rola|tema) anterior|previous|regresa(?: la)?(?: cancion| rola| tema)?|atras|pon la anterior|retrocede(?: la cancion)?)$/,async()=>{await spApi('POST','/me/player/previous');return R('Canción anterior.',M)}],
+ [/^(?:ponla otra vez|ponlo otra vez|desde el principio|reinicia(?: la)? (?:cancion|rola|tema)|repite (?:esta|la) (?:cancion|rola|tema)(?: desde el principio)?)$/,async()=>{await spApi('PUT','/me/player/seek?position_ms=0');return R('Desde el principio.',M)}],
+ [/^(?:mutea|mutear|silencia|silencia la musica|pon en silencio|quita el sonido)$/,()=>setv(0)],
+ [/^(?:quita el silencio|activa el sonido|desmutea|pon sonido)$/,()=>setv(50)],
+ [/^(?:pon |ponle |sube |baja |ajusta )?(?:el )?volumen (?:al|a|en) (\d{1,3})(?: por ciento)?$/,mm=>setv(Math.min(100,+mm[1]))],
+ [/^(?:pon |ponle |sube )?(?:el )?volumen (?:al |a )?(maximo|minimo|medio|mitad)$/,mm=>setv(({maximo:100,minimo:0})[mm[1]]??50)],
+ [/^(sube|baja|aumenta|reduce)(?: un poco| mucho| mas)?(?: el)? (?:volumen|musica)(?: un poco| mucho| mas)?$/,mm=>vol((/^(?:sube|aumenta)$/.test(mm[1])?1:-1)*rate(mm[0]))],
+ [/^(mas fuerte|mas alto|subele|mas volumen|mas bajo|mas bajito|bajale|menos volumen)$/,mm=>vol((/fuerte|alto|subele|mas volumen/.test(mm[1])?1:-1)*15)],
+ [/^(?:que suena|que cancion es esta|que estoy escuchando|que esta sonando|que es esto|quien canta(?: esto| esta cancion)?|como se llama esta cancion|de quien es esta cancion|que cancion suena|que musica es esta)$/,async()=>{const it=await spCur();return it?R('Suena '+it.name+', de '+it.artists.map(a=>a.name).join(' y ')+', '+who+'.',{m:'Noryx · Spotify',chips:it.external_urls&&it.external_urls.spotify?[{label:'♪ Abrir en Spotify',href:it.external_urls.spotify}]:[]}):R('No hay nada sonando en Spotify ahora, '+who+'.',M)}],
+ [/^(?:(?:activa|pon|prende|enciende)(?: el)?(?: modo)? (?:aleatorio|shuffle|mezcla)|modo aleatorio|aleatorio|shuffle|mezclalo|mezcla la musica)$/,async()=>{await spApi('PUT','/me/player/shuffle?state=true');return R('Modo aleatorio activado.',M)}],
+ [/^(?:desactiva|quita|apaga)(?: el)?(?: modo)? (?:aleatorio|shuffle|mezcla)$/,async()=>{await spApi('PUT','/me/player/shuffle?state=false');return R('Modo aleatorio desactivado.',M)}],
+ [/^(?:(?:activa|pon|prende|enciende)(?: el)?(?: modo)? (?:repeticion|repetir|bucle|loop)|pon en (?:repeticion|bucle)|repetir|repeticion|loop)(?: de)?(?: la)?( cancion| rola| tema)?$/,async mm=>{await spApi('PUT','/me/player/repeat?state='+(mm[1]?'track':'context'));return R(mm[1]?'Repitiendo esta canción.':'Repetición activada.',M)}],
+ [/^(?:desactiva|quita|apaga)(?: el)?(?: modo)? (?:repeticion|repetir|bucle|loop)$/,async()=>{await spApi('PUT','/me/player/repeat?state=off');return R('Repetición desactivada.',M)}],
+ /* DJ de Spotify (Livi): la API web no lo soporta oficialmente → se intenta y siempre se ofrece abrirlo en la app */
+ [new RegExp('^'+V+'(?:(?:a|al|el|la|mi)\\s+)*(?:dj livi|livi dj|dj de spotify livi|dj livi de spotify|dj de spotify|dj spotify|spotify dj|dj|livi)(?:\\s+de spotify)?$'),async()=>{
+  const uri='spotify:playlist:37i9dQZF1EYkqdzj48dyYq',web='https://open.spotify.com/playlist/37i9dQZF1EYkqdzj48dyYq';let ok=false;
+  if(spReady())try{await spStart({context_uri:uri});ok=true}catch(e){}
+  if(!ok)jvUri(uri);
+  return R(ok?'Llamando al DJ de Spotify, '+who+'. Si no oye a Livi hablar, ábralo en la app con el botón.':'Abriendo el DJ de Spotify en su app, '+who+'.',{chips:[{label:'🎧 DJ en la app',href:uri},{label:'🎧 DJ en web',href:web}],log:'🎧 DJ de Spotify',m:'Noryx · Spotify',show:(ok?'Pedí el DJ de Spotify a Noryx.':'Abrí el DJ de Spotify en tu app.')+' La narración (la voz de Livi) solo está garantizada en las apps oficiales de Spotify: la API web no puede controlarla.'})},true],
+ /* Me gusta */
+ [new RegExp('^'+V+'((?:(?:mi|mis|la|las|el|los|de|a|lista|playlist|coleccion|biblioteca|musica|canciones|temas|rolas|que|todas)\\s+)*)'+LK+'(?:\\s+(?:en|con)\\s+(?:modo\\s+)?(?:aleatorio|shuffle|mezcla))?$'),async()=>{const sh=/aleatori|shuffle|mezcl/.test(s)?true:null;
+  return await spPlayLiked(sh)?R('Reproduciendo tus canciones de Me gusta'+(sh?' en aleatorio':'')+', '+who+'.',{m:'Noryx · Spotify',log:'♥ Me gusta',show:'Reproduciendo tus Me gusta de Spotify'+(sh?' en aleatorio.':'.')}):R('Aún no tienes canciones guardadas en Me gusta, '+who+'.',M)},false,mm=>hasV||/\bmis?\b/.test(mm[1])],
+ [/^(?:dale (?:un )?(?:me gusta|like|corazon)(?: a (?:esta|esa)(?: cancion| rola| tema)?)?|me gusta(?: mucho)? (?:esta|esa)(?: cancion| rola| tema)?|guardala|agregala|anadela|metela|marcala|like)$/,()=>likeCur(true)],
+ [/^(?:ya no me gusta|quita el me gusta|dale unlike|no me gusta)(?: esta| esa)?(?: cancion| rola| tema)?$/,()=>likeCur(false)],
+ [/^(?:guarda|agrega|anade|mete)\s+(?:este|ese|el)\s+(?:album|disco)(?:\s+(?:a|en)\s+(?:mi\s+)?(?:biblioteca|me gusta|favoritos))?$/,async()=>{const it=await spCur();if(!it||!it.album)return R('No hay nada sonando, '+who+'.',M);await spSave([it.album.uri],true);return R('Guardé el álbum «'+it.album.name+'» en tu biblioteca, '+who+'.',M)}],
+ [new RegExp('^(?:agrega|agregame|anade|anademe|guarda|guardame|mete|marca|pon|ponme)\\s+(?:la\\s+cancion\\s+|el\\s+tema\\s+|la\\s+rola\\s+)?(.+?)\\s+(?:a|en|entre|dentro de)\\s+'+LIB+'$'),async mm=>{if(isNow(mm[1]))return likeCur(true);
+  const r=(await spFind(spClean(mm[1]),'track'))[0];if(!r)return nf(mm[1]);await spSave([r.uri],true);
+  return R('Agregué «'+r.name+'», de '+r.artists.map(a=>a.name).join(' y ')+', a tus Me gusta, '+who+'.',{m:'Noryx · Spotify',log:'♥ '+r.name})}],
+ [new RegExp('^(?:quita|elimina|borra|saca|remueve)\\s+(?:la\\s+cancion\\s+)?(.+?)\\s+de\\s+'+LIB+'$'),async mm=>{if(isNow(mm[1]))return likeCur(false);
+  const r=(await spFind(spClean(mm[1]),'track'))[0];if(!r)return nf(mm[1]);await spSave([r.uri],false);
+  return R('Quité «'+r.name+'» de tus Me gusta, '+who+'.',{m:'Noryx · Spotify',log:'♡ '+r.name})}],
+ /* cola */
+ [new RegExp('^(?:agrega|anade|mete|pon|ponme|encola)\\s+(.+?)\\s+(?:a|en)\\s+(?:la|mi)\\s+(?:cola|fila)$|^(?:despues|luego|a continuacion|siguiente)\\s+(?:pon|ponme|reproduce|toca)\\s+(.+)$|^(?:pon|ponme|reproduce|toca)\\s+(.+?)\\s+(?:despues|luego|a continuacion|de siguiente)$'),async mm=>{
+  const q=mm[1]||mm[2]||mm[3],r=(await spFind(spClean(q),'track'))[0];if(!r)return nf(q);const id=await spDevice();
+  await spApi('POST','/me/player/queue?uri='+encodeURIComponent(r.uri)+(id?'&device_id='+encodeURIComponent(id):''));
+  return R('Agregué «'+r.name+'» a la cola, '+who+'.',{m:'Noryx · Spotify',log:'＋ cola · '+r.name})}],
+ /* mis playlists */
+ [new RegExp('^'+V+'(?:mi|mis)\\s+(?:playlist|lista|mezcla|mix)\\s+(?:de\\s+|llamada\\s+)?(.+)$'),pl],
+ [new RegExp('^'+V+'(?:mi\\s+)?(descubrimiento semanal|radar de novedades|mezcla diaria(?: \\d)?|daily mix(?: \\d)?|on repeat|repeat rewind|daylist)$'),pl],
+ [/^(?:(?:cuales son|dime|lee|muestrame|muestra|que)\s+)?(?:mis playlists|mis listas(?: de reproduccion)?|playlists tengo|que playlists tengo)$/,async()=>{const{L}=await spMyPl('');if(!L.length)return R('No encontré playlists en tu cuenta, '+who+'.',M);
+  return R('Tienes '+L.length+' playlists. Las primeras: '+L.slice(0,5).map(x=>x.name).join(', ')+'.',{m:'Noryx · Spotify',show:L.slice(0,12).map((x,i)=>(i+1)+'. '+x.name).join('\n'),chips:L.slice(0,8).map(x=>({label:'♪ '+x.name.slice(0,26),fn:()=>jvInput('pon mi playlist '+x.name)}))})}]
+ ];
+ for(const[re,fn,free,g]of A){const mm=s.match(re);if(!mm||(g&&!g(mm)))continue;
+  if(!free&&!spReady())return R('Para eso necesito que conectes tu cuenta de Spotify con /spotify, '+who+'. Sin eso no puedo tocar otras aplicaciones desde el navegador.',{m:'Noryx · límite honesto'});
+  try{const r=await fn(mm);setTimeout(npPoll,900);return r}catch(e){return R(spErrText(e),{m:'Noryx · error'})}}
+ return null}
+
+/* ---- tarjeta «sonando ahora» ---- */
+var NP={play:false,pos:0,dur:0,at:0,shuf:false,rep:'off',uri:'',liked:null};
+const $np=$('#jvnp');
+const npHeart=()=>{const b=$('#npl');b.textContent=NP.liked?'♥':'♡';b.classList.toggle('act',!!NP.liked)};
+function npSet(it,pos,play,shuf,rep){if(!it||!it.uri){$np.hidden=true;NP.play=false;return}
+ const k=it.uri!=NP.uri;NP.uri=it.uri;NP.dur=it.duration_ms||0;NP.pos=pos||0;NP.at=Date.now();NP.play=!!play;NP.shuf=!!shuf;NP.rep=rep||'off';
+ const im=(it.album&&it.album.images)||[],img=(im[1]||im[0]||{}).url||'',e=$('#npi');
+ $np.hidden=false;if(e.getAttribute('src')!=img)e.src=img;e.style.visibility=img?'visible':'hidden';
+ $('#npt').textContent=it.name||'';$('#npa').textContent=(it.artists||[]).map(a=>a.name).join(', ');
+ $('#npp').textContent=play?'⏸':'▶';$('#nps').classList.toggle('act',NP.shuf);const r=$('#npr');r.classList.toggle('act',NP.rep!='off');r.textContent=NP.rep=='track'?'🔂':'🔁';
+ if(k){NP.liked=null;npHeart();spHas(it.uri).then(v=>{if(NP.uri==it.uri){NP.liked=v;npHeart()}})}}
+function npSDK(st){if(!st||!st.track_window||!st.track_window.current_track)return;npSet(st.track_window.current_track,st.position,!st.paused,st.shuffle,['off','context','track'][st.repeat_mode||0])}
+async function npPoll(){if(!JV.on||!spReady()||document.hidden)return;try{const c=await spApi('GET','/me/player');if(c&&c.item&&c.item.type!='episode')npSet(c.item,c.progress_ms,c.is_playing,c.shuffle_state,c.repeat_state);else if(c&&!c.item)npSet(null)}catch(e){}}
+setInterval(npPoll,7000);
+setInterval(()=>{if(!$np.hidden&&NP.dur)$('#npf').style.width=Math.min(100,((NP.play?NP.pos+Date.now()-NP.at:NP.pos)/NP.dur)*100)+'%'},400);
+const npDo=f=>async()=>{try{await f();setTimeout(npPoll,600)}catch(e){toast(spErrText(e))}};
+$('#npp').onclick=npDo(()=>NP.play?spApi('PUT','/me/player/pause'):spStart(undefined));
+$('#npn').onclick=npDo(()=>spApi('POST','/me/player/next'));
+$('#npv').onclick=npDo(()=>spApi('POST','/me/player/previous'));
+$('#nps').onclick=npDo(()=>spApi('PUT','/me/player/shuffle?state='+!NP.shuf));
+$('#npr').onclick=npDo(()=>spApi('PUT','/me/player/repeat?state='+(NP.rep=='off'?'context':NP.rep=='context'?'track':'off')));
+$('#npl').onclick=npDo(async()=>{if(!NP.uri)return;const on=!NP.liked;await spSave([NP.uri],on);NP.liked=on;npHeart();toast(on?'♥ Agregada a tus Me gusta':'Quitada de tus Me gusta')});
+$('#npbar').onclick=e=>{if(!NP.dur)return;const r=e.currentTarget.getBoundingClientRect(),ms=Math.round(NP.dur*(e.clientX-r.left)/r.width);npDo(()=>spApi('PUT','/me/player/seek?position_ms='+ms))()};
 
 spCallback();
 loadCT();
@@ -9348,7 +9489,7 @@ function drawControls(){
  geo:`<b>Figuras geométricas</b><label>Figura</label><select id="nlShape"><option value="triangle">Triángulo</option><option value="circle">Círculo</option><option value="rectangle">Rectángulo</option><option value="square">Cuadrado</option></select><div class="nl-row">${field('Base / ancho','nlA','6','number')}${field('Altura / alto','nlB','4','number')}</div><button class="primary" id="nlRun">Dibujar y calcular</button>`,
  physics:`<b>Física: estática, electrostática, vectores y circuitos</b><label>Situación</label><select id="nlPhys"><option value="incline">Bloque en plano inclinado</option><option value="vectors">Suma de vectores</option><option value="statics">Estática: equilibrio y momentos</option><option value="electrostatics">Electrostática: fuerza, campo y potencial</option><option value="forces">Diagrama de fuerzas</option></select>
 <div id="nlForceFields" style="display:none"><b>Diagrama cartesiano de fuerzas</b><p class="nl-small">Ingresa magnitud en newtons y ángulo medido desde el eje +X en sentido antihorario. Los ángulos cardinales son 0°, 90°, 180° y 270°.</p><div class="nl-row">${field('Fuerza F₁ (N)','nlF1m','10','number')}${field('Ángulo F₁ (°)','nlF1a','0','number')}</div><div class="nl-row">${field('Fuerza F₂ (N)','nlF2m','10','number')}${field('Ángulo F₂ (°)','nlF2a','90','number')}</div><div class="nl-row">${field('Fuerza F₃ (N)','nlF3m','5','number')}${field('Ángulo F₃ (°)','nlF3a','180','number')}</div><div class="nl-row">${field('Fuerza F₄ (N)','nlF4m','0','number')}${field('Ángulo F₄ (°)','nlF4a','270','number')}</div><p class="nl-small">Puedes usar magnitud 0 si no necesitas una fuerza. El diagrama muestra cada vector desde el origen y la resultante.</p></div><div id="nlStaticsFields" style="display:none"><b>Datos de estática</b><div class="nl-row">${field('Fuerza 1 (N)','nlStF1','20','number')}${field('Distancia 1 al pivote (m)','nlStD1','2','number')}</div><div class="nl-row">${field('Fuerza 2 (N)','nlStF2','10','number')}${field('Distancia 2 al pivote (m)','nlStD2','3','number')}</div><label>Sentido de las fuerzas</label><select id="nlStSense"><option value="opposite">Momentos opuestos</option><option value="same">Momentos en el mismo sentido</option></select><p class="nl-small">Calcula τ = F·d y el momento resultante. Se supone que las fuerzas son perpendiculares al brazo.</p></div>
-<div id="nlElectroFields" style="display:none"><b>Datos de electrostática</b><div class="nl-row">${field('Carga q₁ (μC)','nlEq1','2','number')}${field('Carga q₂ (μC)','nlEq2','-3','number')}</div>${field('Distancia entre cargas (m)','nlEr','0.5','number')}<div class="nl-row">${field('Carga de prueba q (μC)','nlEtest','1','number')}${field('Distancia para potencial (m)','nlErp','0.5','number')}</div><p class="nl-small">Calcula fuerza de Coulomb, campo aproximado por F/q y potencial de q₁.</p></div><div id="nlCircuitFields"><p class="nl-small">Dibuja el circuito en el editor visual para simplificarlo paso a paso.</p></div><button class="primary" id="nlRun">Simplificar circuito / generar diagrama</button>`,
+<div id="nlElectroFields" style="display:none"><b>Datos de electrostática</b><div class="nl-row">${field('Carga q₁ (μC)','nlEq1','2','number')}${field('Carga q₂ (μC)','nlEq2','-3','number')}</div>${field('Distancia entre cargas (m)','nlEr','0.5','number')}<div class="nl-row">${field('Carga de prueba q (μC)','nlEtest','1','number')}${field('Distancia para potencial (m)','nlErp','0.5','number')}</div><p class="nl-small">Calcula fuerza de Coulomb, campo aproximado por F/q y potencial de q₁.</p></div><div id="nlCircuitFields"><label>Sube una foto del circuito (se procesa en esta herramienta; la foto no se envía a APIs)</label><input id="nlCircuitPhoto" type="file" accept="image/*"><div id="nlCircuitPreview" class="nl-small">Sin fotografía seleccionada.</div><button type="button" id="nlAnalyzeCircuitPhoto">Abrir foto en el analizador visual local de NORYX</button><p class="nl-small">Tras analizar la foto, dibuja el circuito en el editor visual para simplificarlo paso a paso sin errores.</p></div><button class="primary" id="nlRun">Simplificar circuito / generar diagrama</button>`,
  stats:`<b>Probabilidad y estadística</b><label>Herramienta</label><select id="nlStatsOp"><option value="descriptive">Estadística descriptiva</option><option value="probability">Probabilidad simple</option><option value="conditional">Probabilidad condicional</option><option value="combinatorics">Combinatoria (nCr y nPr)</option><option value="binomial">Distribución binomial</option></select><div id="nlStatsData"><label>Datos separados por comas (ej. 4, 7, 7, 9, 13)</label><input id="nlStatsValues" value="4, 7, 7, 9, 13"><div class="nl-row"><label><input type="checkbox" id="nlSample"> Tratar los datos como muestra (n−1 para varianza)</label></div></div><div id="nlStatsProb" style="display:none"><div class="nl-row">${field('Casos favorables','nlFav','2','number')}${field('Casos posibles','nlTotal','6','number')}</div><div class="nl-row">${field('P(A ∩ B) para condicional','nlInter','0.2','number')}${field('P(B) > 0','nlPB','0.5','number')}</div></div><div id="nlStatsComb" style="display:none"><div class="nl-row">${field('n (total)','nlN','10','number')}${field('r (seleccionados)','nlR','3','number')}</div></div><div id="nlStatsBinom" style="display:none"><div class="nl-row">${field('n ensayos','nlBinN','10','number')}${field('k éxitos exactos','nlBinK','3','number')}</div>${field('Probabilidad de éxito p (0 a 1)','nlBinP','0.5','number')}</div><button class="primary" id="nlRun">Calcular y explicar</button><p class="nl-small">Incluye media, mediana, moda, rango, varianza, desviación estándar, probabilidad simple/condicional, permutaciones, combinaciones y distribución binomial. Verifica supuestos y si los datos son una muestra o población.</p>`,
  integral:`<b>Cálculo diferencial e integral</b><label>Operación</label><select id="nlCalcOp"><option value="integral">Integración</option><option value="deriv">Derivación</option></select>${field('Función (ej. 3*x^2+2*x-4)','nlInt','3*x^2+2*x-4')}<div class="nl-math-keyboard" id="nlMathKeyboard"><div class="nl-math-head"><b>Teclado matemático</b><span>Inserta símbolos en el integrando</span></div><div class="nl-math-keys"><button type="button" data-insert="∫">∫ Integral</button><button type="button" data-insert="sqrt(|)">√ Raíz</button><button type="button" data-insert="^">xⁿ Potencia</button><button type="button" data-insert="(|)/()">a/b Fracción</button><button type="button" data-insert="pi">π Pi</button><button type="button" data-insert="infty">∞ Infinito</button><button type="button" data-insert="sin(|)">sin</button><button type="button" data-insert="cos(|)">cos</button><button type="button" data-insert="tan(|)">tan</button><button type="button" data-insert="ln(|)">ln</button><button type="button" data-insert="e^(|)">eˣ</button><button type="button" data-insert="*">× Multiplicar</button><button type="button" data-insert="+">＋</button><button type="button" data-insert="-">−</button><button type="button" data-insert="(">(</button><button type="button" data-insert=")">)</button><button type="button" data-insert="x">x</button><button type="button" data-insert="dx">dx</button></div></div><label>Tipo de función (opcional: se detecta automáticamente)</label><select id="nlIntType"><option value="poly">Polinomios</option><option value="trig">Trigonométricas básicas</option><option value="exp">Exponenciales y 1/x</option></select><div class="nl-row">${field('Límite inferior (opcional; acepta pi, inf)','nlLower','','text')}${field('Límite superior (opcional; acepta pi, inf)','nlUpper','','text')}</div><button class="primary" id="nlRun">Resolver paso a paso</button><div class="nl-photo-tool"><b>Resolver desde una foto</b><label for="nlIntegralPhoto">Toma una foto o selecciona una imagen del ejercicio</label><input id="nlIntegralPhoto" type="file" accept="image/*" capture="environment"><div id="nlIntegralPreview" class="nl-small">Sin fotografía seleccionada.</div><button type="button" class="primary" id="nlIntegralAnalyze">Leer y resolver automáticamente</button><p class="nl-small">NORYX procesará la fotografía con OCR local y mostrará la transcripción antes de resolver. Revisa cualquier símbolo dudoso; las potencias pequeñas pueden requerir corrección manual.</p></div><p class="nl-small">Muestra la regla aplicada a cada término y, si completas ambos límites, evalúa la integral definida. Sintaxis: x, *, ^, /, sin(x) o sen(x), cos(x), tan(x), e^x, ln(x), sqrt(x), atan(x)… Resuelve sustitución, partes (varias veces), fracciones parciales, potencias trigonométricas, sustitución trigonométrica e integrales impropias, siempre paso a paso. Ejemplos: x^2*e^x*sin(x), x^3/sqrt(1+x^2), x^2/(1+x^2)^2, ln(x)^2.</p>`,
  photo:`<b>Resolver ejercicio desde una fotografía</b><label>Selecciona o toma una foto del ejercicio</label><input id="nlPhoto" type="file" accept="image/*" capture="environment"><div id="nlPreview" class="nl-small">Sin fotografía seleccionada.</div><button class="primary" id="nlPhotoAnalyze" type="button">Leer y resolver automáticamente</button><p class="nl-small">NORYX utilizará automáticamente su analizador visual local, transcribirá lo que reconozca y resolverá el ejercicio paso a paso. Si algún símbolo no se distingue, lo indicará para evitar inventar datos.</p>`
@@ -9550,36 +9691,28 @@ async function ensureLabTesseract(progress){
  progress('Cargando motor OCR local…');
  return await window.__noryxLabTesseractPromise;
 }
-async function ocrImageLocal(file,progress,kind){
+async function ocrImageLocal(file,progress){
  if(!file||!/^image\//.test(file.type))throw Error('Selecciona una imagen válida (JPG, PNG o WEBP).');
  if(file.size>25*1024*1024)throw Error('La imagen supera 25 MB.');
- progress('Preparando lectura…');const tess=await ensureLabTesseract(progress);const url=URL.createObjectURL(file);let worker=null;
+ progress('Preparando lectura mejorada…');const tess=await ensureLabTesseract(progress);const url=URL.createObjectURL(file);
  try{
   const img=await new Promise((resolve,reject)=>{const im=new Image();im.onload=()=>resolve(im);im.onerror=()=>reject(Error('No pude abrir la fotografía. Prueba con JPG o PNG.'));im.src=url});
-  /* Escala moderada: más rápido y suficiente para texto de cuaderno o pantalla. */
-  const scale=Math.min(2.4,Math.max(1.2,2000/Math.max(img.width,img.height))),w=Math.round(img.width*scale),h=Math.round(img.height*scale);
-  const cache={};
-  const makeCanvas=variant=>{if(cache[variant])return cache[variant];const c=document.createElement('canvas');c.width=w;c.height=h;const x=c.getContext('2d',{willReadFrequently:true});if(!x)throw Error('El navegador no pudo preparar la imagen.');x.fillStyle='#fff';x.fillRect(0,0,w,h);x.imageSmoothingEnabled=true;x.imageSmoothingQuality='high';x.drawImage(img,0,0,w,h);if(variant){const im=x.getImageData(0,0,w,h),d=im.data;for(let i=0;i<d.length;i+=4){let gray=.299*d[i]+.587*d[i+1]+.114*d[i+2];if(variant===1){gray=gray<150?0:255;}else if(variant===2){gray=Math.max(0,Math.min(255,(gray-128)*1.65+128));}else if(variant===3){gray=255-gray;}else{gray=gray<190?0:255;}d[i]=d[i+1]=d[i+2]=gray;}x.putImageData(im,0,0);}return cache[variant]=c;};
-  /* Pocas pasadas, de la más útil a la menos; se detiene en cuanto una sale confiable. */
-  const math=kind==='integral'||kind==='physics';
-  const passes=math?[{variant:0,psm:6},{variant:2,psm:6},{variant:0,psm:6,math:true},{variant:1,psm:7,math:true},{variant:0,psm:11}]:[{variant:0,psm:6},{variant:2,psm:6},{variant:1,psm:6},{variant:0,psm:11}];
-  const WL='0123456789xXabcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ+-−*/^()[]{}.=∫√π²³⁴⁵⁶⁷⁸⁹⁰ ';
-  let cur='';
-  /* UN solo lector reutilizado (antes se creaba uno por pasada y recargaba el idioma 26 veces). */
-  worker=await tess.createWorker('spa+eng',1,{logger:m=>{if(m.status==='recognizing text')progress('Leyendo '+cur+'… '+Math.round((m.progress||0)*100)+' %');}});
-  const candidates=[];
+  // Escala suficiente para subíndices, etiquetas pequeñas y valores eléctricos.
+  const scale=Math.min(4.4,Math.max(1.8,3200/Math.max(img.width,img.height))),w=Math.round(img.width*scale),h=Math.round(img.height*scale);
+  const makeCanvas=(variant)=>{const c=document.createElement('canvas');c.width=w;c.height=h;const x=c.getContext('2d',{willReadFrequently:true});if(!x)throw Error('El navegador no pudo preparar la imagen.');x.fillStyle='#fff';x.fillRect(0,0,w,h);x.imageSmoothingEnabled=true;x.imageSmoothingQuality='high';x.drawImage(img,0,0,w,h);if(variant){const im=x.getImageData(0,0,w,h),d=im.data;for(let i=0;i<d.length;i+=4){let gray=.299*d[i]+.587*d[i+1]+.114*d[i+2];if(variant===1){gray=gray<150?0:255;}else if(variant===2){gray=Math.max(0,Math.min(255,(gray-128)*1.65+128));}else if(variant===3){gray=255-gray;}else{gray=gray<190?0:255;}d[i]=d[i+1]=d[i+2]=gray;}x.putImageData(im,0,0);}return c;};
+  // Distintas versiones ayudan con etiquetas pequeñas, estructuras dibujadas y fondos grises.
+  const candidates=[];const passes=[{variant:0,psm:6},{variant:2,psm:6},{variant:1,psm:6},{variant:0,psm:11},{variant:2,psm:11},{variant:3,psm:11},{variant:4,psm:6},{variant:0,psm:12},{variant:0,psm:7},{variant:2,psm:7},{variant:0,psm:13},{variant:1,psm:6,math:true},{variant:2,psm:7,math:true},{variant:0,psm:11,math:true},{variant:0,psm:6,math:true},{variant:2,psm:6,math:true},{variant:1,psm:7,math:true},{variant:0,psm:13,math:true},{variant:2,psm:13,math:true},{variant:4,psm:7,math:true},{variant:1,psm:13,math:true},{variant:0,psm:8,math:true},{variant:2,psm:8,math:true},{variant:0,psm:6,math:true,high:true},{variant:2,psm:11,math:true,high:true},{variant:1,psm:11,math:true,high:true}];
   for(let i=0;i<passes.length;i++){
-   const pass=passes[i];cur='(pasada '+(i+1)+' de '+passes.length+')';progress('Leyendo '+cur+'…');
-   await worker.setParameters({tessedit_pageseg_mode:String(pass.psm),preserve_interword_spaces:'1',tessedit_char_whitelist:pass.math?WL:''});
-   const r=await worker.recognize(makeCanvas(pass.variant)),data=r&&r.data||{},text=String(data.text||'').trim(),conf=Number(data.confidence)||0;
-   if(text)candidates.push({text,confidence:conf,variant:pass.variant,psm:pass.psm});
-   if(text.length>=8&&conf>=82)break; /* ya es buena: no gastes más pasadas */
+   const pass=passes[i];progress('Mejorando imagen y leyendo símbolos… pasada '+(i+1)+' de '+passes.length);
+   const cfg={tessedit_pageseg_mode:pass.psm,preserve_interword_spaces:'1',logger:m=>{if(m.status==='recognizing text')progress('Leyendo ejercicio… '+Math.round((m.progress||0)*100)+' %');}};if(pass.math)cfg.tessedit_char_whitelist='0123456789xXabcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ+-−*/^()[]{}.=∫√π²³⁴⁵⁶⁷⁸⁹⁰ ';const r=await tess.recognize(makeCanvas(pass.variant),'spa+eng',cfg);
+   const data=r&&r.data||{},text=String(data.text||'').trim();if(text)candidates.push({text,confidence:Number(data.confidence)||0,variant:pass.variant,psm:pass.psm});
   }
   if(!candidates.length)throw Error('El OCR terminó, pero no detectó texto. Usa una foto más nítida, derecha y con buena iluminación.');
+  // Preferir el pase con confianza mayor y contenido útil; no inventar símbolos.
   const useful=t=>(t.match(/[A-Za-z0-9]/g)||[]).length+(t.match(/[=+−*/^²³⁴⁵⁶⁷⁸⁹∫√]/g)||[]).length*2+(t.match(/\bx\s*\d|x\^[0-9]|[²³⁴⁵⁶⁷⁸⁹]/gi)||[]).length*5+(t.match(/CH\s*[₃3;:]|Br|Cl|OH|NH\s*2|NO\s*2|COOH|C\s*6\s*H\s*6/gi)||[]).length*5;
   candidates.sort((a,b)=>(b.confidence+useful(b.text)*.08)-(a.confidence+useful(a.text)*.08));
   const best=candidates[0];return {text:best.text,confidence:best.confidence,alternatives:candidates.slice(1).map(x=>({text:x.text,confidence:x.confidence})),passes:candidates.map(x=>({text:x.text,confidence:x.confidence,variant:x.variant,psm:x.psm}))};
- }finally{URL.revokeObjectURL(url);if(worker){try{await worker.terminate()}catch(e){}}}
+ }finally{URL.revokeObjectURL(url)}
 }
 /* ===== Lectura de fotos con visión: qwen/qwen3.8-27b (vía tu Worker; la clave nunca va en esta página) ===== */
 const NX_VISION_MODEL='qwen/qwen3.8-27b';
@@ -9592,28 +9725,27 @@ const NX_VISION_PROMPT={
 async function nxVisionShrink(file){
  const url=URL.createObjectURL(file);
  try{const im=await new Promise((ok,no)=>{const i=new Image();i.onload=()=>ok(i);i.onerror=()=>no(Error('No pude abrir la fotografía.'));i.src=url});
-  const k=Math.min(1,1280/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);
-  const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);x.drawImage(im,0,0,c.width,c.height);return c.toDataURL('image/jpeg',.82)}
+  const k=Math.min(1,1600/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);
+  const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);x.drawImage(im,0,0,c.width,c.height);return c.toDataURL('image/jpeg',.88)}
  finally{URL.revokeObjectURL(url)}}
 async function nxVisionRead(file,kind,progress){
- const ctrl=new AbortController(),t=setTimeout(()=>ctrl.abort(),45000);
- try{progress('Leyendo la imagen…');
+ const ctrl=new AbortController(),t=setTimeout(()=>ctrl.abort(),70000);
+ try{progress('Leyendo la imagen con visión (Qwen3.8 27B)…');
   const image=await nxVisionShrink(file);
   const r=await fetch(NX_VISION_BASE+'/v1/vision',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({kind:NX_VISION_PROMPT[kind]?kind:'generic',prompt:NX_VISION_PROMPT[kind]||NX_VISION_PROMPT.generic,image}),signal:ctrl.signal});
-  if(!r.ok){let x='';try{const j=await r.json();x=[j.error,j.details].filter(Boolean).join(' · ')}catch(e){}window._nxVisionDiag='HTTP '+r.status+(x?' · '+x:'');return null}
-  const d=await r.json(),text=String(d&&d.text||'').replace(/<think>[\s\S]*?(?:<\/think>|$)/g,'').trim();
+  if(!r.ok){window._nxVisionDiag='HTTP '+r.status;return null}
+  const d=await r.json(),text=String(d&&d.text||'').replace(/<think>[\s\S]*?<\/think>/g,'').trim();
   if(text.length<3){window._nxVisionDiag='respuesta vacía';return null}
   window._nxVisionDiag='ok';return text.slice(0,4000)}
- catch(e){window._nxVisionDiag=e&&e.name==='AbortError'?'tiempo agotado':'sin conexión (CORS/origen no permitido: el Worker solo acepta tu página de GitHub Pages)';return null}
+ catch(e){window._nxVisionDiag=e&&e.name==='AbortError'?'tiempo agotado':'sin conexión';return null}
  finally{clearTimeout(t)}}
 async function ocrImage(file,progress,kind){
  if(!file||!/^image\//.test(file.type))throw Error('Selecciona una imagen válida (JPG, PNG o WEBP).');
  if(file.size>25*1024*1024)throw Error('La imagen supera 25 MB.');
  const v=await nxVisionRead(file,kind,progress);
- if(v){window._nxLastVia='qwen';return {text:v,confidence:96,alternatives:[],passes:[{text:v,confidence:96}],via:'qwen'}}
- window._nxLastVia='local';
- progress('Leyendo la imagen…');
- return ocrImageLocal(file,progress,kind)}
+ if(v)return {text:v,confidence:96,alternatives:[],passes:[{text:v,confidence:96}],via:'qwen'};
+ progress('La visión no respondió ('+(window._nxVisionDiag||'sin datos')+'); usando el lector local…');
+ return ocrImageLocal(file,progress)}
 function normalizeMathOCR(t){return String(t||'')
  .replace(/[⁰¹²³⁴⁵⁶⁷⁸⁹]/g,c=>'^'+String('⁰¹²³⁴⁵⁶⁷⁸⁹'.indexOf(c)))
  .replace(/[−–—]/g,'-').replace(/[×·⋅]/g,'*')
