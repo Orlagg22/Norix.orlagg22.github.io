@@ -5708,7 +5708,7 @@ async function jvIntroCreator(){
  await step(fel+', '+N+'.')}
 function jvStop(){JV.on=false;const r=JV.rec;JV.rec=null;try{r&&r.abort()}catch(e){}window.speechSynthesis&&speechSynthesis.cancel();jvEl.hidden=true;JV.proc=false;earRelease();if(!JV.pin)jvWake(false)}
 function jvListen(){if(!JV.on||!mdEl.hidden)return;if(JV.mute||!HAS_EAR){jvSet('mute');return}
- if(Date.now()-creatorAct>6e5){jvStop();if(creator)lock(false);sysMsg('🔒 Modo Noryx cerrado por inactividad (10 min). '+(creator?'Escribe /creador para entrar otra vez.':'Escribe /noryx para volver a entrar.'),'Noryx');return}
+ if(!creator&&Date.now()-creatorAct>6e5){jvStop();sysMsg('🔒 Modo Noryx cerrado por inactividad (10 min). '+(creator?'Escribe /creador para entrar otra vez.':'Escribe /noryx para volver a entrar.'),'Noryx');return}
  if(!jvAllowed()){jvStop();sysMsg('⏳ Tu acceso al modo Noryx terminó.','Noryx');return}
  if(true){jvListenLocal();return}
  let fin='',r;try{r=new SR()}catch(e){return}
@@ -5722,7 +5722,7 @@ const JBYE=/^(?:adios|chao|hasta luego|terminar|terminar sesion|colgar|desconect
 async function jvTurn(raw0,typed){
  if(JV.proc)return;JV.proc=true;
  try{
-  if(!jvAllowed()||Date.now()-creatorAct>6e5){jvStop();if(creator)lock(false);sysMsg('🔒 Modo Noryx cerrado: '+(creator?'la verificación de creador expiró (10 min sin actividad). Escribe /creador para entrar otra vez.':'tu acceso terminó o pasaron 10 min sin actividad. Escribe /noryx para volver a intentarlo.'),'Noryx');return}
+  if(!jvAllowed()||(!creator&&Date.now()-creatorAct>6e5)){jvStop();sysMsg('🔒 Modo Noryx cerrado: '+(creator?'la verificación de creador expiró (10 min sin actividad). Escribe /creador para entrar otra vez.':'tu acceso terminó o pasaron 10 min sin actividad. Escribe /noryx para volver a intentarlo.'),'Noryx');return}
   let raw=raw0.trim(),pm=jvPlain(raw);if(pm.length!==raw.length)raw=pm;pm=pm.replace(/[^a-z0-9 ]/g,' ');
   const sm=pm.match(/^\s*(?:(?:oye|hey|ok|okay|ey)\s+)?((?:noryx|jarvis)\b\s*)?(?:por favor\s+|porfa\s+)?/),woke=!!(sm&&sm[1]);
   if(JV.wake&&!typed&&!woke&&!/\b(?:noryx|jarvis)\b/.test(pm.slice(0,40)))return;
@@ -5772,6 +5772,10 @@ const jvSendTxt=()=>{const t=jvi.value.trim();jvi.value='';jvInput(t)};
 jvi.addEventListener('keydown',e=>{if(e.key=='Enter'){e.preventDefault();jvSendTxt()}});$('#jvsend').onclick=jvSendTxt;
 addEventListener('keydown',e=>{if(e.key=='Escape'&&JV.on)jvStop()});
 addEventListener('keydown',e=>{if(JV.on&&mdEl.hidden&&e.key.length==1&&!e.ctrlKey&&!e.metaKey&&!e.altKey&&!/^(?:INPUT|TEXTAREA|SELECT)$/.test((document.activeElement||{}).tagName||''))jvi.focus()});
+/* Sesión de creador permanente: mientras tu cuenta del creador esté iniciada, nunca se cierra por inactividad; se restaura sola y renueva su token */
+let _cr=0,_ct=0;setInterval(async()=>{try{const ce=sess&&sess.email&&String(sess.email).toLowerCase()==CREATOR_EMAIL.toLowerCase();if(!ce)return;
+ if(!creator&&sess.refresh&&!_cr){_cr=1;await refreshSess();if(sess){cloudToken=sess.access;creator=true;privMail=CREATOR_EMAIL}_cr=0}
+ if(creator){creatorAct=Date.now();if(Date.now()-_ct>3e5){_ct=Date.now();await ensureTok()}}}catch(e){_cr=0}},5000);
 setInterval(()=>{const b=$('#jvb');if(b)b.hidden=!jvAllowed();const gb=$('#gxb');if(gb)gb.hidden=!creator;
  if(tester&&!creator&&!grantActive('ensenar')){lock(false);toast('Tu acceso de tester terminó')}
  if(JV.on){if(!jvAllowed()){jvStop();sysMsg('⏳ Tu acceso al modo Noryx terminó.','Noryx');return}const d=new Date(),gl=creator?'':grantLeft('noryx');$('#jvclk').textContent=jvPad(d.getHours())+':'+jvPad(d.getMinutes())+':'+jvPad(d.getSeconds())+(gl?' · acceso: '+gl:'');$('#jvsp').classList.toggle('on',spReady());jvTick()}},1000);
