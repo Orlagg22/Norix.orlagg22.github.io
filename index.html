@@ -9550,7 +9550,7 @@ async function ensureLabTesseract(progress){
  progress('Cargando motor OCR local…');
  return await window.__noryxLabTesseractPromise;
 }
-async function ocrImage(file,progress){
+async function ocrImageLocal(file,progress){
  if(!file||!/^image\//.test(file.type))throw Error('Selecciona una imagen válida (JPG, PNG o WEBP).');
  if(file.size>25*1024*1024)throw Error('La imagen supera 25 MB.');
  progress('Preparando lectura mejorada…');const tess=await ensureLabTesseract(progress);const url=URL.createObjectURL(file);
@@ -9573,6 +9573,38 @@ async function ocrImage(file,progress){
   const best=candidates[0];return {text:best.text,confidence:best.confidence,alternatives:candidates.slice(1).map(x=>({text:x.text,confidence:x.confidence})),passes:candidates.map(x=>({text:x.text,confidence:x.confidence,variant:x.variant,psm:x.psm}))};
  }finally{URL.revokeObjectURL(url)}
 }
+/* ===== Lectura de fotos con visión: qwen/qwen3.8-27b (vía tu Worker; la clave nunca va en esta página) ===== */
+const NX_VISION_MODEL='qwen/qwen3.8-27b';
+const NX_VISION_BASE=(()=>{try{return String(NORYX_API).replace(/\/v1\/chat$/,'')}catch(e){return 'https://api-llama-proxy.orlandogeovanni519.workers.dev'}})();
+const NX_VISION_PROMPT={
+ integral:'Transcribe la integral de la imagen sin resolverla. Responde solo con una línea con este formato: ∫ (expresión) dx, y si hay límites añade «de a hasta b». Usa ^ para potencias, sqrt() para raíces, * para producto y / para fracciones.',
+ physics:'Transcribe el ejercicio de física de la imagen sin resolverlo: enunciado completo, cada dato con su valor y unidad (q1=2 µC, V=12 V…). Si hay un circuito, enumera cada componente con su valor (C1=2 µF, R1=10 Ω…) y cómo están conectados (serie, paralelo, nodos A y B).',
+ chem:'Transcribe el ejercicio de química de la imagen sin resolverlo. Escribe las fórmulas en texto plano (CH3, NO2, COOH, H2SO4, C6H6). Si hay una estructura dibujada, describe el anillo, cada sustituyente y sus posiciones relativas.',
+ generic:'Transcribe todo el texto y las expresiones matemáticas de la imagen sin resolverlas. Usa texto plano: x^2, sqrt(x), ∫, a/b. Si hay figuras o diagramas, descríbelos y lista sus etiquetas y valores.'};
+async function nxVisionShrink(file){
+ const url=URL.createObjectURL(file);
+ try{const im=await new Promise((ok,no)=>{const i=new Image();i.onload=()=>ok(i);i.onerror=()=>no(Error('No pude abrir la fotografía.'));i.src=url});
+  const k=Math.min(1,1600/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);
+  const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);x.drawImage(im,0,0,c.width,c.height);return c.toDataURL('image/jpeg',.88)}
+ finally{URL.revokeObjectURL(url)}}
+async function nxVisionRead(file,kind,progress){
+ const ctrl=new AbortController(),t=setTimeout(()=>ctrl.abort(),70000);
+ try{progress('Leyendo la imagen con visión (Qwen3.8 27B)…');
+  const image=await nxVisionShrink(file);
+  const r=await fetch(NX_VISION_BASE+'/v1/vision',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({kind:NX_VISION_PROMPT[kind]?kind:'generic',prompt:NX_VISION_PROMPT[kind]||NX_VISION_PROMPT.generic,image}),signal:ctrl.signal});
+  if(!r.ok){window._nxVisionDiag='HTTP '+r.status;return null}
+  const d=await r.json(),text=String(d&&d.text||'').replace(/<think>[\s\S]*?<\/think>/g,'').trim();
+  if(text.length<3){window._nxVisionDiag='respuesta vacía';return null}
+  window._nxVisionDiag='ok';return text.slice(0,4000)}
+ catch(e){window._nxVisionDiag=e&&e.name==='AbortError'?'tiempo agotado':'sin conexión';return null}
+ finally{clearTimeout(t)}}
+async function ocrImage(file,progress,kind){
+ if(!file||!/^image\//.test(file.type))throw Error('Selecciona una imagen válida (JPG, PNG o WEBP).');
+ if(file.size>25*1024*1024)throw Error('La imagen supera 25 MB.');
+ const v=await nxVisionRead(file,kind,progress);
+ if(v)return {text:v,confidence:96,alternatives:[],passes:[{text:v,confidence:96}],via:'qwen'};
+ progress('La visión no respondió ('+(window._nxVisionDiag||'sin datos')+'); usando el lector local…');
+ return ocrImageLocal(file,progress)}
 function normalizeMathOCR(t){return String(t||'')
  .replace(/[⁰¹²³⁴⁵⁶⁷⁸⁹]/g,c=>'^'+String('⁰¹²³⁴⁵⁶⁷⁸⁹'.indexOf(c)))
  .replace(/[−–—]/g,'-').replace(/[×·⋅]/g,'*')
@@ -9757,7 +9789,7 @@ function chooseDomainOCR(read,kind){
  all.sort((a,b)=>score(b)-score(a));return all[0]||{text:'',confidence:0};
 }
 async function handleLabPhoto(kind,buttonId,inputId,previewId){if(busy)return;const btn=$(buttonId),inp=$(inputId);if(!btn||!inp)return;const f=inp.files&&inp.files[0];if(!f){const p=$(previewId);if(p)p.textContent='Primero toma una foto o selecciona una imagen.';return;}busy=true;btn.disabled=true;const progress=m=>{const p=$(previewId);if(p)p.textContent=m;const ex=$('nxLabExplain');if(ex)ex.textContent=m;};
- try{const read=await ocrImage(f,progress),chosen=chooseDomainOCR(read,kind),text=chosen.text,confidence=chosen.confidence;if(kind==='integral'){
+ try{const read=await ocrImage(f,progress,kind),chosen=chooseDomainOCR(read,kind),text=chosen.text,confidence=chosen.confidence;if(kind==='integral'){
    const ocrVariants=[text,...(read.passes||[]).map(x=>x.text),...(read.alternatives||[]).map(x=>x.text)];
    // OCR suele transcribir la combinación ∫√x dx como "/ ve dr". Detectarla en cualquiera de las pasadas y priorizar una interpretación explícitamente provisional.
    const rootLike=ocrVariants.some(rawText=>{const z=String(rawText||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[\s\t]+/g,' ');return /(?:\/|\\|\|)?\s*v\s*e\s*d\s*r\b/.test(z)||/(?:\/|\\|\|)?\s*v[ecl]\s*d[rx]\b/.test(z)||/√\s*x|raiz(?: cuadrada)?(?: de)?\s*x/.test(z)});
