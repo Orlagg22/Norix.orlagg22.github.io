@@ -13697,12 +13697,18 @@ function sci(v){if(!isFinite(v)||v===0)return '0';let e=Math.floor(Math.log10(Ma
 const uTex=T=>T==='C'?'\\mathrm{F}':'\\Omega',tv=(v,T)=>sci(v)+'\\,'+uTex(T);
 const tn=n=>{const m=String(n).match(/^([A-Za-z])(.+)$/);return m?m[1]+'_{'+m[2]+'}':n};
 const SI=[[1e6,'M'],[1e3,'k'],[1,''],[1e-3,'m'],[1e-6,'µ'],[1e-9,'n'],[1e-12,'p']];
-function si(v,u){if(!isFinite(v)||v===0)return '0 '+u;const a=Math.abs(v);for(const [f,p] of SI)if(a>=f*0.9995)return +(v/f).toPrecision(4)+' '+p+u;return v.toExponential(3)+' '+u}
+const NCSUP={'-':'⁻','0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹'};
+function sciTxt(v){if(!isFinite(v)||v===0)return '0';let e=Math.floor(Math.log10(Math.abs(v))),m=+(v/Math.pow(10,e)).toPrecision(4);if(Math.abs(m)>=10){m/=10;e++}
+ if(e>=-2&&e<=4)return String(+v.toPrecision(4));return m+'×10'+String(e).split('').map(c=>NCSUP[c]).join('')}
+function si(v,u){return sciTxt(v)+' '+u}
 function stepFormulas(grp,name,val,T){
- const ns=grp.items.map(i=>i.c.name),vs=grp.items.map(i=>i.c.val),h=harm(grp.kind,T),L=[];
- if(h){L.push(tn(name)+'=\\dfrac{1}{'+ns.map(n=>'\\dfrac{1}{'+tn(n)+'}').join('+')+'}');L.push(tn(name)+'=\\dfrac{1}{'+vs.map(v=>'\\dfrac{1}{'+tv(v,T)+'}').join('+')+'}')}
- else{L.push(tn(name)+'='+ns.map(tn).join('+'));L.push(tn(name)+'='+vs.map(v=>tv(v,T)).join('+'))}
- L.push(tn(name)+'='+tv(val,T));return L;
+ const ns=grp.items.map(i=>i.c.name),vs=grp.items.map(i=>i.c.val),h=harm(grp.kind,T),N=tn(name);
+ const al=(lhs,a,per)=>{const r=[];for(let i=0;i<a.length;i+=per)r.push(a.slice(i,i+per));return '\\begin{aligned}'+lhs+'&='+r.map((x,i)=>(i?'\\\\&\\quad{}+':'')+x.join('+')).join('')+'\\end{aligned}'};
+ if(h){const inv=1/val,u=T==='C'?'\\mathrm{F}^{-1}':'\\Omega^{-1}';
+  return [al('\\dfrac{1}{'+N+'}',ns.map(n=>'\\dfrac{1}{'+tn(n)+'}'),3),
+   al('\\dfrac{1}{'+N+'}',vs.map(v=>'\\dfrac{1}{'+tv(v,T)+'}'),2),
+   '\\begin{aligned}\\dfrac{1}{'+N+'}&='+sci(inv)+'\\,'+u+'\\\\ '+N+'&='+tv(val,T)+'\\end{aligned}']}
+ return [al(N,ns.map(tn),5),al(N,vs.map(v=>tv(v,T)),3),N+'='+tv(val,T)];
 }
 function nodal(S0){
  const N=netlist(S0),nets=[...new Set(N.items.flatMap(i=>[i.a,i.b]))],idx=new Map(),un=nets.filter(n=>n!==N.nA&&n!==N.nB);un.forEach((n,i)=>idx.set(n,i));
@@ -13801,25 +13807,26 @@ const st=document.createElement('style');st.textContent=`.nc-panel{display:flex;
 #ncProps{display:none;flex-direction:column;gap:6px;border:1px solid var(--acc);border-radius:12px;padding:8px 10px;background:color-mix(in srgb,var(--acc) 6%,var(--panel))}
 #ncProps .nc-row input{flex:1 1 90px;min-width:0}#ncProps .nc-row select{flex:0 0 90px}
 .nc-stat{margin-top:8px;padding:8px 10px;border-radius:10px;font-size:13px;line-height:1.45;border:1px solid var(--line)}.nc-stat.ok{border-color:#16a34a;background:#16a34a14}.nc-stat.bad{border-color:#dc2626;background:#dc262612}
-.nc-help summary{cursor:pointer;font-size:12.5px;color:var(--mute)}.nc-help p{margin:6px 0 0}`;
+.nc-help summary{cursor:pointer;font-size:12.5px;color:var(--mute)}.nc-help p{margin:6px 0 0}.nc-svg{overflow:hidden!important}`;
 document.head.appendChild(st);
 const ED={wires:[],comps:[],A:null,B:null,V:12,tool:'sel',sel:null,start:null,hover:null,n:{C:0,R:0}};
 let lastCirc='',view=null,res=null,stepI=0;
 const col={wire:'#6b8a82',comp:'#0f766e',acc:'#d97706'};
-function symbol(c,hl,cen){
+function symbol(c,hl,cen,ann){
  const e=ends(c),cl=hl?col.acc:col.comp,dx=e[1][0]-e[0][0],dy=e[1][1]-e[0][1],L=Math.hypot(dx,dy)*G/2,ang=Math.atan2(dy,dx)*180/Math.PI,X=c.cx*G,Y=c.cy*G;
  const body=c.type==='C'?`<path d="M${-L} 0H-4M4 0H${L}M-4-12V12M4-12V12" stroke="${cl}" stroke-width="4" fill="none"/>`:`<path d="M${-L} 0H-26L-20-11L-8 11L4-11L16 11L22 0H${L}" stroke="${cl}" stroke-width="3.5" fill="none" stroke-linejoin="round"/>`;
  const nm=esc(c.name),vl=esc(si(c.val,c.type==='C'?'F':'Ω')),T=(x,y,an,t,b)=>`<text x="${x}" y="${y}" text-anchor="${an}" font-size="${b?14:12}" ${b?`font-weight="700" fill="${cl}"`:'fill="#556"'}>${t}</text>`;
+ const AN=(x,y,an)=>false?`<text x="${x}" y="${y}" text-anchor="${an}" font-size="12" font-weight="700" fill="#0a7e8c">${esc(si(ann.v,'V')+' · '+si(ann.f,c.type==='C'?'C':'A'))}</text>`:'';
  let lab;
  if(dx&&dy){const n0=dy>0?[1,-1]:[1,1],c0=cen?{x:cen.x*G,y:cen.y*G}:{x:X,y:Y},sg=((X-c0.x)*n0[0]+(Y-c0.y)*n0[1])>=0?1:-1,nx=n0[0]*sg,ny=n0[1]*sg,an=nx>0?'start':'end',ty=Y+ny*24+(ny>0?6:-4);
-  lab=T(X+nx*24,ty,an,nm,1)+T(X+nx*24,ty+14,an,vl)}
- else if(dy===0)lab=T(X,Y-20,'middle',nm,1)+T(X,Y+32,'middle',vl);
- else lab=T(X-22,Y-2,'end',nm,1)+T(X-22,Y+14,'end',vl);
+  lab=T(X+nx*24,ty,an,nm,1)+T(X+nx*24,ty+14,an,vl)+AN(X+nx*24,ty+28,an)}
+ else if(dy===0)lab=T(X,Y-20,'middle',nm,1)+T(X,Y+32,'middle',vl)+AN(X,Y+47,'middle');
+ else lab=T(X-22,Y-2,'end',nm,1)+T(X-22,Y+14,'end',vl)+AN(X-22,Y+30,'end');
  return `<g><g transform="translate(${X},${Y}) rotate(${ang})">${body}</g>${lab}</g>`;
 }
 function drawScene(S,opt={}){
  let s=S.wires.map((w,i)=>`<line x1="${w.x1*G}" y1="${w.y1*G}" x2="${w.x2*G}" y2="${w.y2*G}" stroke="${opt.sel&&opt.sel.t==='w'&&opt.sel.i===i?col.acc:col.wire}" stroke-width="4" stroke-linecap="round"/>`).join('');
- const bb=bounds(S),cen={x:(bb.x+bb.w/2)/G,y:(bb.y+bb.h/2)/G};s+=S.comps.map((c,i)=>symbol(c,c.fresh||(opt.sel&&opt.sel.t==='c'&&opt.sel.i===i),cen)).join('');
+ const bb=bounds(S),cen={x:(bb.x+bb.w/2)/G,y:(bb.y+bb.h/2)/G};s+=S.comps.map((c,i)=>symbol(c,c.fresh||(opt.sel&&opt.sel.t==='c'&&opt.sel.i===i),cen,opt.vals&&opt.vals(c))).join('');
  if(S.A&&S.B&&S.A.y===S.B.y&&Math.abs(S.A.x-S.B.x)>=6){const d=Math.sign(S.B.x-S.A.x),mx=Math.round((S.A.x+S.B.x)/2)*G,y=S.A.y*G;
   s+=`<path d="M${S.A.x*G} ${y}H${mx-d*5}M${mx+d*5} ${y}H${S.B.x*G}" stroke="${col.wire}" stroke-width="4"/><path d="M${mx-d*5} ${y-16}V${y+16}" stroke="#334" stroke-width="5"/><path d="M${mx+d*5} ${y-9}V${y+9}" stroke="#334" stroke-width="5"/><text x="${mx}" y="${y-26}" text-anchor="middle" font-size="15" font-weight="700" fill="#334">${S.V} V</text><text x="${mx-d*16}" y="${y-8}" text-anchor="middle" font-size="14" fill="#c0392b">+</text><text x="${mx+d*16}" y="${y-8}" text-anchor="middle" font-size="16" fill="#2563eb">−</text>`}
  if(S.A&&S.B&&S.A.x===S.B.x&&Math.abs(S.A.y-S.B.y)>=6){const d=Math.sign(S.B.y-S.A.y),x=S.A.x*G,my=Math.round((S.A.y+S.B.y)/2)*G;
@@ -13828,7 +13835,7 @@ function drawScene(S,opt={}){
  return s;
 }
 function bounds(S){let xs=[],ys=[];S.wires.forEach(w=>{xs.push(w.x1,w.x2);ys.push(w.y1,w.y2)});S.comps.forEach(c=>ends(c).forEach(p=>{xs.push(p[0]);ys.push(p[1])}));[S.A,S.B].forEach(p=>{if(p){xs.push(p.x);ys.push(p.y)}});
- if(!xs.length)return {x:0,y:0,w:880,h:560};const x0=Math.min(...xs)*G-90,y0=Math.min(...ys)*G-70,x1=Math.max(...xs)*G+60,y1=Math.max(...ys)*G+70;return {x:x0,y:y0,w:x1-x0,h:y1-y0}}
+ if(!xs.length)return {x:0,y:0,w:880,h:560};const x0=Math.min(...xs)*G-150,y0=Math.min(...ys)*G-70,x1=Math.max(...xs)*G+110,y1=Math.max(...ys)*G+80;return {x:x0,y:y0,w:x1-x0,h:y1-y0}}
 function makeViewer(svg,vb0,o={}){
  let vb={...vb0};const set=()=>svg.setAttribute('viewBox',`${vb.x} ${vb.y} ${vb.w} ${vb.h}`);set();
  const zoom=(f,cx,cy)=>{const r=svg.getBoundingClientRect();const p=cx==null?{x:vb.x+vb.w/2,y:vb.y+vb.h/2}:{x:vb.x+(cx-r.left)/r.width*vb.w,y:vb.y+(cy-r.top)/r.height*vb.h};const nw=Math.min(vb0.w*5,Math.max(vb0.w/10,vb.w/f)),k=nw/vb.w;vb={x:p.x-(p.x-vb.x)*k,y:p.y-(p.y-vb.y)*k,w:nw,h:vb.h*k};set();o.onzoom&&o.onzoom(Math.round(vb0.w/vb.w*100))};
@@ -13843,7 +13850,9 @@ function makeViewer(svg,vb0,o={}){
  return {fit:b=>{vb0={...b};vb={...b};set();o.onzoom&&o.onzoom(100)},zoom,reset:()=>{vb={...vb0};set();o.onzoom&&o.onzoom(100)},pt:(cx,cy)=>{const r=svg.getBoundingClientRect();return {x:vb.x+(cx-r.left)/r.width*vb.w,y:vb.y+(cy-r.top)/r.height*vb.h}}};
 }
 /* ---- parseo de valores ---- */
-function parseVal(s,T){const m=String(s).trim().replace(/μ/g,'µ').match(/^([\d.]+(?:e[-+]?\d+)?)\s*([pnuµmkM]?)\s*(?:[FfΩ]|ohm|ohms)?$/);if(!m)return null;const f={p:1e-12,n:1e-9,u:1e-6,'µ':1e-6,m:1e-3,k:1e3,M:1e6,'':1}[m[2]];const v=+m[1]*f;return v>0?v:null}
+function parseVal(s,T){const SB={'⁻':'-','⁰':'0','¹':'1','²':'2','³':'3','⁴':'4','⁵':'5','⁶':'6','⁷':'7','⁸':'8','⁹':'9'};
+ let t=String(s).trim().replace(/μ/g,'µ').replace(/[⁻⁰¹²³⁴⁵⁶⁷⁸⁹]/g,c=>SB[c]).replace(/\s*[x×*·]\s*10\s*\^?\s*\(?\s*([-+]?\d+)\s*\)?/i,'e$1');
+ const m=t.match(/^([\d.]+(?:e[-+]?\d+)?)\s*([pnuµmkM]?)\s*(?:[FfΩCc]|ohm|ohms)?$/);if(!m)return null;const f={p:1e-12,n:1e-9,u:1e-6,'µ':1e-6,m:1e-3,k:1e3,M:1e6,'':1}[m[2]];const v=+m[1]*f;return v>0&&isFinite(v)?v:null}
 /* ---- editor ---- */
 const FIT=32,H={u:[],r:[]},vopt={left:false};let gs=null;
 const coarse=()=>!!(window.matchMedia&&matchMedia('(pointer:coarse)').matches);
@@ -13977,25 +13986,52 @@ function rotSel(){const s=ED.sel;if(!(s&&s.t==='c')){if(!$('ncEd'))mountEditor()
  if(c.p){const dx=c.p[2]-c.p[0],dy=c.p[3]-c.p[1];c.p=[c.p[0],c.p[1],c.p[0]-dy,c.p[1]+dx];c.cx=(c.p[0]+c.p[2])/2;c.cy=(c.p[1]+c.p[3])/2}
  else c.o={h:'e',e:'v',v:'d',d:'h'}[c.o||'h'];refresh()}
 /* ---- resultado ---- */
+function ruleOf(s){if(s.removed)return 'Puente equilibrado: sus dos extremos tienen el mismo potencial.';const C=s.type==='C',ser=s.kind==='serie';
+ return C?(ser?'Capacitores en serie: comparten la misma carga y se suman los inversos (1/C).':'Capacitores en paralelo: comparten el voltaje y las capacitancias se suman.'):(ser?'Resistencias en serie: comparten la misma corriente y se suman.':'Resistencias en paralelo: comparten el voltaje y se suman los inversos (1/R).')}
+const numT=(v,u)=>sci(v)+'\\,'+u;
+const alg=(l,a,b,c)=>'\\begin{aligned}'+l+'&='+a+'\\\\&='+b+(c!==undefined?'\\\\&='+c:'')+'\\end{aligned}';
+function valsLine(r,s){const n=r.rows&&!s.removed&&r.rows.find(x=>x.name===s.name);if(!n||n.v===undefined)return '';
+ const T=r.T,C=T==='C',X=C?'Q':'I',Xu=C?'\\mathrm{C}':'\\mathrm{A}',V='\\mathrm{V}',q=tn(n.name),par=r.rows.find(p=>p.children&&p.children.includes(n));
+ const blk=(t,f)=>`<div class="nl-small" style="margin-top:8px"><b>${t}</b></div><div class="tx">${tex(f,true)}</div>`;
+ let h=`<b style="display:block;margin-top:14px">Voltaje y ${C?'carga':'corriente'} de ${esc(n.name)}</b><div class="nl-small">${par?'Su voltaje viene de repartir desde la fuente (en '+esc(par.name)+', '+par.kind+').':'Es el equivalente total: su voltaje es el de la fuente.'}</div>`;
+ h+=blk('Voltaje de '+esc(n.name),'V_{'+q+'}='+numT(n.v,V));
+ h+=blk((C?'Carga':'Corriente')+' de '+esc(n.name)+' (fórmula, sustitución, resultado)',C?alg(X+'_{'+q+'}',q+'\\,V_{'+q+'}',tv(n.val,T)+'\\cdot '+numT(n.v,V),numT(n.f,Xu)):alg(X+'_{'+q+'}','\\dfrac{V_{'+q+'}}{'+q+'}','\\dfrac{'+numT(n.v,V)+'}{'+tv(n.val,T)+'}',numT(n.f,Xu)));
+ if(n.children){const ser=n.kind==='serie',ch=n.children,names=ch.map(c=>tn(c.name));
+  h+=`<div class="nl-small" style="margin-top:12px"><b>Reparto en ${ch.map(c=>esc(c.name)).join(', ')}</b> (${ser?'serie':'paralelo'}): ${ser?(C?'misma carga, el voltaje se reparte':'misma corriente, el voltaje se reparte'):(C?'mismo voltaje, la carga se reparte':'mismo voltaje, la corriente se reparte')}</div>`;
+  h+=blk(ser?(C?'Misma carga':'Misma corriente'):'Mismo voltaje',ser?names.map(x=>X+'_{'+x+'}').join('=')+'='+X+'_{'+q+'}='+numT(n.f,Xu):names.map(x=>'V_{'+x+'}').join('=')+'=V_{'+q+'}='+numT(n.v,V));
+  ch.forEach(c=>{const x=tn(c.name);let f;
+   if(ser)f=C?alg('V_{'+x+'}','\\dfrac{Q}{'+x+'}','\\dfrac{'+numT(c.f,Xu)+'}{'+tv(c.val,T)+'}',numT(c.v,V)):alg('V_{'+x+'}','I\\cdot '+x,numT(c.f,Xu)+'\\cdot '+tv(c.val,T),numT(c.v,V));
+   else f=C?alg('Q_{'+x+'}',x+'\\cdot V',tv(c.val,T)+'\\cdot '+numT(c.v,V),numT(c.f,Xu)):alg('I_{'+x+'}','\\dfrac{V}{'+x+'}','\\dfrac{'+numT(c.v,V)+'}{'+tv(c.val,T)+'}',numT(c.f,Xu));
+   h+=`<div class="tx">${tex(f,true)}</div>`})}
+ return h}
+function distHTML(r){const T=r.T,X=T==='C'?'Q':'I',Xu=T==='C'?'\\mathrm{C}':'\\mathrm{A}',V='\\mathrm{V}',blocks=[];
+ r.rows.forEach(n=>{if(!n.children)return;const nm=tn(n.name),ch=n.children,L=[],ser=n.kind==='serie',names=ch.map(c=>tn(c.name));
+  L.push(ser?names.map(q=>X+'_{'+q+'}').join('=')+'='+X+'_{'+nm+'}='+numT(n.f,Xu):names.map(q=>'V_{'+q+'}').join('=')+'=V_{'+nm+'}='+numT(n.v,V));
+  ch.forEach(c=>{const q=tn(c.name),k=T==='C'?'C':'R';
+   if(ser)L.push(T==='C'?'V_{'+q+'}=\\dfrac{Q}{'+q+'}=\\dfrac{'+numT(c.f,Xu)+'}{'+tv(c.val,T)+'}='+numT(c.v,V):'V_{'+q+'}=I\\cdot '+q+'='+numT(c.f,Xu)+'\\cdot '+tv(c.val,T)+'='+numT(c.v,V));
+   else L.push(T==='C'?'Q_{'+q+'}='+q+'\\cdot V='+tv(c.val,T)+'\\cdot '+numT(c.v,V)+'='+numT(c.f,Xu):'I_{'+q+'}=\\dfrac{V}{'+q+'}=\\dfrac{'+numT(c.v,V)+'}{'+tv(c.val,T)+'}='+numT(c.f,Xu))});
+  blocks.push(`<div style="border-left:3px solid var(--acc);padding:2px 0 2px 10px;margin:8px 0"><div class="nl-small"><b>${esc(n.name)}</b> (${ser?'serie':'paralelo'}) se reparte en ${ch.map(c=>'<b>'+esc(c.name)+'</b>').join(', ')}: ${ser?(T==='C'?'misma carga Q, el voltaje se reparte':'misma corriente I, el voltaje se reparte'):(T==='C'?'mismo voltaje, la carga se reparte':'mismo voltaje, la corriente se reparte')}</div>${L.map(l=>`<div class="tx">${tex(l,true)}</div>`).join('')}</div>`)});
+ return `<details class="nc-help" open style="margin-top:10px"><summary><b>Cómo se calcularon los voltajes y ${T==='C'?'cargas':'corrientes'} (de la fuente hacia cada componente)</b></summary><div class="nc-calc" style="max-height:none;border:0;padding:0;--ncf:1.1">${blocks.join('')}</div></details>`}
 function summaryText(r){let t='Circuito de '+(r.T==='C'?'capacitores':'resistencias')+' · V_T = '+r.V+' V\n';r.steps.forEach((s,i)=>{t+='Paso '+(i+1)+' · '+s.kind+' · '+s.names.join(' — ')+' → '+s.name+' = '+si(s.val,r.T==='C'?'F':'Ω')+'\n'});
  t+=(r.T==='C'?'C_eq = ':'R_eq = ')+si(r.Keq,r.T==='C'?'F':'Ω')+'\n';
  if(r.rows)r.rows.filter(n=>n.leaf).forEach(n=>{t+=n.name+': V = '+si(n.v,'V')+(r.T==='C'?', Q = '+si(n.f,'C'):', I = '+si(n.f,'A'))+'\n'});return t}
 function showResult(r){
  res=r;const o=$('nxLabOut'),U=r.T==='C'?'F':'Ω',N=r.steps.length;
- const calcOf=i=>{const s=i?r.steps[i-1]:null;return s?`<b>${s.removed?'Puente equilibrado':'Cálculo de la reducción'}</b><div class="nl-small">Paso ${i} · ${esc(s.kind)} · ${esc(s.names.join(' — '))} → <b>${esc(s.name)}</b></div><b style="display:block;margin-top:8px">Reducción equivalente</b>${s.formulas.map(f=>`<div class="tx">${tex(f,true)}</div>`).join('')}<div class="nl-small">${s.removed?'Sin diferencia de potencial no circula carga ni corriente: el componente se retira sin cambiar el resultado.':'El equivalente aparece resaltado; solo se reduce este grupo.'}</div>`
-   :`<b>Circuito original</b><p class="nl-small">V<sub>T</sub> = ${r.V} V · ${r.start.comps.length} componentes.</p><div class="tx" style="font-size:14px">${r.start.comps.map(c=>`<b>${esc(c.name)}</b> = ${esc(si(c.val,U))}`).join(' &nbsp;·&nbsp; ')}</div><p class="nl-small">Debajo se reduce un grupo por paso, redibujando el circuito cada vez.</p>`};
+ const calcOf=i=>{const s=i?r.steps[i-1]:null;return s?`<b>${s.removed?'Puente equilibrado':'Cálculo de la reducción'}</b><div class="nl-small">Paso ${i} · ${esc(s.kind)} · ${esc(s.names.join(' — '))} → <b>${esc(s.name)}</b></div><div class="nl-small" style="margin-top:6px">${esc(ruleOf(s))}</div>${s.formulas.map((f,k)=>`<div class="nl-small" style="margin-top:8px"><b>${(s.removed?['Por qué se retira']:['1) Fórmula','2) Sustituyendo los valores','3) Resultado'])[k]||''}</b></div><div class="tx">${tex(f,true)}</div>`).join('')}${valsLine(r,s)}<div class="nl-small">${s.removed?'Sin diferencia de potencial no circula carga ni corriente: el componente se retira sin cambiar el resultado.':'El equivalente aparece resaltado; solo se reduce este grupo.'}</div>`
+   :`<b>Circuito original</b><p class="nl-small">V<sub>T</sub> = ${r.V} V · ${r.start.comps.length} componentes.</p><div class="tx" style="font-size:14px">${r.start.comps.map(c=>`<b>${esc(c.name)}</b> = ${esc(si(c.val,U))}`).join(' &nbsp;·&nbsp; ')}</div><p class="nl-small">El voltaje y la ${r.T==='C'?'carga':'corriente'} de cada componente están en la tabla de resultados. Debajo se reduce un grupo por paso.</p>`};
+ const valsFor=i=>c=>{if(i===0&&!r.reducible){const d=r.nodal.comp.get(c.id);return d?{v:Math.abs(d.v),f:Math.abs(d.f)}:null}const nd=c.node;return nd&&isFinite(nd.v)?{v:nd.v,f:nd.f}:null};
  const title=i=>i?`Paso ${i} de ${N} · ${r.steps[i-1].kind}`:'Circuito inicial',sub=i=>i?r.steps[i-1].names.join(' — ')+' → '+r.steps[i-1].name:'Antes de simplificar';
  const card=i=>`<section class="nc-card"><header><span class="nc-n">${i}</span><div><b>${esc(title(i))}</b><small>${esc(sub(i))}</small></div><button class="nc-exp" data-i="${i}">⤢ Ampliar</button></header><div class="nc-split"><svg class="nc-svg ncRv" style="cursor:grab"><g class="ncRs"></g></svg><div class="nc-calc">${calcOf(i)}</div></div></section>`;
  o.innerHTML=`<div class="nc-bar"><button id="ncZm">−</button><span id="ncZp" class="nl-small">100%</span><button id="ncZpl">+</button><button id="ncZr">Restablecer</button><button id="ncHide">Ocultar cálculo</button><label class="nl-small" style="margin:0 0 0 6px">Tamaño de fórmulas <input id="ncF" type="range" min="0.8" max="2.6" step="0.05" value="1.3" style="width:110px;min-height:0"></label><button id="ncBack">Volver al editor</button><button id="ncSend" class="primary">Enviar al chat</button></div>
-<div id="ncAll" style="--ncf:1.3">${Array.from({length:N+1},(_,i)=>card(i)).join('')}</div><div id="ncFinal"></div>`;
+<div id="ncFinal"></div><b style="display:block;margin:14px 0 6px">Simplificación paso a paso</b><div id="ncAll" style="--ncf:1.3">${Array.from({length:N+1},(_,i)=>card(i)).join('')}</div>`;
  const svs=[...o.querySelectorAll('.ncRv')],B=bounds(r.start);
- const vs=svs.map((sv,i)=>{sv.querySelector('.ncRs').innerHTML=drawScene(i?r.steps[i-1].state:r.start);return makeViewer(sv,B,{left:true,onzoom:z=>{if(i===0)$('ncZp').textContent=z+'%'}})});
+ const vs=svs.map((sv,i)=>{sv.querySelector('.ncRs').innerHTML=drawScene(i?r.steps[i-1].state:r.start,{vals:valsFor(i)});return makeViewer(sv,B,{left:true,onzoom:z=>{if(i===0)$('ncZp').textContent=z+'%'}})});
  $('ncZm').onclick=()=>vs.forEach(v=>v.zoom(1/1.25));$('ncZpl').onclick=()=>vs.forEach(v=>v.zoom(1.25));$('ncZr').onclick=()=>vs.forEach(v=>v.reset());
  $('ncHide').onclick=()=>{const a=document.querySelectorAll('#ncAll .nc-split');a.forEach(x=>x.classList.toggle('solo'));$('ncHide').textContent=a[0].classList.contains('solo')?'Mostrar cálculo':'Ocultar cálculo'};
  $('ncF').oninput=e=>{$('ncAll').style.setProperty('--ncf',e.target.value)};
  $('ncAll').onclick=e=>{const b=e.target.closest('.nc-exp');if(!b)return;const i=+b.dataset.i,m=document.createElement('div');m.id='ncModal';
   m.innerHTML=`<div class="nc-bar" style="margin:0"><b style="flex:1">${esc(title(i))} · ${esc(sub(i))}</b><label class="nl-small" style="margin:0">Fórmulas <input id="ncMF" type="range" min="0.8" max="3" step="0.05" value="1.6" style="width:120px;min-height:0"></label><button id="ncMX" class="primary">✕ Cerrar</button></div><div class="nc-split"><svg class="nc-svg" style="cursor:grab"><g id="ncMS"></g></svg><div class="nc-calc" id="ncMC" style="--ncf:1.6">${calcOf(i)}</div></div>`;
-  document.body.appendChild(m);m.querySelector('#ncMS').innerHTML=drawScene(i?r.steps[i-1].state:r.start);makeViewer(m.querySelector('.nc-svg'),B,{left:true});
+  document.body.appendChild(m);m.querySelector('#ncMS').innerHTML=drawScene(i?r.steps[i-1].state:r.start,{vals:valsFor(i)});makeViewer(m.querySelector('.nc-svg'),B,{left:true});
   const close=()=>{m.remove();document.removeEventListener('keydown',kd)},kd=ev=>{if(ev.key==='Escape')close()};document.addEventListener('keydown',kd);
   m.querySelector('#ncMX').onclick=close;m.querySelector('#ncMF').oninput=ev=>m.querySelector('#ncMC').style.setProperty('--ncf',ev.target.value)};
  $('ncBack').onclick=()=>mountEditor();
@@ -14005,7 +14041,7 @@ function showResult(r){
  let f=`<div class="nl-check" style="margin-top:12px"><b>Resultado</b><div class="tx">${tex(tn(kind+'eq')+'='+tv(r.Keq,r.T)+(r.T==='C'?'\\;\\Rightarrow\\;Q_T=C_{eq}V_T='+sci(r.Keq*r.V)+'\\,\\mathrm{C}':'\\;\\Rightarrow\\;I_T=\\dfrac{V_T}{R_{eq}}='+sci(r.V/r.Keq)+'\\,\\mathrm{A}'),true)}</div></div>`;
  if(r.rows){f+=`<table class="nc-tab"><tr><th>Componente</th><th>Valor</th><th>V</th><th>${r.T==='C'?'Q':'I'}</th><th>${r.T==='C'?'Energía ½CV²':'Potencia VI'}</th></tr>`+r.rows.map(n=>`<tr><td>${n.leaf?'<b>'+esc(n.name)+'</b>'+(n.removed?' <span class="nl-small">(puente equilibrado: V = 0)</span>':''):esc(n.name)+' <span class="nl-small">(equiv.)</span>'}</td><td>${esc(si(n.val,U))}</td><td>${esc(si(n.v,'V'))}</td><td>${esc(si(n.f,r.T==='C'?'C':'A'))}</td><td>${esc(si(r.T==='C'?.5*n.val*n.v*n.v:n.v*n.f,r.T==='C'?'J':'W'))}</td></tr>`).join('')+`</table><p class="nl-small">En serie, ${r.T==='C'?'la carga Q':'la corriente I'} es la misma y el voltaje se reparte; en paralelo, el voltaje es el mismo y ${r.T==='C'?'la carga':'la corriente'} se reparte. Se recorre de arriba hacia abajo desde el equivalente total. Comprobación con análisis nodal (Kirchhoff): diferencia relativa máx. ${r.err.toExponential(1)} ${r.err<1e-6?'✓':'⚠'}.</p>`}
  else f+=`<p class="nl-small">Este circuito no se reduce solo con serie/paralelo (p. ej. un puente). Se resolvió con análisis nodal; el equivalente se obtuvo de ${r.T==='C'?'Q_T/V_T':'V_T/I_T'}.</p><table class="nc-tab"><tr><th>Componente</th><th>V</th><th>${r.T==='C'?'Q':'I'}</th></tr>${r.start.comps.map(c=>{const d=r.nodal.comp.get(c.id);return `<tr><td>${esc(c.name)}</td><td>${esc(si(d.v,'V'))}</td><td>${esc(si(d.f,r.T==='C'?'C':'A'))}</td></tr>`}).join('')}</table>`;
- $('ncFinal').innerHTML=f;}
+ if(r.rows)f+=distHTML(r);$('ncFinal').innerHTML=f;}
 /* ---- integración con el laboratorio ---- */
 function ladder(str,V){const w=[],c=[],top=4,bot=14;let n=0,cur=2,lastPar=true;
  const wr=(a,b,e,f)=>{if(a!==e||b!==f)w.push(W(a,b,e,f))},add=(v,cx,cy,o)=>c.push(CC('R'+(++n),v,cx,cy,o,'R'));
