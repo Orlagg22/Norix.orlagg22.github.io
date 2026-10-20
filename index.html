@@ -9600,17 +9600,18 @@ async function nxVisionRead(file,kind,progress){
  try{progress('Leyendo la imagen con visión (Qwen3.8 27B)…');
   const image=await nxVisionShrink(file);
   const r=await fetch(NX_VISION_BASE+'/v1/vision',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({kind:NX_VISION_PROMPT[kind]?kind:'generic',prompt:NX_VISION_PROMPT[kind]||NX_VISION_PROMPT.generic,image}),signal:ctrl.signal});
-  if(!r.ok){window._nxVisionDiag='HTTP '+r.status;return null}
+  if(!r.ok){let x='';try{const j=await r.json();x=[j.error,j.details].filter(Boolean).join(' · ')}catch(e){}window._nxVisionDiag='HTTP '+r.status+(x?' · '+x:'');return null}
   const d=await r.json(),text=String(d&&d.text||'').replace(/<think>[\s\S]*?(?:<\/think>|$)/g,'').trim();
   if(text.length<3){window._nxVisionDiag='respuesta vacía';return null}
   window._nxVisionDiag='ok';return text.slice(0,4000)}
- catch(e){window._nxVisionDiag=e&&e.name==='AbortError'?'tiempo agotado':'sin conexión';return null}
+ catch(e){window._nxVisionDiag=e&&e.name==='AbortError'?'tiempo agotado':'sin conexión (CORS/origen no permitido: el Worker solo acepta tu página de GitHub Pages)';return null}
  finally{clearTimeout(t)}}
 async function ocrImage(file,progress,kind){
  if(!file||!/^image\//.test(file.type))throw Error('Selecciona una imagen válida (JPG, PNG o WEBP).');
  if(file.size>25*1024*1024)throw Error('La imagen supera 25 MB.');
  const v=await nxVisionRead(file,kind,progress);
- if(v)return {text:v,confidence:96,alternatives:[],passes:[{text:v,confidence:96}],via:'qwen'};
+ if(v){window._nxLastVia='qwen';return {text:v,confidence:96,alternatives:[],passes:[{text:v,confidence:96}],via:'qwen'}}
+ window._nxLastVia='local';
  progress('La visión no respondió ('+(window._nxVisionDiag||'sin datos')+'); usando el lector local…');
  return ocrImageLocal(file,progress,kind)}
 function normalizeMathOCR(t){return String(t||'')
@@ -9806,7 +9807,8 @@ async function handleLabPhoto(kind,buttonId,inputId,previewId){if(busy)return;co
    }else{const hint=ocrVariants.some(rawText=>/(?:\/|\\|\|)?\s*v\s*e\s*d\s*r\b/i.test(String(rawText||'')));if(hint){$('nlInt').value='x^0.5';$('nlIntType').value='poly';labMessage('Posible integral reconocida',statusCard('Texto OCR:\n'+text)+statusCard('La lectura «/ ve dr» puede corresponder a ∫√x dx. Dejé x^0.5 en el campo Integrando como propuesta, no como certeza. Comprueba la fotografía y pulsa Resolver paso a paso para calcularla.'));lastText='Posible integral: ∫√x dx; transcripción provisional x^0.5. Confirmar con la imagen.';}else{labMessage('No pude interpretar la integral',statusCard('Texto OCR:\n'+text)+statusCard('Corrige manualmente el campo Integrando con x, *, ^ y vuelve a pulsar Resolver paso a paso.'));lastText='OCR de integral:\n'+text;}}
   }else if(kind==='chem')chemSolve(text,confidence);else if(kind==='physics')physicsSolve(text,confidence);else{const body=statusCard('Transcripción OCR (confianza aproximada '+Math.round(confidence)+' %):\n'+text)+statusCard('Clasifica el ejercicio en química o física para aplicar el solucionador especializado. La lectura mejorada compara varias versiones de la imagen, pero debes verificar los símbolos dudosos.');labMessage('Ejercicio leído en el laboratorio',body);lastText='Ejercicio leído por OCR:\n'+text;}
  }catch(err){const msg=err&&err.message?err.message:String(err||'Error desconocido');labMessage('No se pudo leer la fotografía',statusCard(msg)+statusCard(/Tesseract|OCR|cargar|descarga/i.test(msg)?'Comprueba tu conexión y que el navegador permita cargar Tesseract.js y el idioma español. Después vuelve a intentarlo.':'El error ocurrió al procesar la fotografía o conectar la lectura con el solucionador. Revisa el texto reconocido y vuelve a intentarlo.'));console.error('[NORYX Laboratorio OCR]',err);}
- finally{busy=false;const b=$(buttonId);if(b)b.disabled=false;}
+ finally{busy=false;const b=$(buttonId);if(b)b.disabled=false;
+  try{const o=$('nxLabOut');if(o){const via=window._nxLastVia==='qwen'?'🟢 Leído con la IA de visión (Qwen).':'🟠 Leído con el lector local (Tesseract). La IA de visión no respondió: '+escapeHTML(String(window._nxVisionDiag||'sin datos'))+'.';o.insertAdjacentHTML('afterbegin','<div class="nl-small" style="margin-bottom:8px">'+via+'</div>');}}catch(e){}}
 }
 const photoButtons={nlAnalyzeChemPhoto:['chem','nlChemPhoto','nlChemPhotoPreview'],nlAnalyzeCircuitPhoto:['physics','nlCircuitPhoto','nlCircuitPreview'],nlIntegralAnalyze:['integral','nlIntegralPhoto','nlIntegralPreview'],nlPhotoAnalyze:['generic','nlPhoto','nlPreview']};
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('button[id]');if(!b||!photoButtons[b.id])return;e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();const [kind,input,preview]=photoButtons[b.id];handleLabPhoto(kind,b.id,input,preview);},true);
