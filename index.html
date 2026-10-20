@@ -5316,7 +5316,7 @@ function imRemove(i){if(imBusy){toast('Espera a que Noryx termine de responder')
  if(!imList.length){imSel=-1;orig=null;imMeta=null;imCache={};$('#imw').hidden=true;$('#imo').textContent='';imThumbs();return}
  imShow(Math.min(i<imSel?imSel-1:imSel,imList.length-1))}
 function loadFile(f){return new Promise(res=>{const u=URL.createObjectURL(f),im=new Image();
- im.onload=()=>{const k=Math.min(1,1600/Math.max(im.width,im.height)),w=Math.max(1,Math.round(im.width*k)),h=Math.max(1,Math.round(im.height*k)),
+ im.onload=()=>{const k=Math.min(1,1280/Math.max(im.width,im.height)),w=Math.max(1,Math.round(im.width*k)),h=Math.max(1,Math.round(im.height*k)),
    c=document.createElement('canvas');c.width=w;c.height=h;const x=c.getContext('2d',{willReadFrequently:true});x.drawImage(im,0,0,w,h);
   const tk=96/Math.max(w,h),t=document.createElement('canvas');t.width=Math.max(1,Math.round(w*tk));t.height=Math.max(1,Math.round(h*tk));t.getContext('2d').drawImage(c,0,0,t.width,t.height);
   const it={orig:x.getImageData(0,0,w,h),cur:null,cache:{},th:t.toDataURL('image/jpeg',.7),meta:{name:f.name,w:im.width,h:im.height,kb:Math.round(f.size/1024)}};URL.revokeObjectURL(u);res(it)};
@@ -9550,28 +9550,36 @@ async function ensureLabTesseract(progress){
  progress('Cargando motor OCR local…');
  return await window.__noryxLabTesseractPromise;
 }
-async function ocrImageLocal(file,progress){
+async function ocrImageLocal(file,progress,kind){
  if(!file||!/^image\//.test(file.type))throw Error('Selecciona una imagen válida (JPG, PNG o WEBP).');
  if(file.size>25*1024*1024)throw Error('La imagen supera 25 MB.');
- progress('Preparando lectura mejorada…');const tess=await ensureLabTesseract(progress);const url=URL.createObjectURL(file);
+ progress('Preparando lectura…');const tess=await ensureLabTesseract(progress);const url=URL.createObjectURL(file);let worker=null;
  try{
   const img=await new Promise((resolve,reject)=>{const im=new Image();im.onload=()=>resolve(im);im.onerror=()=>reject(Error('No pude abrir la fotografía. Prueba con JPG o PNG.'));im.src=url});
-  // Escala suficiente para subíndices, etiquetas pequeñas y valores eléctricos.
-  const scale=Math.min(4.4,Math.max(1.8,3200/Math.max(img.width,img.height))),w=Math.round(img.width*scale),h=Math.round(img.height*scale);
-  const makeCanvas=(variant)=>{const c=document.createElement('canvas');c.width=w;c.height=h;const x=c.getContext('2d',{willReadFrequently:true});if(!x)throw Error('El navegador no pudo preparar la imagen.');x.fillStyle='#fff';x.fillRect(0,0,w,h);x.imageSmoothingEnabled=true;x.imageSmoothingQuality='high';x.drawImage(img,0,0,w,h);if(variant){const im=x.getImageData(0,0,w,h),d=im.data;for(let i=0;i<d.length;i+=4){let gray=.299*d[i]+.587*d[i+1]+.114*d[i+2];if(variant===1){gray=gray<150?0:255;}else if(variant===2){gray=Math.max(0,Math.min(255,(gray-128)*1.65+128));}else if(variant===3){gray=255-gray;}else{gray=gray<190?0:255;}d[i]=d[i+1]=d[i+2]=gray;}x.putImageData(im,0,0);}return c;};
-  // Distintas versiones ayudan con etiquetas pequeñas, estructuras dibujadas y fondos grises.
-  const candidates=[];const passes=[{variant:0,psm:6},{variant:2,psm:6},{variant:1,psm:6},{variant:0,psm:11},{variant:2,psm:11},{variant:3,psm:11},{variant:4,psm:6},{variant:0,psm:12},{variant:0,psm:7},{variant:2,psm:7},{variant:0,psm:13},{variant:1,psm:6,math:true},{variant:2,psm:7,math:true},{variant:0,psm:11,math:true},{variant:0,psm:6,math:true},{variant:2,psm:6,math:true},{variant:1,psm:7,math:true},{variant:0,psm:13,math:true},{variant:2,psm:13,math:true},{variant:4,psm:7,math:true},{variant:1,psm:13,math:true},{variant:0,psm:8,math:true},{variant:2,psm:8,math:true},{variant:0,psm:6,math:true,high:true},{variant:2,psm:11,math:true,high:true},{variant:1,psm:11,math:true,high:true}];
+  /* Escala moderada: más rápido y suficiente para texto de cuaderno o pantalla. */
+  const scale=Math.min(2.4,Math.max(1.2,2000/Math.max(img.width,img.height))),w=Math.round(img.width*scale),h=Math.round(img.height*scale);
+  const cache={};
+  const makeCanvas=variant=>{if(cache[variant])return cache[variant];const c=document.createElement('canvas');c.width=w;c.height=h;const x=c.getContext('2d',{willReadFrequently:true});if(!x)throw Error('El navegador no pudo preparar la imagen.');x.fillStyle='#fff';x.fillRect(0,0,w,h);x.imageSmoothingEnabled=true;x.imageSmoothingQuality='high';x.drawImage(img,0,0,w,h);if(variant){const im=x.getImageData(0,0,w,h),d=im.data;for(let i=0;i<d.length;i+=4){let gray=.299*d[i]+.587*d[i+1]+.114*d[i+2];if(variant===1){gray=gray<150?0:255;}else if(variant===2){gray=Math.max(0,Math.min(255,(gray-128)*1.65+128));}else if(variant===3){gray=255-gray;}else{gray=gray<190?0:255;}d[i]=d[i+1]=d[i+2]=gray;}x.putImageData(im,0,0);}return cache[variant]=c;};
+  /* Pocas pasadas, de la más útil a la menos; se detiene en cuanto una sale confiable. */
+  const math=kind==='integral'||kind==='physics';
+  const passes=math?[{variant:0,psm:6},{variant:2,psm:6},{variant:0,psm:6,math:true},{variant:1,psm:7,math:true},{variant:0,psm:11}]:[{variant:0,psm:6},{variant:2,psm:6},{variant:1,psm:6},{variant:0,psm:11}];
+  const WL='0123456789xXabcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ+-−*/^()[]{}.=∫√π²³⁴⁵⁶⁷⁸⁹⁰ ';
+  let cur='';
+  /* UN solo lector reutilizado (antes se creaba uno por pasada y recargaba el idioma 26 veces). */
+  worker=await tess.createWorker('spa+eng',1,{logger:m=>{if(m.status==='recognizing text')progress('Leyendo '+cur+'… '+Math.round((m.progress||0)*100)+' %');}});
+  const candidates=[];
   for(let i=0;i<passes.length;i++){
-   const pass=passes[i];progress('Mejorando imagen y leyendo símbolos… pasada '+(i+1)+' de '+passes.length);
-   const cfg={tessedit_pageseg_mode:pass.psm,preserve_interword_spaces:'1',logger:m=>{if(m.status==='recognizing text')progress('Leyendo ejercicio… '+Math.round((m.progress||0)*100)+' %');}};if(pass.math)cfg.tessedit_char_whitelist='0123456789xXabcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ+-−*/^()[]{}.=∫√π²³⁴⁵⁶⁷⁸⁹⁰ ';const r=await tess.recognize(makeCanvas(pass.variant),'spa+eng',cfg);
-   const data=r&&r.data||{},text=String(data.text||'').trim();if(text)candidates.push({text,confidence:Number(data.confidence)||0,variant:pass.variant,psm:pass.psm});
+   const pass=passes[i];cur='(pasada '+(i+1)+' de '+passes.length+')';progress('Leyendo '+cur+'…');
+   await worker.setParameters({tessedit_pageseg_mode:String(pass.psm),preserve_interword_spaces:'1',tessedit_char_whitelist:pass.math?WL:''});
+   const r=await worker.recognize(makeCanvas(pass.variant)),data=r&&r.data||{},text=String(data.text||'').trim(),conf=Number(data.confidence)||0;
+   if(text)candidates.push({text,confidence:conf,variant:pass.variant,psm:pass.psm});
+   if(text.length>=8&&conf>=82)break; /* ya es buena: no gastes más pasadas */
   }
   if(!candidates.length)throw Error('El OCR terminó, pero no detectó texto. Usa una foto más nítida, derecha y con buena iluminación.');
-  // Preferir el pase con confianza mayor y contenido útil; no inventar símbolos.
   const useful=t=>(t.match(/[A-Za-z0-9]/g)||[]).length+(t.match(/[=+−*/^²³⁴⁵⁶⁷⁸⁹∫√]/g)||[]).length*2+(t.match(/\bx\s*\d|x\^[0-9]|[²³⁴⁵⁶⁷⁸⁹]/gi)||[]).length*5+(t.match(/CH\s*[₃3;:]|Br|Cl|OH|NH\s*2|NO\s*2|COOH|C\s*6\s*H\s*6/gi)||[]).length*5;
   candidates.sort((a,b)=>(b.confidence+useful(b.text)*.08)-(a.confidence+useful(a.text)*.08));
   const best=candidates[0];return {text:best.text,confidence:best.confidence,alternatives:candidates.slice(1).map(x=>({text:x.text,confidence:x.confidence})),passes:candidates.map(x=>({text:x.text,confidence:x.confidence,variant:x.variant,psm:x.psm}))};
- }finally{URL.revokeObjectURL(url)}
+ }finally{URL.revokeObjectURL(url);if(worker){try{await worker.terminate()}catch(e){}}}
 }
 /* ===== Lectura de fotos con visión: qwen/qwen3.8-27b (vía tu Worker; la clave nunca va en esta página) ===== */
 const NX_VISION_MODEL='qwen/qwen3.8-27b';
@@ -9584,16 +9592,16 @@ const NX_VISION_PROMPT={
 async function nxVisionShrink(file){
  const url=URL.createObjectURL(file);
  try{const im=await new Promise((ok,no)=>{const i=new Image();i.onload=()=>ok(i);i.onerror=()=>no(Error('No pude abrir la fotografía.'));i.src=url});
-  const k=Math.min(1,1600/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);
-  const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);x.drawImage(im,0,0,c.width,c.height);return c.toDataURL('image/jpeg',.88)}
+  const k=Math.min(1,1280/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);
+  const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);x.drawImage(im,0,0,c.width,c.height);return c.toDataURL('image/jpeg',.82)}
  finally{URL.revokeObjectURL(url)}}
 async function nxVisionRead(file,kind,progress){
- const ctrl=new AbortController(),t=setTimeout(()=>ctrl.abort(),70000);
+ const ctrl=new AbortController(),t=setTimeout(()=>ctrl.abort(),45000);
  try{progress('Leyendo la imagen con visión (Qwen3.8 27B)…');
   const image=await nxVisionShrink(file);
   const r=await fetch(NX_VISION_BASE+'/v1/vision',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({kind:NX_VISION_PROMPT[kind]?kind:'generic',prompt:NX_VISION_PROMPT[kind]||NX_VISION_PROMPT.generic,image}),signal:ctrl.signal});
   if(!r.ok){window._nxVisionDiag='HTTP '+r.status;return null}
-  const d=await r.json(),text=String(d&&d.text||'').replace(/<think>[\s\S]*?<\/think>/g,'').trim();
+  const d=await r.json(),text=String(d&&d.text||'').replace(/<think>[\s\S]*?(?:<\/think>|$)/g,'').trim();
   if(text.length<3){window._nxVisionDiag='respuesta vacía';return null}
   window._nxVisionDiag='ok';return text.slice(0,4000)}
  catch(e){window._nxVisionDiag=e&&e.name==='AbortError'?'tiempo agotado':'sin conexión';return null}
@@ -9604,7 +9612,7 @@ async function ocrImage(file,progress,kind){
  const v=await nxVisionRead(file,kind,progress);
  if(v)return {text:v,confidence:96,alternatives:[],passes:[{text:v,confidence:96}],via:'qwen'};
  progress('La visión no respondió ('+(window._nxVisionDiag||'sin datos')+'); usando el lector local…');
- return ocrImageLocal(file,progress)}
+ return ocrImageLocal(file,progress,kind)}
 function normalizeMathOCR(t){return String(t||'')
  .replace(/[⁰¹²³⁴⁵⁶⁷⁸⁹]/g,c=>'^'+String('⁰¹²³⁴⁵⁶⁷⁸⁹'.indexOf(c)))
  .replace(/[−–—]/g,'-').replace(/[×·⋅]/g,'*')
