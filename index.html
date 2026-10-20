@@ -682,7 +682,6 @@ html,body{overscroll-behavior:none}#feed{overscroll-behavior:contain}
    <div class="qrow"><input type="text" id="imq" placeholder="Escribe tu pregunta… ej. ¿qué música le queda a esta foto?" maxlength="400" autocomplete="off"><button class="pri" id="imd">Preguntar</button></div>
    <div id="imo" aria-live="polite"></div>
    <details class="ed"><summary>Editar imagen (filtros y descarga)</summary><div class="tb" id="imt"><button data-f="gray">Grises</button><button data-f="sepia">Sepia</button><button data-f="invert">Invertir</button><button data-f="bright">Más luz</button><button data-f="dark">Menos luz</button><button data-f="contrast">Contraste</button><button data-f="flip">Voltear</button><button data-f="rot">Girar</button><button data-f="reset">Restablecer</button><button id="imdl">Descargar</button></div></details>
-   <small id="imnote"></small>
   </div>
  </div>
  <div id="pMk" class="pn" hidden>
@@ -694,11 +693,6 @@ html,body{overscroll-behavior:none}#feed{overscroll-behavior:contain}
   <button class="pri" id="mkb">Crear imagen</button></div>
   <div id="mkh"></div><div id="mkst"></div><div id="mko"></div>
   <div class="row" id="mka" hidden><button id="mkv">Otra variante</button><button id="mkd">Descargar</button></div>
-  <small>La imagen la genera un servicio externo (Cloudflare; si falla, Pollinations) a partir de tu descripción; funciona mejor si la escribes con detalle. Si agregas fotos, se envían a Cloudflare para procesarlas (no subas fotos privadas). Con fotos, escribe qué cambiar: «ponle un sombrero», «conviértela en dibujo». Si no responde, Noryx dibuja arte generativo local como respaldo.</small>
- <details class="ed" id="pkd"><summary>Clave de Pollinations (solo para crear imágenes)</summary>
-  <div class="qrow" style="margin-top:8px"><input type="password" id="pkey" placeholder="pk_…" autocomplete="off" spellcheck="false"><button id="pks">Guardar</button></div>
-  <small>Si la creación de imágenes falla, el servicio ahora pide una clave. Créala gratis en <a href="https://enter.pollinations.ai" target="_blank" rel="noopener">enter.pollinations.ai</a> (elige tipo «publishable», pk_). Se guarda solo en este navegador y se envía únicamente a Pollinations. Usa una clave pk_, nunca una sk_.</small>
- </details>
  </div>
 <div id="nxLab" hidden>
  <section class="nl-card" role="dialog" aria-modal="true" aria-label="Laboratorio visual de Noryx">
@@ -5300,8 +5294,8 @@ const st=$('#studio');
 function stOpen(t){if(!sess)return openDlg();closeMenu();st.hidden=false;stTab(t||'up')}
 function stTab(t){$('#pUp').hidden=t!='up';$('#pMk').hidden=t!='mk';const lab=$('#nxLab');if(lab)lab.hidden=t!='lab';$('#tbUp').classList.toggle('on',t=='up');$('#tbMk').classList.toggle('on',t=='mk');$('#tbLab').classList.toggle('on',t=='lab')}
 $('#imb').onclick=()=>stOpen('up');
-$('#pkey').value=S.get('nx-pkey','');
-$('#pks').onclick=()=>{const k=$('#pkey').value.trim();if(k&&!/^pk_/.test(k)){toast(/^sk_/.test(k)?'Esa es una clave secreta (sk_): no la pongas aquí. Usa una pk_':'La clave debe empezar por pk_');return}S.set('nx-pkey',k);toast(k?'Clave guardada en este navegador':'Clave borrada')};$('#stX').onclick=()=>st.hidden=true;$('#tbUp').onclick=()=>stTab('up');$('#tbMk').onclick=()=>stTab('mk');$('#tbLab').onclick=()=>stTab('lab');
+
+$('#stX').onclick=()=>st.hidden=true;$('#tbUp').onclick=()=>stTab('up');$('#tbMk').onclick=()=>stTab('mk');$('#tbLab').onclick=()=>stTab('lab');
 st.addEventListener('click',e=>{if(e.target==st)st.hidden=true});
 addEventListener('keydown',e=>{if(e.key!='Escape')return;if(!st.hidden)st.hidden=true;else if(VL.on)vlStop()});
 const dl=(blob,name)=>{const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),4000)};
@@ -7187,7 +7181,6 @@ localVision=function(q,wait){
   return r})};
 /* con el motor en línea, el modelo de visión recibe también los datos que escribiste */
 /* el análisis de imágenes es siempre local: se fuerza el motor y se actualiza la nota */
-$('#imnote').textContent='Todo corre en tu navegador y la imagen no sale de tu equipo. Noryx lee texto (Tesseract), reconoce objetos (MobileNet) y, para leer figuras y describir imágenes, usa un modelo de visión pequeño (SmolVLM): la primera vez descarga unos 250 MB y luego queda guardado. No es una IA grande: revisa sus resultados.';
 })();
 </script>
 <script>
@@ -13807,7 +13800,27 @@ const st=document.createElement('style');st.textContent=`.nc-panel{display:flex;
 #ncProps{display:none;flex-direction:column;gap:6px;border:1px solid var(--acc);border-radius:12px;padding:8px 10px;background:color-mix(in srgb,var(--acc) 6%,var(--panel))}
 #ncProps .nc-row input{flex:1 1 90px;min-width:0}#ncProps .nc-row select{flex:0 0 90px}
 .nc-stat{margin-top:8px;padding:8px 10px;border-radius:10px;font-size:13px;line-height:1.45;border:1px solid var(--line)}.nc-stat.ok{border-color:#16a34a;background:#16a34a14}.nc-stat.bad{border-color:#dc2626;background:#dc262612}
-.nc-help summary{cursor:pointer;font-size:12.5px;color:var(--mute)}.nc-help p{margin:6px 0 0}.nc-svg{overflow:hidden!important}`;
+.nc-help summary{cursor:pointer;font-size:12.5px;color:var(--mute)}.nc-help p{margin:6px 0 0}.nc-svg{overflow:hidden!important}
+#ncPadM{position:fixed;inset:0;z-index:70;background:#000b;display:grid;place-items:center;padding:clamp(6px,2vw,20px);overflow:auto}
+.ncp-card{width:min(1100px,100%);max-height:100%;overflow:auto;background:var(--panel);color:var(--fg,inherit);border:1px solid var(--line);border-radius:18px;padding:12px 14px;display:flex;flex-direction:column;gap:8px}
+.ncp-bar{display:flex;flex-wrap:wrap;gap:6px;align-items:center}.ncp-sp{flex:1}.ncp-bar button{min-height:38px;border-radius:12px;padding:6px 12px}
+.ncp-bar button.on{background:var(--acc)!important;color:#fff!important;border-color:var(--acc)!important}.ncp-bar button.primary{background:var(--acc);color:#fff;border-color:var(--acc);font-weight:700}
+.ncp-l{display:flex;align-items:center;gap:6px;font-size:13px}.ncp-bar input[type=color]{width:42px;height:38px;padding:2px;border-radius:10px;border:1px solid var(--line);background:var(--bg)}
+.ncp-wrap{position:relative;border-radius:12px;overflow:hidden;border:1px solid var(--line);background:#fff;line-height:0;width:min(100%,calc(58vh*1.5909));margin:0 auto}
+.ncp-wrap canvas{width:100%;height:auto;aspect-ratio:1400/880;display:block;touch-action:none;cursor:crosshair;background:#fff}
+.ncp-wrap canvas#ncpOv{position:absolute;inset:0;pointer-events:none;background:none}
+.ncp-wrap.grid::after{content:"";position:absolute;inset:0;pointer-events:none;background-image:linear-gradient(#00000026 1px,transparent 1px),linear-gradient(90deg,#00000026 1px,transparent 1px);background-size:2.857142% 4.545454%}
+.ncp-tab input,.ncp-tab select{min-height:34px!important;padding:4px 8px!important;font-size:14px!important;width:100%}
+#ncpT{width:100%;min-height:42px;padding:8px 12px;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:inherit;font-size:16px}
+#ncPadM{padding:0!important;place-items:stretch!important;overflow:hidden!important;background:var(--bg,#fff)!important;z-index:2147483100!important}
+.ncp-card{width:100%!important;height:100%;max-height:none!important;border-radius:0!important;border:0!important;padding:8px 10px!important;gap:6px!important;overflow:auto}
+.ncp-view{flex:1 1 auto;min-height:52vh;overflow:auto;background:#d9dde3;border:1px solid var(--line);border-radius:12px;padding:4px;display:grid;place-items:start center;-webkit-overflow-scrolling:touch}
+.ncp-wrap{width:auto;margin:0;flex:none;border-radius:4px;box-shadow:0 4px 18px #0004}
+.ncp-wrap canvas{aspect-ratio:2000/1260!important}
+.ncp-wrap.grid::after{background-size:var(--gx) var(--gy)!important}
+.ncp-sel{display:none;padding:6px 8px;border:1px solid var(--acc);border-radius:12px;background:color-mix(in srgb,var(--acc) 7%,var(--panel))}
+#ncpT1 button[data-k]{min-height:42px}
+`;
 document.head.appendChild(st);
 const ED={wires:[],comps:[],A:null,B:null,V:12,tool:'sel',sel:null,start:null,hover:null,n:{C:0,R:0}};
 let lastCirc='',view=null,res=null,stepI=0;
@@ -14061,7 +14074,254 @@ function ctrlHTML(){return `<div class="nc-panel" id="ncPanel"><b>Editor visual 
 <label>Ejemplos cargados</label><select id="ncPre">${PRESETS.map(p=>`<option value="${p.id}">${esc(p.name)}</option>`).join('')}</select>
 <div class="nc-row"><button id="ncEx">Cargar ejemplo</button><button id="ncClr">Limpiar todo</button></div>
 <label>Generar escalera de resistencias (como la de la imagen)</label><input id="ncLad" value="1 | 12 4 ; 1 | 10 ; 2 | 8" aria-label="Escalera"><p class="nl-small">Cada etapa = resistencia en serie | resistencias en paralelo (separadas por espacio). Etapas separadas por «;». Acepta k y M (ej. 2.2k). Después puedes editar todo en el dibujo.</p><button id="ncLadGo">Generar escalera</button>
+<button id="ncPad">✏️ Pizarra: dibujar el circuito y enviarlo al resolvedor</button>
 <button class="primary" id="ncGo">Simplificar y calcular</button></div>`}
+
+/* ---------- pizarra: reconoce trazos y los convierte en componentes del editor ---------- */
+const PADW=2000,PADH=1260,PC=40; /* celda de la pizarra = 2 unidades del editor (un componente mide 2 celdas) */
+const pdist=(a,b)=>Math.hypot(a[0]-b[0],a[1]-b[1]);
+const plen=P=>{let s=0;for(let i=1;i<P.length;i++)s+=pdist(P[i-1],P[i]);return s};
+function pdens(P,st){const o=[P[0]];for(let i=1;i<P.length;i++){const a=P[i-1],b=P[i],n=Math.max(1,Math.ceil(pdist(a,b)/st));for(let j=1;j<=n;j++)o.push([a[0]+(b[0]-a[0])*j/n,a[1]+(b[1]-a[1])*j/n])}return o}
+function prdp(P,e){if(P.length<3)return P.slice();const a=P[0],b=P[P.length-1],L=pdist(a,b);let m=-1,ix=0;
+ for(let i=1;i<P.length-1;i++){const d=L<1e-6?pdist(P[i],a):Math.abs((b[0]-a[0])*(a[1]-P[i][1])-(a[0]-P[i][0])*(b[1]-a[1]))/L;if(d>m){m=d;ix=i}}
+ if(m<=e)return [a,b];const l=prdp(P.slice(0,ix+1),e),r=prdp(P.slice(ix),e);return l.slice(0,-1).concat(r)}
+function padInk(strokes){let ink=[];
+ for(const k of strokes){
+  if(k.clr){ink=[];continue}
+  if(!k.e){if(k.p.length>1){k.p.wire=!!k.wire;ink.push(k.p)}continue}
+  const E=pdens(k.p.length>1?k.p:[k.p[0],k.p[0]],Math.max(3,k.w/3)),r=k.w/2+5,nx=[];
+  for(const s of ink){let cur=[];
+   for(const q of pdens(s,6)){if(E.some(e=>Math.abs(e[0]-q[0])<r&&Math.abs(e[1]-q[1])<r&&pdist(e,q)<r)){if(cur.length>1){cur.wire=s.wire;nx.push(cur)};cur=[]}else cur.push(q)}
+   if(cur.length>1){cur.wire=s.wire;nx.push(cur)}}
+  ink=nx}
+ return ink}
+function padZig(z){const n=z.length;if(n<6)return null;
+ const turn=i=>{const a=z[i-1],b=z[i],c=z[i+1],u=[b[0]-a[0],b[1]-a[1]],v=[c[0]-b[0],c[1]-b[1]];return Math.atan2(u[0]*v[1]-u[1]*v[0],u[0]*v[0]+u[1]*v[1])*180/Math.PI};
+ const sh=[];for(let i=1;i<n-1;i++){const t=turn(i);sh.push(Math.abs(t)>=32&&pdist(z[i-1],z[i])<=95&&pdist(z[i],z[i+1])<=95?Math.sign(t):0)}
+ let best=null,i=0;
+ while(i<sh.length){if(!sh[i]){i++;continue}let j=i;while(j+1<sh.length&&sh[j+1]&&sh[j+1]===-sh[j])j++;if(j-i+1>=4&&(!best||j-i>best[1]-best[0]))best=[i,j];i=j+1}
+ if(!best)return null;const s=best[0],e=best[1]+2,A=z[s],B=z[e],ex=pdist(A,B);if(ex<40)return null;
+ let amp=0;for(let q=s;q<=e;q++)amp=Math.max(amp,Math.abs((B[0]-A[0])*(A[1]-z[q][1])-(A[0]-z[q][0])*(B[1]-A[1]))/ex);
+ return amp>=6?[s,e]:null}
+const PCLS=n=>{let t=Math.atan2(n[1],n[0])*180/Math.PI;t=((t%180)+180)%180;return t<22.5||t>=157.5?'h':t<67.5?'e':t<112.5?'v':'d'};
+const PCAN={h:[1,0],v:[0,1],e:[1,1],d:[1,-1]};
+function padAlign(vals){const idx=vals.map((v,i)=>[v,i]).sort((a,b)=>a[0]-b[0]),out=new Array(vals.length);let g=[],sum=0,last=null;
+ const flush=()=>{if(!g.length)return;const m=Math.round(sum/g.length/PC)*2;g.forEach(i=>out[i]=m);g=[];sum=0};
+ for(const [v,i] of idx){if(last!==null&&v-last>34)flush();g.push(i);sum+=v;last=v}flush();return out}
+function padDetect(strokes,ov,syms){ov=ov||{};
+ const ink=padPre(padInk(strokes)),notes=[],raw=[],wl=[],cand=[];
+ for(const R of ink){
+  if(R.wire){wl.push(R.length>2?prdp(R,5):R);continue}
+  const L=plen(R);if(L<14)continue;
+  const xs=R.map(p=>p[0]),ys=R.map(p=>p[1]),b0=Math.min(...xs),b1=Math.max(...xs),c0=Math.min(...ys),c1=Math.max(...ys),w=b1-b0,h=c1-c0,z=prdp(R,5),sp=prdp(R,9);
+  if(pdist(R[0],R[R.length-1])<0.3*L&&sp.length>=4&&sp.length<=9){const lo=Math.max(w,h),sh=Math.min(w,h);
+   if(sh>=12&&lo/sh>=1.35&&lo>=44&&lo<=360&&Math.abs(L-2*(w+h))<0.4*L){const my=(c0+c1)/2,mx=(b0+b1)/2;
+    raw.push({k:'R',ports:w>=h?[[b0,my],[b1,my]]:[[mx,c0],[mx,c1]]});continue}}
+  const run=padZig(z);
+  if(run){const pre=z.slice(0,run[0]+1),post=z.slice(run[1]);if(pre.length>1&&plen(pre)>=14)wl.push(pre);if(post.length>1&&plen(post)>=14)wl.push(post);
+   raw.push({k:'R',ports:[z[run[0]],z[run[1]]]});continue}
+  const ch=sp.length===2?pdist(sp[0],sp[1]):0;if(sp.length===2&&ch>=18&&ch<=150){const L=ch,d=[(sp[1][0]-sp[0][0])/L,(sp[1][1]-sp[0][1])/L];cand.push({a:sp[0],b:sp[1],L,m:[(sp[0][0]+sp[1][0])/2,(sp[0][1]+sp[1][1])/2],d});continue}
+  wl.push(sp)}
+ /* placas paralelas = capacitor (iguales) o pila (una larga y una corta) */
+ const pr=[];
+ for(let i=0;i<cand.length;i++)for(let j=i+1;j<cand.length;j++){const a=cand[i],b=cand[j],o=[b.m[0]-a.m[0],b.m[1]-a.m[1]],D=Math.hypot(o[0],o[1]);
+  if(D<8||D>120||D>1.4*Math.max(a.L,b.L)||Math.min(a.L,b.L)<0.3*Math.max(a.L,b.L))continue;
+  if(Math.abs(a.d[0]*b.d[0]+a.d[1]*b.d[1])<0.8)continue;
+  if(Math.abs(o[0]*a.d[0]+o[1]*a.d[1])/D>0.6)continue;pr.push([D,i,j])}
+ pr.sort((x,y)=>x[0]-y[0]);const used=new Set();
+ for(const [D,i,j] of pr){if(used.has(i)||used.has(j))continue;used.add(i);used.add(j);const a=cand[i],b=cand[j],o=[b.m[0]-a.m[0],b.m[1]-a.m[1]];
+  let dd=[a.d[0]+(a.d[0]*b.d[0]+a.d[1]*b.d[1]>=0?b.d[0]:-b.d[0]),a.d[1]+(a.d[0]*b.d[0]+a.d[1]*b.d[1]>=0?b.d[1]:-b.d[1])];const q=Math.hypot(dd[0],dd[1])||1;dd=[dd[0]/q,dd[1]/q];
+  let n=[-dd[1],dd[0]];if(n[0]*o[0]+n[1]*o[1]<0)n=[-n[0],-n[1]];
+  const c=[(a.m[0]+b.m[0])/2,(a.m[1]+b.m[1])/2],hf=D/2+10,ratio=Math.max(a.L,b.L)/Math.min(a.L,b.L);
+  raw.push({k:ratio>=1.35?'S':'C',ports:[[c[0]-n[0]*hf,c[1]-n[1]*hf],[c[0]+n[0]*hf,c[1]+n[1]*hf]],plus:a.L>b.L?0:1})}
+ cand.forEach((c,i)=>{if(!used.has(i))wl.push([c.a,c.b])});
+ (syms||[]).forEach(s=>{const g=symGeo(s);raw.push({k:s.kind,ports:[g.P0,g.P1],plus:1,sym:s})});
+ /* orden de lectura y tipo final (se puede corregir en la tabla) */
+ raw.forEach(c=>{c.c=[(c.ports[0][0]+c.ports[1][0])/2,(c.ports[0][1]+c.ports[1][1])/2]});
+ raw.sort((p,q)=>Math.round(p.c[1]/60)-Math.round(q.c[1]/60)||p.c[0]-q.c[0]);
+ let hasS=false;
+ const comps=raw.map((c,idx)=>{let kind=ov[idx]||c.k;if(kind==='S'){if(hasS){kind=ov[idx]&&ov[idx]!=='S'?ov[idx]:'C';notes.push('Solo puede haber una fuente; la otra se trató como capacitor.')}else hasS=true}
+  let P0=c.ports[0],P1=c.ports[1],plus=c.plus,n=[P1[0]-P0[0],P1[1]-P0[1]],q=Math.hypot(n[0],n[1])||1;n=[n[0]/q,n[1]/q];
+  let o=PCLS(n);if(kind==='S'&&(o==='e'||o==='d'))o=Math.abs(n[0])>Math.abs(n[1])?'h':'v';
+  if(n[0]*PCAN[o][0]+n[1]*PCAN[o][1]<0){[P0,P1]=[P1,P0];if(plus!==undefined)plus=1-plus}
+  return {idx,kind,o,c:c.c,ports:[P0,P1],plus:plus===undefined?0:plus,sym:c.sym}});
+ /* vértices de cables y alineación a la cuadrícula */
+ const W=wl.map(P=>P.map(p=>({x:p[0],y:p[1],fix:null})));
+ const R=70;
+ W.forEach(P=>[P[0],P[P.length-1]].forEach(v=>{let best=null,bd=R;comps.forEach(c=>c.ports.forEach((pp,k)=>{const d=pdist(pp,[v.x,v.y]);if(d<bd&&d<(c.sym?36:R)){bd=d;best=[c,k]}}));if(best)v.at=best}));
+ const vs=[];W.forEach(P=>P.forEach(v=>{if(!v.at)vs.push(v)}));
+ const XV=[],XI=[],YV=[],YI=[];
+ vs.forEach(v=>{XV.push(v.x);XI.push(v);YV.push(v.y);YI.push(v)});
+ comps.forEach(c=>{if(c.o==='h'||c.o==='e'||c.o==='d'){YV.push(c.c[1]);YI.push(c)}if(c.o==='v'||c.o==='e'||c.o==='d'){XV.push(c.c[0]);XI.push(c)}});
+ const AX=padAlign(XV.length?XV:[0]),AY=padAlign(YV.length?YV:[0]);
+ XI.forEach((o,i)=>{o.ux=AX[i]});YI.forEach((o,i)=>{o.uy=AY[i]});
+ comps.forEach(c=>{const sn=x=>Math.round(x/PC)*2;
+  if(c.o==='h'){c.cx=sn(c.c[0]);c.cy=c.uy}else if(c.o==='v'){c.cx=c.ux;c.cy=sn(c.c[1])}else{c.cx=sn(c.c[0]);c.cy=sn(c.c[1])}
+  const r=c.kind==='S'?3:2,V={h:[[-r,0],[r,0]],v:[[0,-r],[0,r]],e:[[-2,-2],[2,2]],d:[[-2,2],[2,-2]]}[c.o];
+  c.pins=V.map(p=>[c.cx+p[0],c.cy+p[1]])});
+ const seg=[],seen=new Set(),add=(a,b)=>{if(a[0]===b[0]&&a[1]===b[1])return;const k=[a,b].sort((p,q)=>p[0]-q[0]||p[1]-q[1]).map(p=>p.join(',')).join('|');if(seen.has(k))return;seen.add(k);seg.push({x1:a[0],y1:a[1],x2:b[0],y2:b[1]})};
+ W.forEach(P=>{const U=P.map(v=>v.at?v.at[0].pins[v.at[1]]:[v.ux,v.uy]);for(let i=1;i<U.length;i++)add(U[i-1],U[i])});
+ /* un cable que pasa por el cuerpo del componente se corta en sus terminales */
+ let wires=seg;
+ comps.forEach(c=>{if(c.o!=='h'&&c.o!=='v')return;const hz=c.o==='h',a=c.pins[0][hz?0:1],b=c.pins[1][hz?0:1],fx=hz?c.cy:c.cx,nw=[];
+  wires.forEach(w=>{const on=hz?(w.y1===fx&&w.y2===fx):(w.x1===fx&&w.x2===fx);if(!on){nw.push(w);return}
+   const t1=hz?w.x1:w.y1,t2=hz?w.x2:w.y2,lo=Math.min(t1,t2),hi=Math.max(t1,t2);
+   if(Math.min(hi,b)-Math.max(lo,a)<=0){nw.push(w);return}
+   const mk=(p,q)=>p===q?null:hz?{x1:p,y1:fx,x2:q,y2:fx}:{x1:fx,y1:p,x2:fx,y2:q};
+   if(lo<a)nw.push(mk(lo,a));if(hi>b)nw.push(mk(b,hi))});
+  wires=nw.filter(Boolean)});
+ const S0=comps.find(c=>c.kind==='S');let A=null,B=null;
+ if(S0){A={x:S0.pins[S0.plus][0],y:S0.pins[S0.plus][1]};B={x:S0.pins[1-S0.plus][0],y:S0.pins[1-S0.plus][1]}}
+ else notes.push('No encontré la fuente: dibuja una pila (dos rayas paralelas, una larga y otra corta) o cambia un componente a «Fuente» en la tabla.');
+ if(!comps.some(c=>c.kind!=='S'))notes.push('No encontré capacitores ni resistencias. Dibújalos como dos rayas paralelas (capacitor) o un zigzag/rectángulo (resistencia).');
+ return {wires,comps,A,B,notes}}
+
+/* ---- v22: limpieza de trazos chuecos (suaviza y endereza rectas a 0/45/90/135°) ---- */
+function padPre(ink){return ink.map(R=>{const o=padPre1(R);o.wire=R.wire;return o})}
+function padPre1(R){{
+ let P=pdens(R,4);
+ if(P.length>4){const Q=[P[0]];for(let i=1;i<P.length-1;i++)Q.push([(P[i-1][0]+P[i][0]+P[i+1][0])/3,(P[i-1][1]+P[i][1]+P[i+1][1])/3]);Q.push(P[P.length-1]);P=Q}
+ const L=plen(P),z=prdp(P,Math.max(5,.035*L));
+ if(z.length===2&&L>=14){const a=z[0],b=z[1],ang=Math.atan2(b[1]-a[1],b[0]-a[0])*180/Math.PI,sn=Math.round(ang/45)*45;
+  if(Math.abs(ang-sn)<=13){const m=[(a[0]+b[0])/2,(a[1]+b[1])/2],h=pdist(a,b)/2,r=sn*Math.PI/180;
+   return [[m[0]-Math.cos(r)*h,m[1]-Math.sin(r)*h],[m[0]+Math.cos(r)*h,m[1]+Math.sin(r)*h]]}}
+ return P}}
+/* ---- v22: símbolos colocables. Terminales = centro ± L·n (la pila tiene su «+» en el extremo +n) ---- */
+const SYMK={C:'Capacitor',R:'Resistencia',S:'Pila (fuente)'};
+function symGeo(s){const a=s.rot*Math.PI/180,dg=s.rot%90!==0,L=s.kind==='S'?60:(dg?56.5685:40),n=[Math.cos(a),Math.sin(a)];
+ return {n,L,P0:[s.x-n[0]*L,s.y-n[1]*L],P1:[s.x+n[0]*L,s.y+n[1]*L]}}
+function padDrawSym(x,s,sel){const g=symGeo(s),k=s.kind,L=g.L,b=k==='S'?8:k==='C'?7:28;
+ x.save();x.translate(s.x,s.y);x.rotate(s.rot*Math.PI/180);x.strokeStyle=x.fillStyle='#111';x.lineWidth=3.4;x.lineCap=x.lineJoin='round';
+ x.beginPath();x.moveTo(-L,0);x.lineTo(-b,0);x.moveTo(b,0);x.lineTo(L,0);
+ if(k==='C'){x.moveTo(-7,-24);x.lineTo(-7,24);x.moveTo(7,-24);x.lineTo(7,24)}
+ else if(k==='S'){x.moveTo(-8,-14);x.lineTo(-8,14);x.moveTo(8,-26);x.lineTo(8,26)}
+ else{x.moveTo(-28,0);for(let i=1;i<=7;i++)x.lineTo(-28+i*7,i%2?-11:11);x.lineTo(28,0)}
+ x.stroke();x.restore();
+ const pp=[-g.n[1],g.n[0]];x.font='bold 24px sans-serif';x.textAlign='center';x.fillStyle='#111';
+ if(k==='S'){x.fillText('+',s.x+g.n[0]*22-pp[0]*26,s.y+g.n[1]*22-pp[1]*26+8);x.fillText('−',s.x-g.n[0]*22-pp[0]*26,s.y-g.n[1]*22-pp[1]*26+8)}
+ else if(s.v){const t=s.v+' '+s.u,hz=s.rot%180===0,vt=s.rot%180===90;x.font='bold 22px sans-serif';x.fillStyle='#b45309';
+  if(hz){x.fillText(t,s.x,s.y-36)}else{x.textAlign='left';x.fillText(t,s.x+(vt?30:36),s.y+(vt?8:-28))}}
+ if(sel){x.save();x.strokeStyle='#2563eb';x.lineWidth=2.5;x.setLineDash([8,6]);x.beginPath();x.arc(s.x,s.y,L+8,0,7);x.stroke();x.setLineDash([]);x.fillStyle='#2563eb';[g.P0,g.P1].forEach(p=>{x.beginPath();x.arc(p[0],p[1],6,0,7);x.fill()});x.restore()}}
+
+function openPad(){
+ if($('ncPadM'))return;
+ const m=document.createElement('div');m.id='ncPadM';m.setAttribute('role','dialog');m.setAttribute('aria-modal','true');m.setAttribute('aria-label','Pizarra para dibujar el circuito');
+ m.innerHTML=`<div class="ncp-card"><div class="ncp-bar"><b>✏️ Pizarra del circuito</b><span class="nl-small" id="ncpH"></span><span class="ncp-sp"></span><button id="ncpX" aria-label="Cerrar">✕ Cerrar</button></div>
+<div class="ncp-bar" id="ncpT1"><button data-k="sel" class="on">☝ Mover / girar</button><button data-k="pen">✏️ Lápiz</button><button data-k="wire">📏 Cable recto</button><button data-k="era">🧽 Goma</button><button data-k="pan">✋ Mover vista</button><span class="nl-small">Símbolos:</span><button data-k="C">┤├ Capacitor</button><button data-k="R">⌇ Resistencia</button><button data-k="S">🔋 Pila</button><input type="color" id="ncpC" value="#111111" aria-label="Color"><label class="ncp-l">Grosor <input type="range" id="ncpW" min="1" max="12" value="3"></label></div>
+<div class="ncp-bar"><button id="ncpU">↶ Deshacer</button><button id="ncpR">↷ Rehacer</button><button id="ncpK">🗑 Borrar todo</button><span class="ncp-sp"></span><button id="ncpZm" aria-label="Alejar">− Alejar</button><button id="ncpZp" aria-label="Acercar">+ Acercar</button><button id="ncpZf">⤢ Ajustar</button><label class="ncp-l"><input type="checkbox" id="ncpG" checked> Cuadrícula</label><button id="ncpD">PNG</button></div>
+<div class="ncp-bar ncp-sel" id="ncpSel"><b id="ncpSK"></b><label class="ncp-l" id="ncpSVl">Valor <input type="number" id="ncpSV" min="0" step="any" inputmode="decimal" style="width:100px"></label><select id="ncpSU" aria-label="Unidad" style="min-height:38px"></select><button id="ncpRotL">⟲ Girar</button><button id="ncpRot">⟳ Girar</button><button id="ncpDup">⧉ Duplicar</button><button id="ncpDel">🗑 Quitar símbolo</button></div>
+<div class="ncp-view" id="ncpView"><div class="ncp-wrap grid" id="ncpWr"><canvas id="ncpCv" width="${PADW}" height="${PADH}" aria-label="Zona de dibujo"></canvas><canvas id="ncpOv" width="${PADW}" height="${PADH}" aria-hidden="true"></canvas></div></div>
+<details class="nc-help"><summary>Cómo usar la pizarra</summary><p class="nl-small"><b>Símbolos:</b> elige uno y toca la pizarra para colocarlo; arrástralo para moverlo y usa «Girar» (o la tecla R) para rotarlo; en «Mover / girar» tócalo para cambiar su valor. <b>A mano:</b> cables = líneas (se enderezan solas); capacitor = dos rayas paralelas; pila = dos rayas, una larga (+) y una corta (−); resistencia = zigzag o rectángulo. Los cables se pegan a los extremos de los símbolos. Puedes mezclar dibujo a mano y símbolos.</p></details>
+<div class="ncp-bar"><button class="primary" id="ncpDet">🔍 Detectar componentes</button><span class="nl-small" id="ncpM"></span></div>
+<div id="ncpRes" hidden></div></div>`;
+ document.body.appendChild(m);
+ const cv=$('ncpCv'),cx=cv.getContext('2d'),ovc=$('ncpOv'),ox=ovc.getContext('2d'),view=$('ncpView'),stage=$('ncpWr'),note=t=>{$('ncpM').textContent=t};
+ stage.style.setProperty('--gx',(40/PADW*100)+'%');stage.style.setProperty('--gy',(40/PADH*100)+'%');
+ let strokes=[],syms=[],sel=null,uid=0,hist=[],fut=[],cur=null,tool='sel',mode=null,drag=null,det=null,OV={},VALS={},zoom=1;
+ const HINT={sel:'Toca un símbolo para moverlo, girarlo o cambiar su valor.',pen:'Dibuja a mano: no importa si queda chueco.',wire:'Arrastra para trazar un cable recto (se pega a los símbolos).',era:'Borra trazos pasando la goma.',pan:'Arrastra para desplazar la pizarra (útil con zoom).',C:'Toca para colocar capacitores.',R:'Toca para colocar resistencias.',S:'Toca para colocar la pila (una sola).'};
+ const defU=k=>k==='C'?'µF':'Ω',G2=40,snapG=v=>Math.round(v/G2)*G2,clampP=p=>[Math.max(60,Math.min(PADW-60,p[0])),Math.max(60,Math.min(PADH-60,p[1]))];
+ const state=()=>JSON.stringify({strokes,syms}),snap=()=>{hist.push(state());if(hist.length>100)hist.shift();fut=[]};
+ const restore=s=>{const o=JSON.parse(s),id=sel&&sel.id;strokes=o.strokes;syms=o.syms;sel=syms.find(q=>q.id===id)||null};
+ const lay=()=>{const w=Math.max(280,Math.min(view.clientWidth-8,(view.clientHeight-8)*PADW/PADH));stage.style.width=Math.round(w*zoom)+'px'};
+ const paint=()=>{cx.fillStyle='#fff';cx.fillRect(0,0,cv.width,cv.height);cx.lineCap=cx.lineJoin='round';
+  for(const k of (cur?strokes.concat([cur]):strokes)){
+   if(k.clr){cx.fillStyle='#fff';cx.fillRect(0,0,cv.width,cv.height);continue}
+   cx.strokeStyle=cx.fillStyle=k.e?'#fff':k.c;cx.lineWidth=k.w;
+   if(k.p.length===1){cx.beginPath();cx.arc(k.p[0][0],k.p[0][1],k.w/2,0,7);cx.fill();continue}
+   cx.beginPath();cx.moveTo(k.p[0][0],k.p[0][1]);
+   for(let i=1;i<k.p.length;i++){const a=k.p[i-1],b=k.p[i];cx.quadraticCurveTo(a[0],a[1],(a[0]+b[0])/2,(a[1]+b[1])/2)}
+   const z=k.p[k.p.length-1];cx.lineTo(z[0],z[1]);cx.stroke()}
+  syms.forEach(s=>padDrawSym(cx,s,s===sel))};
+ const stale=()=>{det=null;ox.clearRect(0,0,PADW,PADH);$('ncpRes').hidden=true};
+ const pt=e=>{const r=cv.getBoundingClientRect();return [(e.clientX-r.left)*cv.width/r.width,(e.clientY-r.top)*cv.height/r.height]};
+ const hitSym=p=>{let best=null,bd=46;syms.forEach(s=>{const g=symGeo(s),dx=g.P1[0]-g.P0[0],dy=g.P1[1]-g.P0[1],t=Math.max(0,Math.min(1,((p[0]-g.P0[0])*dx+(p[1]-g.P0[1])*dy)/(dx*dx+dy*dy))),d=pdist(p,[g.P0[0]+dx*t,g.P0[1]+dy*t]);if(d<bd){bd=d;best=s}});return best};
+ const snapPt=p=>{let b=null,bd=32;syms.forEach(s=>{const g=symGeo(s);[g.P0,g.P1].forEach(q=>{const d=pdist(p,q);if(d<bd){bd=d;b=q}})});return b?[b[0],b[1]]:clampP([snapG(p[0]),snapG(p[1])])};
+ const selUI=()=>{const b=$('ncpSel');b.style.display=sel?'flex':'none';if(!sel)return;$('ncpSK').textContent=SYMK[sel.kind];const S=sel.kind==='S';$('ncpSVl').style.display=S?'none':'';$('ncpSU').style.display=S?'none':'';
+  if(!S){$('ncpSU').innerHTML=UN[sel.kind].map(u=>`<option${u[0]===sel.u?' selected':''}>${u[0]}</option>`).join('');$('ncpSV').value=sel.v}};
+ const setSel=s=>{sel=s;selUI();paint()};
+ const addSym=(k,p)=>{if(k==='S'&&syms.some(s=>s.kind==='S')){note('Solo puede haber una pila: muévela o quítala primero.');return null}
+  const c=clampP([snapG(p[0]),snapG(p[1])]),s={id:++uid,kind:k,x:c[0],y:c[1],rot:0,v:k==='C'?1:k==='R'?100:0,u:defU(k)};syms.push(s);return s};
+ const rotSel=d=>{if(!sel)return note('Primero toca un símbolo.');snap();const st=(sel.kind==='S'?90:45)*d;sel.rot=((sel.rot+st)%360+360)%360;stale();paint()};
+ const delSel=()=>{if(!sel)return note('Primero toca un símbolo.');snap();syms=syms.filter(s=>s!==sel);sel=null;stale();selUI();paint()};
+ const dupSel=()=>{if(!sel)return note('Primero toca un símbolo.');if(sel.kind==='S')return note('Solo puede haber una pila.');snap();const c=clampP([sel.x+80,sel.y+80]),s={...sel,id:++uid,x:c[0],y:c[1]};syms.push(s);sel=s;stale();selUI();paint()};
+ cv.addEventListener('pointerdown',e=>{if(e.button>0)return;e.preventDefault();try{cv.setPointerCapture(e.pointerId)}catch(_){}
+  const p=pt(e);note('');
+  if(tool==='pan'){mode='pan';drag={x:e.clientX,y:e.clientY,sl:view.scrollLeft,st:view.scrollTop};return}
+  if(tool==='sel'){const h=hitSym(p);if(h){snap();mode='move';drag={dx:h.x-p[0],dy:h.y-p[1]}}setSel(h);return}
+  if(SYMK[tool]){snap();const s=addSym(tool,p);if(!s){hist.pop();return}mode='move';drag={dx:0,dy:0};stale();setSel(s);return}
+  snap();stale();
+  if(tool==='wire'){const a=snapPt(p);cur={c:$('ncpC').value,w:(+$('ncpW').value)*1.8,p:[a,a],wire:1};mode='wire'}
+  else{const era=tool==='era';cur={c:$('ncpC').value,w:(+$('ncpW').value)*(era?4:1.8),e:era,p:[p]};mode='ink'}
+  paint()});
+ cv.addEventListener('pointermove',e=>{if(!mode)return;e.preventDefault();
+  if(mode==='pan'){view.scrollLeft=drag.sl-(e.clientX-drag.x);view.scrollTop=drag.st-(e.clientY-drag.y);return}
+  const p=pt(e);
+  if(mode==='move'&&sel){const c=clampP([snapG(p[0]+drag.dx),snapG(p[1]+drag.dy)]);if(c[0]!==sel.x||c[1]!==sel.y){sel.x=c[0];sel.y=c[1];stale();paint()}return}
+  if(mode==='wire'&&cur){cur.p[1]=snapPt(p);paint();return}
+  if(mode==='ink'&&cur){const ev=e.getCoalescedEvents?e.getCoalescedEvents():[e];(ev.length?ev:[e]).forEach(x=>cur.p.push(pt(x)));paint()}});
+ const end=()=>{if(mode==='wire'&&cur&&pdist(cur.p[0],cur.p[1])>=12)strokes.push(cur);else if(mode==='ink'&&cur)strokes.push(cur);
+  cur=null;mode=null;paint()};
+ cv.addEventListener('pointerup',end);cv.addEventListener('pointercancel',end);cv.addEventListener('pointerleave',end);
+ m.querySelectorAll('[data-k]').forEach(b=>b.onclick=()=>{tool=b.dataset.k;m.querySelectorAll('[data-k]').forEach(x=>x.classList.toggle('on',x===b));cv.style.cursor=tool==='pan'?'grab':tool==='sel'?'default':'crosshair';$('ncpH').textContent=HINT[tool]||'';if(tool!=='sel'&&!SYMK[tool]&&sel)setSel(null)});
+ $('ncpH').textContent=HINT.sel;
+ $('ncpU').onclick=()=>{if(!hist.length)return;fut.push(state());restore(hist.pop());stale();selUI();paint()};
+ $('ncpR').onclick=()=>{if(!fut.length)return;hist.push(state());restore(fut.pop());stale();selUI();paint()};
+ $('ncpK').onclick=()=>{if(!strokes.length&&!syms.length)return;snap();strokes=[];syms=[];sel=null;stale();selUI();paint();note('Pizarra limpia (puedes deshacer).')};
+ $('ncpG').onchange=e=>stage.classList.toggle('grid',e.target.checked);
+ $('ncpZm').onclick=()=>{zoom=Math.max(.5,zoom/1.25);lay()};$('ncpZp').onclick=()=>{zoom=Math.min(4,zoom*1.25);lay()};$('ncpZf').onclick=()=>{zoom=1;lay();view.scrollTo(0,0)};
+ $('ncpRot').onclick=()=>rotSel(1);$('ncpRotL').onclick=()=>rotSel(-1);$('ncpDel').onclick=delSel;$('ncpDup').onclick=dupSel;
+ $('ncpSV').oninput=e=>{if(sel){sel.v=e.target.value;stale();paint()}};$('ncpSU').onchange=e=>{if(sel){sel.u=e.target.value;stale();paint()}};
+ const kd=e=>{if(e.key==='Escape'){e.stopPropagation();close();return}
+  if(/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName))return;
+  if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='z'){e.preventDefault();$(e.shiftKey?'ncpR':'ncpU').click()}
+  else if(e.key==='r'||e.key==='R')rotSel(e.shiftKey?-1:1);
+  else if(e.key==='Delete'||e.key==='Backspace'){if(sel){e.preventDefault();delSel()}}
+  else if(e.key==='d'||e.key==='D')dupSel()};
+ const close=()=>{document.removeEventListener('keydown',kd,true);removeEventListener('resize',lay);m.remove()};
+ document.addEventListener('keydown',kd,true);addEventListener('resize',lay);$('ncpX').onclick=close;
+ $('ncpD').onclick=()=>{sel=null;selUI();paint();cv.toBlob(b=>{if(!b)return;const a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='circuito-pizarra.png';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),4000)},'image/png')};
+ /* ----- vista previa de lo detectado ----- */
+ const nameOf=()=>{const n={C:0,R:0};return det.comps.map(c=>c.kind==='S'?'V':c.kind+(++n[c.kind]))};
+ const drawOv=()=>{ox.clearRect(0,0,PADW,PADH);if(!det)return;const U=20,nm=nameOf();
+  ox.lineCap='round';ox.lineJoin='round';ox.strokeStyle='#0f766e';ox.lineWidth=7;ox.globalAlpha=.55;
+  det.wires.forEach(w=>{ox.beginPath();ox.moveTo(w.x1*U,w.y1*U);ox.lineTo(w.x2*U,w.y2*U);ox.stroke()});
+  ox.globalAlpha=.9;ox.strokeStyle='#d97706';ox.lineWidth=9;
+  det.comps.forEach((c,i)=>{ox.beginPath();ox.moveTo(c.pins[0][0]*U,c.pins[0][1]*U);ox.lineTo(c.pins[1][0]*U,c.pins[1][1]*U);ox.stroke();
+   ox.fillStyle='#b45309';ox.font='bold 30px sans-serif';ox.textAlign='center';ox.fillText(nm[i],c.cx*U,c.cy*U-((c.o==='h')?26:(c.o==='v'?-4:-22)))});
+  [['A (+)',det.A],['B (−)',det.B]].forEach(([t,p])=>{if(!p)return;const hz=det.A&&det.B&&det.A.y===det.B.y;ox.fillStyle='#be123c';ox.beginPath();ox.arc(p.x*U,p.y*U,9,0,7);ox.fill();ox.font='bold 26px sans-serif';ox.textAlign=hz?'center':'right';ox.fillText(t,p.x*U-(hz?0:16),p.y*U+(hz?-18:9))})};
+ const render=()=>{const D=det,box=$('ncpRes'),nm=nameOf();
+  D.comps.forEach(c=>{const v=VALS[c.idx];if(c.kind!=='S'&&(!v||v.k!==c.kind))VALS[c.idx]=c.sym&&c.sym.kind===c.kind&&+c.sym.v>0?{k:c.kind,v:c.sym.v,u:c.sym.u}:{k:c.kind,v:c.kind==='C'?1:100,u:defU(c.kind)}});
+  const nC=D.comps.filter(c=>c.kind==='C').length,nR=D.comps.filter(c=>c.kind==='R').length;
+  let h=`<div class="ncp-sum"><b>Detecté:</b> ${nC} capacitor(es), ${nR} resistencia(s), ${D.A?'la fuente':'<span style="color:#be123c">sin fuente</span>'} y ${D.wires.length} cable(s). Revisa la vista sobre el dibujo (naranja = componentes, verde = cables).</div>`;
+  D.notes.forEach(t=>{h+=`<div class="nl-small">⚠ ${esc(t)}</div>`});
+  if(D.comps.length){h+=`<table class="nc-tab ncp-tab"><tr><th>Nombre</th><th>Es un…</th><th>Valor</th><th>Unidad</th></tr>`+D.comps.map((c,i)=>{const v=VALS[c.idx];
+   const opts=['C','R','S'].map(k=>`<option value="${k}"${k===c.kind?' selected':''}>${k==='C'?'Capacitor':k==='R'?'Resistencia':'Fuente (pila)'}</option>`).join('');
+   const val=c.kind==='S'?'<td colspan="2" class="nl-small">usa el voltaje V<sub>T</sub> de abajo</td>':`<td><input type="number" min="0" step="any" inputmode="decimal" data-i="${c.idx}" data-f="v" value="${v.v}"></td><td><select data-i="${c.idx}" data-f="u">${UN[c.kind].map(u=>`<option${u[0]===v.u?' selected':''}>${u[0]}</option>`).join('')}</select></td>`;
+   return `<tr><td><b>${nm[i]}</b></td><td><select data-i="${c.idx}" data-f="k">${opts}</select></td>${val}</tr>`}).join('')+`</table>`}
+  h+=`<div class="ncp-bar"><label class="ncp-l">Voltaje V<sub>T</sub> (V) <input id="ncpV" type="number" min="0" step="any" inputmode="decimal" value="${ED.V}" style="width:110px"></label><span class="ncp-sp"></span><button class="primary" id="ncpL1">Cargar en el editor</button><button class="primary" id="ncpL2">Cargar y calcular</button></div>`;
+  box.innerHTML=h;box.hidden=false;
+  box.onchange=e=>{const t=e.target,i=t.dataset.i;if(i===undefined)return;
+   if(t.dataset.f==='k'){OV[i]=t.value;det=padDetect(strokes,OV,syms);render();drawOv()}
+   else if(t.dataset.f==='u'){VALS[i].u=t.value}else{VALS[i].v=t.value}};
+  box.oninput=e=>{const t=e.target;if(t.dataset.f==='v'&&VALS[t.dataset.i])VALS[t.dataset.i].v=t.value};
+  $('ncpL1').onclick=()=>load(false);$('ncpL2').onclick=()=>load(true)};
+ const hasInk=()=>padInk(strokes).length>0||syms.length>0;
+ $('ncpDet').onclick=()=>{if(!hasInk())return note('Dibuja o coloca el circuito antes de detectarlo.');
+  OV={};VALS={};try{det=padDetect(strokes,OV,syms)}catch(err){console.error(err);return note('No se pudo analizar el dibujo.')}
+  note('');render();drawOv();$('ncpRes').scrollIntoView({block:'nearest',behavior:'smooth'})};
+ const load=go=>{if(!det)return;const D=det,nC=D.comps.filter(c=>c.kind==='C').length,nR=D.comps.filter(c=>c.kind==='R').length,T=nR>nC?'R':'C',V=+$('ncpV').value;
+  if(!(V>=0))return note('Escribe un voltaje válido.');
+  const comps=[];let n=0;const nm=nameOf();
+  for(const c of D.comps){if(c.kind==='S')continue;const v=VALS[c.idx]||{v:1,u:defU(T)},un=UN[T].find(u=>u[0]===v.u)||UN[T].find(u=>u[0]===defU(T)),val=+v.v*un[1];
+   if(!(val>0))return note('Escribe un valor mayor que 0 para '+nm[D.comps.indexOf(c)]+'.');
+   const name=T+(++n);comps.push({id:name,name,type:T,val,cx:c.cx,cy:c.cy,o:c.o})}
+  if(!comps.length)return note('No hay componentes para cargar.');
+  commit();Object.assign(ED,{wires:D.wires.map(w=>({...w})),comps,A:D.A?{...D.A}:null,B:D.B?{...D.B}:null,V,sel:null,start:null});ED.n={C:T==='C'?n:0,R:T==='R'?n:0};
+  const iv=$('ncV');if(iv)iv.value=V;mountEditor();close();
+  msg(D.A?'Dibujo cargado: '+comps.length+' componentes. Revísalo y pulsa «Simplificar y calcular».':'Dibujo cargado, pero falta la fuente: coloca los terminales A (+) y B (−) con las herramientas del editor.');
+  if(go)$('ncGo').click()};
+ lay();paint();
+}
 function sync(){
  const sel=$('nlPhys'),cc=$('nxLabControls');if(!sel||!cc)return;
  if(!sel.querySelector('option[value="cedit"]')){const op=document.createElement('option');op.value='cedit';op.textContent='Circuito: editor visual (capacitores / resistencias, paso a paso)';sel.insertBefore(op,sel.firstChild);sel.value='cedit'}
@@ -14078,7 +14338,7 @@ function bind(){
  $('ncTools').onclick=e=>{const b=e.target.closest('[data-t]');if(!b)return;ED.tool=b.dataset.t;ED.start=null;paint()};
  ED.tool=ED.tool||'sel';paint();
  $('ncUndo').onclick=()=>{if(!$('ncEd'))mountEditor();undo()};$('ncRedo').onclick=()=>{if(!$('ncEd'))mountEditor();redo()};
- $('ncRot').onclick=rotSel;
+ $('ncRot').onclick=rotSel;$('ncPad').onclick=openPad;
  $('ncDel').onclick=()=>{if(!$('ncEd'))mountEditor();const s=ED.sel;if(s){commit();delSel(s);refresh();return msg('Eliminado.')}ED.tool='del';ED.start=null;paint();msg('Modo borrar: toca el componente, cable o terminal que quieras quitar.')};
  $('ncEnd').onclick=()=>{ED.start=null;drawEditor()};
  $('ncEZm').onclick=()=>{if($('ncEd')&&view)view.zoom(1/1.3)};$('ncEZp').onclick=()=>{if($('ncEd')&&view)view.zoom(1.3)};
