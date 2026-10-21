@@ -6486,6 +6486,14 @@ renderAll();
  #spx.idle .xl{font-size:calc(var(--xfs,26px)*1.2)}
  #spx.idle .spxr{height:52vh}
 }
+/* ===== v35 · letra gigante solo con el fondo del álbum + salida de los modos de inmersión ===== */
+#spx.big .spxm,#spx.big #xv,#spx.big .xclk{visibility:hidden}
+#spx.big .spxbg{filter:blur(calc(var(--xbl,70px)*.4)) saturate(1.5) brightness(.62)}
+#spx.big .xbigl{background:#0002}
+.xbx{display:none;position:absolute;z-index:7;top:calc(14px + env(safe-area-inset-top,0px));left:50%;transform:translateX(-50%);align-items:center;gap:6px;border:1px solid #ffffff40;background:#000a;color:#fff;border-radius:999px;padding:9px 18px;font:600 14px 'Bricolage Grotesque',sans-serif;cursor:pointer;backdrop-filter:blur(8px);transition:opacity .6s,background .2s}
+.xbx:hover{background:#fff;color:#000}
+#spx.big .xbx,#spx.teat .xbx,#spx.crt .xbx,#spx.mact .xbx{display:inline-flex}
+#spx.idle .xbx{opacity:0;pointer-events:none}
 #spx.blind .xvl{filter:blur(24px) brightness(.6)}
 </style>
 <script>
@@ -6693,7 +6701,7 @@ async function gamep(){const p=$x('#xp');p.className='xp';p.replaceChildren();co
   o.replaceChildren(E('div','xm','¿De quién es esta canción?'));const fb=E('div','xm');
   ops.forEach(x=>{const b=E('button','xq');b.textContent=x.name;b.onclick=()=>{if(o.dataset.d)return;o.dataset.d=1;const ok=x.id==a.id;st.k=ok?st.k+1:0;if(ok)st.s+=10+Math.min(st.k,5)*2;const g=G();if(st.s>g.best){g.best=st.s;S.set('nx-spxgame',g)}el.classList.remove('blind');hd();fb.textContent=(ok?'✅ ¡Correcto! ':'❌ Era '+a.name+'. ')+'«'+t.name+'», de '+a.name+'.';const n=E('button','xpri');n.textContent='Siguiente';n.onclick=()=>go(round);o.append(n)};o.append(b)});delete o.dataset.d;o.append(fb)};
  o.append(E('div','xm','🎧 Adivina el artista: suena un fragmento de tus Me gusta con la portada y el título ocultos. Elige de quién es.'));const b=E('button','xpri');b.textContent='▶ Jugar';b.onclick=()=>go(round);o.append(b)}
-const big=E('div','xbigl');el.append(big);
+const big=E('div','xbigl');el.append(big);{const xb=E('button','xbx','↺ Modo normal');xb.title='Salir del modo (Esc)';xb.setAttribute('aria-label','Volver al modo normal');xb.onclick=e=>{e.stopPropagation();modoX()};el.append(xb)}
 setInterval(()=>{if(!X.open)return;if(X.uri!=lu2){lu2=X.uri;if(X.set.hora){const h0=new Date().getHours();scn(h0>=6&&h0<12?1:h0>=12&&h0<18?6:h0>=18&&h0<22?2:3)}if(X.tab=='info')infop();const w=$x('.xcw');w.classList.remove('xin');void w.offsetWidth;w.classList.add('xin')}mkDraw();const a=X.ab;if(a&&a.a!=null&&a.b!=null&&NP.play&&pos()>=a.b&&Date.now()-(a.t||0)>1200){a.t=Date.now();seek(a.a)}
  if(el.classList.contains('big'))bigDraw()},200);
 let lu='',tq=0,tn=0,fc=0;setInterval(()=>{if(X.uri&&X.uri!=lu){lu=X.uri;X.ab={};tn++;if(X.set.auto&&X.open)scn(Math.random()*SCN.length|0)}if(NP.play)tq+=1000;if(++fc>=15){fc=0;if(tq||tn){const T=TOT();T.ms+=tq;T.songs+=tn;tq=tn=0;const d=ymd(new Date());if(!T.days.includes(d))T.days.push(d);T.days=T.days.slice(-400);S.set('nx-spxtot',T)}}},1000);
@@ -6720,7 +6728,15 @@ let lu2='';X.set.amb=X.set.amb||'off';X.set.bfx=X.set.bfx||'words';
 function bigDraw(){const v=X.v;let l='',dr=3;if(v&&v.L.length){const q=pos()+off();let i=-1;for(let k=0;k<v.L.length;k++){if(v.L[k].t<=q)i=k;else break}l=i>=0?v.L[i].x:'';if(i>=0&&v.L[i+1])dr=Math.max(.8,Math.min(5,(v.L[i+1].t-v.L[i].t)/1000));if(!l)l='♪'}else l=NP.it?NP.it.name:'';
  const fx=X.set.bfx||'words';if(big.dataset.k==l+fx)return;big.dataset.k=l+fx;big.className='xbigl f-'+fx;big.replaceChildren();
  if(fx=='words'||fx=='wave'||fx=='type'){const T=fx=='words'?l.split(/\s+/).filter(Boolean):[...l];T.forEach((w,i)=>{const s2=E('span','xs');s2.textContent=w==' '?'\u00a0':w;s2.style.animationDelay=(fx=='words'?Math.min(i*dr*.7/T.length,i*.4):fx=='type'?Math.min(i*.04,i*dr*.7/T.length):i*.06)+'s';big.append(s2)})}else big.textContent=l}
-function modo(k){const c=el.classList;if(k=='x'){c.remove('big','teat','crt');toast('Modo normal');return}
+function modo(k){const c=el.classList;if(k=='x'){modoX();return}
+ if(!X._snap&&k!='crt'&&k!='teat'){X._snap=JSON.parse(JSON.stringify(X.set));X._nsl=false}
+ if(k=='noche')X._nsl=true;
+ modo0(k);mact()}
+function mact(){const c=el.classList;c.toggle('mact',!!X._snap||c.contains('big')||c.contains('teat')||c.contains('crt'))}
+function modoX(){const c=el.classList;c.remove('big','teat','crt','mact');
+ if(X._snap){const s=X._snap;X._snap=null;['bg','vis','acc','ah','bfx','amb','blur','clock'].forEach(k=>{if(s[k]===undefined)delete X.set[k];else X.set[k]=s[k]});if(X._nsl){sleepIn(0);X._nsl=false}}
+ sv();ap();big.dataset.k='';if(X.tab=='tools')toolp();toast('Modo normal')}
+function modo0(k){const c=el.classList;
  if(k=='crt'){c.toggle('crt');toast(c.contains('crt')?'📺 Modo retro':'Modo normal');return}
  if(k=='teat'){c.toggle('teat');toast(c.contains('teat')?'🎭 Modo teatro':'Modo normal');return}
  if(k=='con'){c.add('big','teat');Object.assign(X.set,{bg:'dark',vis:'stars',acc:'auto',ah:true,bfx:'words',amb:'off',blur:70});toast('🎤 Modo concierto')}
@@ -6908,7 +6924,7 @@ const dend=()=>{if(dst&&drag)msv();dst=null;setTimeout(()=>{drag=false},0)};mini
 addEventListener('resize',()=>{if(!mini.hidden)mvz()});
 window.spxMini=a=>{if(a=='hide'||a=='stop')X.mh=true;else if(a=='show'){if(!NP.uri)return false;X.mh=false}mvis();return true};
 addEventListener('keydown',e=>{if(!X.open||/INPUT|TEXTAREA/.test((e.target||{}).tagName||'')&&e.key!='Escape')return;const k=e.key;
- if(k=='Escape')close();else if(k==' '){e.preventDefault();$('#npp').onclick()}else if(k=='ArrowRight')seekBy(5000);else if(k=='ArrowLeft')seekBy(-5000);else if(k=='ArrowUp'){e.preventDefault();setVol(X.vol+5)}else if(k=='ArrowDown'){e.preventDefault();setVol(X.vol-5)}
+ if(k=='Escape'){const c=el.classList;if(c.contains('big')||c.contains('teat')||c.contains('crt')||c.contains('mact'))modoX();else close()}else if(k==' '){e.preventDefault();$('#npp').onclick()}else if(k=='ArrowRight')seekBy(5000);else if(k=='ArrowLeft')seekBy(-5000);else if(k=='ArrowUp'){e.preventDefault();setVol(X.vol+5)}else if(k=='ArrowDown'){e.preventDefault();setVol(X.vol-5)}
  else if(/^[lL]$/.test(k))tab('lyrics');else if(/^[eE]$/.test(k))tab('disc');else if(/^[aA]$/.test(k))tab('artists');else if(/^[uU]$/.test(k))tab('stats');else if(/^[oO]$/.test(k))tab('galaxy');else if(/^[dD]$/.test(k))tab('moments');else if(/^[zZ]$/.test(k))tab('tools');else if(/^[bB]$/.test(k))tab('biblio');else if(/^[qQ]$/.test(k))tab('queue');else if(/^[fF]$/.test(k))$x('#xfs').onclick();else if(/^[vV]$/.test(k))$x('#xvi').onclick();else extra(k)});
 /* ---- accesos desde la tarjeta de voz ---- */
 const b=E('button');b.id='npx';b.title='Reproductor inmersivo';b.setAttribute('aria-label','Reproductor inmersivo');NXB(b,'full');b.onclick=()=>open();$('.npc').append(b);$('#npi').style.cursor='pointer';$('#npi').onclick=()=>open();
