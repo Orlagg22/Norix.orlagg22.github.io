@@ -14828,6 +14828,12 @@ function octaedro(){/* Ejemplo 9: rama 1 = (C3∥C4)–C2–C1 ; rama 2 = C6–[
  const c=[CC('C4',1e-6,38,4,'h'),CC('C3',8e-6,38,9,'h'),CC('C2',3e-6,24,4,'h'),CC('C1',5e-6,10,10,'v'),CC('C8',8e-6,14,26,'h'),
   CC('C9',2e-6,21,22,'d'),CC('C10',4e-6,29,22,'e'),CC('C11',5e-6,21,30,'e'),CC('C12',6e-6,29,30,'d'),CC('C6',10e-6,40,18,'v')];
  return {V:80,A:{x:52,y:9},B:{x:3,y:26},wires:w,comps:c}}
+function ej10(){/* Ejemplo 10 (foto): A(+)–C5–C2–C6–(C3∥C9)–octágono [C7 ∥ (C10+C4+C8)]–C1–B(−) */
+ const w=[W(2,2,2,4),W(2,8,2,12),W(2,2,9,2),W(13,2,28,2),W(28,2,28,4),W(28,8,28,12),W(28,12,34,12),W(28,16,34,16),W(21,16,28,16),W(17,16,21,16),
+  W(13,20,13,22),W(13,22,13,24),W(17,28,21,28),W(25,20,25,24),W(2,22,6,22),W(10,22,13,22)];
+ const c=[CC('C5',5e-6,2,6,'v'),CC('C2',3e-6,11,2,'h'),CC('C6',10e-6,28,6,'v'),CC('C3',8e-6,28,14,'v'),CC('C9',3e-6,34,14,'v'),
+  CC('C7',2e-6,15,18,'d'),CC('C10',1e-6,23,18,'e'),CC('C8',4e-6,15,26,'e'),CC('C4',3e-6,23,26,'d'),CC('C1',5e-6,8,22,'h')];
+ return {V:12,A:{x:2,y:12},B:{x:2,y:22},wires:w,comps:c}}
 const PRESETS=[
  {id:'foto',name:'Ejemplo 2: dibujo exacto de la foto (20 V, 10 capacitores)',make:()=>photo()},
  {id:'fotop',name:'Ejemplo 3: foto con puente C11 entre C5–C6 y C8–C9 (Kirchhoff)',make:()=>photo({bridge:true})},
@@ -14836,7 +14842,8 @@ const PRESETS=[
  {id:'escalera',name:'Ejemplo 6: escalera de 5 capacitores (12 V)',make:rank},
  {id:'serie',name:'Ejemplo 7: serie con 4 capacitores (9 V)',make:serie4},
  {id:'paralelo',name:'Ejemplo 8: tres capacitores en paralelo (10 V)',make:par3},
- {id:'foto2',name:'Ejemplo 9: dos ramas A–B con octágono C9–C12 (80 V, 10 capacitores)',make:octaedro}];
+ {id:'foto2',name:'Ejemplo 9: dos ramas A–B con octágono C9–C12 (80 V, 10 capacitores)',make:octaedro},
+ {id:'ej10',name:'Ejemplo 10: C5–C2–C6–(C3∥C9)–[C7 ∥ (C10–C4–C8)]–C1 (12 V, 10 capacitores)',make:ej10}];
 globalThis.NoryxCircuits={solve,PRESET,PRESETS,netlist,sci,si};
 if(typeof document==='undefined')return;
 /* ================= INTERFAZ ================= */
