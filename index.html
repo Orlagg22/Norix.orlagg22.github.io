@@ -6352,6 +6352,7 @@ renderAll();
 #spx .xclk{position:absolute;z-index:5;top:calc(16px + env(safe-area-inset-top,0px));left:clamp(16px,4vw,56px);font:700 22px 'JetBrains Mono',monospace;opacity:.8}
 #spx.kar .spxm{grid-template-columns:1fr}#spx.kar .spxl{display:none}#spx.kar .spxr{height:92vh;max-width:900px;width:100%;margin:auto}#spx.kar .xl{text-align:center;transform-origin:center;font-size:calc(var(--xfs,26px)*1.5)}
 #spmini .mn{margin-left:-4px}
+@media (min-width:821px){.xcw{width:min(100%,38vh);margin:0 auto}}.spxl{max-height:100%;overflow-y:auto;scrollbar-width:none}.spxl::-webkit-scrollbar{display:none}
 </style>
 <script>
 /* ===== Noryx · reproductor inmersivo de Spotify: letra sincronizada (LRCLIB), cola, equipos, temporizador, mini reproductor, Media Session ===== */
@@ -6409,7 +6410,7 @@ async function lib(k,rg){const p=$x('#xp');p.className='xp';p.textContent='Carga
   if(k=='top'){const bar=E('div','xrg');[['short_term','4 semanas'],['medium_term','6 meses'],['long_term','Siempre']].forEach(([v,n])=>{const b=E('button',v==rg?'act':'',n);b.onclick=()=>lib('top',v);bar.append(b)});p.prepend(bar)}}
  catch(e){p.replaceChildren(E('div','xm',e&&e.code=='scope'&&k!='liked'?'Falta un permiso nuevo de Spotify para esto. Escribe <b>/spotify conectar</b> una vez en el chat y acepta los permisos.':spErrText(e)))}}
 function srch(){const p=$x('#xp');p.className='xp';p.replaceChildren();const i=E('input','xsi');i.type='search';i.placeholder='Buscar canciones o artistas…';i.setAttribute('aria-label','Buscar');const o=E('div');p.append(i,o);let tm=0;
- i.oninput=()=>{clearTimeout(tm);const q=i.value.trim();if(q.length<2){o.replaceChildren();return}tm=setTimeout(async()=>{try{const j=await spApi('GET','/search?type=track&limit=20&q='+encodeURIComponent(q));rows(o,((j.tracks||{}).items||[]).filter(Boolean),true)}catch(e){o.replaceChildren(E('div','xm',spErrText(e)))}},350)};setTimeout(()=>i.focus(),50)}
+ i.oninput=()=>{clearTimeout(tm);const q=i.value.trim();if(q.length<2){o.replaceChildren();return}tm=setTimeout(async()=>{try{const u=l=>'/search?type=track&limit='+l+'&q='+encodeURIComponent(q);let j;try{j=await spApi('GET',u(10))}catch(e){if(/limit/i.test((e&&e.msg)||''))j=await spApi('GET',u(5));else throw e}rows(o,((j.tracks||{}).items||[]).filter(Boolean),true)}catch(e){o.replaceChildren(E('div','xm',spErrText(e)))}},350)};setTimeout(()=>i.focus(),50)}
 /* ---- playlists, ajustes, modo cine, gestos, atajos y acciones extra ---- */
 async function pls(){const p=$x('#xp');p.className='xp';p.textContent='Cargando playlists…';
  try{spNeed('playlist-read-private');let L=[];for(const o of[0,50]){const j=await spApi('GET','/me/playlists?limit=50&offset='+o);L=L.concat((j.items||[]).filter(Boolean));if(!j.next)break}
