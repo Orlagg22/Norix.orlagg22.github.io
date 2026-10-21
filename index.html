@@ -4948,12 +4948,6 @@ let _nxLast={k:'',at:0};
 async function send(t){t=(t||'').trim();if(!t||busy)return;{const k=t.toLowerCase(),now=Date.now();if(k===_nxLast.k&&now-_nxLast.at<1200)return;_nxLast={k,at:now}}$('#in').value='';fit();closeMenu();window.speechSynthesis&&speechSynthesis.cancel();
  if(gate(t))return;
  let m;if((m=t.match(/^\/(\w+)\s*(.*)$/))){const k=m[1].toLowerCase();
-  if(k=='voz'||k=='groq'){const mode=norm(m[2]||'estado');
-   if(/^(local|apagar|off|desactivar)$/.test(mode)){NXG.on=false;S.set('nx-groq-stt',false);sysMsg('🎙 **Oído local activado.** Noryx transcribirá con Whisper dentro de tu equipo (la primera vez baja ~80 MB). Escribe `/voz groq` para volver a la nube.','Noryx · voz');return}
-   if(/^(groq|nube|on|activar|encender)$/.test(mode)){NXG.on=true;NXG.bad=0;NXG.off=0;S.set('nx-groq-stt',true);sysMsg('🎙 **Oído en la nube activado.** El audio de tu micrófono se envía a Groq (Whisper large-v3-turbo) a través del Worker de Noryx solo cuando hablas. Si falla o se agota el límite gratuito, uso el oído local. No digas datos privados en voz alta. Escribe `/voz local` para desactivarlo.','Noryx · voz');return}
-   if(/^(probar|prueba|test)$/.test(mode)){if(!NXG.base||/TU-WORKER/.test(NXG.base)){sysMsg('❌ No hay URL del Worker configurada.','Noryx · voz');return}
-    fetch(NXG.base+'/v1/stt',{method:'GET'}).then(async r=>{let j={};try{j=await r.json()}catch(e){}sysMsg(r.ok&&j.ok?'✅ **El Worker responde y tiene la clave de Groq.** Modelo: '+(j.model||'whisper-large-v3-turbo')+'. Ahora toca el micrófono y habla.':'❌ **El Worker respondió HTTP '+r.status+'.** '+(j.error||'Agrega la ruta /v1/stt (archivo noryx-worker-voz.js) y el secreto GROQ_API_KEY.'),'Noryx · prueba de voz')}).catch(()=>sysMsg('❌ **No pude conectar con el Worker** (¿CORS o URL incorrecta?).','Noryx · prueba de voz'));return}
-   sysMsg('**Oído de Noryx:** '+(NXG.on?(nxGroqOn()?'Groq Whisper (nube, gratis)':'Groq en pausa ('+(NXG.diag||'límite')+'); usando oído local'):'Whisper local')+'.\n\nComandos: `/voz groq`, `/voz local`, `/voz probar`.','Noryx · voz');return}
   if(k=='mic'||k.startsWith('micr')){mdOpen();return}
   if(k=='noryx'||k=='puente'||k=='atajo'||k=='rutina'||k=='spotify'){if(k!='puente'&&k!='spotify')echoU(t);await noryxEntry(k,m[2]);return}
   if(k=='ia'||k=='maestro'||k=='online'){const mode=norm(m[2]||'estado');if(/^(activar|activa|encender|on|enable|online)$/.test(mode)){MAESTRO=true;S.set('nx-maestro2',true);sysMsg('🌐 **Modo en línea activado.** Para responder preguntas abiertas puedo enviar el mensaje y el contexto reciente a la API de Noryx (Cloudflare + Groq) y, si no responde, al servicio externo de respaldo (Pollinations). No envíes contraseñas ni información privada. Las fuentes o datos actuales no se dan por verificados solo porque los genere el modelo. Escribe `/ia apagar` para desactivarlo.','Noryx · modo en línea');return}if(/^(apagar|desactivar|desactiva|off|disable|local)$/.test(mode)){MAESTRO=false;S.set('nx-maestro2',false);sysMsg('Modo en línea desactivado. Noryx seguirá usando su núcleo local y las consultas de conocimiento disponibles.','Noryx · modo local');return}if(/^(probar|prueba|test)$/.test(mode)){askNoryxAPI([{role:'system',content:'Responde solo con la palabra OK.'},{role:'user',content:'Di OK'}]).then(o=>{const d=window._nxApiDiag||{};sysMsg(o&&o.t?'✅ **La API responde.** Prueba: '+String(o.t).slice(0,120):'❌ **La API no respondió.** Detalle: '+(d.msg||'sin detalle')+'. Página: '+location.origin,'Noryx · prueba de API')});return}sysMsg('**Modo de generación externa:** '+(MAESTRO?'activado':'desactivado')+'.\n\nUsa `/ia activar` para ampliar las respuestas con el servicio externo de generación de texto, o `/ia apagar` para mantener el procesamiento conversacional en el núcleo local. Al activarlo, algunos mensajes se enviarán a ese servicio.','Noryx · estado');return}
@@ -5227,30 +5221,7 @@ async function asrLoad(say){
   return _asr})().catch(e=>{_asrP=null;throw e});
  return _asrP}
 const ASR_JUNK=/subt[ií]tulos|amara\.org|suscr[ií]b|thanks for watching|gracias por ver/i;
-/* ===== Oído en la nube: Groq Whisper (gratis) vía tu Worker. Si falla, se usa el Whisper local de abajo ===== */
-const NXG={on:S.get('nx-groq-stt',true)!==false,bad:0,off:0,diag:'',base:(()=>{try{return String(NORYX_API).replace(/\/v1\/chat$/,'')}catch(e){return ''}})()};
-function nxGroqOn(){return NXG.on&&!!NXG.base&&!/TU-WORKER/.test(NXG.base)&&Date.now()>=NXG.off&&navigator.onLine!==false}
-function nxWav16(pcm){const n=pcm.length,b=new ArrayBuffer(44+n*2),v=new DataView(b),w=(o,s)=>{for(let i=0;i<s.length;i++)v.setUint8(o+i,s.charCodeAt(i))};
- w(0,'RIFF');v.setUint32(4,36+n*2,true);w(8,'WAVE');w(12,'fmt ');v.setUint32(16,16,true);v.setUint16(20,1,true);v.setUint16(22,1,true);v.setUint32(24,16000,true);v.setUint32(28,32000,true);v.setUint16(32,2,true);v.setUint16(34,16,true);w(36,'data');v.setUint32(40,n*2,true);
- for(let i=0;i<n;i++){const s=Math.max(-1,Math.min(1,pcm[i]));v.setInt16(44+i*2,s<0?s*32768:s*32767,true)}return b}
-async function nxGroqSTT(rec,lang){
- const pcm=rec.pcm||rec,c=new AbortController(),t=setTimeout(()=>c.abort(),20000);
- try{const r=await fetch(NXG.base+'/v1/stt?lang='+lang,{method:'POST',headers:{'Content-Type':'application/octet-stream'},body:nxWav16(pcm),signal:c.signal});
-  if(r.status==429){NXG.off=Date.now()+60000;throw new Error('límite gratuito de Groq (429)')}
-  if(!r.ok){let x='';try{const j=await r.json();x=[j.error,j.details].filter(Boolean).join(' · ')}catch(e){}throw new Error('HTTP '+r.status+(x?' · '+x:''))}
-  const d=await r.json();NXG.bad=0;NXG.diag='ok';return d}
- catch(e){NXG.bad++;NXG.diag=e&&e.name=='AbortError'?'tiempo agotado':String(e&&e.message||e);if(NXG.bad>=3)NXG.off=Date.now()+5*60000;throw e}
- finally{clearTimeout(t)}}
 async function asrText(rec,say){
- if(nxGroqOn()){
-  try{say&&say('Transcribiendo con Groq…');
-   const d=await nxGroqSTT(rec,/^en/i.test(navigator.language||'')?'en':'es');
-   let t=String(d&&d.text||'').trim();const sg=(d&&d.segments)||[];
-   if(sg.length&&sg.every(s=>s.no_speech_prob>.6))t='';
-   return(t.length<2||/^[\[(].*[\])]$/.test(t)||ASR_JUNK.test(t))?'':t}
-  catch(e){say&&say('Groq no respondió ('+NXG.diag+'). Uso el oído local…')}}
- return asrTextLocal(rec,say)}
-async function asrTextLocal(rec,say){
  const asr=await asrLoad(say);say&&say('Transcribiendo…');
  const lg=/^en/i.test(navigator.language||'')?'english':'spanish';
  const out=await asr(rec.pcm||rec,{language:lg,task:'transcribe',chunk_length_s:30});
@@ -5260,7 +5231,7 @@ function earFailMsg(e){const n=e&&e.name;if(n=='NotAllowedError'||n=='SecurityEr
 async function listenLocal(b){
  if(b.classList.contains('on'))return;b.classList.add('on');MICCTL={finish:false};
  try{
-  if(!_asr&&!nxGroqOn())await asrLoad(m=>toast(m,60000));
+  if(!_asr)await asrLoad(m=>toast(m,60000));
   toast('🎙 Habla ahora… (toca el micrófono para terminar)',60000);
   const rec=await earRecord({maxMs:25000,ctl:MICCTL,onSpeech:()=>toast('🎙 Te escucho…',60000),onLevel:l=>{b.style.boxShadow='0 0 0 '+Math.min(14,l*350)+'px rgba(255,255,255,.3)'}});
   b.style.boxShadow='';
@@ -5272,7 +5243,7 @@ async function listenLocal(b){
 async function vlListenLocal(){
  if(VL.loc)return;VL.loc=true;let rec=null,err=null;
  try{
-  if(!_asr&&!nxGroqOn()){vlSet('think');vlText('Preparando el oído de Noryx…');await asrLoad(m=>vlText(m))}
+  if(!_asr){vlSet('think');vlText('Preparando el oído de Noryx…');await asrLoad(m=>vlText(m))}
   if(!VL.on||VL.mute){VL.loc=false;if(VL.on)vlSet('mute');return}
   vlSet('listen');vlText('');
   rec=await earRecord({maxMs:20000,stop:()=>!VL.on||VL.mute,onSpeech:()=>{vls.textContent='Te escucho… 🗣'}})}
@@ -5293,7 +5264,7 @@ async function jvListenLocal(){
  let abort=false;const me={abort(){abort=true}};JV.rec=me;
  let rec=null,err=null;
  try{
-  if(!_asr&&!nxGroqOn()){jvSet('think');jvText('Preparando el oído de Noryx…');await asrLoad(m=>jvText(m))}
+  if(!_asr){jvSet('think');jvText('Preparando el oído de Noryx…');await asrLoad(m=>jvText(m))}
   if(abort||!JV.on||JV.mute||JV.proc){if(JV.rec===me)JV.rec=null;if(JV.on&&!JV.mute&&!JV.proc)setTimeout(jvListen,150);return}
   jvSet('listen');jvText('');
   rec=await earRecord({maxMs:20000,stop:()=>abort||!JV.on||JV.mute||JV.proc||(window.speechSynthesis&&speechSynthesis.speaking),onSpeech:()=>{jvs.textContent='Te escucho… 🗣'}})}
@@ -5877,7 +5848,7 @@ async function mdRec(){
  mdStop();mdlog.textContent='';mdo.className='';
  const L=m=>{mdAdd(m);mdn.textContent=m};
  try{
-  if(!_asr&&!nxGroqOn()){mdVerdict('warn','⏳ Preparando el motor de voz de Noryx (la primera vez baja ~80 MB). Espera…');await asrLoad(m=>{mdn.textContent=m})}
+  if(!_asr){mdVerdict('warn','⏳ Preparando el motor de voz de Noryx (la primera vez baja ~80 MB). Espera…');await asrLoad(m=>{mdn.textContent=m})}
   mdVerdict('warn','🎙 Di una frase corta, por ejemplo «hola Noryx».');L('▶ Escuchando… habla ahora');
   const rec=await earRecord({maxMs:12000,waitMs:9000,onLevel:l=>{mdb.style.width=Math.min(100,l*800)+'%'},onSpeech:()=>mdAdd('🗣 Detecto tu voz')});
   mdb.style.width='0';
