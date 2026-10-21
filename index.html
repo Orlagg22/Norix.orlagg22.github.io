@@ -6219,7 +6219,6 @@ async function spNLU(n){
  [/^(?:muestra |muestrame |ver |abre )?(?:mis )?(?:canciones )?recientes$/,async()=>spxOpen('recent')?R('Aquí están sus canciones recientes, '+who+'.',M):R('Abra primero algo de música, '+who+'.',M)],
  [/^(?:abre |muestra |ve a |ir a )?(?:la )?(?:seccion de )?(?:descubrir|descubre musica|descubrimiento)$/,async()=>spxOpen('disc')?R('Abrí Descubrir, '+who+'.',M):R('Abra primero algo de música, '+who+'.',M)],
  [/^(?:abre |muestra |ve a |ir a )?(?:mi |la )?biblioteca$/,async()=>spxOpen('biblio')?R('Aquí está su biblioteca, '+who+'.',M):R('Abra primero algo de música, '+who+'.',M)],
- [/^(?:activa |abre |inicia )?(?:el )?(?:modo dj|dj interno|dj de noryx|set de livi)$/,async()=>spxOpen('dj')?R('DJ Livi está lista, '+who+'. Elija un ambiente y empiece el set.',M):R('Abra primero algo de música, '+who+'.',M)],
  [/^(?:muestra |muestrame |ver |abre )?(?:mi top|lo mas escuchado|mis canciones mas escuchadas|mis mas escuchadas)$/,async()=>spxOpen('top')?R('Aquí está lo que más escucha, '+who+'.',M):R('Abra primero algo de música, '+who+'.',M)],
 
  [/^(?:activa |quita |pon )?(?:el )?modo vinilo$/,async()=>spxDo('vin')?R('Modo vinilo, '+who+'.',M):R('Primero ponga música, '+who+'.',M)],
@@ -6405,7 +6404,6 @@ renderAll();
 .xdjav i{width:5px;height:35%;background:#fff;border-radius:3px}.xdj.on .xdjav i{animation:xeq .8s ease-in-out infinite alternate}.xdjav i:nth-child(2){animation-delay:.15s}.xdjav i:nth-child(3){animation-delay:.3s}.xdjav i:nth-child(4){animation-delay:.45s}
 @keyframes xeq{to{height:100%}}@media (prefers-reduced-motion:reduce){.xdj.on .xdjav i{animation:none}}
 .xdjc{background:#ffffff14;border-radius:14px 14px 14px 4px;padding:12px 14px;line-height:1.5;min-height:48px}
-#xdjl{display:flex;flex-direction:column;gap:6px;margin-top:4px}
 /* ===== iconos SVG de los controles (v31) ===== */
 .nxic{fill:currentColor;display:block;pointer-events:none;width:1.2em;height:1.2em}
 .xct button,.xex button,.npc button,.xcl,.xb{display:grid;place-items:center}
@@ -6491,7 +6489,6 @@ async function lib(k,rg){const p=$x('#xp');p.className='xp';p.textContent='Carga
 function srch(){const p=$x('#xp');p.className='xp';p.replaceChildren();const i=E('input','xsi');i.type='search';i.placeholder='Buscar canciones o artistas…';i.setAttribute('aria-label','Buscar');const o=E('div');p.append(i,o);let tm=0;
  i.oninput=()=>{clearTimeout(tm);const q=i.value.trim();if(q.length<2){o.replaceChildren();return}tm=setTimeout(async()=>{try{const u=l=>'/search?type=track&limit='+l+'&q='+encodeURIComponent(q);let j;try{j=await spApi('GET',u(10))}catch(e){if(/limit/i.test((e&&e.msg)||''))j=await spApi('GET',u(5));else throw e}rows(o,((j.tracks||{}).items||[]).filter(Boolean),true)}catch(e){o.replaceChildren(E('div','xm',spErrText(e)))}},350)};setTimeout(()=>i.focus(),50)}
 /* ---- Descubrir · DJ Livi · Biblioteca ---- */
-X.dj={on:false,mood:'energia',n:12,voice:S.get('nx-djv',true)!==false,set:[],i:-1,dk:null};
 const sh=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a},
  cov=o=>{const a=o.images||(o.album&&o.album.images)||[];return(a[1]||a[0]||{}).url||''},
  cap=g=>g.replace(/\b\w/g,c=>c.toUpperCase()),
@@ -6514,36 +6511,10 @@ async function disc(){const p=$x('#xp');p.className='xp';p.textContent='Buscando
   grid(p,'Tus artistas',ar.slice(0,12),o=>spStart({context_uri:o.uri}),o=>cap((o.genres||[])[0]||'Artista'));
   if(!nr.length&&!ar.length)p.append(E('div','xm','Escucha un poco más de música y aquí aparecerán recomendaciones hechas con tus gustos.'))}
  catch(e){errBox(p,e)}}
-/* DJ Livi: DJ propio de Noryx (mezcla lo que escuchas con música nueva y te presenta cada tema) */
-const MOODS={energia:['Energía',['genre:rock','genre:dance','genre:pop'],'con mucha energía'],chill:['Chill',['genre:chill','genre:acoustic','genre:indie'],'tranquilo y suave'],enfoque:['Enfoque',['genre:ambient','genre:classical','genre:instrumental'],'para concentrarte'],fiesta:['Fiesta',['genre:reggaeton','genre:latin','genre:dance'],'para prender la fiesta'],nostalgia:['Nostalgia',['year:1980-1999','year:2000-2009'],'lleno de recuerdos'],descubrir:['Descubrir',[],'lleno de sorpresas']};
-async function djBuild(){const d=X.dj,M=MOODS[d.mood];let fam=[];try{fam=((await spApi('GET','/me/top/tracks?limit=50&time_range=medium_term')).items||[]).filter(Boolean)}catch(e){}
- try{fam=fam.concat(((await spApi('GET','/me/tracks?limit=50')).items||[]).map(x=>x.track).filter(t=>t&&t.uri))}catch(e){}
- const known=new Set(fam.map(t=>t.uri));let qs=M[1].slice();if(!qs.length)qs=(X.gen&&X.gen.length?X.gen:['pop','rock','indie']).slice(0,3).map(g=>'genre:"'+g+'"');
- let fresh=[];for(const q of qs)fresh=fresh.concat(await srT(q,Math.random()*40|0));fresh=fresh.filter(t=>!known.has(t.uri));
- const nf=Math.round(d.n*(d.mood=='descubrir'?.8:.4));let pool=sh(fresh).slice(0,nf).concat(sh(fam).slice(0,d.n-nf));const seen=new Set();pool=sh(pool.filter(t=>!seen.has(t.uri)&&seen.add(t.uri)));
- for(let i=1;i<pool.length;i++)if(pool[i].artists[0].id==pool[i-1].artists[0].id){const j=pool.findIndex((t,k)=>k>i&&t.artists[0].id!=pool[i-1].artists[0].id);if(j>0)[pool[i],pool[j]]=[pool[j],pool[i]]}
- return pool.slice(0,d.n)}
-function djSay(t){const d=X.dj;d.cap=t;const c=$x('#xdjc');if(c)c.textContent=t;if(!d.voice||!window.speechSynthesis)return;
- try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='es-MX';const vs=speechSynthesis.getVoices().filter(v=>/^es/i.test(v.lang));u.voice=vs.find(v=>/female|sabina|helena|paulina|monica|dalia|elena|google/i.test(v.name))||vs[0]||null;u.rate=1.05;
-  const back=()=>{if(d.dk!=null){setVol(d.dk);d.dk=null}};u.onstart=()=>{if(d.dk==null)d.dk=X.vol;setVol(Math.max(8,d.dk*.35))};u.onend=back;u.onerror=back;speechSynthesis.speak(u)}catch(e){}}
-async function djStart(){const d=X.dj;toast('Livi está armando tu set…');d.set=await djBuild();if(!d.set.length)throw{code:'x',msg:'No pude armar el set'};d.on=true;d.i=-1;d.first=true;d.n2=0;await spStart({uris:d.set.map(t=>t.uri)});
- djSay('Hola '+jvWho()+', soy Livi. Te armé un set '+MOODS[d.mood][2]+', con '+d.set.length+' canciones. Vamos.');djpaint()}
-function djStop(){const d=X.dj;d.on=false;try{speechSynthesis.cancel()}catch(e){}if(d.dk!=null){setVol(d.dk);d.dk=null}djpaint();toast('DJ Livi se despide')}
-function djTick(it){const d=X.dj,i=d.set.findIndex(t=>t.uri==it.uri);if(i<0||i==d.i)return;d.i=i;djpaint();if(d.first){d.first=false;return}
- const nx=d.set[i+1],a=it.artists[0].name,w=jvWho();if(!nx){djSay('Última canción del set: '+it.name+', de '+a+'. Gracias por escuchar conmigo, '+w+'.');d.on=false;return}
- d.n2++;if(d.n2%2)return;djSay([ 'Ahora suena '+it.name+', de '+a+'.','Sigue '+it.name+', de '+a+'. Y después viene '+nx.name+'.','Cambiamos con '+it.name+'. Artista: '+a+'.','Esta es '+it.name+', de '+a+'. Disfrútala, '+w+'.'][d.n2/2%4|0])}
-async function djAsk(q){const t=(await srT(q,0))[0],d=X.dj;if(!t){djSay('No encontré «'+q+'», '+jvWho()+'.');return}await spApi('POST','/me/player/queue?uri='+encodeURIComponent(t.uri));d.set.splice(Math.max(d.i+1,0),0,t);djSay('Anotado, '+jvWho()+'. '+t.name+', de '+t.artists[0].name+', suena enseguida.');djpaint()}
-function djp(){const p=$x('#xp'),d=X.dj;p.className='xp';
- p.innerHTML='<div class="xdj" id="xdj"><div class="xdjh"><div class="xdjav"><i></i><i></i><i></i><i></i></div><div><b>DJ Livi</b><small id="xdjs"></small></div></div><div class="xdjc" id="xdjc"></div><div class="xrg" id="xdjm"></div><div class="xrg"><select id="xdjn" aria-label="Canciones del set"><option value="8">8 canciones</option><option value="12">12 canciones</option><option value="20">20 canciones</option><option value="30">30 canciones</option></select><button id="xdjv"></button></div><div class="xrg"><button class="xpri" id="xdjgo"></button><button id="xdjnx">Siguiente</button><button id="xdjof">DJ oficial de Spotify</button></div><input class="xsi" id="xdjq" type="search" placeholder="Pídele una canción a Livi y presiona Enter…" aria-label="Pedir canción"><div id="xdjl"></div></div>';
- const m=$x('#xdjm');Object.keys(MOODS).forEach(k=>{const b=E('button',k==d.mood?'act':'',MOODS[k][0]);b.onclick=()=>{d.mood=k;m.querySelectorAll('button').forEach(x=>x.classList.toggle('act',x==b))};m.append(b)});
- const n=$x('#xdjn');n.value=d.n;n.onchange=()=>{d.n=+n.value};
- $x('#xdjv').onclick=()=>{d.voice=!d.voice;S.set('nx-djv',d.voice);if(!d.voice)try{speechSynthesis.cancel()}catch(e){}djpaint()};
- $x('#xdjgo').onclick=()=>{if(d.on)djStop();else go(djStart)};$x('#xdjnx').onclick=()=>$('#npn').onclick();
- $x('#xdjof').onclick=()=>go(async()=>{try{await spStart({context_uri:'spotify:playlist:37i9dQZF1EYkqdzj48dyYq'})}catch(e){window.open('https://open.spotify.com/playlist/37i9dQZF1EYkqdzj48dyYq','_blank','noopener');throw e}});
- const q=$x('#xdjq');q.onkeydown=e=>{e.stopPropagation();if(e.key=='Enter'&&q.value.trim()){const v=q.value.trim();q.value='';go(()=>djAsk(v))}};djpaint()}
-function djpaint(){const d=X.dj,r=$x('#xdj');if(!r)return;r.classList.toggle('on',d.on&&!!NP.play);$x('#xdjs').textContent=d.on?'En el aire · set '+MOODS[d.mood][0].toLowerCase():'Lista para mezclar';$x('#xdjgo').textContent=d.on?'Detener DJ':'Empezar set';
- const v=$x('#xdjv');v.textContent='Voz de Livi: '+(d.voice?'sí':'no');v.classList.toggle('act',d.voice);const c=$x('#xdjc');c.textContent=d.cap||'Elige un ambiente y cuántas canciones quieres. Mezclo lo que ya escuchas con música nueva y te presento cada tema.';
- const l=$x('#xdjl');l.replaceChildren();d.set.forEach((t,i)=>{const b=E('button','xq'+(i==d.i?' on':'')),im=E('img'),s=E('span','','<b></b><small></small>');im.alt='';im.src=cov(t);s.firstChild.textContent=(i+1)+'. '+t.name;s.lastChild.textContent=t.artists.map(a=>a.name).join(', ');b.append(im,s);b.onclick=()=>go(()=>spStart({uris:d.set.slice(i).map(z=>z.uri)}));l.append(b)})}
+/* DJ Livi: solo el DJ oficial de Spotify */
+function djp(){const p=$x('#xp');p.className='xp';
+ p.innerHTML='<div class="xdj" id="xdj"><div class="xdjh"><div class="xdjav"><i></i><i></i><i></i><i></i></div><div><b>DJ Livi</b><small>DJ oficial de Spotify</small></div></div><div class="xdjc">Livi es el DJ oficial de Spotify: arma una selección con tu música y te habla entre canciones.</div><div class="xrg"><button class="xpri" id="xdjof">Poner al DJ Livi</button></div></div>';
+ $x('#xdjof').onclick=()=>go(async()=>{try{await spStart({context_uri:'spotify:playlist:37i9dQZF1EYkqdzj48dyYq'})}catch(e){window.open('https://open.spotify.com/playlist/37i9dQZF1EYkqdzj48dyYq','_blank','noopener');throw e}})}
 /* Biblioteca: playlists, álbumes, artistas, podcasts y canciones con filtro */
 async function biblio(k){const p=$x('#xp');p.className='xp';k=typeof k=='string'?k:(X.bk||'playlists');X.bk=k;p.replaceChildren();
  const bar=E('div','xrg');[['playlists','Playlists'],['albums','Álbumes'],['artists','Artistas'],['shows','Podcasts'],['liked','Canciones']].forEach(([v,n])=>{const b=E('button',v==k?'act':'',n);b.onclick=()=>biblio(v);bar.append(b)});
@@ -6606,7 +6577,7 @@ try{const m=navigator.mediaSession,H=(a,f)=>{try{m.setActionHandler(a,f)}catch(e
 const paint=()=>{const pl=!!NP.play;el.classList.toggle('pl',pl);NXB($x('#xp2'),pl?'pause':'play');mini.querySelector('[data-a=play]').innerHTML=pl?IC.pause:IC.play;const ml=mini.querySelector('[data-a=like]');ml.innerHTML=NP.liked?IC.likeOn:IC.like;ml.classList.toggle('act',!!NP.liked);$x('#xs').classList.toggle('act',!!NP.shuf);const r=$x('#xr');r.classList.toggle('act',NP.rep!='off');NXB(r,NP.rep=='track'?'repeatOne':'repeat');const l=$x('#xl');NXB(l,NP.liked?'likeOn':'like');l.classList.toggle('act',!!NP.liked)};
 window.spxHook=(it,play)=>{if(!it){mini.hidden=true;document.title=T0;if(X.open)close();return}
  const nw=it.uri!=X.uri,ar=(it.artists||[]).map(a=>a.name).join(', '),im=(it.album||{}).images||[],big=(im[0]||{}).url||'',sm=(im.slice(-1)[0]||{}).url||big;X.uri=it.uri;X.ar=ar;
- if(nw){if(X.dj&&X.dj.on)djTick(it);if(!X.hist.length||X.hist[0].uri!=it.uri){X.hist.unshift(it);X.hist.length=Math.min(X.hist.length,50)}X.v=null;X.cur=-2;$x('#xt').textContent=it.name||'';$x('#xa').textContent=ar;const c=$x('#xc');c.onload=()=>color(c);c.src=big;$x('#xbg').style.backgroundImage=big?'url("'+big+'")':'';mini.querySelector('img').src=sm;mini.querySelector('b').textContent=it.name||'';mini.querySelector('small').textContent=ar;msess(it);
+ if(nw){if(!X.hist.length||X.hist[0].uri!=it.uri){X.hist.unshift(it);X.hist.length=Math.min(X.hist.length,50)}X.v=null;X.cur=-2;$x('#xt').textContent=it.name||'';$x('#xa').textContent=ar;const c=$x('#xc');c.onload=()=>color(c);c.src=big;$x('#xbg').style.backgroundImage=big?'url("'+big+'")':'';mini.querySelector('img').src=sm;mini.querySelector('b').textContent=it.name||'';mini.querySelector('small').textContent=ar;msess(it);
   lrc(it).then(v=>{if(X.uri==it.uri){X.v=v;if(X.open&&X.tab=='lyrics')rl()}});if(X.open&&X.tab=='lyrics')rl();if(X.open&&X.tab=='queue')setTimeout(queue,800)}
  paint();document.title=play?'♪ '+(it.name||'')+' — '+ar:T0;if(play&&!X.pp)X.mh=false;X.pp=!!play;mvis()};
 function open(t){if(!NP.uri||!NP.it){toast('No hay música sonando. Pídele algo a Noryx, p. ej. «pon a Soda Stereo».',2800);return false}
