@@ -6089,14 +6089,22 @@ async function spToken(){let t=S.get('nx-sptok',null);if(!t)return null;if(Date.
  try{const j=await spTokenReq({grant_type:'refresh_token',refresh_token:t.refresh,client_id:spCid()});
   t={access:j.access_token,refresh:j.refresh_token||t.refresh,exp:Date.now()+j.expires_in*1000,scope:j.scope||t.scope||''};S.set('nx-sptok',t);return t.access}
  catch(e){S.set('nx-sptok',null);return null}}
-async function spApi(method,path,body){const tk=await spToken();if(!tk)throw{code:'auth'};
+async function spApi0(method,path,body){const tk=await spToken();if(!tk)throw{code:'auth'};
  const r=await fetch('https://api.spotify.com/v1'+path,{method,headers:Object.assign({Authorization:'Bearer '+tk},body?{'Content-Type':'application/json'}:{}),body:body?JSON.stringify(body):undefined});
  if(r.status==204||r.status==202)return{};
  let j=null;try{j=await r.json()}catch(e){}
  if(r.status==401)throw{code:'auth'};
- if(r.status==429)throw{code:'rate'};
+ if(r.status==429)throw{code:'rate',ra:parseInt(r.headers.get('Retry-After'))||0};
  if(!r.ok)throw{code:r.status,msg:j&&j.error&&j.error.message,reason:j&&j.error&&j.error.reason};
  return j||{}}
+const SPQ={cool:0,inf:new Map()};
+function spApi(method,path,body){const k=method=='GET'?path:null;if(k&&SPQ.inf.has(k))return SPQ.inf.get(k);
+ const run=async()=>{for(let i=0;;i++){const w=SPQ.cool-Date.now();
+   if(w>0){if(w>9000)throw{code:'rate',wait:Math.ceil(w/1000)};await sleep(w+150)}
+   try{return await spApi0(method,path,body)}
+   catch(e){if(!(e&&e.code=='rate'))throw e;const ra=Math.max(2,Math.min(60,e.ra||3));SPQ.cool=Date.now()+ra*1000;
+    if(i>=2||ra>9)throw{code:'rate',wait:ra}}}};
+ const p=run();if(k){SPQ.inf.set(k,p);const f=()=>SPQ.inf.delete(k);p.then(f,f)}return p}
 function spLoadSDK(){return new Promise((ok,no)=>{if(window.Spotify)return ok();window.onSpotifyWebPlaybackSDKReady=ok;const e=document.createElement('script');e.src='https://sdk.scdn.co/spotify-player.js';e.onerror=()=>no(new Error('No pude cargar el reproductor de Spotify'));document.head.append(e)})}
 function spInitPlayer(){if(SP.dev)return Promise.resolve(SP.dev);if(SP.initing)return SP.initing;
  SP.initing=(async()=>{await spLoadSDK();
@@ -6117,7 +6125,7 @@ async function spStart(body){const id=await spDevice();if(!id)throw{code:404,rea
 function spErrText(e){const who=jvWho(),c=e&&e.code;
  if(c=='scope')return'Para eso falta un permiso de Spotify (Me gusta y playlists), '+who+'. Escribe /spotify conectar una vez y acepta los permisos nuevos.';
  if(c=='auth')return'La conexión con Spotify caducó, '+who+'. Escribe /spotify conectar para entrar otra vez.';
- if(c=='rate')return'Spotify me pide esperar un momento, '+who+'. Intente de nuevo en unos segundos.';
+ if(c=='rate')return'Spotify me pide esperar '+(e.wait?e.wait+' segundos':'un momento')+', '+who+'. Lo reintento solo en cuanto pase.';
  if(e&&e.reason=='PREMIUM_REQUIRED'||(c==403&&/premium/i.test(e&&e.msg||'')))return'Spotify solo deja controlar la reproducción desde aquí con una cuenta Premium, '+who+'.';
  if(c==403)return'Spotify rechazó la orden'+(e.msg?' ('+e.msg+')':'')+'. Puede que tu cuenta no esté autorizada en la app de Spotify (el modo desarrollo solo admite 5 personas): el creador debe agregar tu correo en User Management.';
  if(c==404||(e&&e.reason=='NO_ACTIVE_DEVICE'))return'No encontré ningún reproductor de Spotify disponible, '+who+'. Abre Spotify en algún dispositivo y vuelve a pedirlo.';
@@ -6298,8 +6306,8 @@ function npSet(it,pos,play,shuf,rep){if(!it||!it.uri){$np.hidden=true;NP.play=fa
  NXB($('#npp'),play?'pause':'play');$('#nps').classList.toggle('act',NP.shuf);const r=$('#npr');r.classList.toggle('act',NP.rep!='off');NXB(r,NP.rep=='track'?'repeatOne':'repeat');
  if(k){NP.liked=null;npHeart();spHas(it.uri).then(v=>{if(NP.uri==it.uri){NP.liked=v;npHeart()}})}
  window.spxHook&&spxHook(it,play)}
-function npSDK(st){if(!st||!st.track_window||!st.track_window.current_track)return;npSet(st.track_window.current_track,st.position,!st.paused,st.shuffle,['off','context','track'][st.repeat_mode||0])}
-async function npPoll(){if(!(JV.on||NP.uri||window.SPX_BOOT)||!spReady()||document.hidden)return;try{const c=await spApi('GET','/me/player');if(c&&c.item&&c.item.type!='episode')npSet(c.item,c.progress_ms,c.is_playing,c.shuffle_state,c.repeat_state);else if(c&&!c.item)npSet(null)}catch(e){}}
+function npSDK(st){if(!st||!st.track_window||!st.track_window.current_track)return;SP.sdkAt=Date.now();npSet(st.track_window.current_track,st.position,!st.paused,st.shuffle,['off','context','track'][st.repeat_mode||0])}
+async function npPoll(){if(!(JV.on||NP.uri||window.SPX_BOOT)||!spReady()||document.hidden)return;if(SPQ.cool>Date.now())return;if(SP.sdkAt&&Date.now()-SP.sdkAt<5000&&Date.now()-(npPoll.t||0)<20000)return;npPoll.t=Date.now();try{const c=await spApi('GET','/me/player');if(c&&c.item&&c.item.type!='episode')npSet(c.item,c.progress_ms,c.is_playing,c.shuffle_state,c.repeat_state);else if(c&&!c.item)npSet(null)}catch(e){}}
 setInterval(npPoll,4000);
 (function tk(){if(!$np.hidden&&NP.dur){const p=Math.min(NP.dur,NP.play?NP.pos+Date.now()-NP.at:NP.pos);$('#npf').style.transform='scaleX('+p/NP.dur+')';$('#npcur').textContent=jvFmt(p/1000);$('#npdur').textContent=jvFmt(NP.dur/1000)}requestAnimationFrame(tk)})();
 setInterval(()=>{if((JV.on||NP.uri)&&SP.player&&SP.dev)SP.player.getCurrentState().then(st=>st&&npSDK(st)).catch(()=>{})},1500);
@@ -6623,7 +6631,7 @@ async function likedAll(force,prog){X.lk=X.lk||{t:0,v:null};if(!force&&X.lk.v&&D
  const mp=j=>(j.items||[]).filter(x=>x&&x.track&&x.track.uri).map(x=>Object.assign({},x.track,{_at:x.added_at||''})),pg=off=>spApi('GET','/me/tracks?limit=50&offset='+off);
  const j0=await pg(0),total=j0.total||0;let pages=[mp(j0)],got=pages[0].length,partial=false;if(prog)prog(got,total);
  if(j0.next||total>50){const offs=[];for(let o=50;o<(total||1e5);o+=50)offs.push(o);
-  for(let i=0;i<offs.length&&!partial;i+=4){const lot=offs.slice(i,i+4);
+  for(let i=0;i<offs.length&&!partial;i+=2){const lot=offs.slice(i,i+2);await sleep(i?300:0);
    try{const r=await Promise.all(lot.map(pg));r.forEach((j,k)=>{pages[(lot[k]/50)|0]=mp(j);got+=pages[(lot[k]/50)|0].length});if(prog)prog(got,total);if(!total&&!r[r.length-1].next)break}
    catch(e){if(e&&e.code=='scope')throw e;partial=true}}}
  const seen=new Set(),v=[].concat(...pages.filter(Boolean)).filter(t=>!seen.has(t.uri)&&seen.add(t.uri));
@@ -6634,7 +6642,7 @@ const yr=t=>+(((t.album||{}).release_date||'').slice(0,4))||0,dcd=t=>{const y=yr
  opt=(sel,v,txt)=>{const o=document.createElement('option');o.value=v;o.textContent=txt;sel.append(o)};
 X.lf={q:'',artist:'',dec:'',sort:'added',n:100};
 async function likedp(){const p=$x('#xp');p.className='xp';p.textContent='Cargando tus Me gusta…';let all;
- try{all=await likedAll(false,(n,t)=>{p.textContent='Cargando tus Me gusta… '+n+(t?' de '+t:'')})}catch(e){p.replaceChildren(E('div','xm',e&&e.code=='scope'?'Falta un permiso nuevo de Spotify para esto. Escribe <b>/spotify conectar</b> una vez en el chat y acepta los permisos.':spErrText(e)));return}
+ try{all=await likedAll(false,(n,t)=>{p.textContent='Cargando tus Me gusta… '+n+(t?' de '+t:'')})}catch(e){p.replaceChildren(E('div','xm',e&&e.code=='scope'?'Falta un permiso nuevo de Spotify para esto. Escribe <b>/spotify conectar</b> una vez en el chat y acepta los permisos.':spErrText(e)));if(e&&e.code=='rate'){const m=p.firstChild;setTimeout(()=>{if(m&&m.isConnected&&X.open)likedp()},(e.wait||5)*1000+800)}return}
  p.replaceChildren();if(!all.length){p.append(E('div','xm','Aún no tienes canciones en Me gusta.'));return}
  if(X.lk&&X.lk.partial)p.append(E('div','xm','Spotify cortó la carga por límite de peticiones: se cargaron '+all.length+(X.lk.total?' de '+X.lk.total:'')+' canciones. Pulsa ↻ en unos minutos para completar.'));
  const f=X.lf,q=E('input','xsi'),bar=E('div','xlf'),sa=document.createElement('select'),sd=document.createElement('select'),ss=document.createElement('select'),act=E('div','xrg'),cnt=E('div','xcnt'),o=E('div');
