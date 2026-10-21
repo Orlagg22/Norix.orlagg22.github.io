@@ -6574,6 +6574,7 @@ html.spx-on *{-webkit-backdrop-filter:none!important;backdrop-filter:none!import
 #spx.v37in .xl{animation:v37up 1s .5s backwards}
 @keyframes v37c{from{opacity:0;translate:0 46px;scale:.88;filter:blur(14px)}}
 #spx.blind .xvl{filter:blur(24px) brightness(.6)}
+#spx{overflow-x:hidden}.xtabs{position:relative;overscroll-behavior:contain}.xtabs button{flex:none}
 </style>
 <script>
 /* ===== Noryx · reproductor inmersivo de Spotify: letra sincronizada (LRCLIB), cola, equipos, temporizador, mini reproductor, Media Session ===== */
@@ -6982,7 +6983,7 @@ $x('#xkar').onclick=kar;
 $x('#xbar').onmousemove=e=>{const r=e.currentTarget.getBoundingClientRect();e.currentTarget.title=fmt((NP.dur||0)*Math.max(0,Math.min(1,(e.clientX-r.left)/r.width)))};
 $x('#xcl2').onclick=()=>{const u=NP.it&&NP.it.external_urls&&NP.it.external_urls.spotify;if(!u)return;try{navigator.clipboard.writeText(u).then(()=>toast('📤 Enlace copiado'))}catch(e){toast(u)}};
 window.spxSeekTo=seek;
-function tab(t){X._qb=-1;$x('#xp').onclick=null;if(!['lyrics','share','album','queue','disc','artists','stats','sets','info','galaxy','moments','tools','game','biblio','dev','search','recent','top','liked','pls','hist','set'].includes(t))t='lyrics';if(t!='game')el.classList.remove('blind');X.tab=t;S.set('nx-spxtab',t);el.querySelectorAll('.xtabs button').forEach(b=>b.classList.toggle('act',b.dataset.t==t));{const a=el.querySelector('.xtabs .act');a&&a.scrollIntoView&&a.scrollIntoView({inline:'center',block:'nearest'})}$x('#xlt').hidden=t!='lyrics';({lyrics:rl,share:sxShare,album:sxAlbum,queue,disc,artists:artp,stats:statp,sets:colp,info:infop,galaxy:galp,moments:momp,tools:toolp,game:gamep,biblio,dev:devs,search:srch,recent:()=>lib('recent'),top:()=>lib('top'),liked:likedp,pls,hist:histp,set:cfg})[t]()}
+function tab(t){X._qb=-1;$x('#xp').onclick=null;if(!['lyrics','share','album','queue','disc','artists','stats','sets','info','galaxy','moments','tools','game','biblio','dev','search','recent','top','liked','pls','hist','set'].includes(t))t='lyrics';if(t!='game')el.classList.remove('blind');X.tab=t;S.set('nx-spxtab',t);el.querySelectorAll('.xtabs button').forEach(b=>b.classList.toggle('act',b.dataset.t==t));{const bar=el.querySelector('.xtabs'),a=bar&&bar.querySelector('.act');if(a&&bar.scrollWidth>bar.clientWidth+2){const l=a.offsetLeft-(bar.clientWidth-a.offsetWidth)/2;bar.scrollLeft=Math.max(0,l)}el.scrollLeft=0;el.scrollTop=0;const m=el.querySelector('.spxm');if(m)m.scrollLeft=0}$x('#xlt').hidden=t!='lyrics';({lyrics:rl,share:sxShare,album:sxAlbum,queue,disc,artists:artp,stats:statp,sets:colp,info:infop,galaxy:galp,moments:momp,tools:toolp,game:gamep,biblio,dev:devs,search:srch,recent:()=>lib('recent'),top:()=>lib('top'),liked:likedp,pls,hist:histp,set:cfg})[t]()}
 /* ---- volumen, temporizador de sueño, color ---- */
 let vt=0;const setVol=v=>{v=Math.max(0,Math.min(100,Math.round(v)));X.vol=v;$x('#xvol').value=v;if(NP.local&&SP.player){try{SP.player.setVolume(v/100)}catch(e){}return}clearTimeout(vt);vt=setTimeout(()=>spApi('PUT','/me/player/volume?volume_percent='+v).catch(()=>{}),150)};
 function slLabel(){const b=$x('#xsl'),m=X.slEnd?Math.ceil((X.slEnd-Date.now())/60000):0;NXB(b,'sleep');if(m>0)b.insertAdjacentHTML('beforeend','<span class="nxt">'+m+' min</span>');b.classList.toggle('act',m>0)}
