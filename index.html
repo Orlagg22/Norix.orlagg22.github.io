@@ -6501,6 +6501,35 @@ renderAll();
 @media (max-width:620px){.xbmt{display:none}}
 #spx.big .xbx,#spx.teat .xbx,#spx.crt .xbx,#spx.mact .xbx{display:inline-flex}
 #spx.idle .xbx{opacity:0;pointer-events:none}
+/* ===== v37 · experiencia: tarjeta «ahora suena», luz que sigue al cursor, grano de película, pulso en la letra ===== */
+.v37g{position:absolute;inset:-50%;z-index:3;pointer-events:none;opacity:.06;mix-blend-mode:overlay;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.7'/%3E%3C/svg%3E");animation:v37gr .9s steps(6) infinite}
+#spx.vin .v37g{opacity:.11}
+@keyframes v37gr{0%{translate:0 0}20%{translate:-3% 2%}40%{translate:2% -3%}60%{translate:-2% -1%}80%{translate:3% 3%}100%{translate:0 0}}
+.v37s{position:absolute;inset:0;z-index:1;pointer-events:none;mix-blend-mode:screen;opacity:.55;transition:opacity 1s;background:radial-gradient(520px circle at var(--mx,50%) var(--my,40%),color-mix(in srgb,var(--spc,var(--acc)) 28%,transparent),transparent 62%)}
+#spx.idle .v37s{opacity:.28}#spx.big .v37s{opacity:.35}
+.xl.on{text-shadow:0 0 calc(14px + var(--bb,0)*34px) color-mix(in srgb,var(--spc,var(--acc)) 65%,transparent)}
+#spx::before{background:radial-gradient(ellipse at 50% 50%,#0000 38%,color-mix(in srgb,var(--spc,var(--acc)) 14%,#000) 100%)}
+#spx.idle::before{opacity:calc(.85 + var(--bb,0)*.15)}
+#spx:not(.pl) .spxbg{filter:blur(var(--xbl,70px)) saturate(.8) brightness(.38)}
+.v37n{position:absolute;inset:0;z-index:6;pointer-events:none;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:6vw;opacity:0;visibility:hidden;background:radial-gradient(ellipse at 50% 50%,#000d,#0008 65%,#0003 100%)}
+.v37n.on{visibility:visible;animation:v37card 3.6s ease both}
+@keyframes v37card{0%{opacity:0}14%{opacity:1}80%{opacity:1}100%{opacity:0}}
+.v37k{font:600 clamp(11px,1.2vw,14px) 'JetBrains Mono',monospace;letter-spacing:.5em;text-indent:.5em;color:var(--spc,var(--acc));margin-bottom:2.4vh}
+.v37t{font-weight:800;font-size:clamp(34px,7vw,104px);line-height:1.02;color:#fff;max-width:90vw;text-shadow:0 0 70px color-mix(in srgb,var(--spc,var(--acc)) 55%,transparent)}
+.v37a{font-style:italic;font-size:clamp(16px,2.3vw,32px);color:#fffc;margin-top:1.6vh}
+.v37l{display:block;height:2px;width:0;margin-top:3.4vh;background:var(--spc,var(--acc));box-shadow:0 0 18px var(--spc,var(--acc))}
+.v37n.on .v37t{animation:v37ls 3.6s cubic-bezier(.2,.8,.2,1) both}
+.v37n.on .v37a{animation:v37up 1.2s .45s backwards}
+.v37n.on .v37k{animation:v37up 1s .1s backwards}
+.v37n.on .v37l{animation:v37ln 1.5s .55s both}
+@keyframes v37ls{0%{letter-spacing:.3em;filter:blur(16px);opacity:0}30%{letter-spacing:-.01em;filter:blur(0);opacity:1}100%{letter-spacing:.02em;filter:blur(0);opacity:1}}
+@keyframes v37ln{from{width:0}to{width:min(240px,32vw)}}
+@keyframes v37up{from{opacity:0;translate:0 22px}}
+#spx.v37in .xcw{animation:v37c 1.2s cubic-bezier(.2,.8,.2,1) backwards}
+#spx.v37in .xt,#spx.v37in .xa{animation:v37up .9s .18s backwards}
+#spx.v37in .xbar,#spx.v37in .xti,#spx.v37in .xct,#spx.v37in .xtabs{animation:v37up .9s .34s backwards}
+#spx.v37in .xl{animation:v37up 1s .5s backwards}
+@keyframes v37c{from{opacity:0;translate:0 46px;scale:.88;filter:blur(14px)}}
 #spx.blind .xvl{filter:blur(24px) brightness(.6)}
 </style>
 <script>
@@ -6836,6 +6865,28 @@ function cfg(){const p=$x('#xp');p.className='xp';p.replaceChildren();
  p.append(E('div','xm','<b>Atajos</b><br>Espacio play/pausa · ←/→ ±5 s · J/K ±10 s · ↑/↓ volumen · M silencio · N/P siguiente/anterior · S aleatorio · R repetir · L letra · Q cola · A artistas · U resumen · O galaxia · V vinilo · T cambiar fondo · C escenas · X guardar tarjeta · D momentos · Y marcar momento · W letra gigante · I teatro · Z estudio · [ ] \\ bucle A–B · H ocultar controles · F pantalla completa · 0–9 saltar al 0–90 % · doble toque en la portada = Me gusta · desliza la portada para cambiar de canción'))}
 let it_=0;function idle(){el.classList.remove('idle');clearTimeout(it_);if(X.open&&X.set.ah&&NP.play)it_=setTimeout(()=>el.classList.add('idle'),4500)}
 ['pointermove','pointerdown','keydown','touchstart'].forEach(ev=>el.addEventListener(ev,idle,{passive:true}));
+/* v37 · experiencia inmersiva */
+setTimeout(()=>{try{
+ const grain=E('div','v37g'),spot=E('div','v37s'),now=E('div','v37n','<div class="v37k">NORYX · AHORA SUENA</div><div class="v37t"></div><div class="v37a"></div><i class="v37l"></i>');
+ el.append(grain,spot,now);
+ const xcw=el.querySelector('.xcw'),xt=el.querySelector('#xt'),xa=el.querySelector('#xa'),nt=now.querySelector('.v37t'),na=now.querySelector('.v37a');
+ let mx=50,my=40,tx=50,ty=40,bb=-1,raf=0;
+ el.addEventListener('pointermove',e=>{if(e.pointerType=='touch')return;tx=e.clientX/innerWidth*100;ty=e.clientY/innerHeight*100},{passive:true});
+ const tick=()=>{raf=0;if(el.hidden)return;
+  mx+=(tx-mx)*.08;my+=(ty-my)*.08;
+  if(Math.abs(tx-mx)>.05||Math.abs(ty-my)>.05){el.style.setProperty('--mx',mx.toFixed(2)+'%');el.style.setProperty('--my',my.toFixed(2)+'%')}
+  const b=parseFloat(xcw.style.getPropertyValue('--b'))||0;if(Math.abs(b-bb)>.01){bb=b;el.style.setProperty('--bb',b.toFixed(3))}
+  raf=requestAnimationFrame(tick)};
+ const kick=()=>{if(!raf&&!el.hidden)raf=requestAnimationFrame(tick)};
+ let lastT='',lastShow=0,tc=0;
+ const show=()=>{const c=el.classList;if(el.hidden||c.contains('big')||!NP.play)return;const t=(xt.textContent||'').trim();if(!t||Date.now()-lastShow<2500)return;lastShow=Date.now();
+  nt.textContent=t;na.textContent=(xa.textContent||'').trim();now.classList.remove('on');void now.offsetWidth;now.classList.add('on');clearTimeout(tc);tc=setTimeout(()=>now.classList.remove('on'),3800)};
+ new MutationObserver(()=>{const t=(xt.textContent||'').trim();if(t&&t!==lastT){lastT=t;if(!el.hidden&&window.__spxLift)window.__spxLift();setTimeout(show,450)}}).observe(xt,{childList:true,characterData:true,subtree:true});
+ let wasH=el.hidden,tin=0;
+ new MutationObserver(()=>{if(wasH&&!el.hidden){el.classList.add('v37in');clearTimeout(tin);tin=setTimeout(()=>el.classList.remove('v37in'),1800);kick();setTimeout(show,900)}wasH=el.hidden}).observe(el,{attributes:true,attributeFilter:['hidden']});
+ if(!el.hidden)kick();
+}catch(e){console.warn('experiencia',e)}},0);
+
 /* v34 · tocadiscos: disco que gira con inercia, brazo que baja y avanza según la canción, y reacomodo al quedar inactivo */
 setTimeout(()=>{try{
  const xcw=el.querySelector('.xcw'),xc=el.querySelector('#xc');if(!xcw||!xc)return;
@@ -6846,13 +6897,14 @@ setTimeout(()=>{try{
  const L=62,Px=90,Py=12,Cx=46,Cy=50,d=Math.hypot(Px-Cx,Py-Cy),phi=Math.atan2(Cy-Py,Cx-Px),REST=80;
  const armDeg=p=>{const r=38-23*Math.min(1,Math.max(0,p)),c=Math.min(1,Math.max(-1,(L*L+d*d-r*r)/(2*L*d)));return(phi-Math.acos(c))*180/Math.PI};
  const calm=matchMedia('(prefers-reduced-motion:reduce)').matches;
- let ang=0,spd=0,last=0,raf=0,arm=-999;
- const setArm=()=>{let t=REST;if(NP.play&&NP.dur)t=armDeg(pos()/NP.dur);else if(NP.play)t=armDeg(0);if(Math.abs(t-arm)>.15){arm=t;rod.style.setProperty('--ar',t.toFixed(2)+'deg')}};
+ let ang=0,spd=0,last=0,raf=0,arm=-999,lift=false;
+ const setArm=()=>{if(lift)return;let t=REST;if(NP.play&&NP.dur)t=armDeg(pos()/NP.dur);else if(NP.play)t=armDeg(0);if(Math.abs(t-arm)>.15){arm=t;rod.style.setProperty('--ar',t.toFixed(2)+'deg')}};
  const loop=t=>{raf=0;if(el.hidden||!el.classList.contains('vin'))return;
-  const dt=Math.min(.05,(t-last)/1000||0);last=t;const pl=!!NP.play,tg=pl?(calm?70:200):0;
+  const dt=Math.min(.05,(t-last)/1000||0);last=t;const pl=!!NP.play,tg=pl?(lift?30:(calm?70:200)):0;
   spd+=(tg-spd)*(1-Math.exp(-dt*(pl?1.5:.9)));ang=(ang+spd*dt)%360;vd.style.transform='rotate('+ang.toFixed(2)+'deg)';setArm();
   if(pl||spd>.4)raf=requestAnimationFrame(loop)};
  const kick=()=>{if(!raf&&!el.hidden&&el.classList.contains('vin')){last=performance.now();raf=requestAnimationFrame(loop)}};
+ window.__spxLift=()=>{if(!el.classList.contains('vin'))return;lift=true;arm=REST;rod.style.setProperty('--ar',REST+'deg');kick();setTimeout(()=>{lift=false;arm=-999;setArm();kick()},1100)};
  /* recentrar la letra cuando cambia el diseño al quedar inactivo / volver */
  const rc=()=>{const P=el.querySelector('#xp'),e=P&&P.querySelector('.xl.on');if(e&&P.classList.contains('lyr'))P.scrollTo({top:e.offsetTop-P.clientHeight/2+e.offsetHeight/2,behavior:'auto'})};
  let wasIdle=false;
