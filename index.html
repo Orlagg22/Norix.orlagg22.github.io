@@ -6515,17 +6515,24 @@ async function disc(){const p=$x('#xp');p.className='xp';p.textContent='Buscando
   if(!nr.length&&!ar.length)p.append(E('div','xm','Escucha un poco más de música y aquí aparecerán recomendaciones hechas con tus gustos.'))}
  catch(e){errBox(p,e)}}
 /* ---- Me gusta con filtros, Artistas y Resumen ---- */
-async function likedAll(force,prog){X.lk=X.lk||{t:0,v:null};if(!force&&X.lk.v&&Date.now()-X.lk.t<120000)return X.lk.v;spNeed('user-library-read');
- let v=[];for(let off=0;off<1000;off+=50){const j=await spApi('GET','/me/tracks?limit=50&offset='+off);v=v.concat((j.items||[]).filter(x=>x&&x.track&&x.track.uri).map(x=>Object.assign({},x.track,{_at:x.added_at||''})));if(prog)prog(v.length);if(!j.next)break}
- X.lk={t:Date.now(),v};return v}
+async function likedAll(force,prog){X.lk=X.lk||{t:0,v:null};if(!force&&X.lk.v&&Date.now()-X.lk.t<600000)return X.lk.v;spNeed('user-library-read');
+ const mp=j=>(j.items||[]).filter(x=>x&&x.track&&x.track.uri).map(x=>Object.assign({},x.track,{_at:x.added_at||''})),pg=off=>spApi('GET','/me/tracks?limit=50&offset='+off);
+ const j0=await pg(0),total=j0.total||0;let pages=[mp(j0)],got=pages[0].length,partial=false;if(prog)prog(got,total);
+ if(j0.next||total>50){const offs=[];for(let o=50;o<(total||1e5);o+=50)offs.push(o);
+  for(let i=0;i<offs.length&&!partial;i+=4){const lot=offs.slice(i,i+4);
+   try{const r=await Promise.all(lot.map(pg));r.forEach((j,k)=>{pages[(lot[k]/50)|0]=mp(j);got+=pages[(lot[k]/50)|0].length});if(prog)prog(got,total);if(!total&&!r[r.length-1].next)break}
+   catch(e){if(e&&e.code=='scope')throw e;partial=true}}}
+ const seen=new Set(),v=[].concat(...pages.filter(Boolean)).filter(t=>!seen.has(t.uri)&&seen.add(t.uri));
+ X.lk={t:Date.now(),v,total,partial};return v}
 const yr=t=>+(((t.album||{}).release_date||'').slice(0,4))||0,dcd=t=>{const y=yr(t);return y?Math.floor(y/10)*10:0},
  dur=ms=>{const m=Math.round(ms/60000),h=Math.floor(m/60);return h?h+' h '+(m%60)+' min':m+' min'},
  byArtist=L=>{const m=new Map();L.forEach(t=>(t.artists||[]).slice(0,1).forEach(a=>{if(!a||!a.id)return;const r=m.get(a.id)||{id:a.id,name:a.name,n:0};r.n++;m.set(a.id,r)}));return[...m.values()].sort((a,b)=>b.n-a.n||a.name.localeCompare(b.name))},
  opt=(sel,v,txt)=>{const o=document.createElement('option');o.value=v;o.textContent=txt;sel.append(o)};
 X.lf={q:'',artist:'',dec:'',sort:'added',n:100};
 async function likedp(){const p=$x('#xp');p.className='xp';p.textContent='Cargando tus Me gusta…';let all;
- try{all=await likedAll(false,n=>{p.textContent='Cargando tus Me gusta… '+n})}catch(e){p.replaceChildren(E('div','xm',e&&e.code=='scope'?'Falta un permiso nuevo de Spotify para esto. Escribe <b>/spotify conectar</b> una vez en el chat y acepta los permisos.':spErrText(e)));return}
+ try{all=await likedAll(false,(n,t)=>{p.textContent='Cargando tus Me gusta… '+n+(t?' de '+t:'')})}catch(e){p.replaceChildren(E('div','xm',e&&e.code=='scope'?'Falta un permiso nuevo de Spotify para esto. Escribe <b>/spotify conectar</b> una vez en el chat y acepta los permisos.':spErrText(e)));return}
  p.replaceChildren();if(!all.length){p.append(E('div','xm','Aún no tienes canciones en Me gusta.'));return}
+ if(X.lk&&X.lk.partial)p.append(E('div','xm','Spotify cortó la carga por límite de peticiones: se cargaron '+all.length+(X.lk.total?' de '+X.lk.total:'')+' canciones. Pulsa ↻ en unos minutos para completar.'));
  const f=X.lf,q=E('input','xsi'),bar=E('div','xlf'),sa=document.createElement('select'),sd=document.createElement('select'),ss=document.createElement('select'),act=E('div','xrg'),cnt=E('div','xcnt'),o=E('div');
  q.type='search';q.placeholder='Filtrar por canción, artista o álbum…';q.setAttribute('aria-label','Filtrar Me gusta');q.value=f.q;q.onkeydown=e=>e.stopPropagation();
  sa.setAttribute('aria-label','Artista');opt(sa,'','Todos los artistas');byArtist(all).forEach(a=>opt(sa,a.id,a.name+' ('+a.n+')'));if(f.artist&&![...sa.options].some(x=>x.value==f.artist))f.artist='';sa.value=f.artist;
@@ -6555,7 +6562,7 @@ async function artp(k){const p=$x('#xp');p.className='xp';k=typeof k=='string'?k
    const g=E('div','xgr');L.forEach(a=>g.append(card(a,()=>{if(k=='likes'){X.lf.artist=a.id;X.lf.q='';X.lf.dec='';X.lf.n=100;tab('liked')}else return spStart({context_uri:a.uri})},k=='likes'?a.n+' en Me gusta':cap((a.genres||[])[0]||'Artista'))));o.append(g)};
   draw();f.oninput=draw}catch(e){errBox(o,e)}}
 async function statp(){const p=$x('#xp');p.className='xp';p.textContent='Calculando tu resumen…';let all;
- try{all=await likedAll(false,n=>{p.textContent='Calculando tu resumen… '+n})}catch(e){errBox(p,e);return}
+ try{all=await likedAll(false,(n,t)=>{p.textContent='Calculando tu resumen… '+n+(t?' de '+t:'')})}catch(e){errBox(p,e);return}
  p.replaceChildren();if(!all.length){p.append(E('div','xm','Guarda canciones en Me gusta y aquí verás tu resumen.'));return}
  const ar=byArtist(all),ms=all.reduce((s,x)=>s+(x.duration_ms||0),0),ex=all.filter(x=>x.explicit).length,ys=all.map(yr).filter(Boolean),avg=ys.length?Math.round(ys.reduce((a,b)=>a+b,0)/ys.length):0,
   box=(v,l)=>{const d=E('div'),b=E('b'),s=E('small');b.textContent=v;s.textContent=l;d.append(b,s);return d},st=E('div','xstat');
@@ -6572,11 +6579,11 @@ async function biblio(k){const p=$x('#xp');p.className='xp';k=typeof k=='string'
  const bar=E('div','xrg');[['playlists','Playlists'],['albums','Álbumes'],['artists','Artistas'],['shows','Podcasts'],['liked','Canciones']].forEach(([v,n])=>{const b=E('button',v==k?'act':'',n);b.onclick=()=>biblio(v);bar.append(b)});
  const f=E('input','xsi'),o=E('div','',  'Cargando…');f.type='search';f.placeholder='Filtrar en esta sección…';f.setAttribute('aria-label','Filtrar');p.append(bar,f,o);
  const get=async()=>{X.bc=X.bc||{};const c=X.bc[k];if(c&&Date.now()-c.t<120000)return c.v;let v=[];
-  if(k=='playlists'){spNeed('playlist-read-private');for(const off of[0,50,100]){const j=await spApi('GET','/me/playlists?limit=50&offset='+off);v=v.concat((j.items||[]).filter(Boolean));if(!j.next)break}}
-  else if(k=='albums'){spNeed('user-library-read');for(const off of[0,50]){const j=await spApi('GET','/me/albums?limit=50&offset='+off);v=v.concat((j.items||[]).map(x=>x.album).filter(Boolean));if(!j.next)break}}
-  else if(k=='artists'){spNeed('user-follow-read');v=((await spApi('GET','/me/following?type=artist&limit=50')).artists||{}).items||[]}
-  else if(k=='shows'){spNeed('user-library-read');v=((await spApi('GET','/me/shows?limit=50')).items||[]).map(x=>x.show).filter(Boolean)}
-  else{spNeed('user-library-read');for(const off of[0,50]){const j=await spApi('GET','/me/tracks?limit=50&offset='+off);v=v.concat((j.items||[]).map(x=>x.track).filter(t=>t&&t.uri));if(!j.next)break}}
+  if(k=='playlists'){spNeed('playlist-read-private');for(let off=0;off<5000;off+=50){const j=await spApi('GET','/me/playlists?limit=50&offset='+off);v=v.concat((j.items||[]).filter(Boolean));if(!j.next)break}}
+  else if(k=='albums'){spNeed('user-library-read');for(let off=0;off<5000;off+=50){const j=await spApi('GET','/me/albums?limit=50&offset='+off);v=v.concat((j.items||[]).map(x=>x.album).filter(Boolean));if(!j.next)break}}
+  else if(k=='artists'){spNeed('user-follow-read');let af='';for(let i=0;i<100;i++){const j=(await spApi('GET','/me/following?type=artist&limit=50'+(af?'&after='+af:''))).artists||{};v=v.concat((j.items||[]).filter(Boolean));af=(j.cursors||{}).after;if(!af||!(j.items||[]).length)break}}
+  else if(k=='shows'){spNeed('user-library-read');for(let off=0;off<2000;off+=50){const j=await spApi('GET','/me/shows?limit=50&offset='+off);v=v.concat((j.items||[]).map(x=>x.show).filter(Boolean));if(!j.next)break}}
+  else{v=await likedAll(false)}
   X.bc[k]={t:Date.now(),v};return v};
  const sub=x=>k=='playlists'?((x.owner||{}).display_name||''):k=='albums'?(x.artists||[]).map(a=>a.name).join(', '):k=='artists'?cap((x.genres||[])[0]||'Artista'):(x.publisher||'');
  try{const v=await get(),draw=()=>{const q=f.value.trim().toLowerCase(),L=q?v.filter(x=>((x.name||'')+' '+((x.artists||[]).map(a=>a.name).join(' '))+' '+sub(x)).toLowerCase().includes(q)):v;
@@ -6584,7 +6591,7 @@ async function biblio(k){const p=$x('#xp');p.className='xp';k=typeof k=='string'
   draw();f.oninput=draw;f.onkeydown=e=>e.stopPropagation()}catch(e){errBox(o,e)}}
 /* ---- playlists, ajustes, modo cine, gestos, atajos y acciones extra ---- */
 async function pls(){const p=$x('#xp');p.className='xp';p.textContent='Cargando playlists…';
- try{spNeed('playlist-read-private');let L=[];for(const o of[0,50]){const j=await spApi('GET','/me/playlists?limit=50&offset='+o);L=L.concat((j.items||[]).filter(Boolean));if(!j.next)break}
+ try{spNeed('playlist-read-private');let L=[];for(let o=0;o<5000;o+=50){const j=await spApi('GET','/me/playlists?limit=50&offset='+o);L=L.concat((j.items||[]).filter(Boolean));if(!j.next)break}
   p.replaceChildren();if(!L.length){p.append(E('div','xm','No encontré playlists.'));return}
   L.forEach(l=>{const r=E('div','xq'),im=E('img'),s=E('span','','<b></b><small></small>');im.alt='';im.src=((l.images||[]).slice(-1)[0]||{}).url||'';s.firstChild.textContent=l.name;s.lastChild.textContent=((l.owner||{}).display_name||'');r.append(im,s);r.onclick=()=>go(()=>spStart({context_uri:l.uri}));p.append(r)})}catch(e){p.replaceChildren(E('div','xm',spErrText(e)))}}
 const sv=()=>S.set('nx-spxset',X.set);
