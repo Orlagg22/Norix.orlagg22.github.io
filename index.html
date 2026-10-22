@@ -6071,7 +6071,7 @@ async function spConnect(){const J='Noryx',cid=spCid();
  const w=window.open(url,'nx-spotify','width=480,height=740');
  if(!w){location.href=url;return}
  sysMsg('Se abrió la ventana de Spotify: acepta los permisos y se cerrará sola. Si no la ves, permite las ventanas emergentes de esta página.',J)}
-function spDisconnect(){try{SP.player&&SP.player.disconnect()}catch(e){}SP.player=null;SP.dev=null;SP.initing=null;S.set('nx-sptok',null);S.set('nx-spv','');S.set('nx-spst','')}
+function spDisconnect(){try{S.set('nx-spuid','');window.NXLK&&window.NXLK.drop()}catch(e){}try{SP.player&&SP.player.disconnect()}catch(e){}SP.player=null;SP.dev=null;SP.initing=null;S.set('nx-sptok',null);S.set('nx-spv','');S.set('nx-spst','')}
 async function spTokenReq(params){const r=await fetch('https://accounts.spotify.com/api/token',{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:new URLSearchParams(params)});let j={};try{j=await r.json()}catch(e){}if(!r.ok)throw new Error(j.error_description||j.error||('HTTP '+r.status));return j}
 async function spCallback(){
  let u;try{u=new URL(location.href)}catch(e){return}
@@ -6081,7 +6081,7 @@ async function spCallback(){
  S.set('nx-spst','');const pop=!!window.opener;
  if(err){if(pop){window.close();return}sysMsg('Spotify no dio el permiso ('+err+'). Si quieres, vuelve a intentarlo con `/spotify conectar`.','Noryx');return}
  try{const j=await spTokenReq({grant_type:'authorization_code',code,redirect_uri:SP.redir(),client_id:spCid(),code_verifier:S.get('nx-spv','')});
-  S.set('nx-sptok',{access:j.access_token,refresh:j.refresh_token,exp:Date.now()+j.expires_in*1000,scope:j.scope||''});S.set('nx-spv','');
+  S.set('nx-spuid','');S.set('nx-sptok',{access:j.access_token,refresh:j.refresh_token,exp:Date.now()+j.expires_in*1000,scope:j.scope||''});S.set('nx-spv','');
   if(pop){document.title='Spotify conectado';try{window.close()}catch(e){}return}
   sysMsg('✅ Spotify conectado. Abre `/noryx` y di «pon música de Soda Stereo». Necesitas Spotify Premium para que suene dentro de Noryx.','Noryx');spInitPlayer().catch(()=>{})}
  catch(e){sysMsg('No pude completar la conexión con Spotify: '+(e&&e.message||e)+'. Revisa que el Redirect URI en tu app de Spotify sea exactamente `'+SP.redir()+'`.','Noryx')}}
@@ -6182,7 +6182,8 @@ const spNeed=sc=>{const t=S.get('nx-sptok',null);if(!t||!t.scope||!(' '+t.scope+
 const spCur=async()=>{const c=await spApi('GET','/me/player/currently-playing');return c&&c.item&&c.item.type!='episode'?c.item:null};
 async function spSave(uris,on){spNeed('user-library-modify');const m=on?'PUT':'DELETE';
  try{await spApi(m,'/me/library?uris='+encodeURIComponent(uris.join(',')))}
- catch(e){if(e.code==404||e.code==405||e.code==410)await spApi(m,'/me/'+uris[0].split(':')[1]+'s',{ids:uris.map(u=>u.split(':')[2])});else throw e}}
+ catch(e){if(e.code==404||e.code==405||e.code==410)await spApi(m,'/me/'+uris[0].split(':')[1]+'s',{ids:uris.map(u=>u.split(':')[2])});else throw e}
+ try{window.NXLK&&window.NXLK.saved(uris,on)}catch(e){}}
 async function spHas(uri){try{spNeed('user-library-read');const j=await spApi('GET','/me/library/contains?uris='+encodeURIComponent(uri));return Array.isArray(j)?!!j[0]:null}
  catch(e){try{const j=await spApi('GET','/me/tracks/contains?ids='+uri.split(':')[2]);return Array.isArray(j)?!!j[0]:null}catch(x){return null}}}
 async function spFind(q,type){const j=await spApi('GET','/search?type='+type+'&limit=5&q='+encodeURIComponent(q));return((j[type+'s']||{}).items||[]).filter(Boolean)}
@@ -6686,15 +6687,51 @@ async function disc(){const p=$x('#xp');p.className='xp';p.textContent='Buscando
   if(!nr.length&&!ar.length)p.append(E('div','xm','Escucha un poco más de música y aquí aparecerán recomendaciones hechas con tus gustos.'))}
  catch(e){errBox(p,e)}}
 /* ---- Me gusta con filtros, Artistas y Resumen ---- */
-async function likedAll(force,prog){X.lk=X.lk||{t:0,v:null};if(!force&&X.lk.v&&Date.now()-X.lk.t<600000)return X.lk.v;spNeed('user-library-read');
- const mp=j=>(j.items||[]).filter(x=>x&&x.track&&x.track.uri).map(x=>Object.assign({},x.track,{_at:x.added_at||''})),pg=off=>spApi('GET','/me/tracks?limit=50&offset='+off);
- const j0=await pg(0),total=j0.total||0;let pages=[mp(j0)],got=pages[0].length,partial=false;if(prog)prog(got,total);
- if(j0.next||total>50){const offs=[];for(let o=50;o<(total||1e5);o+=50)offs.push(o);
-  for(let i=0;i<offs.length&&!partial;i+=2){const lot=offs.slice(i,i+2);await sleep(i?300:0);
-   try{const r=await Promise.all(lot.map(pg));r.forEach((j,k)=>{pages[(lot[k]/50)|0]=mp(j);got+=pages[(lot[k]/50)|0].length});if(prog)prog(got,total);if(!total&&!r[r.length-1].next)break}
-   catch(e){if(e&&e.code=='scope')throw e;partial=true}}}
- const seen=new Set(),v=[].concat(...pages.filter(Boolean)).filter(t=>!seen.has(t.uri)&&seen.add(t.uri));
- X.lk={t:Date.now(),v,total,partial};return v}
+/* Me gusta: se descargan UNA vez por cuenta de Spotify vinculada y se guardan en IndexedDB (sobreviven a recargas y nuevas sesiones).
+   Al entrar solo se leen del disco: cero peticiones a Spotify. Se actualizan de forma incremental (solo lo nuevo) o con ↻. */
+const LKDB={db:null,open(){return LKDB.db||(LKDB.db=new Promise(ok=>{try{const r=indexedDB.open('nx-likes',1);r.onupgradeneeded=()=>r.result.createObjectStore('lk');r.onsuccess=()=>ok(r.result);r.onerror=r.onblocked=()=>ok(null)}catch(e){ok(null)}}))},
+ async get(k){const d=await LKDB.open();if(!d)return null;return new Promise(ok=>{try{const q=d.transaction('lk').objectStore('lk').get(k);q.onsuccess=()=>ok(q.result||null);q.onerror=()=>ok(null)}catch(e){ok(null)}})},
+ async put(k,v){const d=await LKDB.open();if(!d)return;return new Promise(ok=>{try{const t=d.transaction('lk','readwrite');t.objectStore('lk').put(v,k);t.oncomplete=t.onerror=t.onabort=()=>ok()}catch(e){ok()}})},
+ async clear(){const d=await LKDB.open();if(!d)return;return new Promise(ok=>{try{const t=d.transaction('lk','readwrite');t.objectStore('lk').clear();t.oncomplete=t.onerror=t.onabort=()=>ok()}catch(e){ok()}})}};
+async function lkUid(){let u=S.get('nx-spuid','');if(u)return u;const me=await spApi('GET','/me');u=me&&me.id||'';if(u)S.set('nx-spuid',u);return u}
+const lkSlim=x=>{const t=Object.assign({},x.track,{_at:x.added_at||''});delete t.available_markets;delete t.external_ids;delete t.external_urls;delete t.href;delete t.preview_url;if(t.album){t.album=Object.assign({},t.album);delete t.album.available_markets;delete t.album.external_urls;delete t.album.href}
+ if(t.artists)t.artists=t.artists.map(a=>({id:a.id,name:a.name,uri:a.uri,type:a.type}));return t};
+async function likedAll(force,prog){
+ if(X.lk&&X.lk.v&&!force&&!X.lk.dirty&&!X.lk.partial)return X.lk.v;
+ spNeed('user-library-read');
+ const pg=off=>spApi('GET','/me/tracks?limit=50&offset='+off),mp=j=>(j.items||[]).filter(x=>x&&x.track&&x.track.uri).map(lkSlim);
+ let uid='';try{uid=await lkUid()}catch(e){if(e&&(e.code=='scope'||e.code=='auth'))throw e}
+ /* 1) cargar de disco (una sola vez por sesión del navegador) */
+ if(!X.lk||!X.lk.v){const c=uid?await LKDB.get(uid):null;if(c&&c.v&&c.v.length)X.lk={t:c.t,v:c.v,total:c.total,partial:!!c.partial,next:c.next||0,uid}}
+ const have=X.lk&&X.lk.v?X.lk:null;
+ const save=o=>{o.uid=uid;X.lk=o;if(uid)LKDB.put(uid,{t:o.t,v:o.v,total:o.total,partial:!!o.partial,next:o.next||0});return o.v};
+ /* 2) sin cambios pendientes: usar lo guardado */
+ if(have&&!force&&!have.dirty&&!have.partial)return have.v;
+ try{
+  /* 3) actualización incremental: solo las canciones nuevas (Spotify ordena por fecha de guardado, recientes primero) */
+  if(have&&!have.partial&&(have.dirty||force==='sync')){
+   const known=new Set(have.v.map(t=>t.uri));let fresh=[],off=0,total=have.total,hit=false;
+   while(!hit&&off<2000){const j=await pg(off);total=j.total||total;const m=mp(j);for(const t of m){if(known.has(t.uri)){hit=true;break}fresh.push(t)}if(!j.next||!m.length)break;off+=50;await sleep(250)}
+   let v=fresh.concat(have.v);
+   /* si el total cambió y no es por lo nuevo, hubo quitadas: se verifica con una recarga completa solo en este caso */
+   if(total&&v.length!==total&&!force){X.lk=null;return likedAll('full',prog)}
+   return save({t:Date.now(),v,total:total||v.length,partial:false,next:0})}
+  /* 4) descarga completa (primera vez, retomar una carga cortada o ↻) */
+  const resume=have&&have.partial&&!force?have:null,start=resume?Math.max(0,(resume.next|0)):0;
+  const j0=await pg(start),total=j0.total||0;let pages=[mp(j0)],got=(resume?resume.v.length:0)+pages[0].length,partial=false,next=start+50;if(prog)prog(got,total);
+  if(j0.next||total>start+50){const offs=[];for(let o=start+50;o<(total||1e5);o+=50)offs.push(o);
+   for(let i=0;i<offs.length&&!partial;i+=2){const lot=offs.slice(i,i+2);await sleep(i?300:0);
+    try{const r=await Promise.all(lot.map(pg));r.forEach((j,k)=>{pages[((lot[k]-start)/50)|0]=mp(j);got+=pages[((lot[k]-start)/50)|0].length});next=lot[lot.length-1]+50;if(prog)prog(got,total);if(!total&&!r[r.length-1].next)break}
+    catch(e){if(e&&e.code=='scope')throw e;partial=true}}}
+  const seen=new Set(),base=resume?resume.v:[],v=[].concat(base,...pages.filter(Boolean)).filter(t=>!seen.has(t.uri)&&seen.add(t.uri));
+  /* nunca pisar una copia buena con una carga cortada y más chica */
+  if(partial&&have&&!resume&&have.v.length>=v.length){have.partial=false;return have.v}
+  return save({t:Date.now(),v,total,partial,next:partial?next:0})
+ }catch(e){
+  /* si Spotify falla pero ya hay copia guardada, se usa la copia en vez de mostrar error */
+  if(have&&have.v&&have.v.length&&!(e&&(e.code=='scope'||e.code=='auth'))){have.dirty=false;return have.v}
+  throw e}}
+window.NXLK={drop(){X.lk=null;LKDB.clear()},saved(uris,on){if(!X.lk||!X.lk.v)return;if(!on){const d=new Set(uris);X.lk.v=X.lk.v.filter(t=>!d.has(t.uri));X.lk.total=X.lk.v.length;if(X.lk.uid)LKDB.put(X.lk.uid,{t:Date.now(),v:X.lk.v,total:X.lk.total,partial:!!X.lk.partial,next:X.lk.next||0})}else X.lk.dirty=true}};
 const yr=t=>+(((t.album||{}).release_date||'').slice(0,4))||0,dcd=t=>{const y=yr(t);return y?Math.floor(y/10)*10:0},
  dur=ms=>{const m=Math.round(ms/60000),h=Math.floor(m/60);return h?h+' h '+(m%60)+' min':m+' min'},
  byArtist=L=>{const m=new Map();L.forEach(t=>(t.artists||[]).slice(0,1).forEach(a=>{if(!a||!a.id)return;const r=m.get(a.id)||{id:a.id,name:a.name,n:0};r.n++;m.set(a.id,r)}));return[...m.values()].sort((a,b)=>b.n-a.n||a.name.localeCompare(b.name))},
@@ -6726,7 +6763,7 @@ async function likedp(){const p=$x('#xp');p.className='xp';p.textContent='Cargan
  mkb('🎲 Sorpresa',()=>go(async()=>{const B=cur.length?cur:all,t=B[Math.random()*B.length|0];await spStart({uris:[t.uri]});toast('🎲 '+t.name)}));
  mkb('💾 Guardar colección',()=>{if(!cur.length){toast('No hay canciones con este filtro');return}const n=prompt('Nombre de la colección:',f.artist?sa.selectedOptions[0].textContent.replace(/ \(\d+\)$/,''):'Mi colección');if(!n||!n.trim())return;const A=CS();A.unshift({n:n.trim().slice(0,60),u:cur.map(t=>t.uri).slice(0,500),d:Date.now()});S.set('nx-spxcol',A.slice(0,50));toast('💾 Colección guardada: '+n.trim())});
  mkb('⬇ Exportar',()=>{const q=v=>'"'+String(v==null?'':v).replace(/"/g,'""')+'"',R=[['Título','Artista','Álbum','Año','Guardada','Duración'].map(q).join(',')].concat(cur.map(t=>[t.name,(t.artists||[]).map(a=>a.name).join(', '),(t.album||{}).name,yr(t)||'',(t._at||'').slice(0,10),fmt(t.duration_ms||0)].map(q).join(','))),b=new Blob(['\ufeff'+R.join('\n')],{type:'text/csv;charset=utf-8'}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='mis-me-gusta.csv';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),4000);toast('⬇ '+cur.length+' canciones exportadas')});
- mkb('↻',()=>{X.lk=null;likedp()}).title='Volver a cargar desde Spotify';
+ mkb('↻',()=>{if(X.lk)X.lk.dirty=true;else X.lk=null;likedp()}).title='Buscar canciones nuevas en Spotify (solo pide lo nuevo)';
  p.append(q,bar,act,cnt,o);draw()}
 async function artp(k){const p=$x('#xp');p.className='xp';k=typeof k=='string'?k:(X.ak||'likes');X.ak=k;p.replaceChildren();
  const bar=E('div','xrg');[['likes','En tus Me gusta'],['short_term','Top 4 semanas'],['medium_term','Top 6 meses'],['long_term','Top siempre']].forEach(([v,n])=>{const b=E('button',v==k?'act':'');b.textContent=n;b.onclick=()=>artp(v);bar.append(b)});
