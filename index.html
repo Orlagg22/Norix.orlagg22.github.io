@@ -6576,6 +6576,20 @@ html.spx-on *{-webkit-backdrop-filter:none!important;backdrop-filter:none!import
 @keyframes v37c{from{opacity:0;translate:0 46px;scale:.88;filter:blur(14px)}}
 #spx.blind .xvl{filter:blur(24px) brightness(.6)}
 #spx{overflow-x:hidden}.xtabs{position:relative;overscroll-behavior:contain}.xtabs button{flex:none}
+/* ===== v59 · cambio de disco: el vinilo anterior se retira y el de la nueva canción se coloca en el plato ===== */
+.xplat{perspective:900px}
+.xmat{position:absolute;left:7%;top:11%;width:78%;height:78%;border-radius:50%;will-change:transform;
+ background:radial-gradient(circle,#0000 0 6%,#0007 6.6%,#0000 8%),repeating-radial-gradient(circle,#1c1c22 0 5px,#15151a 5px 10px);
+ box-shadow:inset 0 0 0 2px #000a,0 0 0 1px #ffffff0e}
+.xmat::before{content:'';position:absolute;left:47%;top:4.5%;width:6%;height:6%;border-radius:50%;background:var(--spc,var(--acc));opacity:.9;box-shadow:0 0 12px var(--spc,var(--acc))}
+.xmat::after{content:'';position:absolute;left:48.2%;top:48.2%;width:3.6%;height:3.6%;border-radius:50%;background:radial-gradient(circle at 35% 35%,#fff,#8a8a94 60%,#33333a);box-shadow:0 0 0 2px #0006}
+.xshn{transition:opacity .45s}
+.xvg{pointer-events:none}
+.xvg .xgl{position:absolute;inset:0;border-radius:50%;opacity:0;mix-blend-mode:screen;background:linear-gradient(115deg,#0000 32%,#ffffff70 46%,#ffffff26 54%,#0000 66%)}
+.xring{position:absolute;left:36%;top:40%;width:20%;height:20%;border-radius:50%;opacity:0;pointer-events:none;mix-blend-mode:screen;
+ border:2px solid var(--spc,var(--acc));box-shadow:0 0 24px var(--spc,var(--acc)),inset 0 0 20px var(--spc,var(--acc))}
+.xdst{position:absolute;border-radius:50%;background:#fff;opacity:0;pointer-events:none;box-shadow:0 0 6px #fff9}
+@media (prefers-reduced-motion:reduce){.xring,.xdst{display:none}}
 </style>
 <script>
 /* ===== Noryx · reproductor inmersivo de Spotify: letra sincronizada (LRCLIB), cola, equipos, temporizador, mini reproductor, Media Session ===== */
@@ -6942,24 +6956,112 @@ setTimeout(()=>{try{
  if(!el.hidden)kick();
 }catch(e){console.warn('experiencia',e)}},0);
 
-/* v34 · tocadiscos: disco que gira con inercia, brazo que baja y avanza según la canción, y reacomodo al quedar inactivo */
+/* v34 · tocadiscos: disco que gira con inercia, brazo que baja y avanza según la canción, y reacomodo al quedar inactivo
+   v59 · cambio de disco animado: al cambiar de canción el brazo se levanta, el vinilo anterior se retira de la bandeja y el de la nueva canción cae sobre el plato; luego el brazo baja y el disco acelera */
 setTimeout(()=>{try{
  const xcw=el.querySelector('.xcw'),xc=el.querySelector('#xc');if(!xcw||!xc)return;
- const plat=E('div','xplat','<div class="xvd"><div class="xvl"></div></div><i class="xshn"></i><div class="xrod"></div><i class="xpiv"></i>');xcw.append(plat);
- const vd=plat.querySelector('.xvd'),lab=plat.querySelector('.xvl'),rod=plat.querySelector('.xrod');
- const syncCov=()=>{const u=xc.currentSrc||xc.getAttribute('src')||'';lab.style.backgroundImage=u?'url("'+u+'")':''};
+ const plat=E('div','xplat','<i class="xmat"></i><div class="xvd"><div class="xvl"></div></div><i class="xshn"></i><i class="xring"></i><div class="xrod"></div><i class="xpiv"></i>');xcw.append(plat);
+ const vd=plat.querySelector('.xvd'),lab=plat.querySelector('.xvl'),rod=plat.querySelector('.xrod'),shn=plat.querySelector('.xshn'),ring=plat.querySelector('.xring'),mat=plat.querySelector('.xmat');
+ /* portada del disco: durante el cambio se retiene la anterior y la nueva se pinta justo al soltar el disco */
+ const curCov=()=>xc.currentSrc||xc.getAttribute('src')||'';
+ const paint=(u,n)=>{n.style.backgroundImage=u?'url("'+u+'")':''};
+ let shown='',hold=false;
+ const syncCov=()=>{if(hold)return;shown=curCov();paint(shown,lab)};
  new MutationObserver(syncCov).observe(xc,{attributes:true,attributeFilter:['src']});xc.addEventListener('load',syncCov);syncCov();
  const L=62,Px=90,Py=12,Cx=46,Cy=50,d=Math.hypot(Px-Cx,Py-Cy),phi=Math.atan2(Cy-Py,Cx-Px),REST=80;
  const armDeg=p=>{const r=38-23*Math.min(1,Math.max(0,p)),c=Math.min(1,Math.max(-1,(L*L+d*d-r*r)/(2*L*d)));return(phi-Math.acos(c))*180/Math.PI};
  const calm=matchMedia('(prefers-reduced-motion:reduce)').matches;
- let ang=0,spd=0,last=0,raf=0,arm=-999,lift=false;
+ let ang=0,spd=0,last=0,raf=0,arm=-999,lift=false,swapping=false,ghost=null,tms=[],dir=1,dirAt=0,openedAt=0;
+ const K=1; /* velocidad de la ceremonia: 1 = normal · 1.5 = más lenta y teatral */
+ const ms=n=>n*K,BASE='0 8px 24px -6px #000,0 0 0 3px #08080a';
+ const later=(fn,n)=>{const id=setTimeout(()=>{tms=tms.filter(x=>x!==id);fn()},n);tms.push(id)};
  const setArm=()=>{if(lift)return;let t=REST;if(NP.play&&NP.dur)t=armDeg(pos()/NP.dur);else if(NP.play)t=armDeg(0);if(Math.abs(t-arm)>.15){arm=t;rod.style.setProperty('--ar',t.toFixed(2)+'deg')}};
  const loop=t=>{raf=0;if(el.hidden||!el.classList.contains('vin'))return;
-  const dt=Math.min(.05,(t-last)/1000||0);last=t;const pl=!!NP.play,tg=pl?(lift?30:(calm?70:200)):0;
-  spd+=(tg-spd)*(1-Math.exp(-dt*(pl?1.5:.9)));ang=(ang+spd*dt)%360;vd.style.transform='rotate('+ang.toFixed(2)+'deg)';setArm();
-  if(pl||spd>.4)raf=requestAnimationFrame(loop)};
+  const dt=Math.min(.05,(t-last)/1000||0);last=t;const pl=!!NP.play;
+  let tg=pl?(lift?30:(calm?70:200)):0,rt=pl?1.5:.9;
+  if(swapping){tg=calm?20:70;rt=1.6} /* el plato sigue girando despacio mientras se cambia el disco */
+  spd+=(tg-spd)*(1-Math.exp(-dt*rt));ang=(ang+spd*dt)%360;
+  const tr='rotate('+ang.toFixed(2)+'deg)';vd.style.transform=tr;mat.style.transform=tr;setArm();
+  if(pl||spd>.4||swapping)raf=requestAnimationFrame(loop)};
  const kick=()=>{if(!raf&&!el.hidden&&el.classList.contains('vin')){last=performance.now();raf=requestAnimationFrame(loop)}};
- window.__spxLift=()=>{if(!el.classList.contains('vin'))return;lift=true;arm=REST;rod.style.setProperty('--ar',REST+'deg');kick();setTimeout(()=>{lift=false;arm=-999;setArm();kick()},1100)};
+ /* ---- cambio de disco ---- */
+ const reset=()=>{tms.forEach(clearTimeout);tms=[];
+  try{plat.getAnimations({subtree:true}).forEach(a=>a.cancel())}catch(e){}
+  if(ghost){ghost.remove();ghost=null}
+  plat.querySelectorAll('.xdst').forEach(n=>n.remove());
+  vd.style.visibility='';shn.style.opacity='';hold=false;swapping=false;lift=false;arm=-999;syncCov();setArm();kick()};
+ const needleUp=()=>{lift=true;arm=REST;rod.style.setProperty('--ar',REST+'deg')};
+ const needleDown=()=>{lift=false;arm=-999;swapping=false;setArm();kick()};
+ /* 1 · el vinilo anterior se levanta de la bandeja, brilla al inclinarse y sale deslizándose */
+ const takeOff=dr=>{
+  const a=ang,o=-dr; /* siguiente: sale a la izquierda · anterior: a la derecha */
+  ghost=vd.cloneNode(true);ghost.classList.add('xvg');ghost.style.transform='rotate('+a.toFixed(2)+'deg)';ghost.style.visibility='visible';
+  paint(shown,ghost.querySelector('.xvl'));
+  const gl=document.createElement('i');gl.className='xgl';ghost.appendChild(gl);
+  plat.insertBefore(ghost,shn);vd.style.visibility='hidden';shn.style.opacity='0';
+  const an=ghost.animate([
+   {transform:'rotate('+a+'deg)',translate:'0px 0px',scale:1,rotate:'1 0 0 0deg',opacity:1,boxShadow:BASE,offset:0,easing:'cubic-bezier(.3,0,.2,1)'},
+   {transform:'rotate('+(a+14)+'deg)',translate:'0% -7%',scale:1.12,rotate:'1 0 0 -16deg',opacity:1,boxShadow:'0 46px 60px -14px #000d,0 0 0 3px #08080a',offset:.36,easing:'cubic-bezier(.55,0,.85,.45)'},
+   {transform:'rotate('+(a+130)+'deg)',translate:(o*70)+'% -22%',scale:1.04,rotate:'1 0 0 -24deg',opacity:1,boxShadow:'0 60px 70px -18px #000b,0 0 0 3px #08080a',offset:.82},
+   {transform:'rotate('+(a+160)+'deg)',translate:(o*92)+'% -26%',scale:1.02,rotate:'1 0 0 -28deg',opacity:0,boxShadow:'0 70px 80px -20px #0000,0 0 0 3px #08080a00',offset:1}
+  ],{duration:ms(800),fill:'forwards'});
+  an.onfinish=()=>{if(ghost){ghost.remove();ghost=null}};
+  gl.animate([{opacity:0},{opacity:.95,offset:.4},{opacity:0}],{duration:ms(800),easing:'ease-in-out'});
+ };
+ /* 2 · polvo que salta al apoyarse el disco */
+ const dust=()=>{if(calm)return;for(let i=0;i<11;i++){const p=document.createElement('i');p.className='xdst';
+  const a=Math.random()*6.283,r=Math.random()*24+16,sz=2+Math.random()*3;
+  p.style.cssText='left:'+(46+Math.cos(a)*40)+'%;top:'+(50+Math.sin(a)*40)+'%;width:'+sz+'px;height:'+sz+'px';
+  plat.insertBefore(p,ring);
+  const q=p.animate([{translate:'0px 0px',opacity:.9,scale:1},{translate:(Math.cos(a)*r).toFixed(1)+'px '+(Math.sin(a)*r-10).toFixed(1)+'px',opacity:0,scale:.3}],{duration:ms(650+Math.random()*550),easing:'cubic-bezier(.1,.6,.3,1)'});
+  q.onfinish=()=>p.remove()}};
+ /* 3 · el disco aterriza: golpe seco, onda de luz desde el eje, destello en la etiqueta, brillo del vinilo */
+ const land=()=>{
+  shn.style.opacity='';
+  ring.animate([{scale:.25,opacity:.95},{scale:4.4,opacity:0}],{duration:ms(950),easing:'cubic-bezier(.1,.7,.2,1)'});
+  plat.animate([{translate:'0px 0px'},{translate:'0px 4px',offset:.28},{translate:'0px 0px'}],{duration:ms(280),easing:'ease-out'});
+  lab.animate([{filter:'brightness(2.4) saturate(1.5)'},{filter:'none'}],{duration:ms(800),easing:'ease-out'});
+  dust();later(needleDown,ms(280));
+ };
+ /* 4 · el vinilo de la nueva canción baja inclinado desde arriba, se apoya con un pequeño rebote */
+ const dropIn=(dr,tries=0)=>{
+  if(tries<2&&curCov()===shown){later(()=>dropIn(dr,tries+1),90);return} /* espera un instante a que llegue la portada nueva */
+  hold=false;syncCov();vd.style.visibility='visible';
+  const D=ms(900);
+  vd.animate([
+   {translate:(dr*34)+'% -58%',scale:1.3,rotate:'1 0 0 38deg',opacity:0,boxShadow:'0 80px 90px -24px #000e,0 0 0 3px #08080a',offset:0,easing:'cubic-bezier(.2,.7,.3,1)'},
+   {opacity:1,offset:.1},
+   {translate:'0% 0%',scale:1,rotate:'1 0 0 0deg',opacity:1,boxShadow:BASE,offset:.72,easing:'cubic-bezier(.3,0,.5,1)'},
+   {translate:'0% 1.4%',scale:.986,offset:.84,easing:'ease-out'},
+   {translate:'0% 0%',scale:1,offset:1}
+  ],{duration:D});
+  later(land,D*.72);
+ };
+ const swap=()=>{
+  if(!el.classList.contains('vin')||el.hidden)return;
+  if(swapping)return; /* si llega otro cambio en medio, se usará la portada más reciente al soltar el disco */
+  if(Date.now()-openedAt<1600||!shown){syncCov();return} /* recién abierto: no hay disco anterior que retirar */
+  swapping=true;hold=true;needleUp();kick();
+  const dr=Date.now()-dirAt<4000?dir:1;dir=1;
+  if(calm){later(()=>{hold=false;syncCov();try{lab.animate([{opacity:0},{opacity:1}],{duration:420})}catch(e){}needleDown()},500);return}
+  later(()=>takeOff(dr),ms(300));
+  later(()=>dropIn(dr),ms(920));
+ };
+ const intro=()=>{ /* al activar el modo vinilo: se coloca el disco sobre el plato vacío */
+  if(calm){syncCov();return}
+  swapping=true;hold=true;needleUp();kick();vd.style.visibility='hidden';shn.style.opacity='0';
+  later(()=>dropIn(1,9),ms(150));
+ };
+ window.__spxLift=swap;
+ /* dirección: siguiente (el disco sale a la izquierda) / anterior (sale a la derecha) */
+ document.addEventListener('click',e=>{const b=e.target&&e.target.closest&&e.target.closest('#npv,#xpv,#npn,#xn');if(b){dir=(b.id=='npv'||b.id=='xpv')?-1:1;dirAt=Date.now()}},true);
+ document.addEventListener('keydown',e=>{if(el.hidden||/^(INPUT|TEXTAREA|SELECT)$/.test((document.activeElement||{}).tagName||''))return;const k=(e.key||'').toLowerCase();if(k=='p'){dir=-1;dirAt=Date.now()}else if(k=='n'){dir=1;dirAt=Date.now()}},true);
+ {let sx=null;xcw.addEventListener('pointerdown',e=>{sx=e.clientX});xcw.addEventListener('pointerup',e=>{if(sx==null)return;const q=e.clientX-sx;sx=null;if(Math.abs(q)>70){dir=q>0?-1:1;dirAt=Date.now()}})}
+ let wasVin=el.classList.contains('vin'),wasHid=el.hidden;
+ new MutationObserver(()=>{const v=el.classList.contains('vin'),h=el.hidden;
+  if(wasHid&&!h)openedAt=Date.now();
+  if((h&&!wasHid)||(!v&&wasVin))reset();else if(v&&!wasVin&&!h&&!swapping)intro();
+  wasVin=v;wasHid=h}).observe(el,{attributes:true,attributeFilter:['class','hidden']});
  /* recentrar la letra cuando cambia el diseño al quedar inactivo / volver */
  const rc=()=>{const P=el.querySelector('#xp'),e=P&&P.querySelector('.xl.on');if(e&&P.classList.contains('lyr'))P.scrollTo({top:e.offsetTop-P.clientHeight/2+e.offsetHeight/2,behavior:'auto'})};
  let wasIdle=false;
@@ -15663,64 +15765,6 @@ if(cc){new MutationObserver(()=>sync()).observe(cc,{childList:true});document.ad
 #nxy .yt-bar i:after{content:"";position:absolute;right:-6px;top:50%;width:12px;height:12px;margin-top:-6px;border-radius:50%;background:#fff;opacity:0;transform:scale(.6);transition:opacity .12s,transform .12s;box-shadow:0 1px 6px #0008}
 #nxy .yt-bar:hover:before,#nxy .yt-bar:hover i,#nxy .yt-bar.dr:before,#nxy .yt-bar.dr i{height:6px;margin-top:-3px}
 #nxy .yt-bar:hover i{background:var(--ac)}#nxy .yt-bar:hover i:after,#nxy .yt-bar.dr i:after{opacity:1;transform:none}
-
-/* ===== v60: estilo Spotify (color dinámico, barra "reproduciendo", portada, tiles) ===== */
-@property --nxy-tint{syntax:'<color>';inherits:true;initial-value:#2b0f16}
-@property --nxy-glow{syntax:'<color>';inherits:true;initial-value:#ff3d52}
-#nxy{transition:--nxy-tint 1s ease,--nxy-glow 1s ease;background:radial-gradient(90% 60% at 12% 0%,color-mix(in srgb,var(--nxy-glow) 45%,transparent),transparent 70%),linear-gradient(180deg,var(--nxy-tint) 0,#0b0b0c 74%)}
-#nxy .slot{border-radius:12px;box-shadow:0 40px 100px -24px var(--nxy-glow),0 24px 60px rgba(0,0,0,.55)}
-#nxy:not([hidden])~#nxm-vid.big{border-radius:12px;box-shadow:0 40px 100px -24px var(--nxy-glow),0 24px 60px rgba(0,0,0,.55)}
-#nxy .yt-info{margin-top:22px}
-#nxy .yt-ey{display:flex;align-items:center;gap:9px;margin:0 0 8px;font-size:11.5px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.75)}
-#nxy .yt-wv{display:inline-flex;align-items:flex-end;gap:2px;height:13px}
-#nxy .yt-wv i{width:3px;height:100%;border-radius:2px;background:var(--ac);transform-origin:bottom;transform:scaleY(.25)}
-#nxy.playing .yt-wv i{animation:nxyeq .8s ease-in-out infinite}#nxy.playing .yt-wv i:nth-child(2){animation-delay:-.5s}#nxy.playing .yt-wv i:nth-child(3){animation-delay:-.25s}#nxy.playing .yt-wv i:nth-child(4){animation-delay:-.7s}
-#nxy .yt-t{font-size:clamp(28px,3.6vw,56px);font-weight:900;letter-spacing:-.035em;line-height:1.02;text-shadow:0 2px 24px rgba(0,0,0,.35)}
-#nxy .yt-a{margin-top:8px;font-size:16px;color:rgba(255,255,255,.8)}
-#nxy .yt-info.swap{animation:nxyin .65s cubic-bezier(.2,.8,.2,1)}
-@keyframes nxyin{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
-#nxy .yt-side{background:rgba(0,0,0,.34);border-color:transparent;border-radius:14px;backdrop-filter:blur(30px) saturate(1.4);transition:background .6s}
-#nxy.lyr .yt-side{background:color-mix(in srgb,var(--nxy-glow) 40%,#0b0b0c)}
-#nxy .yt-rw.on{background:rgba(255,255,255,.14);box-shadow:inset 3px 0 0 var(--ac)}
-#nxy .yt-ch{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-#nxy .yt-c{text-align:left;padding:18px 14px;border-radius:8px;font-weight:750;font-size:14px;background:rgba(255,255,255,.1);transition:background .15s,transform .15s}
-#nxy .yt-c:hover{background:rgba(255,255,255,.22);transform:translateY(-2px)}
-#nxy .yt-dock{padding-top:12px;background:linear-gradient(to top,rgba(0,0,0,.88),rgba(0,0,0,.45) 70%,transparent)}
-#nxy .yt-np{display:none;align-items:center;gap:12px;min-width:0;max-width:260px;margin-right:6px;cursor:pointer}
-#nxy .yt-np.on{display:flex}
-#nxy .yt-np img{width:56px;height:56px;border-radius:6px;object-fit:cover;flex:none;box-shadow:0 6px 18px rgba(0,0,0,.5);transition:transform .2s}
-#nxy .yt-np:hover img{transform:scale(1.06)}
-#nxy .yt-np div{min-width:0}#nxy .yt-np b{display:block;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-#nxy .yt-np span{display:block;font-size:12px;color:var(--ym);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-#nxy .yt-bar:hover i{background:var(--ac)}
-#nxy .yt-cb .pl{box-shadow:0 6px 22px -6px var(--nxy-glow)}
-@media(max-width:1500px){#nxy .cp{display:none}}
-@media(max-width:900px){#nxy .yt-ch{grid-template-columns:1fr 1fr}#nxy .yt-t{font-size:30px}}
-
-/* ===== v61 ===== */
-#nxy .yt-home{width:44px;height:44px;background:rgba(0,0,0,.4)!important;color:#fff}#nxy .yt-home:hover{background:rgba(255,255,255,.16)!important;transform:scale(1.06)}
-#nxy .yt-logo{gap:12px}
-#nxy .slot .ph span{background:rgba(255,255,255,.1);color:#fff;padding:20px}
-#nxy .yt-gr{font-size:24px;font-weight:900;letter-spacing:-.02em}
-#nxy .yt-up{display:inline-block;max-width:100%;margin-top:16px;padding:8px 15px;border-radius:99px;background:rgba(255,255,255,.12);backdrop-filter:blur(8px);font-size:12.5px;font-weight:650;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;transition:background .15s,transform .15s}
-#nxy .yt-up:hover{background:rgba(255,255,255,.24);transform:translateX(3px)}#nxy .yt-up[hidden]{display:none}
-#nxy .yt-du{position:absolute;right:4px;bottom:4px;font-style:normal;font-size:10.5px;font-weight:700;background:rgba(0,0,0,.78);padding:1px 5px;border-radius:4px}
-#nxy .yt-list{-webkit-mask-image:linear-gradient(to bottom,transparent 0,#000 12px,#000 calc(100% - 18px),transparent 100%);mask-image:linear-gradient(to bottom,transparent 0,#000 12px,#000 calc(100% - 18px),transparent 100%)}
-#nxy .yt-list.fx>*{animation:nxyin .4s cubic-bezier(.2,.8,.2,1) both}
-#nxy .yt-list.fx>:nth-child(2){animation-delay:.04s}#nxy .yt-list.fx>:nth-child(3){animation-delay:.08s}#nxy .yt-list.fx>:nth-child(4){animation-delay:.12s}#nxy .yt-list.fx>:nth-child(5){animation-delay:.16s}#nxy .yt-list.fx>:nth-child(n+6){animation-delay:.2s}
-#nxy .yt-sk{pointer-events:none}
-#nxy .yt-sk .yt-tw,#nxy .yt-sk .yt-mt b,#nxy .yt-sk .yt-mt span{background:linear-gradient(90deg,rgba(255,255,255,.06) 25%,rgba(255,255,255,.15) 50%,rgba(255,255,255,.06) 75%);background-size:200% 100%;animation:nxysh 1.2s linear infinite}
-#nxy .yt-sk .yt-tw{height:63px}
-#nxy .yt-sk .yt-mt b{display:block;height:12px;width:82%;border-radius:6px;margin-bottom:8px}#nxy .yt-sk .yt-mt span{height:10px;width:48%;border-radius:6px}
-@keyframes nxysh{to{background-position:-200% 0}}
-#nxy .hrt.on svg{animation:nxypop .38s cubic-bezier(.3,1.6,.5,1)}
-@keyframes nxypop{0%{transform:scale(.6)}100%{transform:scale(1)}}
-#nxy .yt-cb button:active,#nxy .yt-ib:active{transform:scale(.9)}
-#nxy .yt-top{background:linear-gradient(to bottom,rgba(0,0,0,.28),transparent)}
-#nxy .yt-bar .tip{position:absolute;bottom:20px;transform:translateX(-50%);background:rgba(0,0,0,.85);color:#fff;font-size:11px;padding:3px 7px;border-radius:6px;opacity:0;pointer-events:none;transition:opacity .1s;white-space:nowrap}
-#nxy .yt-bar .tip.on{opacity:1}
-#nxy .slp{background:rgba(255,255,255,.08);color:#fff;border:0;border-radius:18px;padding:0 8px;height:32px;font:inherit;font-size:12px;cursor:pointer;max-width:110px}#nxy .slp option{background:#1b1b1d;color:#fff}
-#nxy .yt-rw .yt-mt span{opacity:.75}
 #nxy .yt-dr{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;margin-top:2px}
 #nxy .dl{display:flex;gap:4px;align-items:center}#nxy .dr{display:flex;justify-content:flex-end;align-items:center;gap:6px}
 #nxy .yt-dock .yt-ib{background:none}#nxy .yt-dock .yt-ib:hover{background:rgba(255,255,255,.12)}#nxy .yt-dock .yt-ib.on{background:none;color:var(--ac)}
@@ -15782,16 +15826,25 @@ const NX_YT_PROXY=(typeof NORYX_API!='undefined'?String(NORYX_API).replace(/\/v1
 const M={open:false,src:ST.get('nx-msrc','youtube'),view:'home',q:'',res:[],resSrc:'',err:null,queue:[],qi:-1,cur:null,playing:false,shuf:ST.get('nx-mshuf',false),rep:ST.get('nx-mrep','off'),
  favs:ST.get('nx-ytfav',[]),hist:ST.get('nx-ythist',[]),key:ST.get('nx-ytkey','')||NX_YT_KEY,lib:'fav',vol:ST.get('nx-mvol',80),ly:null,lyId:'',lyIdx:-1,dismissed:false,busy:false,reply:''};
 const cache=new Map();let P=null,Pready=false,pend=null,tick=0;
-const Y={open:false,built:false,tab:'res',cine:false,err:'',hint:'',started:false,skips:0,auto:false,rate:ST.get('nx-ytrate',1),pp:null,wt:0,r:0};
+/* ===== Cuenta de YouTube por Google OAuth (sin Supabase) =====
+   Requiere un OAuth Client ID de tipo Aplicación web configurado para este dominio.
+   El token vive solo en memoria y no se guarda en localStorage. */
+let NX_GOOGLE_TOKEN='',NX_GOOGLE_PROFILE=null,NX_GOOGLE_CHANNEL=null,NX_GOOGLE_BUSY=false;
+const NX_YT_SCOPE='https://www.googleapis.com/auth/youtube.readonly';
+function nxGoogleClientId(){return String(ST.get('nx-google-client-id','')||'').trim()}
+function nxLoadGIS(){return new Promise((resolve,reject)=>{if(window.google&&google.accounts&&google.accounts.oauth2)return resolve();let sc=document.getElementById('nx-google-gis');if(!sc){sc=document.createElement('script');sc.id='nx-google-gis';sc.src='https://accounts.google.com/gsi/client';sc.async=true;sc.defer=true;sc.onerror=()=>reject(new Error('No se pudo cargar el acceso de Google.'));document.head.appendChild(sc)}let start=Date.now();const check=()=>{if(window.google&&google.accounts&&google.accounts.oauth2)return resolve();if(Date.now()-start>12000)return reject(new Error('Google tardó demasiado en cargar.'));setTimeout(check,150)};check()})}
+async function nxGoogleConnect(){const clientId=nxGoogleClientId();if(!clientId){tst('Primero pega tu ID de cliente OAuth en Ajustes.');return}if(NX_GOOGLE_BUSY)return;NX_GOOGLE_BUSY=true;try{await nxLoadGIS();const client=google.accounts.oauth2.initTokenClient({client_id:clientId,scope:NX_YT_SCOPE,include_granted_scopes:true,callback:async response=>{NX_GOOGLE_BUSY=false;if(response.error||!response.access_token){tst('Google no autorizó el acceso: '+(response.error_description||response.error||'sin token'));return}NX_GOOGLE_TOKEN=response.access_token;try{await nxGoogleLoadAccount();tst('Cuenta de YouTube conectada.');render()}catch(e){NX_GOOGLE_TOKEN='';tst('No se pudo leer el canal: '+e.message);render()}}});client.requestAccessToken({prompt:NX_GOOGLE_TOKEN?'':'consent'})}catch(e){NX_GOOGLE_BUSY=false;tst(e.message||'No se pudo iniciar Google OAuth.')}}
+async function nxGoogleAPI(path){if(!NX_GOOGLE_TOKEN)throw new Error('Conecta tu cuenta de Google primero.');const r=await fetch('https://www.googleapis.com/youtube/v3/'+path,{headers:{Authorization:'Bearer '+NX_GOOGLE_TOKEN}});const j=await r.json().catch(()=>({}));if(!r.ok)throw new Error((j.error&&j.error.message)||('YouTube API '+r.status));return j}
+async function nxGoogleLoadAccount(){const ch=await nxGoogleAPI('channels?part=snippet,statistics,contentDetails&mine=true');if(!ch.items||!ch.items.length)throw new Error('Esta cuenta no tiene un canal de YouTube disponible.');NX_GOOGLE_CHANNEL=ch.items[0];NX_GOOGLE_PROFILE={name:NX_GOOGLE_CHANNEL.snippet.title,photo:(NX_GOOGLE_CHANNEL.snippet.thumbnails&&((NX_GOOGLE_CHANNEL.snippet.thumbnails.default||NX_GOOGLE_CHANNEL.snippet.thumbnails.medium||{}).url))||'',id:NX_GOOGLE_CHANNEL.id,subs:NX_GOOGLE_CHANNEL.statistics&&NX_GOOGLE_CHANNEL.statistics.subscriberCount,views:NX_GOOGLE_CHANNEL.statistics&&NX_GOOGLE_CHANNEL.statistics.viewCount,videos:NX_GOOGLE_CHANNEL.statistics&&NX_GOOGLE_CHANNEL.statistics.videoCount,playlists:NX_GOOGLE_CHANNEL.contentDetails&&NX_GOOGLE_CHANNEL.contentDetails.relatedPlaylists&&NX_GOOGLE_CHANNEL.contentDetails.relatedPlaylists.uploads};return NX_GOOGLE_PROFILE}
+function nxGoogleDisconnect(){NX_GOOGLE_TOKEN='';NX_GOOGLE_PROFILE=null;NX_GOOGLE_CHANNEL=null;render();tst('Cuenta desconectada de Noryx.');}
+async function nxGoogleRefresh(){try{await nxGoogleLoadAccount();render();tst('Datos de YouTube actualizados.')}catch(e){tst(e.message||'No se pudieron actualizar los datos.')}}
+
+const Y={open:false,built:false,tab:'res',cine:false,err:'',hint:'',started:false,skips:0,auto:false,rate:1,pp:null,wt:0,r:0};
 /* ---------- YouTube IFrame ---------- */
 function loadYT(){return new Promise((ok,no)=>{if(window.YT&&YT.Player)return ok();const prev=window.onYouTubeIframeAPIReady;window.onYouTubeIframeAPIReady=()=>{try{prev&&prev()}catch(e){}ok()};if(!document.getElementById('nxm-ytapi')){const s=document.createElement('script');s.id='nxm-ytapi';s.src='https://www.youtube.com/iframe_api';s.onerror=()=>no(new Error('No se pudo cargar el reproductor de YouTube'));document.head.append(s)}setTimeout(()=>no(new Error('YouTube tardó demasiado en cargar')),15000)})}
 function ensureP(){if(Pready)return Promise.resolve(P);return Y.pp||(Y.pp=ensureP0().catch(e=>{Y.pp=null;throw e}))}
 async function ensureP0(){await loadYT();return new Promise(ok=>{const pv={playsinline:1,rel:0,modestbranding:1,controls:0,disablekb:1,fs:0,iv_load_policy:3};if(/^https?:$/.test(location.protocol))pv.origin=location.origin;P=new YT.Player('nxm-yt',{width:'100%',height:'100%',playerVars:pv,events:{onReady:()=>{Pready=true;try{P.setVolume(M.vol)}catch(e){}ok(P);if(pend){const v=pend;pend=null;P.loadVideoById(v)}},onStateChange:e=>{const s=e.data;if(s===1){if(Y.um){Y.um=0;try{P.unMute();P.setVolume(M.vol)}catch(e){}}M.playing=true;Y.started=true;Y.err='';Y.hint='';Y.skips=0;clearTimeout(Y.wt);ui()}else if(s===2){M.playing=false;ui()}else if(s===0){M.playing=false;ended()}else if(s===-1||s===5){M.playing=false;ui()}},onError:e=>yError(e.data)}})})}
-function ySleep(v){clearTimeout(Y.slt);clearInterval(Y.slf);Y.sleepEnd=0;
- if(v==='0'){tst('Temporizador apagado');return}
- if(v==='end'){Y.sleepEnd=1;tst('Se detendrá al terminar esta canción');return}
- Y.slt=setTimeout(()=>{let vol=M.vol;const st=Math.max(1,vol/20);Y.slf=setInterval(()=>{vol-=st;try{P.setVolume(Math.max(0,vol))}catch(e){}if(vol<=0){clearInterval(Y.slf);try{P.pauseVideo()}catch(e){}try{P.setVolume(M.vol)}catch(e){}const x=$('#nxy .slp');if(x)x.value='0'}},200)},(+v)*60000);tst('Se apagará en '+v+' min')}
-function ended(){try{ST.set('nx-ytlast',null)}catch(e){}if(Y.sleepEnd){Y.sleepEnd=0;const x=$('#nxy .slp');if(x)x.value='0';tst('Temporizador: música detenida');return}if(M.rep==='one'&&P){P.seekTo(0);P.playVideo();return}next(true)}
+function ended(){if(M.rep==='one'&&P){P.seekTo(0);P.playVideo();return}next(true)}
 /* ---------- utilidades de título ---------- */
 function split(it){let t=dec(it.title).replace(/\s*[\(\[][^\)\]]*(official|video|audio|lyrics?|letra|visuali[sz]er|hd|4k|mv|remaster|clip)[^\)\]]*[\)\]]/ig,'').replace(/\s*[|｜]\s*.*$/,'').trim(),ch=dec(it.artist||'').replace(/\s*-\s*Topic$/i,'').replace(/VEVO$/i,'').trim();const m=t.match(/^(.+?)\s+[-–—]\s+(.+)$/);return m?{artist:m[1].trim(),track:m[2].trim()}:{artist:ch,track:t}}
 const idOf=s=>{s=String(s||'').trim();let m=s.match(/(?:v=|youtu\.be\/|embed\/|shorts\/|live\/)([\w-]{11})/);if(m)return m[1];return null};const bareId=s=>{s=String(s||'').trim();return /^[\w-]{11}$/.test(s)&&/[0-9_-]/.test(s)&&/[a-z]/.test(s)&&/[A-Z]/.test(s)?s:null};
@@ -15834,7 +15887,7 @@ function addHist(it){M.hist=[it,...M.hist.filter(x=>ikey(x)!==ikey(it))].slice(0
 const isFav=it=>M.favs.some(x=>ikey(x)===ikey(it));
 function togFav(it){if(!it)return;if(isFav(it))M.favs=M.favs.filter(x=>ikey(x)!==ikey(it));else M.favs.unshift(it);ST.set('nx-ytfav',M.favs);ui();if(M.view==='lib')render()}
 function addQ(it){if(!M.queue.some(x=>ikey(x)===ikey(it)))M.queue.push(it);if(M.qi<0&&!M.cur){playItem(it,M.queue,M.queue.length-1);return}tst('Agregada a la cola');if(M.view==='queue')render()}
-function mediaSess(){try{if(!navigator.mediaSession||!M.cur||M.cur.src!=='youtube')return;navigator.mediaSession.metadata=new MediaMetadata({title:split(M.cur).track,artist:split(M.cur).artist,artwork:[{src:M.cur.thumb,sizes:'320x180'}]});const h=navigator.mediaSession;h.setActionHandler('play',toggle);h.setActionHandler('pause',toggle);h.setActionHandler('nexttrack',()=>next());h.setActionHandler('previoustrack',prev);h.setActionHandler('seekto',e=>{if(e.seekTime!=null)seekTo(e.seekTime)});h.setActionHandler('seekforward',()=>{const o=nowPos();seekTo(Math.min(o.d,o.p+10))});h.setActionHandler('seekbackward',()=>{const o=nowPos();seekTo(Math.max(0,o.p-10))})}catch(e){}}
+function mediaSess(){try{if(!navigator.mediaSession||!M.cur||M.cur.src!=='youtube')return;navigator.mediaSession.metadata=new MediaMetadata({title:split(M.cur).track,artist:split(M.cur).artist,artwork:[{src:M.cur.thumb,sizes:'320x180'}]});const h=navigator.mediaSession;h.setActionHandler('play',toggle);h.setActionHandler('pause',toggle);h.setActionHandler('nexttrack',()=>next());h.setActionHandler('previoustrack',prev)}catch(e){}}
 /* ---------- letra (LRCLIB) ---------- */
 function parseLRC(t){const o=[];for(const ln of String(t).split(/\r?\n/)){const st=[...ln.matchAll(/\[(\d+):(\d+(?:\.\d+)?)\]/g)];if(!st.length)continue;const x=ln.replace(/\[[^\]]*\]/g,'').trim();for(const m of st)o.push({t:(+m[1]*60+ +m[2]),x})}return o.sort((a,b)=>a.t-b.t)}
 async function fetchLy(artist,track,dur){const B='https://lrclib.net/api/',get=async u=>{try{const c=new AbortController(),tm=setTimeout(()=>c.abort(),8000),x=await fetch(B+u,{signal:c.signal});clearTimeout(tm);return x.ok?await x.json():null}catch(e){return null}};
@@ -15910,6 +15963,10 @@ function vLib(c){const tg=E('div','nz-tg');[['fav','♥ Favoritos ('+M.favs.leng
  const sh=E('div','nz-sh');sh.innerHTML='<div><h2></h2></div>';sh.querySelector('h2').textContent=M.lib==='fav'?'Tus favoritos':'Reproducido recientemente';const all=E('button','tn','▶ Reproducir todo');all.onclick=()=>playItem(L[0],L,0);sh.append(all);c.append(sh);const l=E('div','rl');L.forEach((it,k)=>l.append(rowEl(it,L,k)));c.append(l)}
 function vCmd(c){const sh=E('div','nz-sh');sh.innerHTML='<div><h2>Habla con Noryx</h2><p>Ej.: «busca Black Sabbath», «pon Joji», «pausa», «siguiente», «volumen a 50», «usa Spotify».</p></div>';c.append(sh);const f=E('form','sf'),i=E('input');i.placeholder='Ej. Noryx, pon Soda Stereo';f.append(i,Object.assign(E('button','nz-bt sc','Enviar comando'),{type:'submit'}));const out=E('div','bx');out.hidden=!M.reply;out.textContent=M.reply;f.onsubmit=async e=>{e.preventDefault();const v=i.value.trim();if(!v)return;out.hidden=false;out.textContent='…';out.textContent=await runCmd(v);M.reply=out.textContent;i.value=''};c.append(f,out)}
 function vCfg(c){const sh=E('div','nz-sh');sh.innerHTML='<div><h2>Ajustes de música</h2><p>La clave se guarda solo en este navegador.</p></div>';c.append(sh);
+ const ga=E('div','bx');ga.append(E('b','','Cuenta personal de YouTube'));ga.append(E('p','','Conecta Google para consultar el canal de YouTube de la cuenta que autorices. Noryx solo solicita permiso de lectura; no usa Supabase.'));
+ const gid=E('input','fi');gid.type='text';gid.autocomplete='off';gid.spellcheck=false;gid.placeholder='ID de cliente OAuth · termina en .apps.googleusercontent.com';gid.value=nxGoogleClientId();gid.style.cssText='width:100%;margin-top:9px';gid.onchange=()=>ST.set('nx-google-client-id',gid.value.trim());ga.append(gid);
+ const gbtns=E('div','nz-tg');gbtns.style.marginTop='10px';const gsave=E('button','nz-bt sc','Guardar ID'),gcon=E('button','nz-bt','Conectar con Google');gsave.onclick=()=>{ST.set('nx-google-client-id',gid.value.trim());tst('ID de cliente guardado en este navegador.')};gcon.onclick=()=>{ST.set('nx-google-client-id',gid.value.trim());nxGoogleConnect()};gbtns.append(gsave,gcon);ga.append(gbtns);
+ if(NX_GOOGLE_PROFILE){const pr=E('div','rw');pr.style.marginTop='12px';if(NX_GOOGLE_PROFILE.photo){const im=E('img','nz-th');im.src=NX_GOOGLE_PROFILE.photo;im.alt='Foto del canal';pr.append(im)}const inf=E('div','mt');inf.append(E('b','',NX_GOOGLE_PROFILE.name),E('span','', 'Canal: '+NX_GOOGLE_PROFILE.id));if(NX_GOOGLE_PROFILE.subs!=null)inf.append(E('span','',Number(NX_GOOGLE_PROFILE.subs).toLocaleString('es-MX')+' suscriptores'));if(NX_GOOGLE_PROFILE.videos!=null)inf.append(E('span','',Number(NX_GOOGLE_PROFILE.videos).toLocaleString('es-MX')+' videos'));pr.append(inf);ga.append(pr);const actions=E('div','nz-tg');actions.style.marginTop='10px';const refresh=E('button','nz-bt sc','Actualizar datos'),disc=E('button','nz-bt sc','Desconectar');refresh.onclick=nxGoogleRefresh;disc.onclick=nxGoogleDisconnect;actions.append(refresh,disc);ga.append(actions);const note=E('p','','Los datos visibles dependen de lo que YouTube permita mostrar para este canal. El token no se guarda al recargar la página; puedes volver a conectar cuando quieras.');ga.append(note)}else{ga.append(E('p','','Estado: cuenta no conectada. El ID OAuth se obtiene en Google Cloud → APIs y servicios → Credenciales → Crear credenciales → ID de cliente OAuth (Aplicación web). Añade https://orlagg22.github.io como origen autorizado y activa YouTube Data API v3.'))}c.append(ga);
  const b=E('div','bx');b.append(E('b','',NX_YT_KEY?'Clave de YouTube: ya incluida en Noryx (opcional usar la tuya)':'Clave de API de YouTube (Data API v3)'));const i=E('input','fi');i.type='password';i.placeholder=NX_YT_KEY?'Opcional: tu propia clave (si no, se usa la de Noryx)':'AIza…';i.value=ST.get('nx-ytkey','');i.style.cssText='width:100%;margin-top:10px';const row=E('div','nz-tg');row.style.marginTop='10px';const sv=E('button','nz-bt','Guardar'),sh2=E('button','nz-bt sc','Mostrar'),rm=E('button','nz-bt sc','Borrar');
  sv.onclick=()=>{ST.set('nx-ytkey',i.value.trim());M.key=i.value.trim()||NX_YT_KEY;cache.clear();tst(i.value.trim()?'Clave guardada':(NX_YT_KEY?'Se usará la clave de Noryx':'Clave borrada'))};sh2.onclick=()=>{i.type=i.type==='password'?'text':'password';sh2.textContent=i.type==='password'?'Mostrar':'Ocultar'};rm.onclick=()=>{i.value='';sv.click()};row.append(sv,sh2,rm);b.append(i,row);
  const n=E('p','','Consejo: restringe la clave a «YouTube Data API v3» y a tu sitio web (https://orlagg22.github.io/*). Cada búsqueda gasta 100 de los 10 000 puntos gratuitos del día; reproducir no gasta nada.');b.append(n);c.append(b);
@@ -15947,7 +16004,7 @@ function setSrc(k){if(M.src===k)return;pauseOther(k);M.src=k;ST.set('nx-msrc',k)
 const curJV=()=>{try{const v=JV.music;return v==='spotify'?'spotify':'youtube'}catch(e){return 'spotify'}};
 function setJV(k,quiet){try{JV.music=k;ST.set('nx-jmusic',k)}catch(e){}syncSel();if(!quiet)tst('Música del asistente: '+(k==='spotify'?'Spotify':'YouTube'))}
 function open(q,src,view){if((src||M.src)==='youtube'){openY(q,view);return}if(src&&src!==M.src)setSrc(src);M.open=true;if(view)M.view=view;const r=$('#nxm');r.hidden=false;try{document.documentElement.classList.add('nxm-on')}catch(e){}render();if(q)doSearch(q);clearInterval(tick);tick=setInterval(loop,300)}
-function close(){try{document.documentElement.style.removeProperty('--nxy-tint');document.documentElement.style.removeProperty('--nxy-glow');Y.amb=null}catch(e){}M.open=false;$('#nxm').hidden=true;if(Y.open){Y.open=false;$('#nxy').hidden=true;cancelAnimationFrame(Y.r)}placeVid()}
+function close(){M.open=false;$('#nxm').hidden=true;if(Y.open){Y.open=false;$('#nxy').hidden=true;cancelAnimationFrame(Y.r)}placeVid()}
 document.addEventListener('keydown',e=>{if(!M.open&&!Y.open)return;if(e.key==='Escape'){e.preventDefault();e.stopPropagation();close();return}const tg=e.target&&e.target.tagName;if(e.code==='Space'&&!/INPUT|TEXTAREA|SELECT|BUTTON/.test(tg||'')){e.preventDefault();toggle()}},true);
 addEventListener('resize',()=>{if(M.open||Y.open)placeVid()});
 $('#nxm-vp').onclick=toggle;$('#nxm-vn').onclick=()=>next();$('#nxm-vx').onclick=()=>{M.dismissed=true;try{P&&Pready&&P.pauseVideo()}catch(e){}M.playing=false;ui()};
@@ -15992,7 +16049,7 @@ function yRow(it,list,i){const r=E('div','yt-rw');r.dataset.k=ikey(it);if(M.cur&
  const s=split(it),m=E('div','yt-mt');m.append(E('b','',s.track||it.title),E('span','',(s.artist||it.artist||'')+(it.dur?' · '+fmt(it.dur):'')));
  const a=E('div','yt-ra'),q=E('button','yt-i','+'),f=E('button','yt-i'+(isFav(it)?' on':''),isFav(it)?'♥':'♡');q.title='Agregar a la cola';f.title='Favorito';
  q.onclick=e=>{e.stopPropagation();addQ(it);if(Y.tab==='q')yPaintSide()};f.onclick=e=>{e.stopPropagation();togFav(it);f.textContent=isFav(it)?'♥':'♡';f.classList.toggle('on',isFav(it));if(Y.tab==='fav')yPaintSide()};
- a.append(q,f);const tw=E('div','yt-tw'),eq=E('span','eq');eq.innerHTML='<i></i><i></i><i></i>';tw.append(th,eq);if(it.dur)tw.append(E('em','yt-du',fmt(it.dur)));r.append(tw,m,a);r.onclick=()=>playItem(it,list,i);return r}
+ a.append(q,f);const tw=E('div','yt-tw'),eq=E('span','eq');eq.innerHTML='<i></i><i></i><i></i>';tw.append(th,eq);r.append(tw,m,a);r.onclick=()=>playItem(it,list,i);return r}
 function yErrBox(e){const f=yErrInfo(e),b=E('div','yt-box er');b.append(E('b','',f.t),E('p','',f.d));const row=E('div','yt-row'),rt=E('button','yt-b','Reintentar'),ts=E('button','yt-b sc','Probar conexión');rt.onclick=()=>ySearch(M.q);ts.onclick=()=>{Y.tab='cfg';yTabs();yPaintSide()};row.append(rt,ts);b.append(row);return b}
 function yList(L,arr,empty,title,clear){if(!arr.length){L.append(E('div','yt-em',empty));return}
  const h=E('div','yt-sh');h.append(E('b','',title));const all=E('button','yt-b','▶ Reproducir todo');all.onclick=()=>playItem(arr[0],arr,0);h.append(all);if(clear)h.append(clear);L.append(h);arr.forEach((it,k)=>L.append(yRow(it,arr,k)))}
@@ -16004,16 +16061,15 @@ function yTest(out){out.textContent='Probando…';const own=M.key!==NX_YT_KEY,t0
   out.textContent='✓ Conexión correcta con YouTube ('+Math.round(performance.now()-t0)+' ms).'}).catch(e=>{const f=yErrInfo(e);out.textContent='✗ '+f.t+'. '+f.d})}
 function yPaintSide(){const L=$('#nxy .yt-list');if(!L)return;const keep=L.scrollTop;L.replaceChildren();const t=Y.tab;
  if(t==='res'){
-  if(M.busy){for(let k=0;k<7;k++){const sk=E('div','yt-rw yt-sk');sk.innerHTML='<div class="yt-tw"></div><div class="yt-mt"><b></b><span></span></div>';L.append(sk)}}
+  if(M.busy)L.append(E('div','yt-em','Buscando…'));
   else if(M.err&&M.resSrc==='youtube')L.append(yErrBox(M.err));
   else if(M.res.length&&M.resSrc==='youtube'){const h=E('div','yt-sh');h.append(E('b','','Resultados de “'+M.q+'”'));const all=E('button','yt-b','▶ Reproducir todo');all.onclick=()=>playItem(M.res[0],M.res,0);h.append(all);L.append(h);M.res.forEach((it,k)=>L.append(yRow(it,M.res,k)))}
   else if(M.q&&M.resSrc==='youtube')L.append(E('div','yt-em','No encontré resultados para “'+M.q+'”.'));
-  else{const h=E('div','yt-sh');h.append(E('b','yt-gr',(()=>{const H=new Date().getHours();return H<6?'Buenas noches':H<12?'Buenos días':H<19?'Buenas tardes':'Buenas noches'})()));L.append(h);const g=E('div','yt-ch');QUICK.forEach(([k,ic,n,q])=>{const b=E('button','yt-c',ic+' '+n);b.onclick=()=>{const i=$('#nxy-q');if(i)i.value=q;ySearch(q)};g.append(b)});L.append(g);
-   const ls=ST.get('nx-ytlast',null);if(ls&&ls.it&&ls.t>5){const h0=E('div','yt-sh');h0.append(E('b','','Continuar donde lo dejaste'));L.append(h0);const rr=yRow(ls.it,[ls.it],0),sp=rr.querySelector('.yt-mt span');if(sp)sp.textContent+=' · desde '+fmt(ls.t);rr.onclick=async()=>{await playItem(ls.it,[ls.it],0);const t0=Date.now(),iv=setInterval(()=>{if(M.playing||Date.now()-t0>9000){clearInterval(iv);if(M.playing)seekTo(ls.t)}},300)};L.append(rr)}
+  else{const h=E('div','yt-sh');h.append(E('b','','Para empezar'));L.append(h);const g=E('div','yt-ch');QUICK.forEach(([k,ic,n,q])=>{const b=E('button','yt-c',ic+' '+n);b.onclick=()=>{const i=$('#nxy-q');if(i)i.value=q;ySearch(q)};g.append(b)});L.append(g);
    const rec=M.hist.filter(x=>x.src==='youtube').slice(0,8);if(rec.length){const h2=E('div','yt-sh');h2.append(E('b','','Reproducido recientemente'));L.append(h2);rec.forEach((it,k)=>L.append(yRow(it,rec,k)))}}
- }else if(t==='q'){const cl=E('button','yt-b sc','Vaciar'),mz=E('button','yt-b sc','Mezclar');mz.onclick=()=>{const a=M.queue.slice(0,M.qi+1),b=M.queue.slice(M.qi+1);for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]]}M.queue=a.concat(b);tst('Cola mezclada');yPaintSide()};cl.onclick=()=>{M.queue=M.cur?[M.cur]:[];M.qi=M.cur?0:-1;yPaintSide()};
+ }else if(t==='q'){const cl=E('button','yt-b sc','Vaciar');cl.onclick=()=>{M.queue=M.cur?[M.cur]:[];M.qi=M.cur?0:-1;yPaintSide()};
   if(!M.queue.length)L.append(E('div','yt-em','La cola está vacía. Usa + en los resultados.'));
-  else{const h=E('div','yt-sh');h.append(E('b','','Cola · '+M.queue.length),mz,cl);L.append(h);M.queue.forEach((it,k)=>{const r=yRow(it,M.queue,k);const x=E('button','yt-i','✕');x.title='Quitar';x.onclick=e=>{e.stopPropagation();M.queue.splice(k,1);if(k<M.qi)M.qi--;else if(k===M.qi)M.qi=-1;yPaintSide()};r.querySelector('.yt-ra').append(x);L.append(r)})}
+  else{const h=E('div','yt-sh');h.append(E('b','','Cola · '+M.queue.length),cl);L.append(h);M.queue.forEach((it,k)=>{const r=yRow(it,M.queue,k);const x=E('button','yt-i','✕');x.title='Quitar';x.onclick=e=>{e.stopPropagation();M.queue.splice(k,1);if(k<M.qi)M.qi--;else if(k===M.qi)M.qi=-1;yPaintSide()};r.querySelector('.yt-ra').append(x);L.append(r)})}
  }else if(t==='fav')yList(L,M.favs.filter(x=>x.src==='youtube'),'Aún no tienes favoritos. Pulsa ♡ en cualquier video.','Tus favoritos de YouTube');
  else if(t==='his')yList(L,M.hist.filter(x=>x.src==='youtube'),'Todavía no has reproducido nada.','Reproducido recientemente');
  else if(t==='ly'){const box=E('div','ly');L.append(box);paintLy()}
@@ -16025,7 +16081,7 @@ function yCfg(L){const own=M.key!==NX_YT_KEY,b=E('div','yt-box');b.append(E('b',
  const b2=E('div','yt-box');b2.append(E('b','','Tu propia clave (opcional)'));const i=E('input','yt-fi');i.type='password';i.placeholder='AIza… (si lo dejas vacío se usa el Worker)';i.value=ST.get('nx-ytkey','');
  const row=E('div','yt-row'),sv=E('button','yt-b','Guardar'),sh=E('button','yt-b sc','Mostrar'),rm=E('button','yt-b sc','Borrar');
  sv.onclick=()=>{const v=i.value.trim();ST.set('nx-ytkey',v);M.key=v||NX_YT_KEY;cache.clear();tst(v?'Clave guardada':'Se usará el Worker de Noryx');yPaintSide()};
- sh.onclick=()=>{i.type=i.type==='password'?'text':'password';sh.textContent=i.type==='password'?'Mostrar':'Ocultar'};rm.onclick=()=>{i.value='';sv.click()};row.append(sv,sh,rm);b2.append(i,row);L.append(b2);const b3=E('div','yt-box');b3.append(E('b','','Atajos de teclado'),E('p','','Espacio o K: reproducir/pausar · N / P: siguiente / anterior · ← →: ±5 s (con Shift ±10 s) · ↑ ↓: volumen · M: silenciar · S: aleatorio · R: repetir · L: letra · C: inmersivo · F: pantalla completa · + − 0: tamaño del video · /: buscar'));L.append(b3)}
+ sh.onclick=()=>{i.type=i.type==='password'?'text':'password';sh.textContent=i.type==='password'?'Mostrar':'Ocultar'};rm.onclick=()=>{i.value='';sv.click()};row.append(sv,sh,rm);b2.append(i,row);L.append(b2)}
 async function ySearch(q){q=String(q||'').trim();if(!q){tst('Escribe una canción, artista o enlace de YouTube.');return}Y.tab='res';Y.panel=true;yApply();yTabs();const p=doSearch(q,true);yPaintSide();await p;yPaintSide()}
 const SV=(p,f)=>'<svg viewBox="0 0 24 24" aria-hidden="true" '+(f?'fill="currentColor"':'fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"')+'>'+p+'</svg>';
 const HEART='<path d="M12 20.5s-7.5-4.6-9.3-9.2C1.5 8 3.4 4.8 6.6 4.8c2 0 3.7 1.1 5.4 3.2 1.7-2.1 3.4-3.2 5.4-3.2 3.2 0 5.1 3.2 3.9 6.5-1.8 4.6-9.3 9.2-9.3 9.2z"/>';
@@ -16045,8 +16101,6 @@ const IC={
  queue:SV('<path d="M3 6h13M3 12h13M3 18h7M17 13v7l5-3.5z"/>'),
  panel:SV('<rect x="3" y="4" width="18" height="16" rx="2.5"/><path d="M15 4v16"/>'),
  link:SV('<path d="M10 14a4.5 4.5 0 0 0 6.4 0l3-3a4.5 4.5 0 0 0-6.4-6.4l-1 1M14 10a4.5 4.5 0 0 0-6.4 0l-3 3a4.5 4.5 0 0 0 6.4 6.4l1-1"/>'),
- clock:SV('<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>'),
- home:SV('<path d="M3 11 12 3l9 8M5 9.5V21h5v-6h4v6h5V9.5"/>'),
  ext:SV('<path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/>'),
  cine:SV('<rect x="3" y="6" width="18" height="12" rx="2.5"/>'),
  fs:SV('<path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/>'),
@@ -16055,7 +16109,7 @@ const IC={
  zout:SV('<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5M8 11h6"/>')};
 const ib=(cls,ic,title)=>{const b=E('button','yt-ib '+cls);b.type='button';b.innerHTML=IC[ic];b.title=title;b.setAttribute('aria-label',title);return b};
 function yApply(){const r=$('#nxy');if(r)r.classList.toggle('nopanel',!Y.panel)}
-function yTabs(){const r=$('#nxy');if(!r)return;const ls=r.querySelector('.yt-list');if(ls&&Y.lt!==Y.tab){Y.lt=Y.tab;ls.classList.remove('fx');void ls.offsetWidth;ls.classList.add('fx')}r.querySelectorAll('.yt-tabs button').forEach(b=>b.classList.toggle('on',b.dataset.t===Y.tab));r.querySelectorAll('.tb[data-t]').forEach(b=>b.classList.toggle('on',Y.panel&&b.dataset.t===Y.tab));const pp=r.querySelector('.tbp');if(pp)pp.classList.toggle('on',Y.panel);r.classList.toggle('lyr',Y.tab==='ly'&&Y.panel)}
+function yTabs(){const r=$('#nxy');if(!r)return;r.querySelectorAll('.yt-tabs button').forEach(b=>b.classList.toggle('on',b.dataset.t===Y.tab));r.querySelectorAll('.tb[data-t]').forEach(b=>b.classList.toggle('on',Y.panel&&b.dataset.t===Y.tab));const pp=r.querySelector('.tbp');if(pp)pp.classList.toggle('on',Y.panel);r.classList.toggle('lyr',Y.tab==='ly'&&Y.panel)}
 function yGo(k){if(Y.cine){Y.cine=false;uiY()}Y.tab=k;Y.panel=true;yApply();yTabs();yPaintSide();if(k==='ly'&&M.cur)loadLy()}
 function yCine(){Y.cine=!Y.cine;uiY();placeVid();Y.wake&&Y.wake()}
 function ySc(){const m=$('#nxy .yt-main');if(m)m.style.setProperty('--sc',Y.sc);const l=$('#nxy .zl');if(l)l.textContent=Math.round(Y.sc*100)+'%'}
@@ -16064,28 +16118,27 @@ function yClip(vid,r){let cp='';if(Y.open){const m=$('#nxy .yt-main');if(m){cons
 function yFs(){try{const p=document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen();p&&p.catch&&p.catch(()=>{})}catch(e){}}
 function buildY(){const root=$('#nxy');root.replaceChildren();if(Y.panel===undefined)Y.panel=true;if(Y.sc===undefined)Y.sc=ST.get('nx-ytsc',1);
  const amb=E('div','yt-amb');amb.append(E('i'),E('i'));
- const top=E('header','yt-top'),logo=E('div','yt-logo');logo.innerHTML='<b>Noryx</b>';const hm=ib('yt-home','home','Inicio');hm.onclick=()=>{if(Y.cine){Y.cine=false;uiY()}M.q='';M.res=[];M.resSrc='';M.err=null;const iq=$('#nxy-q');if(iq)iq.value='';Y.tab='res';Y.panel=true;yApply();yTabs();yPaintSide()};logo.prepend(hm);
+ const top=E('header','yt-top'),logo=E('div','yt-logo');logo.innerHTML='<span class="yb">'+IC.play+'</span><b>Noryx</b><i>YouTube</i>';
  const f=E('form','yt-sf'),i=E('input');i.id='nxy-q';i.type='search';i.placeholder='¿Qué quieres escuchar?';i.setAttribute('aria-label','Buscar canciones, artistas o pegar un enlace de YouTube');i.autocomplete='off';i.value=M.q||'';
  const si=E('span');si.style.display='contents';si.innerHTML=IC.search;f.append(si.firstChild,i);f.onsubmit=e=>{e.preventDefault();ySearch(i.value)};
  const tools=E('div','yt-tools'),tl=ib('tb','lyr','Letra (L)'),tq=ib('tb','queue','Cola'),tp=ib('tbp','panel','Mostrar u ocultar panel'),x=ib('yt-x','down','Minimizar (Esc)');tl.dataset.t='ly';tq.dataset.t='q';
  tl.onclick=()=>{if(Y.panel&&Y.tab==='ly'){Y.panel=false;yApply();yTabs()}else yGo('ly')};tq.onclick=()=>{if(Y.panel&&Y.tab==='q'){Y.panel=false;yApply();yTabs()}else yGo('q')};tp.onclick=()=>{if(Y.cine){Y.cine=false;Y.panel=true;uiY()}else Y.panel=!Y.panel;yApply();yTabs()};x.onclick=close;
  tools.append(tl,tq,tp,x);top.append(logo,f,tools);
- const body=E('div','yt-body'),main=E('section','yt-main'),sw=E('div','yt-sw'),slot=E('div','slot');slot.innerHTML='<div class="ph"><span>'+IC.search+'</span><p>Busca una canción o pega un enlace para empezar</p></div>';sw.append(slot);
- const st=E('div','yt-st');st.hidden=true;const info=E('div','yt-info');info.innerHTML='<p class="yt-ey"><span class="yt-wv"><i></i><i></i><i></i><i></i></span>Reproduciendo ahora</p><h2 class="yt-t"></h2><p class="yt-a"></p><button type="button" class="yt-up" hidden></button>';
+ const body=E('div','yt-body'),main=E('section','yt-main'),sw=E('div','yt-sw'),slot=E('div','slot');slot.innerHTML='<div class="ph"><span>'+IC.play+'</span><p>Busca una canción o pega un enlace para empezar</p></div>';sw.append(slot);
+ const st=E('div','yt-st');st.hidden=true;const info=E('div','yt-info');info.innerHTML='<h2 class="yt-t"></h2><p class="yt-a"></p>';
  main.append(sw,st,info);
  const side=E('aside','yt-side'),tabs=E('div','yt-tabs');YTABS.forEach(([k,n])=>{const b=E('button','',n);b.type='button';b.dataset.t=k;b.onclick=()=>{Y.tab=k;yTabs();yPaintSide();if(k==='ly'&&M.cur)loadLy()};tabs.append(b)});
  side.append(tabs,E('div','yt-list'));body.append(main,side);
  const dock=E('footer','yt-dock');
  dock.innerHTML='<div class="yt-pg"><span class="tc">0:00</span><div class="yt-bar" role="slider" aria-label="Progreso" tabindex="0"><i></i></div><span class="td">0:00</span></div><div class="yt-dr"><div class="dl"></div><div class="yt-cb"></div><div class="dr"></div></div>';
  const dl=dock.querySelector('.dl'),cb=dock.querySelector('.yt-cb'),dr=dock.querySelector('.dr');
- const hrt=ib('hrt','heart','Agregar a favoritos'),cp=ib('cp','link','Copiar enlace'),ex=E('a','yt-ib ext');ex.innerHTML=IC.ext;ex.target='_blank';ex.rel='noopener';ex.title='Abrir en YouTube';ex.setAttribute('aria-label','Abrir en YouTube');const cpt=ib('cpt','clock','Copiar enlace en este minuto');const np=E('div','yt-np');np.title='Abrir modo inmersivo';np.innerHTML='<img alt=""><div><b></b><span></span></div>';np.onclick=()=>yCine();dl.append(np,hrt,cp,cpt,ex);
+ const hrt=ib('hrt','heart','Agregar a favoritos'),cp=ib('cp','link','Copiar enlace'),ex=E('a','yt-ib ext');ex.innerHTML=IC.ext;ex.target='_blank';ex.rel='noopener';ex.title='Abrir en YouTube';ex.setAttribute('aria-label','Abrir en YouTube');dl.append(hrt,cp,ex);
  const mk=(c,ic,t)=>{const b=E('button',c);b.type='button';b.innerHTML=IC[ic];b.title=t;b.setAttribute('aria-label',t);return b};
  cb.append(mk('shf','shuf','Aleatorio'),mk('pv','prev','Anterior'),mk('pl','play','Reproducir / pausar'),mk('nx','next','Siguiente'),mk('rpt','rep','Repetir'));
  const rate=E('select','rate');rate.title='Velocidad';[['0.5','0.5×'],['0.75','0.75×'],['1','1×'],['1.25','1.25×'],['1.5','1.5×'],['2','2×']].forEach(([v,n])=>{const o=E('option','',n);o.value=v;rate.append(o)});
  const vw=E('div','yt-vol'),vic=E('button','vic');vic.type='button';vic.title='Silenciar';vic.setAttribute('aria-label','Silenciar');vic.innerHTML=IC.vol;const vl=E('input','vl');vl.type='range';vl.min=0;vl.max=100;vl.setAttribute('aria-label','Volumen');vw.append(vic,vl);
  const cn=ib('cine','cine','Modo inmersivo (C)'),fs=ib('fs','fs','Pantalla completa (F)');const zo=ib('zo','zout','Reducir video ( - )'),zl=E('button','zl','100%'),zi=ib('zi','zin','Agrandar video ( + )');zl.type='button';zl.title='Tamaño normal ( 0 )';zo.onclick=()=>ySize(-.1);zi.onclick=()=>ySize(.1);zl.onclick=()=>ySize(0);
- const slp=E('select','slp');slp.title='Temporizador de apagado';[['0','☾ Apagado'],['15','15 min'],['30','30 min'],['45','45 min'],['60','60 min'],['end','Fin de canción']].forEach(([v,n])=>{const o=E('option','',n);o.value=v;slp.append(o)});slp.onchange=()=>ySleep(slp.value);
- dr.append(slp,rate,vw,zo,zl,zi,cn,fs);
+ dr.append(rate,vw,zo,zl,zi,cn,fs);
  root.append(amb,top,body,dock);
  const q=s=>root.querySelector(s);
  q('.pv').onclick=prev;q('.nx').onclick=()=>next();q('.pl').onclick=toggle;
@@ -16093,15 +16146,12 @@ function buildY(){const root=$('#nxy');root.replaceChildren();if(Y.panel===undef
  q('.rpt').onclick=()=>{M.rep=M.rep==='off'?'all':M.rep==='all'?'one':'off';ST.set('nx-mrep',M.rep);uiY();tst('Repetir: '+(M.rep==='off'?'no':M.rep==='all'?'toda la cola':'una canción'))};
  vl.oninput=()=>{setVol(+vl.value);vl.style.setProperty('--v',vl.value+'%');vic.innerHTML=+vl.value?IC.vol:IC.mute};
  vic.onclick=()=>{if(M.vol>0){Y.pv=M.vol;setVol(0)}else setVol(Y.pv||80);uiY()};
- rate.onchange=e=>{Y.rate=+e.target.value;ST.set('nx-ytrate',Y.rate);try{P&&Pready&&P.setPlaybackRate(Y.rate)}catch(x){}};
+ rate.onchange=e=>{Y.rate=+e.target.value;try{P&&Pready&&P.setPlaybackRate(Y.rate)}catch(x){}};
  cn.onclick=yCine;fs.onclick=yFs;ySc();
  hrt.onclick=()=>{if(M.cur&&M.cur.src==='youtube'){togFav(M.cur);if(Y.tab==='fav')yPaintSide()}};
- cpt.onclick=async()=>{if(!M.cur)return;const o=nowPos(),u='https://www.youtube.com/watch?v='+M.cur.id+'&t='+Math.floor(o.p)+'s';try{await navigator.clipboard.writeText(u);tst('Enlace copiado en '+fmt(o.p))}catch(e){tst(u,4000)}};
  cp.onclick=async()=>{if(!M.cur)return;const u='https://www.youtube.com/watch?v='+M.cur.id;try{await navigator.clipboard.writeText(u);tst('Enlace copiado')}catch(e){tst(u,4000)}};
  /* barra de progreso: clic y arrastre */
- const bar=q('.yt-bar');let dg=false;const tip=E('div','tip');bar.append(tip);
- bar.addEventListener('pointermove',e=>{const o=nowPos();if(!o.d)return;const r=bar.getBoundingClientRect(),f=Math.max(0,Math.min(1,(e.clientX-r.left)/r.width));tip.textContent=fmt(f*o.d);tip.style.left=f*100+'%';tip.classList.add('on')});
- bar.addEventListener('pointerleave',()=>tip.classList.remove('on'));
+ const bar=q('.yt-bar');let dg=false;
  const at=e=>{const r=bar.getBoundingClientRect();return Math.max(0,Math.min(1,(e.clientX-r.left)/r.width))};
  const vis=f=>{const o=nowPos();bar.firstChild.style.width=f*100+'%';const tc=q('.tc');if(tc&&o.d)tc.textContent=fmt(f*o.d)};
  bar.addEventListener('pointerdown',e=>{if(!nowPos().d)return;dg=true;Y.drag=true;bar.classList.add('dr');try{bar.setPointerCapture(e.pointerId)}catch(x){}vis(at(e))});
@@ -16113,12 +16163,7 @@ function buildY(){const root=$('#nxy');root.replaceChildren();if(Y.panel===undef
  let idt=0;Y.wake=()=>{root.classList.remove('idle');clearTimeout(idt);if(Y.cine&&M.playing)idt=setTimeout(()=>root.classList.add('idle'),3200)};
  ['mousemove','pointerdown','keydown','touchstart'].forEach(ev=>root.addEventListener(ev,Y.wake,{passive:true}));
  if(!Y.kb){Y.kb=1;document.addEventListener('keydown',e=>{if(!Y.open||e.ctrlKey||e.metaKey||e.altKey)return;const tg=e.target&&e.target.tagName;if(/INPUT|TEXTAREA|SELECT/.test(tg||''))return;const k=e.key;
-  if(k==='ArrowRight'||k==='ArrowLeft'){const o=nowPos();if(o.d){e.preventDefault();seekTo(Math.max(0,Math.min(o.d,o.p+(k==='ArrowRight'?1:-1)*(e.shiftKey?10:5))))}}
-  else if((k===' '||k==='k'||k==='K')&&!(k===' '&&tg==='BUTTON')){e.preventDefault();toggle()}
-  else if(k==='n'||k==='N')next();else if(k==='p'||k==='P')prev();
-  else if(k==='m'||k==='M'){const v=root.querySelector('.vic');v&&v.click()}
-  else if(k==='s'||k==='S')root.querySelector('.shf').click();else if(k==='r'||k==='R')root.querySelector('.rpt').click();
-  else if(k==='ArrowUp'||k==='ArrowDown'){e.preventDefault();setVol(Math.max(0,Math.min(100,M.vol+(k==='ArrowUp'?5:-5))));uiY()}
+  if(k==='ArrowRight'||k==='ArrowLeft'){const o=nowPos();if(o.d){e.preventDefault();seekTo(Math.max(0,Math.min(o.d,o.p+(k==='ArrowRight'?5:-5))))}}
   else if(k==='c'||k==='C')yCine();else if(k==='l'||k==='L')yGo('ly');else if(k==='f'||k==='F')yFs();
   else if(k==='+'||k==='=')ySize(.1);else if(k==='-'||k==='_')ySize(-.1);else if(k==='0')ySize(0);
   else if(k==='/'){e.preventDefault();const s=$('#nxy-q');s&&s.focus()}})}
@@ -16130,27 +16175,15 @@ function uiY(){if(!Y.open)return;const r=$('#nxy');if(!r)return;const q=s=>r.que
  q('.shf').classList.toggle('on',M.shuf);const rp=q('.rpt');rp.classList.toggle('on',M.rep!=='off');const rk=M.rep==='one'?'1':'a';if(rp.dataset.k!==rk){rp.dataset.k=rk;rp.innerHTML=M.rep==='one'?IC.rep1:IC.rep}
  const ex=q('.ext');if(it){ex.href='https://www.youtube.com/watch?v='+it.id;ex.classList.remove('off')}else{ex.removeAttribute('href');ex.classList.add('off')}
  const ph=q('.slot .ph');if(ph)ph.hidden=!!it;
- const up=q('.yt-up');if(up){const nx=(M.qi>=0&&M.qi<M.queue.length-1)?M.queue[M.qi+1]:null;up.hidden=!nx;if(nx){const sn=split(nx);up.textContent='Sigue · '+(sn.track||nx.title);up.onclick=()=>next()}}
- const npb=q('.yt-np');if(npb){npb.classList.toggle('on',!!it);if(it){const im=npb.querySelector('img'),u2=it.thumb||('https://i.ytimg.com/vi/'+it.id+'/mqdefault.jpg');if(im.dataset.u!==u2){im.dataset.u=u2;im.src=u2}npb.querySelector('b').textContent=s.track||it.title;npb.querySelector('span').textContent=s.artist||it.artist||''}}
  Y.hint='';const msg=Y.err||'',st=q('.yt-st');st.hidden=!msg;r.classList.toggle('hasmsg',!!msg);st.textContent=msg;st.classList.toggle('er',!!Y.err);
  r.querySelectorAll('.yt-rw').forEach(x=>x.classList.toggle('on',!!it&&x.dataset.k===ikey(it)));r.classList.toggle('cine',Y.cine);
  const vl=q('.vl');if(vl&&document.activeElement!==vl)vl.value=M.vol;if(vl){vl.style.setProperty('--v',M.vol+'%');const vi=q('.vic'),vk=M.vol?'1':'0';if(vi&&vi.dataset.k!==vk){vi.dataset.k=vk;vi.innerHTML=M.vol?IC.vol:IC.mute}}
  const rt=q('.rate');if(rt)rt.value=String(Y.rate);const cn=q('.cine');if(cn)cn.classList.toggle('on',Y.cine);
  const tu=it?(it.thumb||('https://i.ytimg.com/vi/'+it.id+'/mqdefault.jpg')):'';
- if(tu!==Y.amb){Y.amb=tu;yTint(tu);{const ti=r.querySelector('.yt-info');if(ti){ti.classList.remove('swap');void ti.offsetWidth;ti.classList.add('swap')}}const L=r.querySelectorAll('.yt-amb i');if(L.length===2){Y.ai=1-(Y.ai||0);L[Y.ai].style.backgroundImage=tu?'url("'+tu.replace(/"/g,'%22')+'")':'none';L[Y.ai].classList.add('on');L[1-Y.ai].classList.remove('on')}}
+ if(tu!==Y.amb){Y.amb=tu;const L=r.querySelectorAll('.yt-amb i');if(L.length===2){Y.ai=1-(Y.ai||0);L[Y.ai].style.backgroundImage=tu?'url("'+tu.replace(/"/g,'%22')+'")':'none';L[Y.ai].classList.add('on');L[1-Y.ai].classList.remove('on')}}
  if(Y.wake)Y.wake()}
-function yTint(url){const r=$('#nxy'),D=document.documentElement.style;if(!r)return;
- const off=()=>{D.removeProperty('--nxy-tint');D.removeProperty('--nxy-glow');r.style.removeProperty('--ac')};if(!url){off();return}
- const im=new Image();im.crossOrigin='anonymous';im.onerror=off;
- im.onload=()=>{try{const c=document.createElement('canvas');c.width=c.height=24;const x=c.getContext('2d');x.drawImage(im,0,0,24,24);const d=x.getImageData(0,0,24,24).data;let R=0,G=0,B=0,W=0;
-  for(let i=0;i<d.length;i+=4){const mx=Math.max(d[i],d[i+1],d[i+2]),mn=Math.min(d[i],d[i+1],d[i+2]),w=.2+(mx-mn)/40;R+=d[i]*w;G+=d[i+1]*w;B+=d[i+2]*w;W+=w}
-  R/=W*255;G/=W*255;B/=W*255;const mx=Math.max(R,G,B),mn=Math.min(R,G,B),dl=mx-mn;let h=0;
-  if(dl){h=mx===R?((G-B)/dl)%6:mx===G?(B-R)/dl+2:(R-G)/dl+4;h=Math.round(h*60);if(h<0)h+=360}
-  const l=(mx+mn)/2,sat=dl?dl/(1-Math.abs(2*l-1)):0,S=Math.round(Math.max(.45,Math.min(.8,sat))*100);
-  D.setProperty('--nxy-tint','hsl('+h+' '+Math.round(S*.7)+'% 24%)');D.setProperty('--nxy-glow','hsl('+h+' '+S+'% 42%)');r.style.setProperty('--ac','hsl('+h+' '+Math.max(S,60)+'% 64%)')}catch(e){off()}};
- im.src=url}
 function yRefresh(){uiY();if(Y.tab==='ly'){if(M.cur)loadLy()}else if(Y.tab==='q')yPaintSide()}
-function loopY(o){const r=$('#nxy');if(!r)return;const now=Date.now();if(M.cur&&M.cur.src==='youtube'&&M.playing&&o.d>0){if(o.p>3&&now-(Y.sv||0)>5000){Y.sv=now;try{ST.set('nx-ytlast',{it:M.cur,t:Math.floor(o.p)})}catch(e){}}if(now-(Y.ps||0)>1000){Y.ps=now;try{navigator.mediaSession.setPositionState({duration:o.d,position:Math.min(o.p,o.d),playbackRate:Y.rate})}catch(e){}}}const bar=r.querySelector('.yt-bar i'),tc=r.querySelector('.tc'),td=r.querySelector('.td');if(bar&&!Y.drag)bar.style.width=(o.d?Math.min(100,o.p/o.d*100):0)+'%';if(tc&&!Y.drag)tc.textContent=fmt(o.p);if(td)td.textContent=fmt(o.d);
+function loopY(o){const r=$('#nxy');if(!r)return;const bar=r.querySelector('.yt-bar i'),tc=r.querySelector('.tc'),td=r.querySelector('.td');if(bar&&!Y.drag)bar.style.width=(o.d?Math.min(100,o.p/o.d*100):0)+'%';if(tc&&!Y.drag)tc.textContent=fmt(o.p);if(td)td.textContent=fmt(o.d);
  if(Y.tab==='ly'&&M.ly&&M.ly.L&&M.ly.L.length&&M.cur&&M.cur.src==='youtube'){const L=M.ly.L;let i=-1;for(let k=0;k<L.length;k++){if(L[k].t<=o.p+.25)i=k;else break}if(i!==M.lyIdx){M.lyIdx=i;const box=r.querySelector('.ly');if(box){[...box.children].forEach((p,k)=>{p.className=k===i?'on':k<i?'pa':''});const el=box.children[i];if(el)box.scrollTo({top:el.offsetTop-box.clientHeight/2+el.clientHeight/2,behavior:'smooth'})}}}}
 function yRaf(){if(!Y.open)return;placeVid();Y.r=requestAnimationFrame(yRaf)}
 function openY(q,view){if(M.open){M.open=false;$('#nxm').hidden=true}if(M.src!=='youtube')setSrc('youtube');M.dismissed=false;
