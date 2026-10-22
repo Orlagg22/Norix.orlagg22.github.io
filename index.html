@@ -6686,24 +6686,27 @@ async function disc(){const p=$x('#xp');p.className='xp';p.textContent='Buscando
   if(!nr.length&&!ar.length)p.append(E('div','xm','Escucha un poco más de música y aquí aparecerán recomendaciones hechas con tus gustos.'))}
  catch(e){errBox(p,e)}}
 /* ---- Me gusta con filtros, Artistas y Resumen ---- */
-async function likedAll(force,prog){X.lk=X.lk||{t:0,v:null};if(!force&&X.lk.v&&Date.now()-X.lk.t<600000)return X.lk.v;spNeed('user-library-read');
- const mp=j=>(j.items||[]).filter(x=>x&&x.track&&x.track.uri).map(x=>Object.assign({},x.track,{_at:x.added_at||''})),pg=off=>spApi('GET','/me/tracks?limit=50&offset='+off);
- const j0=await pg(0),total=j0.total||0;let pages=[mp(j0)],got=pages[0].length,partial=false;if(prog)prog(got,total);
- if(j0.next||total>50){const offs=[];for(let o=50;o<(total||1e5);o+=50)offs.push(o);
-  for(let i=0;i<offs.length&&!partial;i+=2){const lot=offs.slice(i,i+2);await sleep(i?300:0);
-   try{const r=await Promise.all(lot.map(pg));r.forEach((j,k)=>{pages[(lot[k]/50)|0]=mp(j);got+=pages[(lot[k]/50)|0].length});if(prog)prog(got,total);if(!total&&!r[r.length-1].next)break}
-   catch(e){if(e&&e.code=='scope')throw e;partial=true}}}
+/* v63: Me gusta resistente al límite de Spotify: espera con cuenta regresiva (el header Retry-After no siempre es legible por CORS), pide páginas una a una y guarda copia local */
+async function spApiP(method,path,onWait){for(let i=0;;i++){try{return await spApi(method,path)}catch(e){if(!(e&&e.code=='rate')||i>=6)throw e;const w=Math.max(e.wait||0,[4,8,15,25,35,45][i]);for(let s=w;s>0;s--){if(onWait)onWait(s);await sleep(1000)}SPQ.cool=0}}}
+const LKC=()=>S.get('nx-spxlk',null);
+function lkSave(v){const m=v.map(t=>({uri:t.uri,id:t.id,name:t.name,duration_ms:t.duration_ms,artists:(t.artists||[]).slice(0,3).map(a=>({id:a.id,name:a.name,uri:a.uri})),album:{id:(t.album||{}).id,name:(t.album||{}).name,release_date:(t.album||{}).release_date,images:((t.album||{}).images||[]).slice(-2)},_at:t._at||''}));S.set('nx-spxlk',{t:Date.now(),v:m})}
+async function likedAll(force,prog){X.lk=X.lk||{t:0,v:null};if(!force&&X.lk.v&&Date.now()-X.lk.t<(X.lk.partial?30000:600000))return X.lk.v;spNeed('user-library-read');
+ const mp=j=>(j.items||[]).filter(x=>x&&x.track&&x.track.uri).map(x=>Object.assign({},x.track,{_at:x.added_at||''})),got0=()=>pages.reduce((n,a)=>n+(a?a.length:0),0);
+ let pages=[],total=0,partial=false,wt=0;const W=s=>{wt=s;if(prog)prog(got0(),total,s)},pg=off=>spApiP('GET','/me/tracks?limit=50&offset='+off,W);
+ try{const j0=await pg(0);total=j0.total||0;pages[0]=mp(j0);if(prog)prog(got0(),total,0);
+  for(let o=50;o<(total||50);o+=50){await sleep(350);try{const j=await pg(o);pages[o/50]=mp(j);if(prog)prog(got0(),total,0);if(!total&&!j.next)break}catch(e){if(e&&e.code=='scope')throw e;partial=true;break}}}
+ catch(e){if(e&&(e.code=='scope'||e.code=='auth'))throw e;const c=LKC();if(c&&c.v&&c.v.length){X.lk={t:Date.now()-570000,v:c.v,total:c.v.length,partial:true,stale:c.t};return c.v}throw e}
  const seen=new Set(),v=[].concat(...pages.filter(Boolean)).filter(t=>!seen.has(t.uri)&&seen.add(t.uri));
- X.lk={t:Date.now(),v,total,partial};return v}
+ X.lk={t:Date.now(),v,total,partial};if(!partial&&v.length)lkSave(v);else if(partial){const c=LKC();if(c&&c.v&&c.v.length>v.length){X.lk={t:Date.now()-570000,v:c.v,total:c.v.length,partial:true,stale:c.t};return c.v}}return v}
 const yr=t=>+(((t.album||{}).release_date||'').slice(0,4))||0,dcd=t=>{const y=yr(t);return y?Math.floor(y/10)*10:0},
  dur=ms=>{const m=Math.round(ms/60000),h=Math.floor(m/60);return h?h+' h '+(m%60)+' min':m+' min'},
  byArtist=L=>{const m=new Map();L.forEach(t=>(t.artists||[]).slice(0,1).forEach(a=>{if(!a||!a.id)return;const r=m.get(a.id)||{id:a.id,name:a.name,n:0};r.n++;m.set(a.id,r)}));return[...m.values()].sort((a,b)=>b.n-a.n||a.name.localeCompare(b.name))},
  opt=(sel,v,txt)=>{const o=document.createElement('option');o.value=v;o.textContent=txt;sel.append(o)};
 X.lf={q:'',artist:'',dec:'',sort:'added',n:100};
 async function likedp(){const p=$x('#xp');p.className='xp';p.textContent='Cargando tus Me gusta…';let all;
- try{all=await likedAll(false,(n,t)=>{p.textContent='Cargando tus Me gusta… '+n+(t?' de '+t:'')})}catch(e){p.replaceChildren(E('div','xm',e&&e.code=='scope'?'Falta un permiso nuevo de Spotify para esto. Escribe <b>/spotify conectar</b> una vez en el chat y acepta los permisos.':spErrText(e)));if(e&&e.code=='rate'){const m=p.firstChild;setTimeout(()=>{if(m&&m.isConnected&&X.open)likedp()},(e.wait||5)*1000+800)}return}
+ try{all=await likedAll(false,(n,t,w)=>{p.textContent=w?'Spotify pide esperar '+w+' s; sigo solo… ('+n+(t?' de '+t:'')+' cargadas)':'Cargando tus Me gusta… '+n+(t?' de '+t:'')})}catch(e){p.replaceChildren(E('div','xm',e&&e.code=='scope'?'Falta un permiso nuevo de Spotify para esto. Escribe <b>/spotify conectar</b> una vez en el chat y acepta los permisos.':spErrText(e)));if(e&&e.code=='rate'){const m=p.firstChild;setTimeout(()=>{if(m&&m.isConnected&&X.open)likedp()},Math.max(20,e.wait||0)*1000)}return}
  p.replaceChildren();if(!all.length){p.append(E('div','xm','Aún no tienes canciones en Me gusta.'));return}
- if(X.lk&&X.lk.partial)p.append(E('div','xm','Spotify cortó la carga por límite de peticiones: se cargaron '+all.length+(X.lk.total?' de '+X.lk.total:'')+' canciones. Pulsa ↻ en unos minutos para completar.'));
+ if(X.lk&&X.lk.partial)p.append(E('div','xm',(X.lk.stale?'Spotify sigue limitando las peticiones; te muestro la copia guardada el '+new Date(X.lk.stale).toLocaleString('es-MX')+'. ':'')+'Spotify cortó la carga por límite de peticiones: se cargaron '+all.length+(X.lk.total?' de '+X.lk.total:'')+' canciones. Pulsa ↻ en unos minutos para completar.'));
  const f=X.lf,q=E('input','xsi'),bar=E('div','xlf'),sa=document.createElement('select'),sd=document.createElement('select'),ss=document.createElement('select'),act=E('div','xrg'),cnt=E('div','xcnt'),o=E('div');
  q.type='search';q.placeholder='Filtrar por canción, artista o álbum…';q.setAttribute('aria-label','Filtrar Me gusta');q.value=f.q;q.onkeydown=e=>e.stopPropagation();
  sa.setAttribute('aria-label','Artista');opt(sa,'','Todos los artistas');byArtist(all).forEach(a=>opt(sa,a.id,a.name+' ('+a.n+')'));if(f.artist&&![...sa.options].some(x=>x.value==f.artist))f.artist='';sa.value=f.artist;
