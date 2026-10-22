@@ -4949,6 +4949,7 @@ async function send(t){t=(t||'').trim();if(!t||busy)return;{const k=t.toLowerCas
  if(gate(t))return;
  let m;if((m=t.match(/^\/(\w+)\s*(.*)$/))){const k=m[1].toLowerCase();
   if(k=='mic'||k.startsWith('micr')){mdOpen();return}
+  if(k=='musica'||k=='music'||k=='youtube'||k=='yt'||k=='reproductor'){echoU(t);window.NoryxMusic?NoryxMusic.open(m[2],(k=='youtube'||k=='yt')?'youtube':undefined):sysMsg('El reproductor aún no está listo.','Noryx');return}
   if(k=='noryx'||k=='puente'||k=='atajo'||k=='rutina'||k=='spotify'){if(k!='puente'&&k!='spotify')echoU(t);await noryxEntry(k,m[2]);return}
   if(k=='ia'||k=='maestro'||k=='online'){const mode=norm(m[2]||'estado');if(/^(activar|activa|encender|on|enable|online)$/.test(mode)){MAESTRO=true;S.set('nx-maestro2',true);sysMsg('🌐 **Modo en línea activado.** Para responder preguntas abiertas puedo enviar el mensaje y el contexto reciente a la API de Noryx (Cloudflare + Groq) y, si no responde, al servicio externo de respaldo (Pollinations). No envíes contraseñas ni información privada. Las fuentes o datos actuales no se dan por verificados solo porque los genere el modelo. Escribe `/ia apagar` para desactivarlo.','Noryx · modo en línea');return}if(/^(apagar|desactivar|desactiva|off|disable|local)$/.test(mode)){MAESTRO=false;S.set('nx-maestro2',false);sysMsg('Modo en línea desactivado. Noryx seguirá usando su núcleo local y las consultas de conocimiento disponibles.','Noryx · modo local');return}if(/^(probar|prueba|test)$/.test(mode)){askNoryxAPI([{role:'system',content:'Responde solo con la palabra OK.'},{role:'user',content:'Di OK'}]).then(o=>{const d=window._nxApiDiag||{};sysMsg(o&&o.t?'✅ **La API responde.** Prueba: '+String(o.t).slice(0,120):'❌ **La API no respondió.** Detalle: '+(d.msg||'sin detalle')+'. Página: '+location.origin,'Noryx · prueba de API')});return}sysMsg('**Modo de generación externa:** '+(MAESTRO?'activado':'desactivado')+'.\n\nUsa `/ia activar` para ampliar las respuestas con el servicio externo de generación de texto, o `/ia apagar` para mantener el procesamiento conversacional en el núcleo local. Al activarlo, algunos mensajes se enviarán a ese servicio.','Noryx · estado');return}
   if(k=='jarvis'){echoU(t);sysMsg('El comando ahora es `/noryx`.','Noryx');return}
@@ -7004,6 +7005,7 @@ window.spxHook=(it,play)=>{if(!it){mini.hidden=true;document.title=T0;if(X.open)
 function open(t){if(!NP.uri||!NP.it){toast('No hay música sonando. Pídele algo a Noryx, p. ej. «pon a Soda Stereo».',2800);return false}
  X.open=true;window.__spxOn=1;document.documentElement.classList.add('spx-on');el.hidden=false;ap();mini.hidden=true;el.classList.toggle('vin',X.vin);paint.k=0;paint();tab(t||X.tab);slLabel();spApi('GET','/me/player').then(c=>{if(c&&c.device&&c.device.volume_percent!=null){X.vol=c.device.volume_percent;$x('#xvol').value=X.vol}}).catch(()=>{});if(!loop.on){loop.on=1;requestAnimationFrame(loop)}return true}
 function close(){X.open=false;window.__spxOn=0;document.documentElement.classList.remove('spx-on');el.hidden=true;try{document.fullscreenElement&&document.exitFullscreen()}catch(e){}X.mh=false;mvis()}
+window.NXSPX={open:t=>open(t),close:()=>close()};
 window.spxOpen=open;window.spxClose=close;window.spxSeekBy=seekBy;window.spxSleep=sleepIn;window.spxSlEnd=()=>X.slEnd;
 /* ---- visualizador decorativo (la API de Spotify no entrega el audio real) + lectura de tiempo y letra ---- */
 const cv=$x('#xv'),cx=cv.getContext('2d');let amp=0,ro=false;try{new ResizeObserver(()=>{cv._w=cv._h=0}).observe(cv);ro=true}catch(e){}
@@ -14743,13 +14745,13 @@ function apply(S,grp,name,node){
  return R;
 }
 function sci(v){if(!isFinite(v)||v===0)return '0';let e=Math.floor(Math.log10(Math.abs(v)));let m=+(v/Math.pow(10,e)).toPrecision(4);if(Math.abs(m)>=10){m/=10;e++}
- if(e>=-2&&e<=4)return String(+v.toPrecision(4));return m+'\\times10^{'+e+'}'}
+ if(e>=-2&&e<=4)return String(+v.toPrecision(4));if(e===-5||e===-8||e===-11){m=+(m*10).toPrecision(4);e--}return m+'\\times10^{'+e+'}'}
 const uTex=T=>T==='C'?'\\mathrm{F}':'\\Omega',tv=(v,T)=>sci(v)+'\\,'+uTex(T);
 const tn=n=>{const m=String(n).match(/^([A-Za-z])(.+)$/);return m?m[1]+'_{'+m[2]+'}':n};
 const SI=[[1e6,'M'],[1e3,'k'],[1,''],[1e-3,'m'],[1e-6,'µ'],[1e-9,'n'],[1e-12,'p']];
 const NCSUP={'-':'⁻','0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹'};
 function sciTxt(v){if(!isFinite(v)||v===0)return '0';let e=Math.floor(Math.log10(Math.abs(v))),m=+(v/Math.pow(10,e)).toPrecision(4);if(Math.abs(m)>=10){m/=10;e++}
- if(e>=-2&&e<=4)return String(+v.toPrecision(4));return m+'×10'+String(e).split('').map(c=>NCSUP[c]).join('')}
+ if(e>=-2&&e<=4)return String(+v.toPrecision(4));if(e===-5||e===-8||e===-11){m=+(m*10).toPrecision(4);e--}return m+'×10'+String(e).split('').map(c=>NCSUP[c]).join('')}
 function si(v,u){return sciTxt(v)+' '+u}
 function stepFormulas(grp,name,val,T){
  const ns=grp.items.map(i=>i.c.name),vs=grp.items.map(i=>i.c.val),h=harm(grp.kind,T),N=tn(name);
@@ -15537,5 +15539,240 @@ const cc=$('nxLabControls');
 if(cc){new MutationObserver(()=>sync()).observe(cc,{childList:true});document.addEventListener('change',e=>{if(e.target&&e.target.id==='nlPhys')show(e.target.value==='cedit')});sync()}
 })();
 </script>
+<!-- ===== Noryx Music: reproductor propio (YouTube dentro de Noryx + enlace a todo el reproductor de Spotify) ===== -->
+<style id="nxm-css">
+#nxm{position:fixed;inset:0;z-index:59;background:radial-gradient(ellipse at 70% -20%,#28202c 0,transparent 40%),#090a0d;color:#f4f5f7;font:14px/1.45 Inter,'Segoe UI',Arial,sans-serif;display:grid;grid-template-columns:220px minmax(0,1fr);grid-template-rows:minmax(0,1fr) auto;overflow:hidden;--nr:#ff3448;--ng:#1ed760;--nl:#292d38;--nm:#969cab}
+#nxm[hidden]{display:none}#nxm *{box-sizing:border-box}#nxm button,#nxm input{font:inherit;color:inherit}#nxm button{cursor:pointer;border:0;background:none}
+#nxm .nz-sb{grid-row:1/3;padding:22px 14px;border-right:1px solid var(--nl);background:#0c0d11;display:flex;flex-direction:column;gap:4px;overflow:auto}
+#nxm .br{display:flex;align-items:center;gap:10px;font-size:19px;font-weight:800;letter-spacing:-.6px;margin:0 8px 22px}#nxm .bm{display:grid;place-items:center;width:34px;height:34px;border-radius:11px;background:linear-gradient(145deg,#ff4355,#9c1836);box-shadow:0 5px 22px #ff34482b;font-size:17px}
+#nxm .nv{display:flex;align-items:center;gap:12px;padding:11px;border-radius:11px;color:#aeb2bf;text-align:left;width:100%}#nxm .nv:hover,#nxm .nv.on{background:#22232b;color:#fff}#nxm .nv.on i{color:var(--nr)}#nxm .nv i{font-style:normal;width:20px;text-align:center;font-size:16px}
+#nxm .nz-nt{margin-top:auto;padding:12px;border:1px solid var(--nl);border-radius:13px;color:var(--nm);font-size:12px}
+#nxm .mn{display:block;overflow:auto;padding:22px clamp(16px,3.5vw,44px) 28px;position:relative;scroll-behavior:auto}
+#nxm .tp{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:20px;flex-wrap:wrap}
+#nxm .sg{display:flex;border:1px solid var(--nl);border-radius:99px;padding:3px;background:#14161c}#nxm .sg button{padding:7px 15px;border-radius:99px;color:#c8c6d0;font-weight:650;font-size:13px}#nxm .sg button.on{background:var(--nr);color:#fff}#nxm .sg button.on.sp{background:var(--ng);color:#06220f}
+#nxm .nz-x{width:36px;height:36px;border-radius:50%;background:#22232b;border:1px solid #3a3d47;font-size:15px}#nxm .nz-x:hover{background:#383a46}
+#nxm .nz-hero{position:relative;overflow:hidden;border:1px solid #42303b;border-radius:22px;padding:clamp(20px,4vw,36px);background:linear-gradient(110deg,#25141d 0%,#19151e 48%,#111319 100%)}#nxm .nz-hero:after{content:"♫";position:absolute;right:6%;top:-50px;font-size:270px;line-height:1;color:#ff34480d;transform:rotate(-12deg);pointer-events:none}
+#nxm .nz-hero>*{position:relative;z-index:1}#nxm .ey{color:#ff8b98;font-size:11px;letter-spacing:2px;font-weight:800;text-transform:uppercase}#nxm h1{font-size:clamp(26px,4vw,38px);line-height:1.1;letter-spacing:-1.2px;margin:10px 0}#nxm .nz-hero p{color:#b4b4c0;max-width:520px;margin:0}
+#nxm .nz-sh{display:flex;justify-content:space-between;align-items:end;gap:12px;margin:26px 0 12px}#nxm .nz-sh h2{margin:0;font-size:18px;letter-spacing:-.3px}#nxm .nz-sh p{margin:3px 0 0;color:var(--nm);font-size:12px}
+#nxm .sf{display:flex;gap:9px;margin-top:16px}#nxm .sf input,#nxm .fi{flex:1;min-width:0;background:#15171e;border:1px solid #303440;border-radius:12px;padding:12px 14px;outline:none}#nxm .sf input:focus,#nxm .fi:focus{border-color:#a94a5a}
+#nxm .nz-bt{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:11px 16px;border-radius:10px;background:var(--nr);font-weight:750;color:#fff;white-space:nowrap}#nxm .nz-bt.sc{background:#272932;border:1px solid #3a3d47}#nxm .nz-bt.sp{background:var(--ng);color:#06220f}#nxm .nz-bt:hover{filter:brightness(1.1)}
+#nxm .nz-gr{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}#nxm .tl{padding:11px;border:1px solid var(--nl);border-radius:15px;background:linear-gradient(145deg,#171920,#111319);transition:.18s;text-align:left}#nxm .tl:hover{transform:translateY(-2px);border-color:#4a3a44}
+#nxm .ar{aspect-ratio:1.5;border-radius:10px;display:grid;place-items:center;font-size:40px;background:linear-gradient(135deg,#4a1728,#171b29)}#nxm .ar.r{background:linear-gradient(135deg,#8f1832,#25141d)}#nxm .ar.b{background:linear-gradient(135deg,#172a54,#181322)}#nxm .ar.g{background:linear-gradient(135deg,#65502b,#191817)}#nxm .ar.v{background:linear-gradient(135deg,#165e47,#14201f)}#nxm .tl b{display:block;margin:10px 0 2px;font-size:13px}#nxm .tl span{color:var(--nm);font-size:11px}
+#nxm .rl{display:grid;gap:8px}#nxm .rw{display:flex;align-items:center;gap:12px;padding:9px;border-radius:11px;background:#191b23;border:1px solid transparent}#nxm .rw:hover{border-color:#3a3340}#nxm .rw.on{border-color:var(--nr);background:#2a1a22}
+#nxm .nz-th{width:84px;aspect-ratio:16/9;border-radius:8px;object-fit:cover;background:#2a2d38;flex:none;display:grid;place-items:center;font-size:20px}#nxm .mt{flex:1;min-width:0}#nxm .mt b{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}#nxm .mt span{font-size:11.5px;color:var(--nm);display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#nxm .ac{display:flex;gap:6px;flex:none}#nxm .tn{background:#262832;padding:7px 10px;border-radius:8px;font-size:12px;white-space:nowrap}#nxm .tn:hover{background:#383a46}#nxm .tn.on{color:var(--nr)}
+#nxm .bx{border:1px solid var(--nl);background:#111319;border-radius:15px;padding:14px;margin-top:14px}#nxm .bx.er{border-color:#7a2a36;background:#1c1217}#nxm .bx p{margin:6px 0;color:#b4b7c3}#nxm .bx code{background:#22232b;padding:1px 6px;border-radius:5px;font-size:12px}
+#nxm .nw{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:20px;align-items:start}#nxm .slot{aspect-ratio:16/9;border-radius:16px;background:#000;border:1px solid var(--nl)}#nxm .cv{aspect-ratio:1;border-radius:16px;background:#1a1c24;object-fit:cover;width:100%;max-width:340px;display:block}
+#nxm .ly{position:relative;height:min(62vh,560px);overflow:auto;border:1px solid var(--nl);border-radius:16px;padding:18px;background:#0e1015}#nxm .ly p{margin:0 0 10px;font-size:20px;line-height:1.35;font-weight:700;color:#5d6270;cursor:pointer;transition:.25s}#nxm .ly p.on{color:#fff;transform:scale(1.02);transform-origin:left}#nxm .ly p.pa{color:#8a8fa0}#nxm .ly pre{white-space:pre-wrap;font:inherit;color:#c8ccd8;margin:0}
+#nxm .pb{grid-column:2;display:grid;grid-template-columns:1fr 1.3fr 1fr;align-items:center;gap:18px;padding:11px 22px;background:#101116f5;border-top:1px solid #30313a}
+#nxm .nw2{display:flex;align-items:center;gap:11px;min-width:0}#nxm .cov{width:48px;height:48px;border-radius:9px;flex:none;background:linear-gradient(135deg,#8b233a,#242238);object-fit:cover;display:grid;place-items:center;font-size:20px}#nxm .ni{min-width:0}#nxm .ni b,#nxm .ni span{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}#nxm .ni b{font-size:12.5px}#nxm .ni span{color:var(--nm);font-size:11px}
+#nxm .ct{display:flex;flex-direction:column;align-items:center;gap:6px}#nxm .cb{display:flex;align-items:center;gap:18px}#nxm .cb button{color:#c6c8d2;font-size:18px;padding:2px 4px}#nxm .cb button.on{color:var(--nr)}#nxm .cb .pl{display:grid;place-items:center;width:36px;height:36px;border-radius:50%;background:#fff;color:#111;font-size:15px}
+#nxm .nz-pg{display:flex;align-items:center;gap:8px;width:min(100%,470px);font-size:11px;color:var(--nm)}#nxm .nz-bar{flex:1;height:5px;border-radius:9px;background:#383a43;overflow:hidden;cursor:pointer;position:relative}#nxm .nz-bar i{display:block;height:100%;width:0;background:var(--nr)}#nxm.spm .nz-bar i{background:var(--ng)}
+#nxm .pr{display:flex;align-items:center;justify-content:flex-end;gap:10px;color:var(--nm);font-size:12px}#nxm .pr input[type=range]{width:84px;accent-color:var(--nr)}
+#nxm .nz-tg{display:flex;gap:8px;flex-wrap:wrap}#nxm .nz-tg button{padding:8px 13px;border-radius:99px;border:1px solid #3a303a;background:#17171e;color:#c8c6d0;font-size:12.5px}#nxm .nz-tg button.on{border-color:#ff5366;background:#45202b;color:#fff}
+#nxm .em{color:var(--nm);padding:26px 10px;text-align:center}
+#nxm-vid{position:fixed;z-index:61;right:14px;bottom:104px;width:256px;border-radius:14px;overflow:hidden;background:#000;border:1px solid #3a3d47;box-shadow:0 14px 40px #000a;display:none}#nxm-vid.show{display:block}
+#nxm-vid .vh{display:flex;align-items:center;gap:6px;padding:5px 6px 5px 10px;background:#15171e;color:#e8e9ee;font:600 11px Inter,Arial,sans-serif}#nxm-vid .vh span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}#nxm-vid .vh button{background:#262832;border:0;color:#fff;width:26px;height:24px;border-radius:7px;cursor:pointer}
+#nxm-vid .vf{aspect-ratio:16/9;width:100%;background:#000}#nxm-vid .vf iframe,#nxm-vid .vf>div{width:100%;height:100%;display:block;border:0}
+#nxm-vid.big{border-radius:16px;box-shadow:none}#nxm-vid.big .vh{display:none}
+@media(max-width:1000px){#nxm .nz-gr{grid-template-columns:repeat(2,minmax(0,1fr))}#nxm .pb{grid-template-columns:1fr 1fr}#nxm .pr{display:none}#nxm .nw{grid-template-columns:1fr}}
+@media(max-width:760px){#nxm{grid-template-columns:1fr;grid-template-rows:auto minmax(0,1fr) auto}#nxm .nz-sb{grid-row:1;flex-direction:row;align-items:center;padding:9px 10px;border-right:0;border-bottom:1px solid var(--nl);overflow-x:auto;gap:4px}#nxm .br{margin:0 8px 0 0;font-size:16px}#nxm .nz-nt{display:none}#nxm .nv{width:auto;flex:none;padding:8px 10px;font-size:12px;white-space:nowrap}#nxm .nv span{display:inline}#nxm .mn{grid-row:2;padding:14px 12px 18px}#nxm .pb{grid-column:1;grid-template-columns:1fr;gap:6px;padding:8px 12px}#nxm .nw2{justify-content:center}#nxm .sf{flex-wrap:wrap}#nxm .sf .nz-bt{width:100%}#nxm .nz-th{width:68px}#nxm .rw{flex-wrap:wrap}#nxm .ac{width:100%;justify-content:flex-end}#nxm-vid{bottom:176px;right:8px;width:200px}}
+</style>
+<div id="nxm" hidden role="dialog" aria-label="Noryx Music"></div>
+<div id="nxm-vid"><div class="vh"><span id="nxm-vt">YouTube</span><button id="nxm-vp" title="Play/Pausa">⏯</button><button id="nxm-vn" title="Siguiente">⏭</button><button id="nxm-vx" title="Cerrar reproductor">✕</button></div><div class="vf"><div id="nxm-yt"></div></div></div>
+<script id="nxm-js">
+(()=>{'use strict';
+const $=s=>document.querySelector(s),E=(t,c,x)=>{const e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e};
+const ST={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+const nrm=s=>String(s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9 ]/g,' ').replace(/\s+/g,' ').trim();
+const tst=(t,ms)=>{try{typeof toast=='function'?toast(t,ms):0}catch(e){}};
+const fmt=s=>{s=Math.max(0,Math.floor(s||0));return Math.floor(s/60)+':'+String(s%60).padStart(2,'0')};
+const dec=s=>{const t=document.createElement('textarea');t.innerHTML=s||'';return t.value};
+const sp=()=>{try{return typeof spReady=='function'&&spReady()}catch(e){return false}};
+const M={open:false,src:ST.get('nx-msrc','youtube'),view:'home',q:'',res:[],resSrc:'',err:null,queue:[],qi:-1,cur:null,playing:false,shuf:ST.get('nx-mshuf',false),rep:ST.get('nx-mrep','off'),
+ favs:ST.get('nx-ytfav',[]),hist:ST.get('nx-ythist',[]),key:ST.get('nx-ytkey',''),lib:'fav',vol:ST.get('nx-mvol',80),ly:null,lyId:'',lyIdx:-1,dismissed:false,busy:false,reply:''};
+const cache=new Map();let P=null,Pready=false,pend=null,tick=0;
+/* ---------- YouTube IFrame ---------- */
+function loadYT(){return new Promise((ok,no)=>{if(window.YT&&YT.Player)return ok();const prev=window.onYouTubeIframeAPIReady;window.onYouTubeIframeAPIReady=()=>{try{prev&&prev()}catch(e){}ok()};if(!document.getElementById('nxm-ytapi')){const s=document.createElement('script');s.id='nxm-ytapi';s.src='https://www.youtube.com/iframe_api';s.onerror=()=>no(new Error('No se pudo cargar el reproductor de YouTube'));document.head.append(s)}setTimeout(()=>no(new Error('YouTube tardó demasiado en cargar')),15000)})}
+async function ensureP(){if(Pready)return P;await loadYT();return new Promise(ok=>{const pv={playsinline:1,rel:0,modestbranding:1};if(/^https?:$/.test(location.protocol))pv.origin=location.origin;P=new YT.Player('nxm-yt',{width:'100%',height:'100%',playerVars:pv,events:{onReady:()=>{Pready=true;try{P.setVolume(M.vol)}catch(e){}ok(P);if(pend){const v=pend;pend=null;P.loadVideoById(v)}},onStateChange:e=>{const s=e.data;if(s===1){M.playing=true;ui()}else if(s===2){M.playing=false;ui()}else if(s===0){M.playing=false;ended()}},onError:e=>{const c=e.data;tst(c===101||c===150||c===153?'Este video no permite reproducirse fuera de YouTube. Paso al siguiente.':'No se pudo reproducir ese video ('+c+').',3200);setTimeout(()=>next(true),900)}}})})}
+function ended(){if(M.rep==='one'&&P){P.seekTo(0);P.playVideo();return}next(true)}
+/* ---------- utilidades de título ---------- */
+function split(it){let t=dec(it.title).replace(/\s*[\(\[][^\)\]]*(official|video|audio|lyrics?|letra|visuali[sz]er|hd|4k|mv|remaster|clip)[^\)\]]*[\)\]]/ig,'').replace(/\s*[|｜]\s*.*$/,'').trim(),ch=dec(it.artist||'').replace(/\s*-\s*Topic$/i,'').replace(/VEVO$/i,'').trim();const m=t.match(/^(.+?)\s+[-–—]\s+(.+)$/);return m?{artist:m[1].trim(),track:m[2].trim()}:{artist:ch,track:t}}
+const idOf=s=>{s=String(s||'').trim();let m=s.match(/(?:v=|youtu\.be\/|embed\/|shorts\/|live\/)([\w-]{11})/);if(m)return m[1];return null};const bareId=s=>{s=String(s||'').trim();return /^[\w-]{11}$/.test(s)&&/[0-9_-]/.test(s)&&/[a-z]/.test(s)&&/[A-Z]/.test(s)?s:null};
+const dur8601=s=>{const m=String(s||'').match(/PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/);return m?(+m[1]||0)*3600+(+m[2]||0)*60+(+m[3]||0):0};
+const ikey=i=>i.src+':'+(i.id||i.uri);
+/* ---------- búsqueda ---------- */
+async function ytSearch(q){let id=idOf(q);
+ if(!id&&bareId(q)){try{const r0=await fetch('https://www.youtube.com/oembed?format=json&url='+encodeURIComponent('https://www.youtube.com/watch?v='+q.trim()));if(r0.ok)id=q.trim()}catch(e){}}
+ if(id){try{const r=await fetch('https://www.youtube.com/oembed?format=json&url='+encodeURIComponent('https://www.youtube.com/watch?v='+id));const j=r.ok?await r.json():{};return [{src:'youtube',id,title:dec(j.title||'Video de YouTube'),artist:dec(j.author_name||''),thumb:j.thumbnail_url||'https://i.ytimg.com/vi/'+id+'/mqdefault.jpg',dur:0}]}catch(e){return [{src:'youtube',id,title:'Video de YouTube',artist:'',thumb:'https://i.ytimg.com/vi/'+id+'/mqdefault.jpg',dur:0}]}}
+ if(!M.key)throw {nokey:1};const ck='y:'+nrm(q);if(cache.has(ck))return cache.get(ck);
+ const call=async(u,p)=>{const r=await fetch(u+'?'+new URLSearchParams(Object.assign({key:M.key},p)));let j={};try{j=await r.json()}catch(e){}if(!r.ok){const er=j.error||{};throw {api:1,code:r.status,msg:er.message||'Error '+r.status,reason:(er.errors&&er.errors[0]&&er.errors[0].reason)||(er.details&&er.details[0]&&er.details[0].reason)||''}}return j};
+ const base={part:'snippet',type:'video',maxResults:15,q,videoEmbeddable:'true',safeSearch:'none'};
+ let j=await call('https://www.googleapis.com/youtube/v3/search',Object.assign({videoCategoryId:'10'},base));if(!(j.items||[]).length)j=await call('https://www.googleapis.com/youtube/v3/search',base);
+ const items=(j.items||[]).filter(x=>x.id&&x.id.videoId).map(x=>({src:'youtube',id:x.id.videoId,title:dec(x.snippet.title),artist:dec(x.snippet.channelTitle),thumb:(x.snippet.thumbnails.medium||x.snippet.thumbnails.default||{}).url||'https://i.ytimg.com/vi/'+x.id.videoId+'/mqdefault.jpg',dur:0}));
+ if(items.length){try{const d=await call('https://www.googleapis.com/youtube/v3/videos',{part:'contentDetails',id:items.map(i=>i.id).join(',')});const mp=new Map((d.items||[]).map(v=>[v.id,dur8601(v.contentDetails.duration)]));items.forEach(i=>i.dur=mp.get(i.id)||0)}catch(e){}}
+ cache.set(ck,items);return items}
+async function spSearch(q){if(!sp())throw {nosp:1};const j=await spApi('GET','/search?type=track&limit=15&q='+encodeURIComponent(q));return ((j.tracks&&j.tracks.items)||[]).filter(Boolean).map(t=>({src:'spotify',uri:t.uri,title:t.name,artist:(t.artists||[]).map(a=>a.name).join(', '),thumb:((t.album&&t.album.images)||[]).slice(-2)[0]?(t.album.images.slice(-2)[0].url):'',dur:Math.round((t.duration_ms||0)/1000)}))}
+async function doSearch(q,quiet){q=(q||'').trim();if(!q){tst('Escribe una canción, artista o enlace de YouTube.');return []}
+ M.q=q;M.err=null;M.busy=true;M.res=[];M.resSrc=M.src;if(!quiet){M.view='home';render()}
+ try{M.res=M.src==='spotify'?await spSearch(q):await ytSearch(q)}catch(e){M.err=e;M.res=[]}
+ M.busy=false;if(M.open)render();return M.res}
+/* ---------- reproducción ---------- */
+function pauseOther(src){try{if(src!=='youtube'&&P&&Pready)P.pauseVideo()}catch(e){}try{if(src!=='spotify'&&typeof NP!='undefined'&&NP.play&&sp())spApi('PUT','/me/player/pause').catch(()=>{})}catch(e){}}
+async function playItem(it,list,idx){if(!it)return;M.dismissed=false;
+ if(list){M.queue=list.slice();M.qi=typeof idx=='number'?idx:list.indexOf(it)}else{const k=M.queue.findIndex(x=>ikey(x)===ikey(it));if(k>=0)M.qi=k;else{M.queue.push(it);M.qi=M.queue.length-1}}
+ pauseOther(it.src);M.cur=it;M.lyId='';M.ly=null;addHist(it);
+ if(it.src==='youtube'){M.src='youtube';ST.set('nx-msrc','youtube');
+  try{await ensureP();P.loadVideoById(it.id);P.setVolume(M.vol);M.playing=true}catch(e){tst(e.message||'No se pudo iniciar YouTube',3500)}}
+ else{M.src='spotify';ST.set('nx-msrc','spotify');try{await spStart({uris:[it.uri]});M.playing=true;setTimeout(()=>{try{npPoll()}catch(e){}},900)}catch(e){tst(typeof spErrText=='function'?spErrText(e):'No se pudo reproducir en Spotify',4000)}}
+ mediaSess();ui();if(M.view==='now')loadLy();else if(M.open&&M.view!=='now')render()}
+function next(auto){if(M.src==='spotify'&&!(M.cur&&M.cur.src==='youtube')){if(sp())spApi('POST','/me/player/next').then(()=>setTimeout(()=>{try{npPoll()}catch(e){}},700)).catch(()=>{});return}
+ if(!M.queue.length)return;let i=M.qi;if(M.shuf&&M.queue.length>1){do{i=Math.floor(Math.random()*M.queue.length)}while(i===M.qi)}else i=M.qi+1;
+ if(i>=M.queue.length){if(M.rep==='all')i=0;else{if(auto){M.playing=false;ui()}return}}playItem(M.queue[i],M.queue,i)}
+function prev(){if(M.src==='spotify'&&!(M.cur&&M.cur.src==='youtube')){if(sp())spApi('POST','/me/player/previous').then(()=>setTimeout(()=>{try{npPoll()}catch(e){}},700)).catch(()=>{});return}
+ if(P&&Pready&&P.getCurrentTime()>4){P.seekTo(0);return}if(M.qi>0)playItem(M.queue[M.qi-1],M.queue,M.qi-1)}
+async function toggle(){if(M.src==='spotify'&&!(M.cur&&M.cur.src==='youtube')){if(!sp()){tst('Conecta Spotify primero.');return}try{if(NP.play)await spApi('PUT','/me/player/pause');else await spStart(undefined);setTimeout(()=>{try{npPoll()}catch(e){}},600)}catch(e){tst(typeof spErrText=='function'?spErrText(e):'Error de Spotify',3500)}return}
+ if(!P||!Pready){if(M.cur)playItem(M.cur);return}M.playing?P.pauseVideo():P.playVideo()}
+function setVol(v){M.vol=v;ST.set('nx-mvol',v);try{P&&Pready&&P.setVolume(v)}catch(e){}if(M.src==='spotify'&&sp()&&typeof spApi=='function')clearTimeout(setVol.t),setVol.t=setTimeout(()=>spApi('PUT','/me/player/volume?volume_percent='+v).catch(()=>{}),180)}
+function addHist(it){M.hist=[it,...M.hist.filter(x=>ikey(x)!==ikey(it))].slice(0,60);ST.set('nx-ythist',M.hist)}
+const isFav=it=>M.favs.some(x=>ikey(x)===ikey(it));
+function togFav(it){if(!it)return;if(isFav(it))M.favs=M.favs.filter(x=>ikey(x)!==ikey(it));else M.favs.unshift(it);ST.set('nx-ytfav',M.favs);ui();if(M.view==='lib')render()}
+function addQ(it){if(!M.queue.some(x=>ikey(x)===ikey(it)))M.queue.push(it);if(M.qi<0&&!M.cur){playItem(it,M.queue,M.queue.length-1);return}tst('Agregada a la cola');if(M.view==='queue')render()}
+function mediaSess(){try{if(!navigator.mediaSession||!M.cur||M.cur.src!=='youtube')return;navigator.mediaSession.metadata=new MediaMetadata({title:split(M.cur).track,artist:split(M.cur).artist,artwork:[{src:M.cur.thumb,sizes:'320x180'}]});const h=navigator.mediaSession;h.setActionHandler('play',toggle);h.setActionHandler('pause',toggle);h.setActionHandler('nexttrack',()=>next());h.setActionHandler('previoustrack',prev)}catch(e){}}
+/* ---------- letra (LRCLIB) ---------- */
+function parseLRC(t){const o=[];for(const ln of String(t).split(/\r?\n/)){const st=[...ln.matchAll(/\[(\d+):(\d+(?:\.\d+)?)\]/g)];if(!st.length)continue;const x=ln.replace(/\[[^\]]*\]/g,'').trim();for(const m of st)o.push({t:(+m[1]*60+ +m[2]),x})}return o.sort((a,b)=>a.t-b.t)}
+async function fetchLy(artist,track,dur){const B='https://lrclib.net/api/',get=async u=>{try{const c=new AbortController(),tm=setTimeout(()=>c.abort(),8000),x=await fetch(B+u,{signal:c.signal});clearTimeout(tm);return x.ok?await x.json():null}catch(e){return null}};
+ let r=dur?await get('get?'+new URLSearchParams({track_name:track,artist_name:artist,duration:Math.round(dur)})):null;
+ if(!r){const a=await get('search?'+new URLSearchParams({q:(artist+' '+track).trim()}));if(Array.isArray(a)&&a.length){const ok=dur?a.filter(z=>Math.abs((z.duration||0)-dur)<=8):a;r=(ok.find(z=>z.syncedLyrics)||ok[0]||a.find(z=>z.syncedLyrics)||a[0])||null}}
+ return r?{L:r.syncedLyrics?parseLRC(r.syncedLyrics):[],plain:r.plainLyrics||'',inst:!!r.instrumental}:{L:[],plain:'',inst:false,none:true}}
+async function loadLy(custom){const it=M.cur;if(!it)return;const k=ikey(it)+(custom?custom.a+custom.t:'');if(!custom&&M.lyId===k&&M.ly){paintLy();return}M.lyId=k;M.ly=null;paintLy();
+ const s=split(it),a=custom?custom.a:s.artist,t=custom?custom.t:s.track;let d=it.dur;if(!d&&P&&Pready){try{d=P.getDuration()}catch(e){}}
+ const key='l:'+nrm(a+t);let v=cache.get(key);if(!v||custom){v=await fetchLy(a,t,d);if(v.none&&!custom){const v2=await fetchLy('',t,0);if(!v2.none)v=v2}cache.set(key,v)}
+ if(M.lyId===k){M.ly=v;paintLy()}}
+function paintLy(){const box=$('#nxm .ly');if(!box)return;box.replaceChildren();M.lyIdx=-1;const v=M.ly,it=M.cur;
+ if(!it){box.append(E('div','em','Reproduce una canción para ver su letra.'));return}
+ if(!v){box.append(E('div','em','Buscando letra…'));return}
+ if(v.inst){box.append(E('div','em','♪ Instrumental ♪'));return}
+ if(v.L.length){v.L.forEach(l=>{const p=E('p','',l.x||'♪');p.onclick=()=>seekTo(l.t);box.append(p)});return}
+ if(v.plain){const pr=E('pre','',v.plain);box.append(pr);return}
+ const s=split(it),d=E('div','em');d.append(E('div','',"No encontré la letra de esta canción."));const f=E('div','sf'),a=E('input','fi'),t=E('input','fi'),b=E('button','nz-bt','Buscar otra vez');a.value=s.artist;t.value=s.track;a.placeholder='Artista';t.placeholder='Canción';b.onclick=()=>loadLy({a:a.value,t:t.value});f.append(a,t,b);d.append(f);const g=E('a','tn','Buscar en Google ↗');g.href='https://www.google.com/search?q='+encodeURIComponent(s.artist+' '+s.track+' letra');g.target='_blank';g.rel='noopener';g.style.cssText='display:inline-block;margin-top:10px;color:#fff;text-decoration:none';d.append(g);box.append(d)}
+function seekTo(sec){if(M.src==='youtube'&&P&&Pready){P.seekTo(sec,true)}}
+/* ---------- reloj de la interfaz ---------- */
+const nowPos=()=>{if(M.cur&&M.cur.src==='youtube'&&P&&Pready){try{return{p:P.getCurrentTime()||0,d:P.getDuration()||M.cur.dur||0}}catch(e){}}if(M.src==='spotify'&&typeof NP!='undefined'&&NP.uri){const p=Math.min(NP.dur||1e9,NP.play?NP.pos+Date.now()-NP.at:NP.pos);return{p:p/1000,d:(NP.dur||0)/1000}}return{p:0,d:0}};
+function spNow(){if(typeof NP=='undefined'||!NP.uri||!NP.it)return null;const it=NP.it,im=(it.album&&it.album.images)||[];return{src:'spotify',uri:NP.uri,title:it.name||'',artist:(it.artists||[]).map(a=>a.name).join(', '),thumb:(im[1]||im[0]||{}).url||'',dur:Math.round((NP.dur||0)/1000)}}
+function onSp(){return M.src==='spotify'&&!(M.cur&&M.cur.src==='youtube'&&M.playing)}
+function shown(){return onSp()?spNow()||(M.cur&&M.cur.src==='spotify'?M.cur:null):M.cur}
+function playingNow(){return onSp()?(typeof NP!='undefined'&&NP.play):M.playing}
+function ui(){const root=$('#nxm');const it=shown(),pl=playingNow();
+ if(root&&M.open){root.classList.toggle('spm',onSp());const q=s=>root.querySelector(s);const cv=q('.cov');if(cv&&it&&it.thumb){if(cv.tagName!=='IMG'){const im=E('img','cov');im.alt='';im.src=it.thumb;cv.replaceWith(im)}else if(cv.getAttribute('src')!==it.thumb)cv.src=it.thumb}
+  const t=q('.ni b'),a=q('.ni span');if(t)t.textContent=it?split(it).track||it.title:'Nada reproduciéndose';if(a)a.textContent=it?(it.src==='spotify'?it.artist:split(it).artist||it.artist):'Busca una canción para comenzar';
+  const p=q('.pl');if(p)p.textContent=pl?'Ⅱ':'▶';const h=q('.hrt');if(h){h.textContent=it&&isFav(it)?'♥':'♡';h.style.color=it&&isFav(it)?'var(--nr)':''}
+  const sh=q('.shf'),rp=q('.rpt');if(sh)sh.classList.toggle('on',M.shuf);if(rp){rp.classList.toggle('on',M.rep!=='off');rp.textContent=M.rep==='one'?'🔂':'🔁'}}
+ const vid=$('#nxm-vid');if(vid){const show=!!(M.cur&&M.cur.src==='youtube'&&!M.dismissed&&!window.__spxOn);vid.classList.toggle('show',show);const vt=$('#nxm-vt');if(vt&&M.cur)vt.textContent=split(M.cur).track;placeVid()}
+ const rows=document.querySelectorAll('#nxm .rw[data-k]');rows.forEach(r=>r.classList.toggle('on',!!it&&r.dataset.k===ikey(it)))}
+function placeVid(){const vid=$('#nxm-vid');if(!vid)return;const slot=M.open&&M.view==='now'&&M.src==='youtube'?$('#nxm .slot'):null;
+ if(slot){const r=slot.getBoundingClientRect();vid.classList.add('big');Object.assign(vid.style,{left:r.left+'px',top:r.top+'px',width:r.width+'px',right:'auto',bottom:'auto'})}else{vid.classList.remove('big');vid.style.left=vid.style.top='';vid.style.right='';vid.style.bottom='';vid.style.width=''}}
+function loop(){const root=$('#nxm');const o=nowPos();
+ if(M.open&&root){const bar=root.querySelector('.nz-bar i'),tc=root.querySelector('.tc'),td=root.querySelector('.td');if(bar)bar.style.width=(o.d?Math.min(100,o.p/o.d*100):0)+'%';if(tc)tc.textContent=fmt(o.p);if(td)td.textContent=fmt(o.d);
+  if(onSp())ui();
+  if(M.view==='now'&&M.ly&&M.ly.L&&M.ly.L.length&&M.cur&&M.cur.src==='youtube'){const L=M.ly.L;let i=-1;for(let k=0;k<L.length;k++){if(L[k].t<=o.p+.25)i=k;else break}if(i!==M.lyIdx){M.lyIdx=i;const box=root.querySelector('.ly');if(box){[...box.children].forEach((p,k)=>{p.className=k===i?'on':k<i?'pa':''});const el=box.children[i];if(el)box.scrollTo({top:el.offsetTop-box.clientHeight/2+el.clientHeight/2,behavior:'smooth'})}}}}
+ else if(M.cur&&M.cur.src==='youtube'){}
+ if(M.open&&M.view==='now')placeVid()}
+/* ---------- vistas ---------- */
+const NAV=[['home','⌂','Inicio'],['now','♫','Ahora'],['queue','☰','Cola'],['lib','▤','Biblioteca'],['cmd','✳','Comandos'],['cfg','⚙','Ajustes']];
+const QUICK=[['r','♫','Rock y metal','rock y metal'],['b','◉','Lo más escuchado','canciones populares'],['g','✦','Bandas sonoras','bandas sonoras instrumentales'],['v','☾','Modo nocturno','dark ambient music']];
+const SPX=[['lyrics','Letra'],['share','Compartir'],['album','Álbum'],['queue','Cola'],['disc','Descubrir'],['artists','Artistas'],['stats','Resumen'],['sets','Colecciones'],['info','Ahora'],['galaxy','Galaxia'],['moments','Momentos'],['tools','Estudio'],['game','Juego'],['biblio','Biblioteca'],['search','Buscar'],['recent','Recientes'],['top','Top'],['liked','Me gusta'],['pls','Playlists'],['hist','Sesión'],['dev','Equipos'],['set','Ajustes']];
+function openSpx(t){if(!window.NXSPX){tst('El reproductor de Spotify no está listo todavía.');return}const s=spNow();if(!s){tst('Primero pon una canción de Spotify (busca arriba y pulsa Reproducir).',3200);return}close();window.NXSPX.open(t)}
+function rowEl(it,list,i){const r=E('div','rw');r.dataset.k=ikey(it);const th=it.thumb?E('img','nz-th'):E('div','nz-th','♪');if(it.thumb){th.src=it.thumb;th.alt='';th.loading='lazy'}
+ const m=E('div','mt'),sp2=split(it);m.append(E('b','',it.src==='spotify'?it.title:sp2.track),E('span','',(it.src==='spotify'?it.artist:sp2.artist||it.artist)+(it.dur?' · '+fmt(it.dur):'')));
+ const a=E('div','ac'),pl=E('button','tn','▶ Reproducir'),q=E('button','tn','+ Cola'),f=E('button','tn'+(isFav(it)?' on':''),isFav(it)?'♥':'♡');pl.onclick=()=>playItem(it,list,i);q.onclick=()=>addQ(it);f.onclick=()=>{togFav(it);f.textContent=isFav(it)?'♥':'♡';f.classList.toggle('on',isFav(it))};a.append(pl,q,f);r.append(th,m,a);return r}
+function emptyMsg(t){return E('div','em',t)}
+function vHome(c){
+ const hero=E('div','nz-hero');hero.innerHTML='<div class="ey"></div><h1></h1><p></p>';hero.querySelector('.ey').textContent='TU MÚSICA · TU ESPACIO';hero.querySelector('h1').innerHTML='Todo suena mejor<br>con Noryx.';hero.querySelector('p').textContent=M.src==='spotify'?'Busca en Spotify y reproduce con tu cuenta, con todo tu reproductor inmersivo de Noryx.':'Busca en YouTube y escucha aquí mismo: letra sincronizada, cola y favoritos sin salir de Noryx.';
+ const f=E('form','sf'),i=E('input');i.id='nxm-q';i.placeholder=M.src==='spotify'?'Canción o artista en Spotify…':'Canción, artista o enlace de YouTube…';i.autocomplete='off';i.value=M.q;f.append(i,Object.assign(E('button','nz-bt'+(M.src==='spotify'?' sp':''),'⌕ Buscar'),{type:'submit'}));f.onsubmit=e=>{e.preventDefault();doSearch(i.value)};hero.append(f);c.append(hero);
+ const rb=E('div');c.append(rb);
+ if(M.busy)rb.append(Object.assign(E('div','bx'),{textContent:'Buscando…'}));
+ else if(M.err){rb.append(errBox(M.err))}
+ else if(M.res.length&&M.resSrc===M.src){const sh=E('div','nz-sh');sh.innerHTML='<div><h2></h2><p></p></div>';sh.querySelector('h2').textContent='Resultados de “'+M.q+'”';sh.querySelector('p').textContent=(M.src==='spotify'?'Spotify':'YouTube')+' · '+M.res.length+' resultados';const all=E('button','tn','▶ Reproducir todo');all.onclick=()=>playItem(M.res[0],M.res,0);sh.append(all);rb.append(sh);const l=E('div','rl');M.res.forEach((it,k)=>l.append(rowEl(it,M.res,k)));rb.append(l)}
+ else if(M.q&&!M.busy&&M.resSrc===M.src)rb.append(emptyMsg('No encontré resultados para “'+M.q+'”.'));
+ const sh=E('div','nz-sh');sh.innerHTML='<div><h2>Accesos rápidos</h2><p>Pulsa para buscar esa música.</p></div>';c.append(sh);
+ const g=E('div','nz-gr');QUICK.forEach(([k,ic,n,q])=>{const b=E('button','tl');b.innerHTML='<div class="ar '+k+'"></div><b></b><span>Explorar ↗</span>';b.querySelector('.ar').textContent=ic;b.querySelector('b').textContent=n;b.onclick=()=>{i.value=q;doSearch(q)};g.append(b)});c.append(g);
+ if(M.src==='spotify'){const sh2=E('div','nz-sh');sh2.innerHTML='<div><h2>Tu reproductor de Spotify</h2><p>Todo lo que ya tienes en Noryx, a un toque.</p></div>';c.append(sh2);const tg=E('div','nz-tg');SPX.forEach(([t,n])=>{const b=E('button','',n);b.onclick=()=>openSpx(t);tg.append(b)});c.append(tg)}}
+function errBox(e){const b=E('div','bx er');
+ if(e.nokey){b.innerHTML='<b>Falta tu clave de YouTube</b><p>Para buscar por nombre pega tu clave de la API de YouTube Data v3 en <b>Ajustes</b>. Mientras tanto puedes pegar el <b>enlace de un video</b> arriba y se reproduce igual.</p>';const g=E('button','nz-bt','Ir a Ajustes');g.onclick=()=>{M.view='cfg';render()};b.append(g)}
+ else if(e.nosp){b.innerHTML='<b>Spotify no está conectado</b><p>Conecta tu cuenta (hace falta Spotify Premium) y vuelve aquí. Se abre el asistente de conexión de Noryx.</p>';const g=E('button','nz-bt sp','Conectar Spotify');g.onclick=()=>{close();try{send('/spotify conectar')}catch(x){tst('Escribe /spotify conectar en el chat')}};b.append(g)}
+ else if(e.api){const rf=/REFERRER|referer/i.test(e.reason+' '+e.msg),ex=/expired|API_KEY_INVALID|API key not valid/i.test(e.reason+' '+e.msg),qt=/quota/i.test(e.reason+' '+e.msg);b.innerHTML='<b>YouTube respondió con un error</b>';b.append(E('p','',(e.msg||'')+(e.reason?' ('+e.reason+')':'')));b.append(E('p','',rf?'La clave está restringida por sitio web y esta página no coincide. Abre Noryx desde tu dominio (https://orlagg22.github.io/…) o agrega esta dirección a las restricciones de la clave. Desde un archivo local no funciona.':ex?'La clave no es válida o venció. Crea una nueva en Google Cloud → Credenciales y pégala en Ajustes.':qt?'Se agotó la cuota diaria de YouTube (cada búsqueda cuesta 100 puntos de 10 000 al día). Vuelve a intentar mañana.':'Revisa la clave en Ajustes.'))}
+ else b.append(E('p','',(e&&e.message)||'No se pudo buscar.'));return b}
+function vNow(c){
+ if(!M.cur&&!shown()){c.append(emptyMsg('Aún no hay nada sonando. Busca una canción en Inicio.'));return}
+ if(onSp()){const it=shown();const w=E('div','nw'),l=E('div');const im=E('img','cv');im.src=it?it.thumb:'';im.alt='';l.append(im);const t=E('div','nz-sh');t.innerHTML='<div><h2></h2><p></p></div>';t.querySelector('h2').textContent=it?it.title:'';t.querySelector('p').textContent=it?it.artist:'';l.append(t);
+  const r=E('div');r.append(E('div','bx','Esta canción suena en Spotify. Abre cualquiera de tus pantallas de Noryx:'));const tg=E('div','nz-tg');tg.style.marginTop='12px';SPX.forEach(([k,n])=>{const b=E('button','',n);b.onclick=()=>openSpx(k);tg.append(b)});r.append(tg);const big=E('button','nz-bt sp','⛶ Abrir reproductor inmersivo');big.style.marginTop='16px';big.onclick=()=>openSpx('lyrics');r.append(big);w.append(l,r);c.append(w);return}
+ const w=E('div','nw'),l=E('div'),slot=E('div','slot');l.append(slot);const t=E('div','nz-sh');t.innerHTML='<div><h2></h2><p></p></div>';const s=split(M.cur);t.querySelector('h2').textContent=s.track;t.querySelector('p').textContent=s.artist;l.append(t);
+ const ly=E('div','ly');w.append(l,ly);c.append(w);paintLy();loadLy()}
+function vQueue(c){const sh=E('div','nz-sh');sh.innerHTML='<div><h2>Cola de reproducción</h2><p></p></div>';sh.querySelector('p').textContent=M.queue.length+' canciones';const cl=E('button','tn','Vaciar');cl.onclick=()=>{M.queue=M.cur?[M.cur]:[];M.qi=M.cur?0:-1;render()};sh.append(cl);c.append(sh);if(!M.queue.length){c.append(emptyMsg('La cola está vacía. Usa “+ Cola” en los resultados.'));return}const l=E('div','rl');M.queue.forEach((it,k)=>{const r=rowEl(it,M.queue,k);const x=E('button','tn','✕');x.onclick=()=>{M.queue.splice(k,1);if(k<M.qi)M.qi--;else if(k===M.qi)M.qi=-1;render()};r.querySelector('.ac').append(x);l.append(r)});c.append(l)}
+function vLib(c){const tg=E('div','nz-tg');[['fav','♥ Favoritos ('+M.favs.length+')'],['his','🕘 Historial ('+M.hist.length+')']].forEach(([k,n])=>{const b=E('button',M.lib===k?'on':'',n);b.onclick=()=>{M.lib=k;render()};tg.append(b)});c.append(tg);const L=M.lib==='fav'?M.favs:M.hist;if(!L.length){c.append(emptyMsg(M.lib==='fav'?'Aún no tienes favoritos. Pulsa ♡ en cualquier canción.':'Todavía no has reproducido nada.'));return}
+ const sh=E('div','nz-sh');sh.innerHTML='<div><h2></h2></div>';sh.querySelector('h2').textContent=M.lib==='fav'?'Tus favoritos':'Reproducido recientemente';const all=E('button','tn','▶ Reproducir todo');all.onclick=()=>playItem(L[0],L,0);sh.append(all);c.append(sh);const l=E('div','rl');L.forEach((it,k)=>l.append(rowEl(it,L,k)));c.append(l)}
+function vCmd(c){const sh=E('div','nz-sh');sh.innerHTML='<div><h2>Habla con Noryx</h2><p>Ej.: «busca Black Sabbath», «pon Joji», «pausa», «siguiente», «volumen a 50», «usa Spotify».</p></div>';c.append(sh);const f=E('form','sf'),i=E('input');i.placeholder='Ej. Noryx, pon Soda Stereo';f.append(i,Object.assign(E('button','nz-bt sc','Enviar comando'),{type:'submit'}));const out=E('div','bx');out.hidden=!M.reply;out.textContent=M.reply;f.onsubmit=async e=>{e.preventDefault();const v=i.value.trim();if(!v)return;out.hidden=false;out.textContent='…';out.textContent=await runCmd(v);M.reply=out.textContent;i.value=''};c.append(f,out)}
+function vCfg(c){const sh=E('div','nz-sh');sh.innerHTML='<div><h2>Ajustes de música</h2><p>La clave se guarda solo en este navegador.</p></div>';c.append(sh);
+ const b=E('div','bx');b.append(E('b','','Clave de API de YouTube (Data API v3)'));const i=E('input','fi');i.type='password';i.placeholder='AIza…';i.value=M.key;i.style.cssText='width:100%;margin-top:10px';const row=E('div','nz-tg');row.style.marginTop='10px';const sv=E('button','nz-bt','Guardar'),sh2=E('button','nz-bt sc','Mostrar'),rm=E('button','nz-bt sc','Borrar');
+ sv.onclick=()=>{M.key=i.value.trim();ST.set('nx-ytkey',M.key);cache.clear();tst(M.key?'Clave guardada':'Clave borrada')};sh2.onclick=()=>{i.type=i.type==='password'?'text':'password';sh2.textContent=i.type==='password'?'Mostrar':'Ocultar'};rm.onclick=()=>{i.value='';sv.click()};row.append(sv,sh2,rm);b.append(i,row);
+ const n=E('p','','Consejo: restringe la clave a «YouTube Data API v3» y a tu sitio web (https://orlagg22.github.io/*). Cada búsqueda gasta 100 de los 10 000 puntos gratuitos del día; reproducir no gasta nada.');b.append(n);c.append(b);
+ const b2=E('div','bx');b2.append(E('b','','Plataforma predeterminada del asistente'));const sg=E('div','nz-tg');sg.style.marginTop='10px';[['spotify','Spotify'],['youtube','YouTube']].forEach(([k,nm])=>{const bt=E('button',curJV()===k?'on':'',nm);bt.onclick=()=>{setJV(k);render()};sg.append(bt)});b2.append(sg);c.append(b2)}
+function render(){const root=$('#nxm');if(!root||!M.open)return;const keep=root.querySelector('.mn');const st=keep?keep.scrollTop:0;root.replaceChildren();
+ const sb=E('aside','nz-sb');const br=E('div','br');br.innerHTML='<span class="bm">N</span> noryx<span style="color:#ff596b">.</span>';sb.append(br);NAV.forEach(([k,ic,n])=>{const b=E('button','nv'+(M.view===k?' on':''));b.innerHTML='<i></i><span></span>';b.querySelector('i').textContent=ic;b.querySelector('span').textContent=n;b.onclick=()=>{M.view=k;render()};sb.append(b)});
+ const nt=E('div','nz-nt');nt.innerHTML='<b style="display:block;color:#eee;margin-bottom:4px">'+(M.src==='spotify'?'Spotify':'YouTube')+'</b>';nt.append(document.createTextNode(M.src==='spotify'?(sp()?'Cuenta conectada.':'Sin conectar: usa /spotify conectar.'):(M.key?'Búsqueda con tu clave de API.':'Sin clave: pega enlaces o añade tu clave en Ajustes.')));sb.append(nt);
+ const mn=E('div','mn');const tp=E('div','tp');const sg=E('div','sg');[['youtube','▶ YouTube',''],['spotify','◉ Spotify','sp']].forEach(([k,n,c])=>{const b=E('button',(M.src===k?'on ':'')+c,n);b.onclick=()=>setSrc(k);sg.append(b)});const x=E('button','nz-x','✕');x.title='Cerrar (Esc)';x.setAttribute('aria-label','Cerrar');x.onclick=close;tp.append(sg,x);mn.append(tp);
+ ({home:vHome,now:vNow,queue:vQueue,lib:vLib,cmd:vCmd,cfg:vCfg})[M.view](mn);
+ const pb=E('div','pb');pb.innerHTML='<div class="nw2"><div class="cov">♫</div><div class="ni"><b></b><span></span></div><button class="hrt" title="Favorito" style="font-size:18px;color:#a6a8b2">♡</button></div><div class="ct"><div class="cb"><button class="shf" title="Aleatorio">⤨</button><button class="pv" title="Anterior">⏮</button><button class="pl" title="Reproducir / pausar">▶</button><button class="nx" title="Siguiente">⏭</button><button class="rpt" title="Repetir">🔁</button></div><div class="nz-pg"><span class="tc">0:00</span><div class="nz-bar"><i></i></div><span class="td">0:00</span></div></div><div class="pr"><span>Vol.</span><input type="range" min="0" max="100" class="vl"><button class="tn op">Letra ↗</button></div>';
+ root.append(sb,mn,pb);
+ const cv=pb.querySelector('.cov');const it=shown();if(it&&it.thumb){const im=E('img','cov');im.alt='';im.src=it.thumb;cv.replaceWith(im)}
+ pb.querySelector('.hrt').onclick=()=>togFav(shown());pb.querySelector('.shf').onclick=()=>{M.shuf=!M.shuf;ST.set('nx-mshuf',M.shuf);ui()};pb.querySelector('.rpt').onclick=()=>{M.rep=M.rep==='off'?'all':M.rep==='all'?'one':'off';ST.set('nx-mrep',M.rep);ui();tst('Repetir: '+(M.rep==='off'?'no':M.rep==='all'?'toda la cola':'una canción'))};
+ pb.querySelector('.pv').onclick=prev;pb.querySelector('.nx').onclick=()=>next();pb.querySelector('.pl').onclick=toggle;const vl=pb.querySelector('.vl');vl.value=M.vol;vl.oninput=()=>setVol(+vl.value);
+ pb.querySelector('.op').onclick=()=>{if(onSp())openSpx('lyrics');else{M.view='now';render()}};
+ pb.querySelector('.nz-bar').onclick=e=>{const r=e.currentTarget.getBoundingClientRect(),o=nowPos();if(!o.d)return;const s=(e.clientX-r.left)/r.width*o.d;if(onSp()){if(sp())spApi('PUT','/me/player/seek?position_ms='+Math.round(s*1000)).catch(()=>{})}else seekTo(s)};
+ mn.scrollTop=st;ui();placeVid();if(M.view==='home'&&!M.q&&!M.res.length&&matchMedia('(min-width:761px)').matches)setTimeout(()=>{const q=$('#nxm-q');q&&q.focus({preventScroll:true})},30)}
+/* ---------- comandos propios ---------- */
+async function runCmd(raw){const n=nrm(raw).replace(/^noryx /,'');let m;
+ if(/^(pausa|pausar|pausa la musica|detente|para)$/.test(n)){if(playingNow())await toggle();return 'Pausado.'}
+ if(/^(reanuda|continua|play|sigue|reproduce)$/.test(n)){if(!playingNow())await toggle();return 'Reproduciendo.'}
+ if(/^(siguiente|siguiente cancion|salta|next)$/.test(n)){next();return 'Siguiente canción.'}
+ if(/^(anterior|cancion anterior|atras|previous)$/.test(n)){prev();return 'Canción anterior.'}
+ if(/^(letra|muestra la letra|ver letra)$/.test(n)){if(onSp()){openSpx('lyrics');return 'Abriendo la letra en tu reproductor.'}M.view='now';render();return 'Mostrando la letra.'}
+ if(m=n.match(/^volumen (?:a |al |en )?(\d{1,3})$/)){setVol(Math.min(100,+m[1]));render();return 'Volumen al '+Math.min(100,+m[1])+' %.'}
+ if(/^(sube|subir) (el )?volumen$/.test(n)){setVol(Math.min(100,M.vol+15));render();return 'Volumen al '+M.vol+' %.'}
+ if(/^(baja|bajar) (el )?volumen$/.test(n)){setVol(Math.max(0,M.vol-15));render();return 'Volumen al '+M.vol+' %.'}
+ if(m=n.match(/^(?:usa|usemos|cambia a|pon|ponme) (spotify|youtube)$/)){setSrc(m[1]);return 'Listo, usaré '+(m[1]==='spotify'?'Spotify':'YouTube')+'.'}
+ if(m=n.match(/^(?:agrega|anade|añade|pon) (.+) a la cola$/)){const r=await doSearch(m[1],true);if(r[0]){addQ(r[0]);return 'Agregué «'+split(r[0]).track+'» a la cola.'}return 'No encontré «'+m[1]+'».'}
+ if(m=n.match(/^(?:busca|buscar|encuentra|search)\s+(.+)$/)){const r=await doSearch(raw.replace(/^(?:noryx[, ]*)?(?:busca|buscar|encuentra|search)\s+/i,''),true);M.view='home';render();return M.err?'No pude buscar: '+(M.err.msg||M.err.message||(M.err.nokey?'falta tu clave de YouTube':'error')):(r.length?'Encontré '+r.length+' resultados.':'Sin resultados.')}
+ if(m=n.match(/^(?:reproduce|toca|pon|ponme|quiero escuchar|play)\s+(.+)$/)){const q=raw.replace(/^(?:noryx[, ]*)?(?:reproduce|toca|pon|ponme|quiero escuchar|play)\s+/i,'').replace(/^(?:musica de|música de|a|algo de)\s+/i,'');const r=await doSearch(q,true);if(M.err){M.view='home';render();return 'No pude buscar: '+(M.err.msg||M.err.message||(M.err.nokey?'falta tu clave de YouTube (Ajustes)':M.err.nosp?'Spotify no está conectado':'error'))}if(!r.length)return 'No encontré «'+q+'».';await playItem(r[0],r,0);return 'Reproduciendo '+(r[0].src==='spotify'?r[0].title:split(r[0]).track)+'.'}
+ return 'No entendí. Prueba: «pon Joji», «busca rock», «pausa», «siguiente» o «letra».'}
+/* ---------- abrir / cerrar ---------- */
+function setSrc(k){if(M.src===k)return;pauseOther(k);M.src=k;ST.set('nx-msrc',k);M.res=[];M.err=null;M.q='';setJV(k,true);if(M.open)render();ui()}
+const curJV=()=>{try{const v=JV.music;return v==='spotify'?'spotify':'youtube'}catch(e){return 'spotify'}};
+function setJV(k,quiet){try{JV.music=k;ST.set('nx-jmusic',k)}catch(e){}syncSel();if(!quiet)tst('Música del asistente: '+(k==='spotify'?'Spotify':'YouTube'))}
+function open(q,src,view){if(src&&src!==M.src)setSrc(src);M.open=true;if(view)M.view=view;const r=$('#nxm');r.hidden=false;try{document.documentElement.classList.add('nxm-on')}catch(e){}render();if(q)doSearch(q);clearInterval(tick);tick=setInterval(loop,300)}
+function close(){M.open=false;$('#nxm').hidden=true;placeVid()}
+document.addEventListener('keydown',e=>{if(!M.open)return;if(e.key==='Escape'){e.preventDefault();e.stopPropagation();close();return}const tg=e.target&&e.target.tagName;if(e.code==='Space'&&!/INPUT|TEXTAREA|SELECT|BUTTON/.test(tg||'')){e.preventDefault();toggle()}},true);
+addEventListener('resize',()=>{if(M.open)placeVid()});
+$('#nxm-vp').onclick=toggle;$('#nxm-vn').onclick=()=>next();$('#nxm-vx').onclick=()=>{M.dismissed=true;try{P&&Pready&&P.pauseVideo()}catch(e){}M.playing=false;ui()};
+$('#nxm-vid').addEventListener('dblclick',()=>{if(!M.open)open('', 'youtube','now')});
+/* ---------- selector en el asistente (Modo Noryx) ---------- */
+function syncSel(){const w=$('#jvmus');if(!w)return;const k=curJV();w.querySelectorAll('[data-s]').forEach(b=>b.classList.toggle('on',b.dataset.s===k))}
+(function mkSel(){const jvc=$('#jvc');if(!jvc||$('#jvmus'))return;const w=E('div','');w.id='jvmus';
+ const st=document.createElement('style');st.textContent='#jvmus{display:flex;gap:8px;align-items:center;justify-content:center;flex-wrap:wrap;margin:6px 0;font-size:12.5px;color:var(--mute)}#jvmus button{border:1px solid var(--line);border-radius:99px;padding:7px 14px;font-weight:600;color:var(--ink);background:transparent;cursor:pointer}#jvmus button.on{border-color:var(--acc);background:color-mix(in srgb,var(--acc) 16%,transparent)}#jvmus .op{border-color:var(--acc)}';document.head.append(st);
+ w.append(E('span','','Música:'));[['spotify','◉ Spotify'],['youtube','▶ YouTube']].forEach(([k,n])=>{const b=E('button','',n);b.dataset.s=k;b.onclick=()=>setJV(k);w.append(b)});const o=E('button','op','🎵 Abrir reproductor');o.onclick=()=>{const k=curJV();open('',k)};w.append(o);jvc.after(w);syncSel();setInterval(()=>{const j=$('#jv');if(j&&!j.hidden)syncSel()},1200)})();
+/* ---------- el asistente reproduce con la plataforma elegida ---------- */
+try{const orig=jvPlay;jvPlay=async function(pv,q,hint){
+ if(pv==='youtube'||pv==='youtube music'){const who=(typeof jvWho=='function'?jvWho():'');const ch=[{label:'🎵 Abrir reproductor',fn:()=>open('','youtube')}];
+  if(!q){open('','youtube');return jvR('Abriendo el reproductor de YouTube, '+who+'.',{chips:ch,m:'Noryx · YouTube',log:'♪ YouTube'})}
+  M.src='youtube';ST.set('nx-msrc','youtube');await doSearch(q,true);
+  if(M.err){if(M.err.nokey){open('','youtube','cfg');return jvR('Para buscar en YouTube necesito tu clave de API, '+who+'. Te abrí los ajustes.',{chips:ch,m:'Noryx · YouTube'})}return jvR('YouTube no respondió: '+(M.err.msg||M.err.message||'error')+'.',{chips:ch,m:'Noryx · YouTube'})}
+  if(!M.res.length)return jvR('No encontré «'+q+'» en YouTube, '+who+'.',{chips:ch,m:'Noryx · YouTube'});
+  await playItem(M.res[0],M.res,0);const t=split(M.res[0]);return jvR('Reproduciendo '+t.track+(t.artist?', de '+t.artist:'')+', '+who+'.',{chips:ch,m:'Noryx · YouTube',log:'♪ YouTube · '+t.track,show:'Reproduciendo '+t.track+' en YouTube dentro de Noryx.'})}
+ const r=await orig(pv,q,hint);try{if(pv==='spotify'&&r){r.chips=(r.chips||[]).concat([{label:'⛶ Reproductor inmersivo',fn:()=>{if(window.NXSPX&&spNow())window.NXSPX.open('lyrics');else open('','spotify')}}]);setSrc('spotify')}}catch(e){}return r}}catch(e){console.warn('Noryx Music: no se pudo enlazar el asistente',e)}
+window.NoryxMusic={open,close,play:playItem,search:doSearch,state:M,cmd:runCmd};
+})();
+</script>
+
 </body>
 </html>
