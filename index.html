@@ -7164,7 +7164,8 @@ const sxImg=u=>new Promise(ok=>{if(!u)return ok(null);const i=new Image();i.cros
 function sxRR(g,x,y,w,h,r){g.beginPath();g.moveTo(x+r,y);g.arcTo(x+w,y,x+w,y+h,r);g.arcTo(x+w,y+h,x,y+h,r);g.arcTo(x,y+h,x,y,r);g.arcTo(x,y,x+w,y,r);g.closePath()}
 const sxLines=()=>{const v=X.v;if(!v)return[];if(v.L.length)return v.L.filter(l=>l.x).map(l=>({t:l.t,x:l.x}));return(v.plain||'').split(/\r?\n/).map(x=>x.trim()).filter(Boolean).map(x=>({t:-1,x}))};
 function sxSel(){const L=sxLines(),s=X.sx;if(s.u!=X.uri||s.n!=L.length){s.u=X.uri;s.n=L.length;let i=0;if(L.length&&L[0].t>=0){const q=pos()+off();i=Math.max(0,L.findIndex((l,k)=>l.t<=q&&(!L[k+1]||L[k+1].t>q)))}s.sel=L.slice(i,i+3).map((_,k)=>i+k)}return{L,sel:s.sel.filter(i=>i<L.length).sort((a,b)=>a-b)}}
-async function sxLoadAl(id){const j=await spApi('GET','/albums/'+id),al={id,name:j.name,images:j.images,uri:j.uri,release_date:j.release_date};return X.al={id,name:j.name,j,tracks:((j.tracks||{}).items||[]).filter(t=>t&&t.uri).map(t=>Object.assign({},t,{album:al}))}}
+function alId(a){const v=a&&a.id;if(/^[A-Za-z0-9]{22}$/.test(v||''))return v;const m=/^spotify:album:([A-Za-z0-9]{22})$/.exec((a&&a.uri)||'');return m?m[1]:''}
+async function sxLoadAl(id){if(!/^[A-Za-z0-9]{22}$/.test(id||''))throw new Error('Esta pista no tiene un álbum de Spotify');const j=await spApi('GET','/albums/'+id),al={id,name:j.name,images:j.images,uri:j.uri,release_date:j.release_date};return X.al={id,name:j.name,j,tracks:((j.tracks||{}).items||[]).filter(t=>t&&t.uri).map(t=>Object.assign({},t,{album:al}))}}
 async function sxDraw(cv){const it=NP.it;if(!it)return;const s=X.sx,[W,H]=SXF[s.f],al=it.album||{},ar=(it.artists||[]).map(a=>a.name).join(', '),col=X.col||'#1db954',ff=sxFF();
  if(s.s=='album'&&(!X.al||X.al.id!=al.id))try{await sxLoadAl(al.id)}catch(e){}
  await sxFontLoad();const im=await sxImg(((al.images||[])[0]||{}).url),g=cv.getContext('2d'),m=90,tw=W-2*m,SS=sxSel(),L=SS.L,lines=SS.sel.length?SS.sel.map(i=>L[i].x):[it.name||''];
@@ -7207,8 +7208,10 @@ function sxShare(){const p=$x('#xp');p.className='xp';p.replaceChildren();const 
  p.append(cv,rg([['story','Historia 9:16'],['post','Post 4:5'],['sq','Cuadrado']],'f'),rg([['lyric','Letra grande'],['cover','Portada y letra'],['vinyl','Vinilo'],['album','Álbum']],'s'),sxFsel(draw),dd,act);
  p.append(SS.L.length?E('div','xh','Elige hasta 8 líneas de la letra'):E('div','xm','Esta canción no tiene letra disponible: la imagen llevará la portada y los datos.'));if(SS.L.length)p.append(lst);
  if(X.sxN>1)p.append(E('div','xcnt','La has puesto '+X.sxN+' veces en Noryx.'));draw()}
-async function sxAlbum(){const p=$x('#xp');p.className='xp';const al=NP.it&&NP.it.album;if(!al){p.replaceChildren(E('div','xm','No hay música sonando.'));return}X._sal=al.id;p.textContent='Abriendo el álbum…';
- try{const A=X.al&&X.al.id==al.id?X.al:await sxLoadAl(al.id);if(X.tab!='album')return;const j=A.j,ts=A.tracks,ms=ts.reduce((a,z)=>a+(z.duration_ms||0),0);p.replaceChildren();
+async function sxAlbum(){const p=$x('#xp');p.className='xp';const al=NP.it&&NP.it.album;if(!al){p.replaceChildren(E('div','xm','No hay música sonando.'));return}X._sal=al.id;const id=alId(al);
+ if(!id){if(!p.querySelector('.sxh'))p.replaceChildren(E('div','xm','Esta pista no pertenece a un álbum de Spotify (puede ser el DJ, un anuncio o un archivo local).'));return}
+ p.textContent='Abriendo el álbum…';
+ try{const A=X.al&&X.al.id==id?X.al:await sxLoadAl(id);if(X.tab!='album')return;const j=A.j,ts=A.tracks,ms=ts.reduce((a,z)=>a+(z.duration_ms||0),0);p.replaceChildren();
   const h=E('div','sxh'),im=E('img'),d=E('div','','<b></b><small></small><small></small>');im.alt='';im.src=cov(j);d.children[0].textContent=j.name;d.children[1].textContent=(j.artists||[]).map(a=>a.name).join(', ');d.children[2].textContent=(j.release_date||'').slice(0,4)+' · '+ts.length+' canciones · '+dur(ms)+(j.label?' · '+j.label:'');h.append(im,d);
   const r=E('div','xrg'),bt=(n,f,c)=>{const b=E('button',c||'',n);b.onclick=f;r.append(b)};
   bt('▶ Reproducir',()=>go(()=>spStart({context_uri:j.uri})),'xpri');bt('Aleatorio',()=>go(()=>spStart({uris:sh(ts.map(z=>z.uri)).slice(0,50)})));bt('Guardar álbum',()=>go(async()=>{await spApi('PUT','/me/albums?ids='+j.id);toast('Álbum guardado en tu biblioteca')}));bt('Compartir imagen',()=>{X.sx.s='album';tab('share')});
