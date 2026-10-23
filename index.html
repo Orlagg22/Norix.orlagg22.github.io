@@ -16985,5 +16985,16 @@ addEventListener('keydown',e=>{
  setInterval(fav,2500)}
 }catch(err){try{console.warn('v64:',err)}catch(e){}}})();
 </script>
+<style id="nx-v65-lyrics-fix">
+/* v65 · la letra ya no se corta en los bordes: la línea activa crece (scale) y antes se salía del panel y quedaba recortada */
+#spx .xp.lyr{overflow-x:hidden;padding-left:clamp(14px,6%,72px);padding-right:clamp(14px,6%,72px);box-sizing:border-box}
+#spx .xp.lyr .xl{box-sizing:border-box;max-width:100%;padding-left:.14em;padding-right:.14em;overflow-wrap:anywhere;word-break:normal;hyphens:auto;text-wrap:balance}
+#spx .xp.lyr .xl.on.v61k{padding-left:.16em;padding-right:.2em}
+#spx .xp.lyr .xl.on{transform:scale(1.03)}
+#spx.idle .xp.lyr .xl.on{transform:scale(1.04)}
+#spx.kar .spxr{max-width:min(900px,100%)}
+#spx.kar .xp.lyr{padding-left:clamp(16px,7%,80px);padding-right:clamp(16px,7%,80px)}
+@media (max-width:820px){#spx .xp.lyr{padding-left:14px;padding-right:14px}}
+</style>
 </body>
 </html>
