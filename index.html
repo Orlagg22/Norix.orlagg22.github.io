@@ -16047,13 +16047,13 @@ const ikey=i=>i.src+':'+(i.id||i.uri);
 async function ytSearch(q){let id=idOf(q);
  if(!id&&bareId(q)){try{const r0=await fetch('https://www.youtube.com/oembed?format=json&url='+encodeURIComponent('https://www.youtube.com/watch?v='+q.trim()));if(r0.ok)id=q.trim()}catch(e){}}
  if(id){try{const r=await fetch('https://www.youtube.com/oembed?format=json&url='+encodeURIComponent('https://www.youtube.com/watch?v='+id));const j=r.ok?await r.json():{};return [{src:'youtube',id,title:dec(j.title||'Video de YouTube'),artist:dec(j.author_name||''),thumb:j.thumbnail_url||'https://i.ytimg.com/vi/'+id+'/mqdefault.jpg',dur:0}]}catch(e){return [{src:'youtube',id,title:'Video de YouTube',artist:'',thumb:'https://i.ytimg.com/vi/'+id+'/mqdefault.jpg',dur:0}]}}
- if(!M.key)throw {nokey:1};const ck='y:'+nrm(q);if(cache.has(ck))return cache.get(ck);const pc=ST.get('nx-ytc',{}),hit=pc[ck];if(hit&&Date.now()-hit.t<432e5){cache.set(ck,hit.v);return hit.v}
+ if(!M.key)throw {nokey:1};const ck='y:'+nrm(q);if(cache.has(ck))return cache.get(ck);const pc=ST.get('nx-ytc',{}),hit=pc[ck];if(hit&&Array.isArray(hit.v)&&hit.v.length){/* v77: caché permanente, sin caducidad */cache.set(ck,hit.v);try{if(Date.now()-(hit.u||hit.t)>864e5){hit.u=Date.now();pc[ck]=hit;ST.set('nx-ytc',pc)}}catch(e){}return hit.v}
  const px=M.key===NX_YT_KEY;const call=async(u,p)=>{const r=await fetch(px?NX_YT_PROXY+'/v1/yt/'+(/\/search$/.test(u)?'search':'videos')+'?'+new URLSearchParams(p):u+'?'+new URLSearchParams(Object.assign({key:M.key},p)));let j={};try{j=await r.json()}catch(e){}if(!r.ok){const er=j.error||{};throw {api:1,code:r.status,msg:er.message||'Error '+r.status,reason:(er.errors&&er.errors[0]&&er.errors[0].reason)||(er.details&&er.details[0]&&er.details[0].reason)||''}}if(px&&!Array.isArray(j.items))throw {api:1,code:r.status,msg:'Respuesta inesperada del Worker',reason:'workerOutdated'};return j};
  const base={part:'snippet',type:'video',maxResults:15,q,videoEmbeddable:'true',safeSearch:'none'};
  let j=await call('https://www.googleapis.com/youtube/v3/search',Object.assign({videoCategoryId:'10'},base));if(!(j.items||[]).length)j=await call('https://www.googleapis.com/youtube/v3/search',base);
  const items=(j.items||[]).filter(x=>x.id&&x.id.videoId).map(x=>({src:'youtube',id:x.id.videoId,title:dec(x.snippet.title),artist:dec(x.snippet.channelTitle),thumb:(x.snippet.thumbnails.medium||x.snippet.thumbnails.default||{}).url||'https://i.ytimg.com/vi/'+x.id.videoId+'/mqdefault.jpg',dur:0}));
  if(items.length){try{const d=await call('https://www.googleapis.com/youtube/v3/videos',{part:'contentDetails',id:items.map(i=>i.id).join(',')});const mp=new Map((d.items||[]).map(v=>[v.id,dur8601(v.contentDetails.duration)]));items.forEach(i=>i.dur=mp.get(i.id)||0)}catch(e){}}
- cache.set(ck,items);if(items.length){try{const pc2=ST.get('nx-ytc',{});pc2[ck]={t:Date.now(),v:items};const ks=Object.keys(pc2);if(ks.length>40)ks.sort((a,b)=>pc2[a].t-pc2[b].t).slice(0,ks.length-40).forEach(k=>delete pc2[k]);ST.set('nx-ytc',pc2)}catch(e){}}return items}
+ cache.set(ck,items);if(items.length){try{const pc2=ST.get('nx-ytc',{}),now=Date.now(),age=k=>pc2[k].u||pc2[k].t||0;pc2[ck]={t:now,u:now,v:items};let ks=Object.keys(pc2);if(ks.length>500)ks.sort((a,b)=>age(a)-age(b)).slice(0,ks.length-500).forEach(k=>delete pc2[k]);const put=o=>{try{localStorage.setItem('nx-ytc',JSON.stringify(o));return true}catch(e){return false}};let ok=put(pc2);/* si el almacenamiento se llena, se descartan solo las búsquedas más viejas */while(!ok){ks=Object.keys(pc2).sort((a,b)=>age(a)-age(b));if(ks.length<=1)break;ks.slice(0,Math.ceil(ks.length/4)).forEach(k=>delete pc2[k]);ok=put(pc2)}}catch(e){}}return items}
 async function spSearch(q){if(!sp())throw {nosp:1};const j=await spApi('GET','/search?type=track&limit=15&q='+encodeURIComponent(q));return ((j.tracks&&j.tracks.items)||[]).filter(Boolean).map(t=>({src:'spotify',uri:t.uri,title:t.name,artist:(t.artists||[]).map(a=>a.name).join(', '),thumb:((t.album&&t.album.images)||[]).slice(-2)[0]?(t.album.images.slice(-2)[0].url):'',dur:Math.round((t.duration_ms||0)/1000)}))}
 async function doSearch(q,quiet){q=(q||'').trim();if(!q){tst('Escribe una canción, artista o enlace de YouTube.');return []}
  M.q=q;M.err=null;M.busy=true;M.res=[];M.resSrc=M.src;if(!quiet){M.view='home';render()}
@@ -17714,6 +17714,41 @@ try{window.__nxv76sp={eotOn,eotOff,fadeTick,state:()=>({eot,fadeOn,touched}),set
  set(false);b.onclick=()=>set(!el.classList.contains('xmoreon'));
  ct.after(b);
 }catch(e){try{console.warn('v77 movil',e)}catch(x){}}})();
+</script>
+<script id="v77-cc-js">
+/* v77 · botón de subtítulos (CC) para YouTube: celular y PC */
+(()=>{try{
+ const Z=window.NXYT;if(!Z)return;
+ const KEY='nx-v77-cc';let on=false;try{on=localStorage.getItem(KEY)==='1'}catch(e){}
+ const ICON_ON='<svg viewBox="0 0 24 24" aria-hidden="true" fill="currentColor"><path d="M19 4H5a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zm-8 7H9.5v-.5h-2v3h2V13H11v1c0 .55-.45 1-1 1H7c-.55 0-1-.45-1-1v-4c0-.55.45-1 1-1h3c.55 0 1 .45 1 1v1zm7 0h-1.5v-.5h-2v3h2V13H18v1c0 .55-.45 1-1 1h-3c-.55 0-1-.45-1-1v-4c0-.55.45-1 1-1h3c.55 0 1 .45 1 1v1z"/></svg>';
+ const ICON_OFF='<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M10.5 10.5H9a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1h1.5M16.5 10.5H15a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1h1.5"/><path d="M4 21 20 3" stroke-width="2"/></svg>';
+ let btn=null,last='',tries=0,need=false;
+ const paint=()=>{if(!btn)return;btn.classList.toggle('on',on);btn.setAttribute('aria-pressed',on?'true':'false');const t=on?'Subtítulos: activados (pulsa para quitar)':'Subtítulos: desactivados (pulsa para activar)';btn.title=t;btn.setAttribute('aria-label',t);btn.innerHTML=on?ICON_ON:ICON_OFF};
+ const player=()=>{try{return Z.ready&&Z.ready()?Z.P():null}catch(e){return null}};
+ /* devuelve cuántas pistas de subtítulos encontró (solo cuando están activados) */
+ const apply=()=>{const p=player();if(!p)return -1;try{
+  if(on){p.loadModule('captions');let tl=[];try{tl=p.getOption('captions','tracklist')||[]}catch(e){}
+   if(tl.length){const es=tl.find(t=>/^es/i.test(t.languageCode||''));if(es)try{p.setOption('captions','track',{languageCode:es.languageCode})}catch(e){}}
+   return tl.length}
+  p.unloadModule('captions');return 0}catch(e){return -1}};
+ const toast=m=>{try{Z.tst(m,2600)}catch(e){}};
+ const toggle=()=>{on=!on;try{localStorage.setItem(KEY,on?'1':'0')}catch(e){}paint();
+  if(!player()){toast(on?'Subtítulos activados · se aplicarán al reproducir un video':'Subtítulos desactivados');return}
+  tries=0;need=true;const n=apply();toast(on?'Subtítulos activados':'Subtítulos desactivados');if(on&&n>0)need=false};
+ const tick=()=>{const p=player();if(!p)return;let vid='';try{vid=(p.getVideoData()||{}).video_id||''}catch(e){}
+  if(vid&&vid!==last){last=vid;tries=0;need=true}
+  if(!need)return;const n=apply();
+  if(!on){need=false;return}
+  if(n>0){need=false;return}
+  if(++tries>=6){need=false;toast('Este video no tiene subtítulos disponibles')}};
+ setInterval(tick,1200);
+ const add=root=>{try{const dr=root&&root.querySelector('.dr');if(!dr||dr.querySelector('.v77-cc'))return;
+  btn=document.createElement('button');btn.type='button';btn.className='yt-ib v77-cc';btn.onclick=toggle;paint();dr.insertBefore(btn,dr.firstChild)}catch(e){}};
+ const prev=Z.hooks&&Z.hooks.built;
+ Z.hooks.built=root=>{try{prev&&prev(root)}catch(e){}add(root)};
+ const r=document.getElementById('nxy');if(r&&r.querySelector('.yt-cb'))add(r);
+ window.__nxv77cc={toggle,state:()=>on};
+}catch(e){try{console.warn('v77 cc',e)}catch(x){}}})();
 </script>
 </body>
 </html>
