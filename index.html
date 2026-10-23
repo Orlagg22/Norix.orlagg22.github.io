@@ -16985,45 +16985,5 @@ addEventListener('keydown',e=>{
  setInterval(fav,2500)}
 }catch(err){try{console.warn('v64:',err)}catch(e){}}})();
 </script>
-<style id="nx-v65-css">
-/* ===== v65 · rendimiento: fondo sin desenfoque en vivo, letra ligera, modo ligero automático ===== */
-#spx[data-xs]:is([data-bg=cover],[data-bg=dark]) .spxbg{background-image:var(--xbgs)!important;background-size:cover!important;filter:none!important}
-#spx[data-xs]:is([data-bg=cover],[data-bg=dark]) .v61bgo{display:none!important}
-#spx[data-bg=aurora] .spxbg,#spx[data-bg=sunset] .spxbg{filter:none!important;opacity:.6}
-#spx[data-xs]:not(.pl):is([data-bg=cover]) .spxbg{opacity:.8}
-/* solo las líneas de letra cercanas a la actual llevan desenfoque (antes eran todas) */
-.xp.lyr .xl:not(.on):is(:not([style*="--d"]),[style*="--d: 3"],[style*="--d: 4"]){filter:none}
-#spx .xl{will-change:auto}
-#spx[data-xs] .spxbg{animation:none!important;will-change:auto}
-#spx .v37g{animation:none!important;mix-blend-mode:normal!important;opacity:.035!important}
-#spx.v65ultra #xv,#spx.v65ultra .xcw::before,#spx.v65ultra .v37g{display:none!important}
-#spx.v65ultra .xl:not(.on){filter:none!important}
-#spx.v65ultra .spxbg{animation:none!important}
-</style>
-<script id="nx-v65-js">
-(()=>{try{
-const X=window.__nxX,el=document.getElementById('spx'),img=document.getElementById('xc');
-if(!X||!el||!img)return;
-/* fondo: la portada se reduce a 32×32, se suaviza y se estira con CSS (el desenfoque queda gratis) */
-const N=32,clamp=v=>v<0?0:v>255?255:v;
-function boxBlur(a){const o=new Uint8ClampedArray(a.length);for(let y=0;y<N;y++)for(let x=0;x<N;x++){let r=0,g=0,b=0,n=0;for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){const xx=x+dx,yy=y+dy;if(xx<0||yy<0||xx>=N||yy>=N)continue;const k=(yy*N+xx)*4;r+=a[k];g+=a[k+1];b+=a[k+2];n++}const k=(y*N+x)*4;o[k]=r/n;o[k+1]=g/n;o[k+2]=b/n;o[k+3]=255}a.set(o)}
-function tiny(){try{if(!img.naturalWidth)return;const c=document.createElement('canvas');c.width=c.height=N;const g=c.getContext('2d',{willReadFrequently:true});g.imageSmoothingQuality='high';
- const w=img.naturalWidth,h=img.naturalHeight,s=Math.min(w,h);g.drawImage(img,(w-s)/2,(h-s)/2,s,s,0,0,N,N);
- const d=g.getImageData(0,0,N,N),a=d.data;boxBlur(a);boxBlur(a);
- for(let i=0;i<a.length;i+=4){const l=.3*a[i]+.59*a[i+1]+.11*a[i+2];a[i]=clamp((l+(a[i]-l)*1.7)*.5);a[i+1]=clamp((l+(a[i+1]-l)*1.7)*.5);a[i+2]=clamp((l+(a[i+2]-l)*1.7)*.5)}
- g.putImageData(d,0,0);el.style.setProperty('--xbgs','url("'+c.toDataURL('image/png')+'")');el.dataset.xs='1'}catch(e){delete el.dataset.xs}}
-img.addEventListener('load',tiny);if(img.complete)tiny();
-/* modo ligero automático: si el reproductor va por debajo de 38 fps se aligera solo; si aun así no llega a 30, se quita el visualizador */
-let vis=true;document.addEventListener('visibilitychange',()=>{vis=!document.hidden});
-let stage=0;
-function probe(done){let n=0,t0=0,bad=false;const f=t=>{if(!t0)t0=t;n++;if(document.hidden||el.hidden)bad=true;if(t-t0<2500&&!bad)requestAnimationFrame(f);else done(bad?99:n*1000/(t-t0))};requestAnimationFrame(f)}
-function govern(){if(stage>=2||el.hidden)return;if((X.set&&X.set.perf)&&X.set.perf!='auto')return;
- setTimeout(()=>probe(fps=>{if(el.hidden||fps>=38&&stage==0||fps>=30&&stage==1)return;
-  if(stage==0){stage=1;X._lowb=true;el.dataset.perf='lite';toast('⚡ Activé el modo ligero para que el reproductor fluya mejor',3600);setTimeout(govern,800)}
-  else{stage=2;el.classList.add('v65ultra');toast('⚡ Modo ultraligero: sin visualizador para ir más rápido',3600)}}),2200)}
-new MutationObserver(()=>{if(!el.hidden)govern()}).observe(el,{attributes:true,attributeFilter:['hidden']});
-if(!el.hidden)govern();
-}catch(err){try{console.warn('v65:',err)}catch(e){}}})();
-</script>
 </body>
 </html>
