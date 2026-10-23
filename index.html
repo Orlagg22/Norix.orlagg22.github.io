@@ -17638,5 +17638,82 @@ try{window.__nxv76sp={eotOn,eotOff,fadeTick,state:()=>({eot,fadeOn,touched}),set
 }}catch(e){try{console.warn('v76 Spotify',e)}catch(x){}}
 })();
 </script>
+<!-- ===== v77 · arreglo de reproductores en celular (Spotify inmersivo + YouTube): todos los botones visibles ===== -->
+<style id="v77-movil">
+/* ---------- YouTube (#nxy) ---------- */
+/* el botón «copiar enlace» heredaba .cp{position:absolute;opacity:0} de otra parte de la app y quedaba invisible */
+#nxy .yt-dock .dl .cp{position:static;top:auto;right:auto;opacity:1;border:0;border-radius:50%;background:none;padding:8px;font-size:inherit;color:inherit}
+@media (max-width:900px){
+ #nxy{height:100vh;height:100dvh}
+ #nxy .yt-body,#nxy.lyr .yt-body{padding-bottom:calc(206px + env(safe-area-inset-bottom,0px))}
+ #nxy .yt-dock{padding:24px 10px calc(8px + env(safe-area-inset-bottom,0px));background:linear-gradient(to top,#0a0a0b 70%,rgba(10,10,11,0))}
+ #nxy .yt-pg{gap:8px}
+ #nxy .yt-bar{height:30px}
+ /* se recuperan los botones que antes se ocultaban: fila 1 = transporte, fila 2 = favoritos / más / velocidad / volumen / cine */
+ #nxy .yt-dr{display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-areas:"cb cb" "dl dr";row-gap:2px;margin-top:0;align-items:center}
+ #nxy .yt-cb{grid-area:cb;width:100%;justify-content:space-between;gap:0}
+ #nxy .yt-cb button{flex:1 1 0;width:auto;min-width:0;max-width:48px;height:46px;padding:10px;font-size:13px;font-weight:700}
+ #nxy .yt-cb .pl{flex:0 0 54px;max-width:none;width:54px;height:54px;padding:15px;margin:0 2px}
+ #nxy .yt-dock .dl{grid-area:dl;display:flex;gap:0}
+ #nxy .yt-dock .dr{grid-area:dr;display:flex;justify-content:flex-end;gap:0;min-width:0}
+ #nxy .yt-dock .dl .yt-ib,#nxy .yt-dock .dr .yt-ib,#nxy .yt-dock .dr .vic{width:38px;height:38px;padding:8px!important;flex:none}
+ #nxy .yt-dock .dl .ext,#nxy .yt-dock .dr .vl,#nxy .yt-dock .dr .zl,#nxy .yt-dock .dr [aria-label^="Reducir"],#nxy .yt-dock .dr [aria-label^="Agrandar"]{display:none}
+ #nxy .yt-dock .dr .yt-vol{gap:0}
+ #nxy .yt-dock .dr .rate{flex:none;max-width:64px;padding:7px 8px;font-size:12px;margin-right:2px}
+}
+@media (max-width:360px){#nxy .yt-dock .dl .yt-ib,#nxy .yt-dock .dr .yt-ib,#nxy .yt-dock .dr .vic{width:34px;height:34px;padding:7px!important}#nxy .yt-dock .dr .rate{max-width:56px}}
+
+/* ---------- Spotify inmersivo (#spx) ---------- */
+#spx .xmore{display:none}
+@media (max-width:820px) and (orientation:portrait){
+ #spx{height:100vh;height:100dvh}
+ #spx:not(.kar):not(.teat):not(.idle):not(.big):not(.v64car) .spxm{display:flex;flex-direction:column;gap:10px;height:100vh;height:100dvh;width:100%;max-width:none;margin:0;padding:calc(12px + env(safe-area-inset-top,0px)) 14px calc(10px + env(safe-area-inset-bottom,0px));align-items:stretch;overflow:hidden}
+ #spx:not(.kar):not(.teat):not(.idle):not(.big):not(.v64car).xmoreon .spxm{overflow-y:auto;overflow-x:hidden}
+ /* cabecera compacta: portada chica + título/artista */
+ #spx:not(.kar):not(.teat):not(.idle):not(.big):not(.v64car) .spxl{display:grid;grid-template-columns:84px minmax(0,1fr);grid-template-areas:"cw t" "cw a" "bar bar" "ti ti" "ct ct" "mo mo" "ex ex" "e2 e2";column-gap:12px;row-gap:8px;align-items:center;flex:none;max-height:none;overflow:visible;margin-top:0;padding-top:0;text-align:left}
+ #spx:not(.kar):not(.teat):not(.idle):not(.big):not(.v64car) .xcw{grid-area:cw;width:84px;margin:0}
+ #spx:not(.kar):not(.teat):not(.idle):not(.big):not(.v64car) .xt{grid-area:t;align-self:end;font-size:20px;padding-right:46px}
+ #spx:not(.kar):not(.teat):not(.idle):not(.big):not(.v64car) .xa{grid-area:a;align-self:start;font-size:14px;padding-right:46px}
+ #spx:not(.kar):not(.teat):not(.idle):not(.big):not(.v64car) .xbar{grid-area:bar;height:10px;margin-top:2px}
+ #spx:not(.kar):not(.teat):not(.idle):not(.big):not(.v64car) .xti{grid-area:ti;margin-top:-4px}
+ /* controles principales siempre en UNA fila y siempre visibles */
+ #spx:not(.kar):not(.teat):not(.idle):not(.big):not(.v64car) .xct{grid-area:ct;flex-wrap:nowrap;gap:6px;justify-content:space-between;width:100%}
+ #spx .xct button{flex:1 1 0;width:auto;min-width:0;max-width:54px;height:46px;min-height:46px}
+ #spx .xct #xp2{flex:0 0 62px;max-width:none;width:62px;height:62px}
+ #spx .xmore{grid-area:mo;display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:40px;border:1px solid #ffffff30;background:#ffffff12;border-radius:999px;font-size:13px;font-weight:600}
+ #spx .xmore svg{width:16px;height:16px;transition:rotate .25s;fill:currentColor}
+ #spx.xmoreon .xmore svg{rotate:180deg}
+ /* extras: ocultos hasta pulsar «Más controles» y luego con tamaño táctil completo */
+ #spx:not(.idle) .spxl .xex{display:none}
+ #spx.xmoreon .spxl .xex{display:flex;flex-wrap:nowrap;gap:8px;width:100%}
+ #spx:not(.kar):not(.teat):not(.idle):not(.big):not(.v64car) .xex:not(.xe2){grid-area:ex}
+ #spx:not(.kar):not(.teat):not(.idle):not(.big):not(.v64car) .xe2{grid-area:e2}
+ #spx.xmoreon .spxl .xex:not(.xe2) input{flex:1 1 auto;min-width:80px;height:32px}
+ #spx.xmoreon .spxl .xex:not(.xe2) button{flex:none;width:44px;min-width:44px;height:44px;padding:0}
+ #spx.xmoreon .spxl .xe2{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+ #spx.xmoreon .spxl .xe2 button{width:100%;min-width:0;height:46px;padding:0}
+ /* panel inferior (letra, cola, etc.): las pestañas no se recortan y solo el contenido hace scroll */
+ #spx:not(.kar):not(.teat):not(.idle):not(.big):not(.v64car) .spxr{flex:1 1 0;min-height:0;height:auto}
+ #spx:not(.kar):not(.teat):not(.idle):not(.big):not(.v64car).xmoreon .spxr{flex:none;height:62vh;height:62dvh;min-height:340px}
+ #spx .xtabs{flex:0 0 auto;flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;-webkit-overflow-scrolling:touch;margin-bottom:6px;padding-bottom:6px;-webkit-mask:linear-gradient(to right,#000 90%,transparent);mask:linear-gradient(to right,#000 90%,transparent)}
+ #spx .xtabs::-webkit-scrollbar{display:none}
+ #spx .xtabs button{flex:none;min-height:40px;white-space:nowrap}
+ #spx .xlt{flex:none;gap:6px;margin-bottom:6px}
+ #spx .xlt button{min-height:34px;padding:3px 12px}
+ #spx .xp{min-height:0}
+ #spx .xcl{width:44px;height:44px;top:calc(10px + env(safe-area-inset-top,0px))}
+}
+</style>
+<script id="v77-movil-js">
+(()=>{try{
+ const el=document.getElementById('spx');if(!el||el.querySelector('#xmore'))return;
+ const ct=el.querySelector('.xct');if(!ct)return;
+ const b=document.createElement('button');b.id='xmore';b.type='button';b.className='xmore';b.setAttribute('aria-expanded','false');
+ const set=on=>{el.classList.toggle('xmoreon',on);b.setAttribute('aria-expanded',on?'true':'false');b.firstChild.textContent=on?'Menos controles':'Más controles (volumen, ±10 s, álbum…)'};
+ b.innerHTML='<span></span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7.41 8.59 12 13.17l4.59-4.58L18 10l-6 6-6-6z"/></svg>';
+ set(false);b.onclick=()=>set(!el.classList.contains('xmoreon'));
+ ct.after(b);
+}catch(e){try{console.warn('v77 movil',e)}catch(x){}}})();
+</script>
 </body>
 </html>
