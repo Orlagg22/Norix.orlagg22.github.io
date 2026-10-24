@@ -18206,6 +18206,137 @@ const MORE=[[[
   c:'<script>\n  const datos = { usuario: "Ana", puntos: 50 };\n  \n<\/script>',s:'<script>\n  const datos = { usuario: "Ana", puntos: 50 };\n  const texto = JSON.stringify(datos);\n  console.log(texto);\n  const objeto = JSON.parse(texto);\n  console.log(objeto.usuario);\n<\/script>',
   k:c=>/JSON\.stringify\s*\(/.test(c)&&/JSON\.parse\s*\(/.test(c)&&/console\.log\s*\(/.test(c),p:'Usa `JSON.stringify(datos)`, luego `JSON.parse(texto)` y `console.log` de cada uno.'}]]];
 MORE.forEach((t,i)=>t.forEach((l,j)=>TR[i].lv[j].push(...l)));
+/* ===== Terminal simulado (Linux y Windows CMD): sistema de archivos virtual, nada toca el equipo real ===== */
+const has=(o,k)=>Object.prototype.hasOwnProperty.call(o,k),isD=n=>!!n&&typeof n==='object';
+function SH(code,os){
+ const W=os==='win',home=W?['Users','Ana']:['home','user'],mk=()=>({'notas.txt':'Hola\nMundo\n'+(W?'Windows':'Linux'),docs:{'informe.txt':'Informe 2026\nventas: 10'},fotos:{}}),fs=W?{Users:{Ana:mk()}}:{home:{user:mk()}};
+ let cwd=home.slice();const ran=[],lines=[];let err=0;
+ const res=p=>{const r=/^([\\/]|[A-Za-z]:)/.test(p)?[]:cwd.slice();p.replace(/^[A-Za-z]:/,'').split(/[\\/]/).forEach(s=>{if(!s||s==='.')return;s==='..'?r.pop():r.push(s)});return r};
+ const get=a=>{let n=fs;for(const s of a){if(!isD(n)||!has(n,s))return;n=n[s]}return n};
+ const bad=(l,w)=>'\u0001'+(W?w:l);
+ const vars=W?{USERNAME:'Ana',USERPROFILE:'C:\\Users\\Ana',COMPUTERNAME:'NORYX',OS:'Windows_NT'}:{HOME:'/home/user',USER:'user',SHELL:'/bin/bash'},PM={},pk=p=>p.join('/'),pm=(p,v)=>PM[pk(p)]||(isD(v)?'rwxr-xr-x':'rw-r--r--');
+ const xp=s=>W?s.replace(/%(\w+)%/g,(m,k)=>has(vars,k.toUpperCase())?vars[k.toUpperCase()]:m):s.replace(/'[^']*'|\$\{?(\w+)\}?/g,(m,k)=>m[0]==="'"?m:(has(vars,k)?vars[k]:''));
+ const gl=p=>new RegExp('^'+p.replace(/[.+^${}()|[\]\\]/g,'\\$&').replace(/\*/g,'.*').replace(/\?/g,'.')+'$',W?'i':'');
+ const ex=x=>{if(!/[*?]/.test(x))return[x];const s=x.split(/[\\/]/),b=s.pop(),v=get(res(s.join('/')));if(!isD(v))return[x];const m=Object.keys(v).filter(k=>gl(b).test(k)).sort();return m.length?m.map(k=>s.concat(k).join('/')):[x]};
+ const P=()=>{if(W)return 'C:\\'+cwd.join('\\')+'>';const h=cwd.join('/');return 'user@noryx:'+(h==='home/user'?'~':h.indexOf('home/user/')===0?'~'+h.slice(9):'/'+h)+'$'};
+ const AL=W?{dir:'ls',type:'cat',del:'rm',erase:'rm',rmdir:'rm',copy:'cp',move:'mv',ren:'mv',md:'mkdir',mkdir:'mkdir',findstr:'grep',cls:'clear',cd:'cd',echo:'echo',whoami:'whoami',ver:'ver',sort:'sort',set:'set',attrib:'attrib',xcopy:'cp'}:{pwd:1,ls:1,cd:1,mkdir:1,touch:1,cat:1,echo:1,rm:1,cp:1,mv:1,grep:1,wc:1,head:1,whoami:1,clear:1,sort:1,uname:1,tail:1,find:1,chmod:1,export:1,env:1,rmdir:1};
+ const NF=(x)=>bad('No existe el archivo o directorio: '+x,'El sistema no puede encontrar el archivo especificado.');
+ function cmd(seg,inp){
+  const raw=seg.trim(),t=(raw.match(/(?:[^\s"']|"[^"]*"|'[^']*')+/g)||[]).map(x=>x.replace(/"([^"]*)"|'([^']*)'/g,'$1$2'));
+  if(!t.length)return '';
+  if(!W&&/^\w+=/.test(t[0])){const i=t[0].indexOf('=');vars[t[0].slice(0,i)]=t[0].slice(i+1);return ''}
+  const n=t[0].toLowerCase(),a=t.slice(1),isF=x=>W?/^\/\w$/.test(x):/^-\w+$/.test(x),fl=a.filter(isF).join('').replace(/[-\/]/g,'').toLowerCase(),ar0=a.filter(x=>!isF(x));
+  const c=W?AL[n]:(AL[n]?n:'');
+  if(!c||!has(AL,n))return bad('bash: '+t[0]+': orden no encontrada',"'"+t[0]+"' no se reconoce como un comando interno o externo.");
+  ran.push(n);const ar=['find','grep','echo','chmod','set','attrib','export'].includes(c)?ar0:ar0.flatMap(ex);
+  const txt=(f)=>{const v=f?get(res(f)):inp;return v};
+  switch(c){
+  case 'pwd':return '/'+cwd.join('/');
+  case 'whoami':return W?'noryx\\ana':'user';
+  case 'uname':return 'Linux';
+  case 'ver':return 'Microsoft Windows [Versión 10.0.19045]';
+  case 'clear':lines.length=0;return '';
+  case 'cd':{if(!ar.length){if(W)return 'C:\\'+cwd.join('\\');cwd=home.slice();return ''}const p=res(ar[0]);if(!isD(get(p)))return bad('bash: cd: '+ar[0]+': No existe el archivo o directorio','El sistema no puede encontrar la ruta especificada.');cwd=p;return ''}
+  case 'ls':{const p=ar[0]?res(ar[0]):cwd,v=get(p);if(v===undefined)return NF(ar[0]);if(!isD(v))return ar[0];const k=Object.keys(v).sort();
+   if(W)return k.length?k.map(x=>(isD(v[x])?'<DIR>        ':'       '+String(v[x].length).padStart(5)+' ')+x).join('\n'):'(carpeta vacía)';
+   return fl.includes('l')?k.map(x=>(isD(v[x])?'d'+pm(p.concat(x),v[x])+' 2 user user 4096 ':'-'+pm(p.concat(x),v[x])+' 1 user user '+String(v[x].length).padStart(4)+' ')+x).join('\n'):k.join('  ')}
+  case 'mkdir':{let o='';ar.forEach(x=>{const p=res(x);let m=fs;for(let i=0;i<p.length;i++){const s=p[i],last=i===p.length-1;if(has(m,s)){if(!isD(m[s])||(last&&!fl.includes('p'))){o=bad('mkdir: no se puede crear el directorio «'+x+'»: El archivo ya existe','Ya existe una subcarpeta o un archivo '+x+'.');return}m=m[s]}else{if(!last&&!W&&!fl.includes('p')){o=bad('mkdir: no se puede crear el directorio «'+x+'»: No existe el archivo o directorio','');return}m[s]={};m=m[s]}}});return o}
+  case 'touch':ar.forEach(x=>{const p=res(x),d=get(p.slice(0,-1)),k=p[p.length-1];if(isD(d)&&k&&!has(d,k))d[k]=''});return '';
+  case 'cat':{if(!ar.length)return inp!==undefined?inp:'';return ar.map(x=>{if(W&&x.toLowerCase()==='nul')return '';const v=get(res(x));return v===undefined?NF(x):isD(v)?bad('cat: '+x+': Es un directorio','Acceso denegado.'):v}).join('\n')}
+  case 'echo':return W?raw.replace(/^echo\s?/i,''):a.join(' ');
+  case 'rm':{let o='';ar.forEach(x=>{const p=res(x),d=get(p.slice(0,-1)),k=p[p.length-1],v=get(p);if(v===undefined)o=NF(x);else if(isD(v)&&!(W?fl.includes('s')||!Object.keys(v).length:fl.includes('r')))o=bad('rm: no se puede borrar «'+x+'»: Es un directorio','El directorio no está vacío (usa rmdir /s).');else if(W&&PM[pk(p)]==='R')o=bad('','Acceso denegado.');else if(k){delete d[k];delete PM[pk(p)]}});return o}
+  case 'cp':case 'mv':{const sp=res(ar[0]||''),sv=get(sp);if(sv===undefined||!sp.length)return NF(ar[0]);if(c==='cp'&&isD(sv)&&(W?n!=='xcopy':!fl.includes('r')))return bad('cp: se omite el directorio «'+ar[0]+'» (usa -r)','Acceso denegado.');let dp=res(ar[1]||''),dv=get(dp);if(isD(dv))dp=dp.concat(sp[sp.length-1]);const pd=get(dp.slice(0,-1));if(!isD(pd)||!dp.length)return bad('No existe el destino','El sistema no puede encontrar la ruta especificada.');pd[dp[dp.length-1]]=c==='cp'?JSON.parse(JSON.stringify(sv)):sv;if(c==='mv'){const sd=get(sp.slice(0,-1));if(sd!==pd||sp[sp.length-1]!==dp[dp.length-1])delete sd[sp[sp.length-1]];if(PM[pk(sp)]){PM[pk(dp)]=PM[pk(sp)];delete PM[pk(sp)]}}return W&&n!=='ren'?'        1 archivo(s) '+(c==='cp'?'copiado(s).':'desplazado(s).'):''}
+  case 'grep':{const pat=ar[0]||'',ci=fl.includes('i'),src=ar.length>1?ar.slice(1).map(x=>{const v=get(res(x));return typeof v==='string'?v:null}):[inp];if(src.indexOf(null)>=0||typeof src[0]!=='string')return bad('grep: archivo no encontrado','No se puede abrir el archivo.');return src.join('\n').split('\n').filter(l=>ci?l.toLowerCase().indexOf(pat.toLowerCase())>=0:l.indexOf(pat)>=0).join('\n')}
+  case 'wc':{const v=txt(ar[0]);if(typeof v!=='string')return NF(ar[0]);const L=v?v.split('\n').length:0,f=ar[0]?' '+ar[0]:'';return fl.includes('l')?L+f:L+' '+v.split(/\s+/).filter(Boolean).length+' '+v.length+f}
+  case 'head':{const i=a.indexOf('-n'),nn=i>=0?(+a[i+1]||10):10,f=ar.find(x=>!/^\d+$/.test(x)),v=txt(f);if(typeof v!=='string')return NF(f);return v.split('\n').slice(0,nn).join('\n')}
+  case 'tail':{const i=a.indexOf('-n'),nn=i>=0?(+a[i+1]||10):10,f=ar.find(x=>!/^\d+$/.test(x)),v=txt(f);if(typeof v!=='string')return NF(f);return v.split('\n').slice(-nn).join('\n')}
+  case 'find':{const nm=fl.includes('name'),base=(nm?ar0.length>1:ar0.length>0)?ar0[0]:'.',re=nm?gl(ar0[ar0.length-1]):null,v=get(res(base));if(v===undefined)return NF(base);const o=[],walk=(m,pre)=>Object.keys(m).sort().forEach(k=>{const q=pre+'/'+k;if(!re||re.test(k))o.push(q);if(isD(m[k]))walk(m[k],q)});if(!re)o.push(base);walk(isD(v)?v:{},base.replace(/\/$/,''));return o.join('\n')}
+  case 'chmod':{const mo=a[0]||'',f=a[1],p=res(f||''),v=get(p);if(v===undefined||!f)return NF(f);let cu=pm(p,v);if(/^[0-7]{3}$/.test(mo))cu=mo.split('').map(d=>'rwx'.split('').map((ch,i)=>(d>>(2-i))&1?ch:'-').join('')).join('');else{const m=mo.match(/^([ugoa]*)([+-])([rwx]+)$/);if(!m)return bad('chmod: modo no válido: «'+mo+'»','');const wh=m[1]||'a',ix={u:0,g:1,o:2};cu=cu.split('');'ugo'.split('').forEach(w=>{if(wh.includes('a')||wh.includes(w))m[3].split('').forEach(ch=>{cu[ix[w]*3+'rwx'.indexOf(ch)]=m[2]==='+'?ch:'-'})});cu=cu.join('')}PM[pk(p)]=cu;return ''}
+  case 'export':ar.forEach(x=>{const i=x.indexOf('=');if(i>0)vars[x.slice(0,i)]=x.slice(i+1)});return '';
+  case 'env':return Object.keys(vars).sort().map(k=>k+'='+vars[k]).join('\n');
+  case 'rmdir':{let o='';ar.forEach(x=>{const p=res(x),v=get(p),d=get(p.slice(0,-1)),k=p[p.length-1];if(v===undefined)o=NF(x);else if(!isD(v))o=bad('rmdir: fallo al borrar «'+x+'»: No es un directorio','');else if(Object.keys(v).length)o=bad('rmdir: fallo al borrar «'+x+'»: El directorio no está vacío','');else if(k)delete d[k]});return o}
+  case 'set':{if(!a.length)return Object.keys(vars).sort().map(k=>k+'='+vars[k]).join('\n');const r2=raw.replace(/^set\s+/i,''),i=r2.indexOf('=');if(i<1)return bad('','Variable de entorno '+r2+' no definida');vars[r2.slice(0,i).toUpperCase()]=r2.slice(i+1);return ''}
+  case 'attrib':{const m=a[0]&&a[0].match(/^([+-])r$/i),f=m?a[1]:a[0],p=res(f||''),v=get(p);if(!f||v===undefined)return NF(f);if(m){PM[pk(p)]=m[1]==='+'?'R':'';return ''}return (PM[pk(p)]==='R'?'A    R   ':'A        ')+'C:\\'+p.join('\\')}
+  case 'sort':{const v=txt(ar[0]);if(typeof v!=='string')return NF(ar[0]);return v.split('\n').sort().join('\n')}}
+  return ''}
+ code.split('\n').forEach(line=>{
+  const ln=line.trim();if(!ln)return;
+  if(W?/^(rem\b|::)/i.test(ln):ln[0]==='#'){lines.push({c:ln});return}
+  lines.push({p:P(),t:ln});
+  let o='',inp,rd=null;const segs=xp(ln).split('|');
+  for(let i=0;i<segs.length;i++){let s=segs[i];const m=s.match(/(>>?)\s*(\S+)\s*$/);if(m&&i===segs.length-1){rd=m;s=s.slice(0,m.index)}o=cmd(s,inp);if(o.charAt(0)==='\u0001')break;inp=o}
+  if(rd&&o.charAt(0)!=='\u0001'){const p=res(rd[2]),d=get(p.slice(0,-1)),k=p[p.length-1];if(!isD(d)||!k||isD(d[k]))o=bad('No se puede escribir en '+rd[2],'El sistema no puede encontrar la ruta especificada.');else{d[k]=(rd[1]==='>>'&&d[k]?d[k]+'\n':'')+o;o=''}}
+  if(o.charAt(0)==='\u0001'){err++;lines.push({e:o.slice(1)})}else if(o)lines.push({o})});
+ return{lines,ran,err,cwd,get,vars,PM,prompt:P(),out:lines.map(l=>l.o||l.e||'').join('\n')}}
+function TERM(code,os){const r=SH(code,os),h=r.lines.map(l=>l.c!=null?'<span style="color:#6b7a8c">'+esc(l.c)+'</span>':l.p!=null?'<span style="color:#3ddc84">'+esc(l.p)+'</span> '+esc(l.t):l.e!=null?'<span style="color:#ff7b72">'+esc(l.e)+'</span>':esc(l.o)).join('\n');
+ return '<!doctype html><meta charset="utf-8"><body style="margin:0;background:#0c1116;color:#d6e2ee;font:13px/1.55 ui-monospace,Menlo,Consolas,monospace;padding:12px"><pre style="margin:0;white-space:pre-wrap;word-break:break-word">'+h+'\n<span style="color:#3ddc84">'+esc(r.prompt)+'</span> █</pre>'}
+const Lx=c=>SH(c,'lin'),Wx=c=>SH(c,'win'),HL=['home','user'],HW=['Users','Ana'],at=(r,b,...p)=>r.get(b.concat(p)),isS=v=>typeof v==='string';
+TR.push({id:'lin',n:'Linux',ic:'🐧',term:'lin',lv:[[
+ {n:'Dónde estoy: pwd y ls',h:'La terminal ejecuta órdenes escritas, una por línea. `pwd` muestra la carpeta actual y `ls` lista su contenido. Es un terminal simulado: puedes practicar sin riesgo.',r:'Reto: ejecuta `pwd` y después `ls`.',
+  c:'# Escribe una orden por línea\n',s:'pwd\nls',k:c=>{const r=Lx(c);return r.ran.includes('pwd')&&r.ran.includes('ls')&&!r.err},p:'Escribe `pwd` en una línea y `ls` en otra, sin errores.'},
+ {n:'Moverse con cd',h:'`cd carpeta` entra a una carpeta, `cd ..` sube un nivel y `cd` solo vuelve a tu casa (`~`).',r:'Reto: entra a `docs` y comprueba dónde estás con `pwd`.',
+  c:'ls\n',s:'ls\ncd docs\npwd',k:c=>{const r=Lx(c);return r.cwd.join('/')==='home/user/docs'&&r.ran.includes('pwd')},p:'Usa `cd docs` y después `pwd`.'},
+ {n:'Crear con mkdir y touch',h:'`mkdir nombre` crea una carpeta, `touch archivo` crea un archivo vacío y `rm archivo` lo borra.',r:'Reto: crea la carpeta `proyecto` y dentro el archivo `leeme.txt` (puedes usar la ruta `proyecto/leeme.txt`).',
+  c:'mkdir proyecto\n',s:'mkdir proyecto\ntouch proyecto/leeme.txt\nls proyecto',k:c=>isS(at(Lx(c),HL,'proyecto','leeme.txt')),p:'Después de `mkdir proyecto`, usa `touch proyecto/leeme.txt`.'}],[
+ {n:'Leer y escribir archivos',h:'`cat archivo` muestra el contenido. `echo "texto" > archivo` guarda texto (reemplaza) y `>>` lo agrega al final.',r:'Reto: crea `saludo.txt` con `echo`, agrégale otra línea con `>>` y muéstralo con `cat`.',
+  c:'cat notas.txt\n',s:'echo "Hola" > saludo.txt\necho "Adiós" >> saludo.txt\ncat saludo.txt',k:c=>{const r=Lx(c),v=at(r,HL,'saludo.txt');return isS(v)&&v.split('\n').length>=2&&r.ran.includes('cat')},p:'Usa `>` para la primera línea, `>>` para la segunda y `cat saludo.txt`.'},
+ {n:'Copiar y mover',h:'`cp origen destino` copia y `mv origen destino` mueve o renombra. `ls -l` muestra detalles.',r:'Reto: copia `notas.txt` dentro de `docs` y renombra `notas.txt` como `apuntes.txt`.',
+  c:'ls\n',s:'cp notas.txt docs\nmv notas.txt apuntes.txt\nls',k:c=>{const r=Lx(c);return isS(at(r,HL,'docs','notas.txt'))&&isS(at(r,HL,'apuntes.txt'))&&at(r,HL,'notas.txt')===undefined},p:'`cp notas.txt docs` y luego `mv notas.txt apuntes.txt`.'},
+ {n:'Buscar con grep y wc',h:'`grep palabra archivo` muestra las líneas que la contienen y `wc -l archivo` cuenta líneas. Practica con `docs/informe.txt` y `notas.txt`.',r:'Reto: busca «ventas» en `docs/informe.txt` con `grep` y cuenta las líneas de `notas.txt` con `wc -l`.',
+  c:'cat docs/informe.txt\n',s:'grep ventas docs/informe.txt\nwc -l notas.txt',k:c=>{const r=Lx(c);return r.ran.includes('grep')&&r.ran.includes('wc')&&!r.err&&r.out.includes('ventas: 10')},p:'Escribe `grep ventas docs/informe.txt` y `wc -l notas.txt`.'}],[
+ {n:'Tuberías',h:'Con `|` pasas la salida de una orden a la siguiente: `cat notas.txt | grep o`. Así combinas herramientas simples.',r:'Reto: muestra `notas.txt` ordenado (`| sort`) y, en otra línea, cuenta sus líneas (`| wc -l`).',
+  c:'# Combina órdenes con |\ncat notas.txt\n',s:'cat notas.txt | sort\ncat notas.txt | wc -l',k:c=>!Lx(c).err&&/cat[^\n|]*\|\s*sort/.test(c)&&/\|\s*wc\s+-l/.test(c),p:'Necesitas `cat notas.txt | sort` y `cat notas.txt | wc -l`.'},
+ {n:'Rutas relativas',h:'Una ruta absoluta empieza en `/` (`/home/user/docs`); una relativa parte de donde estás (`docs`, `../fotos`). `..` es la carpeta de arriba.',r:'Reto: estando en `docs`, crea `vacaciones` dentro de `fotos` con la ruta `../fotos/vacaciones` y entra en ella con `cd`.',
+  c:'cd docs\n',s:'cd docs\nmkdir ../fotos/vacaciones\ncd ../fotos/vacaciones\npwd',k:c=>{const r=Lx(c);return isD(at(r,HL,'fotos','vacaciones'))&&r.cwd.join('/')==='home/user/fotos/vacaciones'},p:'Desde `docs`: `mkdir ../fotos/vacaciones` y luego `cd ../fotos/vacaciones`.'},
+ {n:'Organizar y borrar',h:'`mkdir -p a/b` crea carpetas anidadas y `rm -r carpeta` borra una carpeta con todo su contenido (¡no hay papelera!).',r:'Reto: crea `web/css` con `mkdir -p`, crea `web/index.html` y borra la carpeta `fotos` con `rm -r`.',
+  c:'ls\n',s:'mkdir -p web/css\ntouch web/index.html\nrm -r fotos\nls',k:c=>{const r=Lx(c);return isD(at(r,HL,'web','css'))&&isS(at(r,HL,'web','index.html'))&&at(r,HL,'fotos')===undefined},p:'`mkdir -p web/css`, `touch web/index.html` y `rm -r fotos`.'}]]},
+{id:'win',n:'Windows CMD',ic:'🪟',term:'win',lv:[[
+ {n:'Dónde estoy: cd y dir',h:'El Símbolo del sistema (CMD) ejecuta órdenes escritas, una por línea. `cd` solo muestra la carpeta actual y `dir` lista su contenido. Es un terminal simulado.',r:'Reto: ejecuta `cd` y después `dir`.',
+  c:'REM Escribe una orden por línea\n',s:'cd\ndir',k:c=>{const r=Wx(c);return r.ran.includes('cd')&&r.ran.includes('dir')&&!r.err},p:'Escribe `cd` en una línea y `dir` en otra.'},
+ {n:'Moverse con cd',h:'`cd carpeta` entra a una carpeta y `cd ..` sube un nivel. Las rutas de Windows usan `\\`.',r:'Reto: entra a `docs` y comprueba dónde estás con `cd` sin nada.',
+  c:'dir\n',s:'dir\ncd docs\ncd',k:c=>{const r=Wx(c);return r.cwd.join('/')==='Users/Ana/docs'&&r.ran.filter(x=>x==='cd').length>=2},p:'Usa `cd docs` y después `cd` solo.'},
+ {n:'Crear carpetas y archivos',h:'`mkdir nombre` (o `md`) crea una carpeta. Un archivo vacío se crea con `type nul > archivo.txt`.',r:'Reto: crea la carpeta `proyecto` y dentro `leeme.txt` vacío: `type nul > proyecto\\leeme.txt`.',
+  c:'mkdir proyecto\n',s:'mkdir proyecto\ntype nul > proyecto\\leeme.txt\ndir proyecto',k:c=>isS(at(Wx(c),HW,'proyecto','leeme.txt')),p:'Después de `mkdir proyecto`, escribe `type nul > proyecto\\leeme.txt`.'}],[
+ {n:'Leer y escribir: type y echo',h:'`type archivo` muestra el contenido. `echo texto > archivo` guarda texto y `>>` lo agrega al final.',r:'Reto: crea `saludo.txt` con `echo`, agrégale otra línea con `>>` y muéstralo con `type`.',
+  c:'type notas.txt\n',s:'echo Hola > saludo.txt\necho Adios >> saludo.txt\ntype saludo.txt',k:c=>{const r=Wx(c),v=at(r,HW,'saludo.txt');return isS(v)&&v.split('\n').length>=2&&r.ran.includes('type')},p:'Usa `>` para la primera línea, `>>` para la segunda y `type saludo.txt`.'},
+ {n:'Copiar, mover y renombrar',h:'`copy origen destino` copia, `move origen destino` mueve y `ren viejo nuevo` renombra.',r:'Reto: copia `notas.txt` a `docs` y renombra `notas.txt` como `apuntes.txt`.',
+  c:'dir\n',s:'copy notas.txt docs\nren notas.txt apuntes.txt\ndir',k:c=>{const r=Wx(c);return isS(at(r,HW,'docs','notas.txt'))&&isS(at(r,HW,'apuntes.txt'))&&at(r,HW,'notas.txt')===undefined},p:'`copy notas.txt docs` y luego `ren notas.txt apuntes.txt`.'},
+ {n:'Buscar con findstr',h:'`findstr palabra archivo` muestra las líneas que contienen la palabra y `sort` ordena líneas. Practica con `docs\\informe.txt` y `notas.txt`.',r:'Reto: busca «ventas» en `docs\\informe.txt` con `findstr` y muestra `notas.txt` ordenado con `type notas.txt | sort`.',
+  c:'type docs\\informe.txt\n',s:'findstr ventas docs\\informe.txt\ntype notas.txt | sort',k:c=>{const r=Wx(c);return r.ran.includes('findstr')&&!r.err&&r.out.includes('ventas: 10')&&/\|\s*sort/i.test(c)},p:'Escribe `findstr ventas docs\\informe.txt` y `type notas.txt | sort`.'}],[
+ {n:'Tuberías y redirección',h:'`|` envía la salida de una orden a otra: `type notas.txt | findstr o`. `>` guarda la salida en un archivo.',r:'Reto: guarda en `resultado.txt` las líneas de `notas.txt` que contienen «o» (`type`, `findstr` y `>`).',
+  c:'type notas.txt\n',s:'type notas.txt | findstr o > resultado.txt\ntype resultado.txt',k:c=>{const r=Wx(c),v=at(r,HW,'resultado.txt');return isS(v)&&v.length>0&&r.ran.includes('findstr')},p:'Escribe `type notas.txt | findstr o > resultado.txt`.'},
+ {n:'Rutas relativas',h:'Una ruta absoluta empieza con la unidad (`C:\\Users\\Ana\\docs`); una relativa parte de donde estás (`docs`, `..\\fotos`). `..` es la carpeta superior.',r:'Reto: estando en `docs`, crea `vacaciones` dentro de `fotos` con `..\\fotos\\vacaciones` y entra en ella con `cd`.',
+  c:'cd docs\n',s:'cd docs\nmkdir ..\\fotos\\vacaciones\ncd ..\\fotos\\vacaciones\ncd',k:c=>{const r=Wx(c);return isD(at(r,HW,'fotos','vacaciones'))&&r.cwd.join('/')==='Users/Ana/fotos/vacaciones'},p:'Desde `docs`: `mkdir ..\\fotos\\vacaciones` y luego `cd ..\\fotos\\vacaciones`.'},
+ {n:'Organizar y borrar',h:'`mkdir a\\b` crea carpetas anidadas. `rmdir /s carpeta` borra una carpeta con todo su contenido y `del archivo` borra un archivo. ¡No hay papelera!',r:'Reto: crea `web\\css`, crea `web\\index.html` vacío, borra `fotos` con `rmdir /s` y `notas.txt` con `del`.',
+  c:'dir\n',s:'mkdir web\\css\ntype nul > web\\index.html\nrmdir /s fotos\ndel notas.txt\ndir',k:c=>{const r=Wx(c);return isD(at(r,HW,'web','css'))&&isS(at(r,HW,'web','index.html'))&&at(r,HW,'fotos')===undefined&&at(r,HW,'notas.txt')===undefined},p:'`mkdir web\\css`, `type nul > web\\index.html`, `rmdir /s fotos` y `del notas.txt`.'}]]});
+/* Lecciones 4 y 5 por nivel (Linux y Windows) */
+const LIN=TR.find(t=>t.id==='lin'),WIN=TR.find(t=>t.id==='win');
+[[LIN,[[
+ {n:'Quién soy: whoami, uname y clear',h:'`whoami` muestra tu usuario, `uname` el sistema operativo y `clear` limpia la pantalla (ejecútalo al final, porque borra lo anterior).',r:'Reto: ejecuta `whoami`, `uname` y por último `clear`.',
+  c:'# Tres órdenes, una por línea\n',s:'whoami\nuname\nclear',k:c=>{const r=Lx(c);return ['whoami','uname','clear'].every(x=>r.ran.includes(x))&&!r.err},p:'Escribe `whoami`, `uname` y `clear`, cada una en su línea.'},
+ {n:'Borrar carpetas vacías: rmdir',h:'`rmdir carpeta` borra solo carpetas **vacías**; si tienen contenido da error (para eso existe `rm -r`).',r:'Reto: crea `temporal`, bórrala con `rmdir` y prueba `rmdir docs` para ver el error (docs no está vacía).',
+  c:'mkdir temporal\n',s:'mkdir temporal\nrmdir temporal\nrmdir docs',k:c=>{const r=Lx(c);return at(r,HL,'temporal')===undefined&&isD(at(r,HL,'docs'))&&r.err===1&&r.ran.includes('rmdir')},p:'`mkdir temporal`, `rmdir temporal` y luego `rmdir docs` (debe fallar una vez).'}],[
+ {n:'Permisos con chmod',h:'`ls -l` muestra los permisos: `rwx` = leer, escribir, ejecutar, para dueño, grupo y otros. `chmod 755 archivo` los cambia con números (4 = r, 2 = w, 1 = x) y `chmod +x archivo` lo hace ejecutable.',r:'Reto: pon `notas.txt` en `755` y `docs/informe.txt` en `600`; revisa con `ls -l` y `ls -l docs`.',
+  c:'ls -l\n',s:'chmod 755 notas.txt\nchmod 600 docs/informe.txt\nls -l\nls -l docs',k:c=>{const r=Lx(c);return r.PM['home/user/notas.txt']==='rwxr-xr-x'&&r.PM['home/user/docs/informe.txt']==='rw-------'&&r.ran.includes('ls')},p:'Usa `chmod 755 notas.txt` y `chmod 600 docs/informe.txt`, luego `ls -l`.'},
+ {n:'Variables de entorno',h:'Una variable guarda un valor para tus órdenes. `export NOMBRE=valor` la crea, `$NOMBRE` la usa y `env` lista todas. Ya existen `$HOME` y `$USER`.',r:'Reto: crea `SALUDO="Hola Ana"` con `export`, muéstrala con `echo $SALUDO` y muestra también `echo $HOME`.',
+  c:'echo $USER\n',s:'export SALUDO="Hola Ana"\necho $SALUDO\necho $HOME',k:c=>{const r=Lx(c);return r.ran.includes('export')&&r.out.includes('Hola Ana')&&r.out.includes('/home/user')&&!r.err},p:'`export SALUDO="Hola Ana"`, luego `echo $SALUDO` y `echo $HOME`.'}],[
+ {n:'head, tail y tuberías encadenadas',h:'`head -n 2 archivo` muestra las 2 primeras líneas y `tail -n 1 archivo` la última. Puedes encadenar tuberías: `cat notas.txt | head -n 2 | sort`.',r:'Reto: usa `head -n 2 notas.txt`, `tail -n 1 notas.txt` y una línea con dos tuberías, como `cat notas.txt | head -n 2 | sort`.',
+  c:'cat notas.txt\n',s:'head -n 2 notas.txt\ntail -n 1 notas.txt\ncat notas.txt | head -n 2 | sort',k:c=>!Lx(c).err&&/head\s+-n\s*2/.test(c)&&/tail\s+-n\s*1/.test(c)&&/\|[^|\n]*\|/.test(c),p:'Necesitas `head -n 2`, `tail -n 1` y una línea con dos `|`.'},
+ {n:'Comodines, cp -r y find',h:'`*` significa «cualquier cosa»: `rm *.txt` borra todos los `.txt`. `cp -r carpeta copia` copia una carpeta completa y `find . -name "*.txt"` busca archivos por nombre.',r:'Reto: copia `docs` a `respaldo` con `cp -r`, borra los `.txt` de la carpeta actual con `rm *.txt` y busca los `.txt` con `find`.',
+  c:'ls\n',s:'cp -r docs respaldo\nrm *.txt\nfind . -name "*.txt"',k:c=>{const r=Lx(c);return isS(at(r,HL,'respaldo','informe.txt'))&&at(r,HL,'notas.txt')===undefined&&r.ran.includes('find')&&r.out.includes('respaldo/informe.txt')},p:'`cp -r docs respaldo`, `rm *.txt` y `find . -name "*.txt"`.'}]]],
+[WIN,[[
+ {n:'Quién soy: whoami, ver y cls',h:'`whoami` muestra tu usuario, `ver` la versión de Windows y `cls` limpia la pantalla (ejecútalo al final, porque borra lo anterior).',r:'Reto: ejecuta `whoami`, `ver` y por último `cls`.',
+  c:'REM Tres órdenes, una por línea\n',s:'whoami\nver\ncls',k:c=>{const r=Wx(c);return ['whoami','ver','cls'].every(x=>r.ran.includes(x))&&!r.err},p:'Escribe `whoami`, `ver` y `cls`, cada una en su línea.'},
+ {n:'Borrar carpetas vacías: rmdir',h:'`rmdir carpeta` borra una carpeta vacía; si tiene contenido da error y necesitas `rmdir /s`.',r:'Reto: crea `temporal`, bórrala con `rmdir` y prueba `rmdir docs` para ver el error.',
+  c:'mkdir temporal\n',s:'mkdir temporal\nrmdir temporal\nrmdir docs',k:c=>{const r=Wx(c);return at(r,HW,'temporal')===undefined&&isD(at(r,HW,'docs'))&&r.err===1&&r.ran.includes('rmdir')},p:'`mkdir temporal`, `rmdir temporal` y luego `rmdir docs` (debe fallar una vez).'}],[
+ {n:'Atributos con attrib',h:'`attrib +r archivo` marca un archivo como solo lectura y `attrib archivo` muestra sus atributos. Un archivo de solo lectura no se puede borrar con `del`.',r:'Reto: protege `notas.txt` con `attrib +r`, intenta borrarlo con `del` (fallará) y comprueba con `attrib notas.txt`.',
+  c:'attrib notas.txt\n',s:'attrib +r notas.txt\ndel notas.txt\nattrib notas.txt',k:c=>{const r=Wx(c);return r.PM['Users/Ana/notas.txt']==='R'&&isS(at(r,HW,'notas.txt'))&&r.err===1&&r.ran.includes('del')},p:'`attrib +r notas.txt`, `del notas.txt` (dará «Acceso denegado») y `attrib notas.txt`.'},
+ {n:'Variables de entorno',h:'`set NOMBRE=valor` crea una variable, `%NOMBRE%` la usa y `set` solo las lista. Ya existen `%USERNAME%` y `%USERPROFILE%`.',r:'Reto: crea `SALUDO=Hola Ana` con `set`, muéstrala con `echo %SALUDO%` y muestra también `echo %USERNAME%`.',
+  c:'echo %USERNAME%\n',s:'set SALUDO=Hola Ana\necho %SALUDO%\necho %USERNAME%',k:c=>{const r=Wx(c);return r.ran.includes('set')&&r.out.includes('Hola Ana')&&/echo\s+%USERNAME%/i.test(c)&&!r.err},p:'`set SALUDO=Hola Ana`, luego `echo %SALUDO%` y `echo %USERNAME%`.'}],[
+ {n:'Tuberías encadenadas y findstr /i',h:'`findstr /i` ignora mayúsculas. Puedes encadenar tuberías: `type notas.txt | findstr /i o | sort`.',r:'Reto: busca «hola» sin importar mayúsculas con `findstr /i hola notas.txt` y encadena `type notas.txt | findstr /i o | sort`.',
+  c:'type notas.txt\n',s:'findstr /i hola notas.txt\ntype notas.txt | findstr /i o | sort',k:c=>{const r=Wx(c);return !r.err&&/findstr\s+\/i/i.test(c)&&/\|[^|\n]*\|/.test(c)&&r.out.includes('Hola')},p:'Usa `findstr /i hola notas.txt` y una línea con dos `|`.'},
+ {n:'xcopy y comodines',h:'`*` significa «cualquier cosa»: `del *.txt` borra todos los `.txt`. `xcopy origen destino /e /i` copia una carpeta completa con su contenido.',r:'Reto: copia `docs` a `respaldo` con `xcopy docs respaldo /e /i` y borra los `.txt` de la carpeta actual con `del *.txt`.',
+  c:'dir\n',s:'xcopy docs respaldo /e /i\ndel *.txt\ndir',k:c=>{const r=Wx(c);return isS(at(r,HW,'respaldo','informe.txt'))&&at(r,HW,'notas.txt')===undefined&&r.ran.includes('xcopy')&&r.ran.includes('del')},p:'`xcopy docs respaldo /e /i` y luego `del *.txt`.'}]]]].forEach(([T,L])=>L.forEach((l,i)=>T.lv[i].push(...l)));
 const LN=['Principiante','Intermedio','Avanzado'],K='nx-codelab-v1',TOT=TR.reduce((a,t)=>a+t.lv.reduce((b,l)=>b+l.length,0),0);
 const SHIM='<scr'+'ipt>(function(){var p=function(t,a){try{parent.postMessage({nxc:[t,[].slice.call(a).map(function(x){try{return typeof x==="object"?JSON.stringify(x):String(x)}catch(e){return String(x)}}).join(" ")]},"*")}catch(e){}};["log","warn","error","info"].forEach(function(k){var o=console[k];console[k]=function(){p(k,arguments);o&&o.apply(console,arguments)}});addEventListener("error",function(e){p("error",[e.message])});addEventListener("unhandledrejection",function(e){p("error",[String(e.reason)])})})()<\/scr'+'ipt>';
 let done=[];try{done=JSON.parse(localStorage.getItem(K))||[]}catch(e){}
@@ -18214,7 +18345,7 @@ let ov,ed,fr,con,msg,nxb,tm,st={t:0,l:0,s:0};
 const cur=()=>TR[st.t].lv[st.l][st.s],key=(t,l,s)=>TR[t].id+'-'+l+'-'+s;
 function setMsg(t,c){msg.className='cl-msg '+(c||'');msg.innerHTML=fmt(t)}
 function log(k,t){const d=E('div','cl-l '+k);d.textContent=t;con.append(d);if(con.children.length>200)con.firstChild.remove();con.scrollTop=con.scrollHeight}
-function run(){const c=ed.value;con.innerHTML='';
+function run(){const c=ed.value;con.innerHTML='';if(TR[st.t].term){fr.srcdoc=TERM(c,TR[st.t].term);return}
  if(/while\s*\(\s*(true|1)\s*\)|for\s*\(\s*;\s*;\s*\)/.test(c)){fr.srcdoc='';log('warn','Detecté un bucle infinito y no ejecuté el código para que no se congele la página.');return}
  fr.srcdoc='<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>html{background:#fff}body{font-family:system-ui,sans-serif;margin:14px;color:#1b2430}</style>'+SHIM+'</head><body>'+c+'</body></html>'}
 function nav(){const n=$('#clNav');n.innerHTML='';
@@ -18238,7 +18369,7 @@ function build(){ov=E('div');ov.id='nxCode';ov.hidden=true;ov.setAttribute('role
  ['keydown','keyup','keypress'].forEach(t=>ov.addEventListener(t,e=>{if(t==='keydown'&&e.key==='Escape'&&e.target!==ed)close();e.stopPropagation()}));
  addEventListener('message',e=>{const d=e.data;if(fr&&e.source===fr.contentWindow&&d&&d.nxc)log(d.nxc[0],d.nxc[1])})}
 function open(){const f=!ov;if(f)build();ov.hidden=false;f?load():run();if(matchMedia('(pointer:fine)').matches)ed.focus()}
-window.nxCodeLab=open;window.nxCodeLab.data=TR;
+window.nxCodeLab=open;window.nxCodeLab.data=TR;window.nxCodeLab.sh=SH;window.nxCodeLab.term=TERM;
 })();
 </script>
 </body>
