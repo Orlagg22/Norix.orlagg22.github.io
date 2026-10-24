@@ -18097,7 +18097,14 @@ try{window.__nxv76sp={eotOn,eotOff,fadeTick,state:()=>({eot,fadeOn,touched}),set
 .nxs-ar{color:var(--mute)}
 @keyframes clinUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
 @keyframes clinFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
-@media(prefers-reduced-motion:reduce){#clIntro *{animation:none!important;opacity:1!important;transition:none!important}}
+/* v88: confeti, racha, tamaño de letra */
+.clin-fx{position:fixed;inset:0;pointer-events:none;z-index:8;overflow:hidden}
+.clin-fx i{position:absolute;top:-14px;width:8px;height:12px;border-radius:2px;animation:clinFall 2s ease-in forwards}
+@keyframes clinFall{to{transform:translate(var(--x),105vh) rotate(540deg)}}
+#nxCode #clStk{color:var(--acc);font-weight:700}
+#nxCode .cl-bar #clFm,#nxCode .cl-bar #clFp{padding:6px 11px;font-weight:700}
+
+@media(prefers-reduced-motion:reduce){.clin-fx{display:none}#clIntro *{animation:none!important;opacity:1!important;transition:none!important}}
 </style>
 <script id="nx-codelab-js">
 /* NORYX · Aprende a programar. Para sumar un tema, agrega un objeto a TR; cada lección lleva: n título, h explicación, r reto, c código inicial, s solución, k verificador, p pista. */
@@ -18708,6 +18715,17 @@ const INTRO={
  log:{a:'flow',q:'La lógica y los algoritmos son **el arte de pensar los pasos** para resolver un problema antes de escribir el código.',u:'Es la base de todos los lenguajes: si dominas la lógica, aprendes cualquier lenguaje mucho más fácil. Aquí la practicas con retos de JavaScript que se prueban de verdad.',
   ps:[['📥','Entrada y salida','Los datos que recibes y el resultado que entregas.'],['🔀','Decisiones','Elegir un camino según una condición.'],['🔁','Repetición','Hacer lo mismo varias veces con un bucle.'],['🧩','Dividir el problema','Partir algo grande en funciones pequeñas.'],['⚡','Eficiencia','Elegir la forma más simple y rápida de resolverlo.']]}
 };
+/* ===== v88: meta (continuar donde lo dejaste, racha, tamaño de letra), insignias y confeti ===== */
+const MK='nx-codelab-meta-v1';let meta={};try{meta=JSON.parse(localStorage.getItem(MK))||{}}catch(e){}
+const saveM=()=>{try{localStorage.setItem(MK,JSON.stringify(meta))}catch(e){}};
+const dayS=d=>{const x=d||new Date();return x.getFullYear()+'-'+String(x.getMonth()+1).padStart(2,'0')+'-'+String(x.getDate()).padStart(2,'0')};
+const yest=()=>{const y=new Date();y.setDate(y.getDate()-1);return dayS(y)};
+function bumpStreak(){const t=dayS();if(meta.day===t)return;meta.streak=meta.day===yest()?(meta.streak||0)+1:1;meta.day=t;saveM()}
+const lvDone=(t,l)=>!!TR[t].lv[l]&&TR[t].lv[l].every((_,s)=>done.includes(key(t,l,s)));
+const courseDone=t=>TR[t].lv.every((_,l)=>lvDone(t,l));
+const FAILS={};
+function resume(){const m=meta.last;if(m&&TR[m.t]&&TR[m.t].lv[m.l]&&TR[m.t].lv[m.l][m.s])st={t:m.t,l:m.l,s:m.s}}
+function fx(){if(RMO())return;const d=E('div','clin-fx');d.setAttribute('aria-hidden','true');for(let i=0;i<46;i++){const p=E('i');p.style.cssText='left:'+Math.random()*100+'%;background:hsl('+Math.floor(Math.random()*360)+',85%,60%);animation-delay:'+(Math.random()*.5)+'s;--x:'+Math.round(Math.random()*160-80)+'px';d.append(p)}ov.append(d);setTimeout(()=>d.remove(),2800)}
 function stopI(){itm.forEach(clearInterval);itm=[]}
 function hideIntro(silent){stopI();const o=$('#clIntro');if(o&&!o.hidden){o.hidden=true;[...ov.children].forEach(c=>{if(c!==o)c.removeAttribute('inert')});if(!silent&&ed&&matchMedia('(pointer:fine)').matches)ed.focus()}}
 function showIntro(t){const T=TR[t],D=INTRO[T.id];if(!D)return;stopI();let o=$('#clIntro');if(!o){o=E('div');o.id='clIntro';o.setAttribute('role','dialog');o.setAttribute('aria-modal','true');ov.append(o)}
@@ -18757,18 +18775,18 @@ function run(){const c=ed.value;con.innerHTML='';if(TR[st.t].term){fr.srcdoc=TER
 function nav(){const n=$('#clNav');n.innerHTML='';
  const row=(items,on,fn)=>{const r=E('div','cl-row');items.forEach((x,i)=>{const b=E('button',i===on?'on':'',esc(x));b.type='button';b.setAttribute('aria-pressed',i===on);b.onclick=()=>fn(i);r.append(b)});n.append(r)};
  const cnt=i=>TR[i].lv.reduce((a,l,j)=>a+l.filter((_,s)=>done.includes(key(i,j,s))).length,0)+'/'+TR[i].lv.reduce((a,l)=>a+l.length,0);
- row(TR.map((t,i)=>t.ic+' '+t.n+' '+cnt(i)),st.t,i=>{st={t:i,l:0,s:0};load()});
- row(LN.slice(0,TR[st.t].lv.length).map((x,i)=>(isLocked(st.t,i)?'🔒 ':['','','🔥 ','🏆 '][i])+x+' '+TR[st.t].lv[i].filter((_,j)=>done.includes(key(st.t,i,j))).length+'/'+TR[st.t].lv[i].length),st.l,i=>{if(isLocked(st.t,i)){setMsg(lockMsg(st.t,i),'bad');return}st.l=i;st.s=0;load()});{const rr=n.lastChild;[...rr.children].forEach((b,i)=>{if(isLocked(st.t,i)){b.classList.add('lk');b.setAttribute('aria-disabled','true');b.title=lockMsg(st.t,i).replace(/\*\*/g,'')}})}
+ row(TR.map((t,i)=>t.ic+' '+t.n+' '+cnt(i)+(courseDone(i)?' 🎓':'')),st.t,i=>{st={t:i,l:0,s:0};load()});
+ row(LN.slice(0,TR[st.t].lv.length).map((x,i)=>(isLocked(st.t,i)?'🔒 ':lvDone(st.t,i)?'🏅 ':['','','🔥 ','🏆 '][i])+x+' '+TR[st.t].lv[i].filter((_,j)=>done.includes(key(st.t,i,j))).length+'/'+TR[st.t].lv[i].length),st.l,i=>{if(isLocked(st.t,i)){setMsg(lockMsg(st.t,i),'bad');return}st.l=i;st.s=0;load()});{const rr=n.lastChild;[...rr.children].forEach((b,i)=>{if(isLocked(st.t,i)){b.classList.add('lk');b.setAttribute('aria-disabled','true');b.title=lockMsg(st.t,i).replace(/\*\*/g,'')}})}
  row(TR[st.t].lv[st.l].map((x,i)=>(done.includes(key(st.t,st.l,i))?'✓ ':'')+(i+1)+'. '+x.n),st.s,i=>{st.s=i;load()});
- $('#clBar').style.width=Math.round(done.length/TOT*100)+'%';$('#clCnt').textContent=done.length+'/'+TOT}
+ $('#clBar').style.width=Math.round(done.length/TOT*100)+'%';$('#clCnt').textContent=done.length+'/'+TOT;{const live=meta.day===dayS()||meta.day===yest();$('#clStk').textContent=live&&meta.streak?'🔥 '+meta.streak+(meta.streak>1?' días':' día'):''}}
 function busy(b){const o=$('#clOk');if(o)o.disabled=!!b}
-function load(){if(isLocked(st.t,st.l)){const q=pend(st.t,st.l);st.l=q.j;st.s=q.p[0]}seq++;busy(0);const L=cur(),T=TR[st.t];$('#clT').textContent=T.n+' · '+LN[st.l]+' · '+L.n;$('#clH').innerHTML=fmt(L.h);$('#clK').innerHTML=fmt(L.r);
+function load(){if(isLocked(st.t,st.l)){const q=pend(st.t,st.l);st.l=q.j;st.s=q.p[0]}meta.last={t:st.t,l:st.l,s:st.s};saveM();seq++;busy(0);const L=cur(),T=TR[st.t];$('#clT').textContent=T.n+' · '+LN[st.l]+' · '+L.n;$('#clH').innerHTML=fmt(L.h);$('#clK').innerHTML=fmt(L.r);
  ed.value=L.c;con.hidden=!T.con;ov.classList.toggle('cl-js',!!T.js);$('#clRL').textContent=T.js?'🖥 Consola':'👁 Resultado en vivo';$('#clSol').hidden=st.l>=2;nxb.hidden=true;nav();
  setMsg('Escribe tu código'+(T.js?'':', mira el resultado en vivo')+' y pulsa **Verificar** (o Ctrl+Enter) cuando termines.'+(st.l>=2?' En este nivel no hay solución: solo pistas.':''));run();if(introFor!==st.t){introFor=st.t;if(!seenI.includes(TR[st.t].id)){seenI.push(TR[st.t].id);saveI();showIntro(st.t)}}}
 const cl140=s=>String(s).replace(/`/g,"'").slice(0,140);
 function check(){const L=cur(),sq=++seq;clearTimeout(tm);
- const fail=m=>{if(sq!==seq)return;busy(0);setMsg('🔎 Aún falta algo. '+(m||L.p),'bad')},
-  pass=x=>{if(sq!==seq)return;busy(0);const k=key(st.t,st.l,st.s);const lk0=st.l<2&&isLocked(st.t,st.l+1);if(!done.includes(k)){done.push(k);save()}const un=lk0&&!isLocked(st.t,st.l+1)?' 🔓 ¡Desbloqueaste el nivel **'+LN[st.l+1]+'**!':'';setMsg('✅ ¡Correcto! '+(x||'Cumples el reto.')+un+' Pulsa **Siguiente** para continuar.','ok');nxb.hidden=false;nav()};
+ const fail=m=>{if(sq!==seq)return;busy(0);const kk=key(st.t,st.l,st.s),n=FAILS[kk]=(FAILS[kk]||0)+1;setMsg('🔎 Aún falta algo. '+(m||L.p)+(n>=3?'\n💡 Llevas '+n+' intentos. '+(st.l<2?'Si te atoras, mira la solución y estúdiala antes de volver a intentarlo.':'Aquí no hay solución: relee la explicación y usa la pista.'):''),'bad')},
+  pass=x=>{if(sq!==seq)return;busy(0);const k=key(st.t,st.l,st.s);const lk0=st.l<2&&isLocked(st.t,st.l+1),wd=lvDone(st.t,st.l),isNew=!done.includes(k);if(isNew){done.push(k);save();bumpStreak()}const nd=isNew&&!wd&&lvDone(st.t,st.l),cd=nd&&courseDone(st.t),un=lk0&&!isLocked(st.t,st.l+1)?' 🔓 ¡Desbloqueaste el nivel **'+LN[st.l+1]+'**!':'';setMsg('✅ ¡Correcto! '+(x||'Cumples el reto.')+(nd?' 🏅 ¡Completaste el nivel **'+LN[st.l]+'**!':'')+(cd?' 🎓 ¡Terminaste el curso de **'+TR[st.t].n+'**!':'')+un+' Pulsa **Siguiente** para continuar.','ok');if(nd)fx();nxb.hidden=false;nav()};
  if(L.k&&!L.k(ed.value))return fail();
  if(L.t){busy(1);wk({code:ed.value,tests:L.t},null,r=>{
    if(r.err==='__timeout')return fail('⏱ Tu código tardó demasiado: puede haber un bucle infinito o un algoritmo muy lento.');
@@ -18791,15 +18809,17 @@ function next(){const t=TR[st.t];let note='';
  load();if(note)setMsg(note,note.startsWith('🔒')?'bad':'ok')}
 function close(){hideIntro(1);ov.hidden=true;fr.srcdoc='';if(pw){try{pw.terminate()}catch(x){}pw=null}const b=$('#nxModes');b&&b.focus()}
 function build(){ov=E('div');ov.id='nxCode';ov.hidden=true;ov.setAttribute('role','dialog');ov.setAttribute('aria-modal','true');ov.setAttribute('aria-label','Aprende a programar');
- ov.innerHTML='<div class="cl-top"><b>💻 Aprende a programar</b><span class="cl-pr"><i id="clBar"></i></span><small id="clCnt"></small><button type="button" id="clIB" title="Ver la introducción de este curso">🎬 Introducción</button><button type="button" id="clRP" title="Borrar mi progreso">↺ Progreso</button><button type="button" id="clX" aria-label="Cerrar">✕</button></div><div id="clNav"></div><section class="cl-info"><h2 id="clT"></h2><p id="clH"></p><p class="cl-task" id="clK"></p></section><div class="cl-ws"><label class="cl-pane"><span>✍️ Tu código</span><textarea id="clEd" spellcheck="false" autocapitalize="off" autocomplete="off" wrap="off" aria-label="Editor de código"></textarea></label><div class="cl-pane"><span id="clRL">👁 Resultado en vivo</span><iframe id="clFr" title="Resultado en vivo" sandbox="allow-scripts"></iframe><div id="clCon" class="cl-con" aria-label="Consola"></div></div></div><div class="cl-bar"><button type="button" class="pri" id="clOk">✔ Verificar</button><button type="button" id="clHint">💡 Pista</button><button type="button" id="clSol">👁 Ver solución</button><button type="button" id="clRst">↺ Reiniciar</button><button type="button" class="pri" id="clNx" hidden>Siguiente →</button></div><div id="clMsg" class="cl-msg" role="status" aria-live="polite"></div>';
+ ov.innerHTML='<div class="cl-top"><b>💻 Aprende a programar</b><span class="cl-pr"><i id="clBar"></i></span><small id="clCnt"></small><small id="clStk" title="Días seguidos practicando"></small><button type="button" id="clIB" title="Ver la introducción de este curso">🎬 Introducción</button><button type="button" id="clRP" title="Borrar mi progreso">↺ Progreso</button><button type="button" id="clX" aria-label="Cerrar">✕</button></div><div id="clNav"></div><section class="cl-info"><h2 id="clT"></h2><p id="clH"></p><p class="cl-task" id="clK"></p></section><div class="cl-ws"><label class="cl-pane"><span>✍️ Tu código</span><textarea id="clEd" spellcheck="false" autocapitalize="off" autocomplete="off" wrap="off" aria-label="Editor de código"></textarea></label><div class="cl-pane"><span id="clRL">👁 Resultado en vivo</span><iframe id="clFr" title="Resultado en vivo" sandbox="allow-scripts"></iframe><div id="clCon" class="cl-con" aria-label="Consola"></div></div></div><div class="cl-bar"><button type="button" class="pri" id="clOk">✔ Verificar</button><button type="button" id="clHint">💡 Pista</button><button type="button" id="clSol">👁 Ver solución</button><button type="button" id="clRst">↺ Reiniciar</button><button type="button" id="clFm" aria-label="Letra más pequeña" title="Letra más pequeña">A−</button><button type="button" id="clFp" aria-label="Letra más grande" title="Letra más grande">A+</button><button type="button" class="pri" id="clNx" hidden>Siguiente →</button></div><div id="clMsg" class="cl-msg" role="status" aria-live="polite"></div>';
  document.body.append(ov);ed=$('#clEd');fr=$('#clFr');con=$('#clCon');msg=$('#clMsg');nxb=$('#clNx');
- $('#clX').onclick=close;$('#clIB').onclick=()=>showIntro(st.t);$('#clRP').onclick=()=>{if(confirm('¿Borrar todo tu progreso del curso?')){done=[];save();load()}};$('#clOk').onclick=check;nxb.onclick=next;$('#clRst').onclick=()=>{ed.value=cur().c;nxb.hidden=true;setMsg('Código inicial restaurado.');run()};
+ $('#clX').onclick=close;$('#clIB').onclick=()=>showIntro(st.t);{const setFs=n=>{meta.fs=Math.max(11,Math.min(24,n));saveM();ed.style.fontSize=meta.fs+'px'};$('#clFm').onclick=()=>setFs((meta.fs||13.5)-1);$('#clFp').onclick=()=>setFs((meta.fs||13.5)+1);if(meta.fs)ed.style.fontSize=meta.fs+'px'}$('#clRP').onclick=()=>{if(confirm('¿Borrar todo tu progreso del curso?')){done=[];save();load()}};$('#clOk').onclick=check;nxb.onclick=next;$('#clRst').onclick=()=>{ed.value=cur().c;nxb.hidden=true;setMsg('Código inicial restaurado.');run()};
  $('#clHint').onclick=()=>setMsg('💡 '+cur().p);$('#clSol').onclick=()=>{if(st.l>=2)return;ed.value=cur().s;run();setMsg('Esta es una solución posible. Pulsa **Verificar** para comprobarla o **Reiniciar** para volver a intentarlo.')};
  ed.addEventListener('input',()=>{clearTimeout(tm);tm=setTimeout(run,TR[st.t].con?700:200)});
- ed.addEventListener('keydown',e=>{if(e.key==='Tab'&&!e.shiftKey&&!e.ctrlKey&&!e.altKey&&!e.metaKey){e.preventDefault();ed.setRangeText('  ',ed.selectionStart,ed.selectionEnd,'end');ed.dispatchEvent(new Event('input'))}else if(e.key==='Escape')ed.blur();else if(e.key==='Enter'&&(e.ctrlKey||e.metaKey)){e.preventDefault();check()}});
+ ed.addEventListener('keydown',e=>{if(e.key==='Tab'&&!e.shiftKey&&!e.ctrlKey&&!e.altKey&&!e.metaKey){e.preventDefault();ed.setRangeText('  ',ed.selectionStart,ed.selectionEnd,'end');ed.dispatchEvent(new Event('input'))}else if(e.key==='Escape')ed.blur();else if(e.key==='Enter'&&(e.ctrlKey||e.metaKey)){e.preventDefault();check()}
+ else if(e.key==='Enter'&&!e.shiftKey&&!e.altKey&&ed.selectionStart===ed.selectionEnd){const v=ed.value,p=ed.selectionStart,ls=v.lastIndexOf('\n',p-1)+1,ind=v.slice(ls,p).match(/^[ \t]*/)[0],pre=v[p-1],nx=v[p],op=/[{\[(]/.test(pre||''),pair=op&&({'{':'}','[':']','(':')'})[pre]===nx;e.preventDefault();const a='\n'+ind+(op?'  ':'');ed.setRangeText(a+(pair?'\n'+ind:''),p,p,'end');ed.selectionStart=ed.selectionEnd=p+a.length;ed.dispatchEvent(new Event('input'))}
+ else if(!e.ctrlKey&&!e.metaKey&&!e.altKey&&e.key.length===1&&ed.selectionStart===ed.selectionEnd){const v=ed.value,p=ed.selectionStart,P={'(':')','[':']','{':'}'};if(P[e.key]&&!/\w/.test(v[p]||'')){e.preventDefault();ed.setRangeText(e.key+P[e.key],p,p,'end');ed.selectionStart=ed.selectionEnd=p+1;ed.dispatchEvent(new Event('input'))}else if(')]}'.includes(e.key)&&v[p]===e.key){e.preventDefault();ed.selectionStart=ed.selectionEnd=p+1}}});
  ['keydown','keyup','keypress'].forEach(t=>ov.addEventListener(t,e=>{if(t==='keydown'&&e.key==='Escape'&&e.target!==ed){if(introOn())hideIntro();else close()}e.stopPropagation()}));
  addEventListener('message',e=>{const d=e.data;if(fr&&e.source===fr.contentWindow&&d&&d.nxc)log(d.nxc[0],d.nxc[1])})}
-function open(){const f=!ov;if(f)build();ov.hidden=false;f?load():run();if(matchMedia('(pointer:fine)').matches&&!introOn())ed.focus()}
+function open(){const f=!ov;if(f){build();resume()}ov.hidden=false;f?load():run();if(matchMedia('(pointer:fine)').matches&&!introOn())ed.focus()}
 window.nxCodeLab=open;window.nxCodeLab.data=TR;window.nxCodeLab.sh=SH;window.nxCodeLab.term=TERM;
 })();
 </script>
