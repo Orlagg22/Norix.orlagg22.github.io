@@ -11457,7 +11457,7 @@ const MODES=[
  {ic:'🕵️',n:'Detective',d:'Examina lugares, interroga sospechosos y descubre quién miente.',p:'modo detective'},
  {ic:'🗝️',n:'Escape room',d:'Encerrado/a en una sala: junta pistas, resuelve un código, una secuencia y un mensaje cifrado antes de quedarte sin acciones.',p:'modo escape room',tag:'Con cuenta'},
  {ic:'🎬',n:'Películas',d:'Elige entre varias mini películas animadas: cada una con su portada, sus narradores y un cuestionario final (o, en Boreal-7 y Quetzal-3000, un caso que resolver y puedes morir).',fn:'nxMovies',tag:'Con cuenta'},
- {ic:'💻',n:'Aprende a programar',d:'Curso interactivo de HTML, CSS, JavaScript, Lógica y algoritmos, Linux y Windows CMD: más de 150 lecciones con retos que se prueban de verdad, desafíos finales y sin soluciones en los niveles avanzados.',fn:'nxCodeLab',tag:'Nuevo'}];
+ {ic:'💻',n:'Aprende a programar',d:'Curso interactivo de HTML, CSS, JavaScript, Lógica y algoritmos, Linux y Windows CMD: más de 340 lecciones con retos que se prueban de verdad, desafíos finales y sin soluciones en los niveles avanzados.',fn:'nxCodeLab',tag:'Nuevo'}];
 function send(p){const i=$('#in'),g=$('#go');if(!i||!g)return;try{if(typeof busy!=='undefined'&&busy)return}catch(e){}i.value=p;i.dispatchEvent(new Event('input',{bubbles:true}));g.click()}
 let dlg;
 const close=()=>{if(dlg)dlg.hidden=true};
@@ -18272,7 +18272,7 @@ function SH(code,os){
  const gl=p=>new RegExp('^'+p.replace(/[.+^${}()|[\]\\]/g,'\\$&').replace(/\*/g,'.*').replace(/\?/g,'.')+'$',W?'i':'');
  const ex=x=>{if(!/[*?]/.test(x))return[x];const s=x.split(/[\\/]/),b=s.pop(),v=get(res(s.join('/')));if(!isD(v))return[x];const m=Object.keys(v).filter(k=>gl(b).test(k)).sort();return m.length?m.map(k=>s.concat(k).join('/')):[x]};
  const P=()=>{if(W)return 'C:\\'+cwd.join('\\')+'>';const h=cwd.join('/');return 'user@noryx:'+(h==='home/user'?'~':h.indexOf('home/user/')===0?'~'+h.slice(9):'/'+h)+'$'};
- const AL=W?{dir:'ls',type:'cat',del:'rm',erase:'rm',rmdir:'rm',copy:'cp',move:'mv',ren:'mv',md:'mkdir',mkdir:'mkdir',findstr:'grep',cls:'clear',cd:'cd',echo:'echo',whoami:'whoami',ver:'ver',sort:'sort',set:'set',attrib:'attrib',xcopy:'cp',hostname:'hostname',more:'cat',find:'grep'}:{pwd:1,ls:1,cd:1,mkdir:1,touch:1,cat:1,echo:1,rm:1,cp:1,mv:1,grep:1,wc:1,head:1,whoami:1,clear:1,sort:1,uname:1,tail:1,find:1,chmod:1,export:1,env:1,rmdir:1,cut:1,uniq:1,tr:1,hostname:1,id:1,seq:1,basename:1,dirname:1,diff:1,tee:1,which:1};
+ const AL=W?{dir:'ls',type:'cat',del:'rm',erase:'rm',rmdir:'rm',copy:'cp',move:'mv',ren:'mv',md:'mkdir',mkdir:'mkdir',findstr:'grep',cls:'clear',cd:'cd',echo:'echo',whoami:'whoami',ver:'ver',sort:'sort',set:'set',attrib:'attrib',xcopy:'cp',hostname:'hostname',more:'cat',find:'grep',rename:'mv',fc:'diff',where:'where',tree:'tree',pause:'pause'}:{pwd:1,ls:1,cd:1,mkdir:1,touch:1,cat:1,echo:1,rm:1,cp:1,mv:1,grep:1,wc:1,head:1,whoami:1,clear:1,sort:1,uname:1,tail:1,find:1,chmod:1,export:1,env:1,rmdir:1,cut:1,uniq:1,tr:1,hostname:1,id:1,seq:1,basename:1,dirname:1,diff:1,tee:1,which:1,date:1,nl:1,printenv:1,tac:1,rev:1,sed:1,test:1};
  const NF=(x)=>bad('No existe el archivo o directorio: '+x,'El sistema no puede encontrar el archivo especificado.');
  function cmd(seg,inp){
   const raw=seg.trim(),t=(raw.match(/(?:[^\s"']|"[^"]*"|'[^']*')+/g)||[]).map(x=>x.replace(/"([^"]*)"|'([^']*)'/g,'$1$2'));
@@ -18321,8 +18321,16 @@ function SH(code,os){
    case 'seq':{const x=ar.map(Number),s0=x.length>1?x[0]:1,e0=x.length>1?x[1]:x[0],o=[];for(let i=s0;i<=e0&&o.length<500;i++)o.push(i);return o.join('\n')}
    case 'basename':return (ar[0]||'').split('/').filter(Boolean).pop()||'';
    case 'dirname':{const p=(ar[0]||'').split('/').filter(Boolean);p.pop();return p.length?(ar[0][0]==='/'?'/':'')+p.join('/'):'.'}
-   case 'diff':{const A=get(res(ar[0]||'')),B=get(res(ar[1]||''));if(typeof A!=='string'||typeof B!=='string')return NF(ar[0]);if(A===B)return '';const x=A.split('\n'),y=B.split('\n'),o=[];for(let i=0;i<Math.max(x.length,y.length);i++)if(x[i]!==y[i]){if(x[i]!==undefined)o.push('< '+x[i]);if(y[i]!==undefined)o.push('> '+y[i])}return o.join('\n')}
+   case 'diff':{const A=get(res(ar[0]||'')),B=get(res(ar[1]||''));if(typeof A!=='string'||typeof B!=='string')return NF(ar[0]);if(A===B)return W?'FC: no se han encontrado diferencias':'';const x=A.split('\n'),y=B.split('\n'),o=[];for(let i=0;i<Math.max(x.length,y.length);i++)if(x[i]!==y[i]){if(x[i]!==undefined)o.push('< '+x[i]);if(y[i]!==undefined)o.push('> '+y[i])}return o.join('\n')}
    case 'tee':{if(typeof inp!=='string')return '';ar.forEach(x=>{const p=res(x),d=get(p.slice(0,-1)),k=p[p.length-1];if(isD(d)&&k)d[k]=inp});return inp}
+   case 'date':return 'sáb 24 oct 2026 12:00:00';
+   case 'tac':case 'rev':case 'nl':{const v=txt(ar[0]);if(typeof v!=='string')return NF(ar[0]);const L=v.split('\n');return c==='tac'?L.reverse().join('\n'):c==='rev'?L.map(l=>l.split('').reverse().join('')).join('\n'):L.map((l,i)=>String(i+1).padStart(6)+'  '+l).join('\n')}
+   case 'printenv':return ar[0]?(has(vars,ar[0])?vars[ar[0]]:''):Object.keys(vars).sort().map(k=>k+'='+vars[k]).join('\n');
+   case 'sed':{const m=(ar[0]||'').match(/^s(.)(.*?)\1(.*?)\1(g?)$/),v=txt(ar[1]);if(!m)return bad('sed: expresión no válida','');if(typeof v!=='string')return NF(ar[1]);const re=new RegExp(m[2].replace(/[.+^${}()|[\]\\]/g,'\\$&'),m[4]?'g':'');return v.split('\n').map(l=>l.replace(re,m[3])).join('\n')}
+   case 'test':{const p=res(ar[0]||''),v=get(p),f=a[0];return (f==='-f'?isS(v):f==='-d'?isD(v):f==='-e'?v!==undefined:false)?'':bad('','')}
+   case 'where':{const q=(ar[0]||'').toLowerCase();return ['notepad','cmd','ping','calc','mspaint'].includes(q)?'C:\\Windows\\System32\\'+q+'.exe':bad('','INFORMACIÓN: no se pudo encontrar archivos para el patrón dado.')}
+   case 'pause':return 'Presione una tecla para continuar . . .';
+   case 'tree':{const o=['C:.'],w=(m,pre)=>Object.keys(m).filter(k=>isD(m[k])).sort().forEach(k=>{o.push(pre+'+---'+k);w(m[k],pre+'|   ')});w(get(cwd),'');return o.join('\n')}
    case 'which':return ar[0]&&has(AL,ar[0])?'/usr/bin/'+ar[0]:'';
   }
   return ''}
@@ -18852,6 +18860,90 @@ const LW=[[
 ['Mini proyecto con respaldo','Estructura, archivos y copia de seguridad.','Reto: crea `proyecto\\src`, `proyecto\\docs` y `proyecto\\README.md` (con `echo`), y cópialo con `xcopy /e /i` a `respaldo`.','mkdir proyecto\\src proyecto\\docs\necho Proyecto > proyecto\\README.md\nxcopy proyecto respaldo /e /i',['d:proyecto/src','d:respaldo/src','f:respaldo/README.md~proyecto']]
 ]];
 [['lin',LL],['win',LW]].forEach(([id,D])=>D.forEach((rows,l)=>TR.find(t=>t.id===id).lv[l].push(...rows.map(mkQ(id)))));
+/* ===== v90: más lecciones en Linux, Windows CMD, HTML, CSS, JavaScript y Lógica; comandos nuevos (date, nl, tac, rev, printenv, sed, test / rename, where, tree, fc, pause) ===== */
+const LLn=[[
+['Fecha: date','`date` muestra la fecha y la hora del sistema.','Reto: muestra la fecha con `date`.','date',['r:date','o:2026']],
+['Numerar líneas: nl','`nl archivo` numera las líneas de un archivo, parecido a `cat -n`.','Reto: numera las líneas de `notas.txt`.','nl notas.txt',['r:nl','o:1\\s+Hola']],
+['Una variable: printenv','`printenv NOMBRE` muestra solo el valor de una variable de entorno, sin el nombre.','Reto: muestra el valor de `HOME` con `printenv`.','printenv HOME',['r:printenv','o:/home/user']],
+['Al revés: tac','`tac` es `cat` al revés: muestra un archivo de la última línea a la primera.','Reto: muestra `notas.txt` con las líneas en orden inverso.','tac notas.txt',['r:tac','o:Linux\\s+Mundo\\s+Hola']],
+['Comprobar: test -f','`test -f archivo` comprueba si un archivo existe (`-d` para carpetas). No imprime nada: se usa con `&&` para decidir si sigue la orden siguiente.','Reto: imprime `existe` solo si `notas.txt` existe.','test -f notas.txt && echo existe',['r:test','o:existe']]
+],[
+['Reemplazar texto: sed','`sed s/viejo/nuevo/ archivo` cambia la primera coincidencia de cada línea (el archivo no se modifica).','Reto: muestra `notas.txt` cambiando `Hola` por `Adiós`.','sed s/Hola/Adiós/ notas.txt',['r:sed','o:Adiós','!:Hola']],
+['sed y redirección','Con `>` guardas el resultado de `sed` en un archivo nuevo; el original queda igual.','Reto: guarda en `nuevo.txt` el contenido de `notas.txt` cambiando `Mundo` por `Planeta`.','sed s/Mundo/Planeta/ notas.txt > nuevo.txt',['f:nuevo.txt~Planeta','f:notas.txt~Mundo']],
+['nl con tail','Combina órdenes con `|`: la última línea numerada te dice cuántas líneas hay.','Reto: numera `notas.txt` y muestra solo la última línea.','nl notas.txt | tail -n 1',['o:3\\s+Linux','!:Hola']],
+['Invertir texto: rev','`rev` invierte los caracteres de cada línea. Recibe texto de una tubería.','Reto: envía `Linux` con `echo` a `rev`.','echo Linux | rev',['r:rev','o:xuniL']],
+['Registro con fecha','Redirige la salida de `date` para llevar un registro.','Reto: guarda la fecha en `registro.txt` y muéstrala con `cat`.','date > registro.txt\ncat registro.txt',['f:registro.txt~2026','o:2026']]
+],[
+['Reemplazo global: sed g','Con una `g` al final (`s/o/0/g`) se reemplazan todas las coincidencias de la línea.','Reto: cambia todas las `o` por `0` en el texto `Hola Mundo`.','echo Hola Mundo | sed s/o/0/g',['o:H0la Mund0']],
+['Variable y test','Una variable puede guardar el nombre de un archivo para comprobarlo después con `$nombre`.','Reto: guarda `notas.txt` en `archivo` y comprueba con `test -f` que existe; imprime `ok`.','archivo=notas.txt\ntest -f $archivo && echo ok',['v:archivo=notas.txt','o:ok']],
+['Crear solo si existe: test -d','Si `test` falla, `&&` detiene la cadena y no se ejecuta lo siguiente.','Reto: crea la carpeta `backup` solo si `docs` existe y luego lista con `ls`.','test -d docs && mkdir backup\nls',['d:backup','o:backup']],
+['Cuando test falla','Si el archivo no existe, `test` da error y `&&` no ejecuta el `echo`.','Reto: intenta imprimir `no` solo si `nada.txt` existe (no debe aparecer nada).','test -f nada.txt && echo no',['r:test','e:1','!:no']],
+['Exportar y leer: printenv','`export` publica una variable y `printenv` la lee.','Reto: exporta `IDIOMA=es` y muéstrala con `printenv IDIOMA`.','export IDIOMA=es\nprintenv IDIOMA',['v:IDIOMA=es','o:es']]
+]];
+const LWn=[[
+['Renombrar: rename','`rename` es otro nombre de `ren`: cambia el nombre de un archivo.','Reto: renombra `notas.txt` a `apuntes.txt` con `rename`.','rename notas.txt apuntes.txt',['f:apuntes.txt','x:notas.txt']],
+['Dónde está: where','`where programa` muestra la ruta de un programa (como `which` en Linux).','Reto: averigua dónde está `notepad`.','where notepad',['r:where','o:notepad']],
+['Pausa: pause','`pause` detiene un script hasta pulsar una tecla; es típico al final de un `.bat`.','Reto: muestra `Listo` y luego ejecuta `pause`.','echo Listo\npause',['r:echo','r:pause','o:Presione']],
+['Árbol de carpetas: tree','`tree` dibuja las carpetas en forma de árbol.','Reto: muestra el árbol de carpetas con `tree`.','tree',['r:tree','o:docs']],
+['Comparar archivos: fc','`fc archivo1 archivo2` compara dos archivos y avisa si hay diferencias.','Reto: copia `notas.txt` a `copia.txt` y compáralos con `fc`.','copy notas.txt copia.txt\nfc notas.txt copia.txt',['f:copia.txt','r:fc','o:no se han encontrado']]
+],[
+['Guardar el árbol','Redirige `tree` con `>` para guardar la estructura en un archivo.','Reto: guarda el árbol en `arbol.txt`.','tree > arbol.txt',['f:arbol.txt~docs']],
+['Renombrar y listar','Tras `rename`, `dir /b` muestra solo el nombre nuevo.','Reto: renombra `notas.txt` a `datos.txt` y lista solo los nombres con `dir /b`.','rename notas.txt datos.txt\ndir /b',['f:datos.txt','x:notas.txt','o:datos.txt']],
+['Filtrar el árbol','`findstr` también filtra la salida de `tree`.','Reto: muestra solo las líneas de `tree` que contengan `fotos`.','tree | findstr fotos',['o:fotos','!:docs']],
+['Varios where','Puedes consultar varios programas con una orden `where` por línea.','Reto: busca la ruta de `cmd` y la de `ping`.','where cmd\nwhere ping',['n:where=2','o:cmd','o:ping']],
+['Órdenes en una línea con &','`&` ejecuta varias órdenes seguidas en una sola línea.','Reto: en una línea, muestra `Inicio`, busca `cmd` con `where` y termina con `pause`.','echo Inicio & where cmd & pause',['r:echo','r:where','r:pause','o:Presione']]
+],[
+['Script con pause','Un `.bat` puede terminar con `pause` para que se lea el resultado.','Reto: crea `fin.bat` con las líneas `echo Hecho` y `pause`, y ejecútalo con `call`.','echo echo Hecho > fin.bat\necho pause >> fin.bat\ncall fin.bat',['f:fin.bat~pause','r:script','o:Hecho']],
+['Respaldo comprobado','Después de copiar, `fc` verifica que el respaldo es idéntico.','Reto: copia `notas.txt` a `respaldo.txt` y verifica con `fc`.','copy notas.txt respaldo.txt\nfc notas.txt respaldo.txt',['f:respaldo.txt','o:no se han encontrado']],
+['Estructura y árbol','Crea carpetas anidadas y revísalas con `tree`.','Reto: crea `web\\css` y `web\\js` y muéstralas con `tree`.','mkdir web\\css web\\js\ntree',['d:web/css','d:web/js','o:css','o:js']],
+['Guardar una ruta','Guarda en un archivo el resultado de `where`.','Reto: guarda en `ruta.txt` la ruta de `notepad`.','where notepad > ruta.txt',['f:ruta.txt~notepad']],
+['Variable y rename','Una variable guarda un nombre que usas después con `%NOMBRE%`.','Reto: crea `NOMBRE=datos.txt` y renombra `notas.txt` a `%NOMBRE%`.','set NOMBRE=datos.txt\nrename notas.txt %NOMBRE%',['v:NOMBRE=datos.txt','f:datos.txt','x:notas.txt']]
+]];
+[['lin',LLn],['win',LWn]].forEach(([id,D])=>D.forEach((rows,l)=>TR.find(t=>t.id===id).lv[l].push(...rows.map(mkQ(id)))));
+
+AD('html',0,[
+LS('Imágenes con texto alternativo','`<img src="..." alt="descripción">` inserta una imagen. El atributo `alt` la describe para quien no la ve o cuando no carga, y `width` fija su ancho.','Reto: añade una `<img>` con `src`, `alt` y `width`.','<p>Mi foto:</p>\n','<p>Mi foto:</p>\n<img src="https://example.com/yo.png" alt="Retrato de Ana" width="120">',
+ c=>/<img(?=[^>]*\bsrc=["'][^"']+["'])(?=[^>]*\balt=["'][^"']+["'])(?=[^>]*\bwidth=)[^>]*>/i.test(c),'Necesitas `<img src="..." alt="..." width="...">`.')]);
+AD('html',1,[
+LS('Listas anidadas y de descripción','Una sublista va dentro de un `<li>`. `<ol>` numera y `<dl>` define términos con `<dt>` (término) y `<dd>` (descripción).','Reto: crea una `<ol>` con una `<ul>` anidada en un `<li>`, y una `<dl>` con `<dt>` y `<dd>`.','<ol>\n  \n</ol>\n','<ol>\n  <li>Frutas\n    <ul><li>Pera</li><li>Uva</li></ul>\n  </li>\n  <li>Verduras</li>\n</ol>\n<dl>\n  <dt>HTML</dt>\n  <dd>Lenguaje de marcado</dd>\n</dl>',
+ c=>/<ol[\s>][\s\S]*<li[^>]*>[\s\S]*<ul[\s>][\s\S]*<\/ul>[\s\S]*<\/li>[\s\S]*<\/ol>/i.test(c)&&/<dl[\s>][\s\S]*<dt[\s>][\s\S]*<dd[\s>][\s\S]*<\/dl>/i.test(c),'Una `<ul>` dentro de un `<li>` de la `<ol>`, y una `<dl>` con `<dt>` y `<dd>`.')]);
+AD('html',2,[
+LS('Figuras, fechas y resaltado','`<figure>` agrupa una ilustración con su `<figcaption>`. `<time datetime="2026-10-24">` marca una fecha que entienden las máquinas y `<mark>` resalta texto.','Reto: crea un `<figure>` con `<figcaption>`, un `<time>` con `datetime` y un `<mark>`.','<!-- Tu contenido -->\n','<figure>\n  <img src="https://example.com/mapa.png" alt="Mapa">\n  <figcaption>Mapa de la ciudad</figcaption>\n</figure>\n<p>Publicado el <time datetime="2026-10-24">24 de octubre</time>: <mark>importante</mark></p>',
+ c=>{c=UJ(c);return /<figure[\s>][\s\S]*<figcaption[\s>]\s*[^<\s][\s\S]*<\/figure>/i.test(c)&&/<time[^>]*\bdatetime=["'][^"']+["']/i.test(c)&&/<mark[^>]*>\s*[^<\s]/i.test(c)},'Necesitas `<figure>` con `<figcaption>`, `<time datetime="...">` y `<mark>`, con texto.')]);
+
+AD('css',0,[
+LS('Bordes y esquinas','`border: 2px solid color` dibuja un borde, `border-radius` redondea las esquinas (`50%` hace un círculo) y `margin` separa del resto.','Reto: a `.caja` dale `border`, `border-radius` y `margin`; a `.circulo` un `border-radius` de `50%`.','<style>\n  \n</style>\n<div class="caja">Caja</div>\n<div class="circulo"></div>','<style>\n  .caja { border: 2px solid #2a7de1; border-radius: 12px; margin: 16px; padding: 10px; }\n  .circulo { width: 60px; height: 60px; background: tomato; border-radius: 50%; margin: 16px; }\n</style>\n<div class="caja">Caja</div>\n<div class="circulo"></div>',
+ c=>['border','border-radius','margin'].every(x=>HP(c,'\\.caja',x))&&HP(c,'\\.circulo','border-radius','50%'),'`.caja` necesita `border`, `border-radius` y `margin`; `.circulo` un `border-radius: 50%`.')]);
+AD('css',1,[
+LS('Transiciones y transformaciones','`transition: transform .3s` anima el cambio entre dos estados, y `transform: scale(1.1)` o `rotate(5deg)` agranda o gira un elemento.','Reto: `.btn` con `transition`; `.btn:hover` con un `transform` que use `scale(`.','<style>\n  .btn { padding: 12px 24px; border: 0; border-radius: 10px; background: #2a7de1; color: white; }\n  \n</style>\n<button class="btn">Pasa el mouse</button>','<style>\n  .btn { padding: 12px 24px; border: 0; border-radius: 10px; background: #2a7de1; color: white; transition: transform .3s; }\n  .btn:hover { transform: scale(1.1) rotate(2deg); }\n</style>\n<button class="btn">Pasa el mouse</button>',
+ c=>HP(c,'\\.btn','transition')&&/\.btn:hover\s*\{[^}]*transform\s*:\s*[^;}]*scale\(/i.test(c),'Añade `transition` a `.btn` y `.btn:hover { transform: scale(1.1); }`.')]);
+AD('css',2,[
+LS('Variables y calc()','`calc()` mezcla unidades: `width: calc(100% - 40px)`. Con una variable (`--espacio: 16px`) cambias un valor en un solo lugar y lo reutilizas con `var(--espacio)`.','Reto: declara `--espacio` en `:root`; `.panel` usa `padding: var(--espacio)` y `width: calc(100% - 40px)`.','<style>\n  \n</style>\n<div class="panel">Panel</div>','<style>\n  :root { --espacio: 16px; }\n  .panel { padding: var(--espacio); width: calc(100% - 40px); background: #e8f4ff; }\n</style>\n<div class="panel">Panel</div>',
+ c=>/:root\s*\{[^}]*--espacio\s*:/i.test(c)&&HP(c,'\\.panel','padding','var\\(\\s*--espacio')&&HP(c,'\\.panel','width','calc\\('),'Declara `--espacio` en `:root` y úsalo en `.panel` con `var(--espacio)` y `calc(...)`.')]);
+
+AD('js',0,[
+LS('Bucle while y Math','`while (condición) { ... }` repite mientras la condición sea verdadera. `Math.max()`, `Math.min()` y `Math.floor()` hacen cálculos con números.','Reto: con un `while` imprime del 1 al 5 y después `Math.max(3, 9, 5)`.',JS('  let i = 1;\n  \n'),JS('  let i = 1;\n  while (i <= 5) {\n    console.log(i);\n    i++;\n  }\n  console.log(Math.max(3, 9, 5));\n'),
+ c=>{c=UJ(c);return /\bwhile\s*\(/.test(c)&&/Math\.max\s*\(/.test(c)},'Necesitas `while (i <= 5) { ... i++ }` y `Math.max(3, 9, 5)`.',
+ {d:()=>__L.join('|')==='1|2|3|4|5|9'||'Deben salir 1, 2, 3, 4, 5 y después 9.'})]);
+AD('js',1,[
+LS('Objetos: claves, valores y desestructuración','`Object.keys(obj)` da las claves y `Object.values(obj)` los valores. La desestructuración `const { nombre, edad } = persona` saca propiedades a variables.','Reto: usa `Object.keys`, `Object.values` y desestructuración con `persona`, y muestra los resultados.',JS('  const persona = { nombre: "Ana", edad: 20, ciudad: "Lima" };\n  \n'),JS('  const persona = { nombre: "Ana", edad: 20, ciudad: "Lima" };\n  const { nombre, edad } = persona;\n  console.log(Object.keys(persona).length);\n  console.log(Object.values(persona).join(","));\n  console.log(nombre + " " + edad);\n'),
+ c=>{c=UJ(c);return /Object\.keys\s*\(/.test(c)&&/Object\.values\s*\(/.test(c)&&/const\s*\{[^}]+\}\s*=\s*persona/.test(c)},'Usa `Object.keys(persona)`, `Object.values(persona)` y `const { nombre, edad } = persona;`.',
+ {d:()=>{const t=__L.join('|');return (t.includes('3')&&t.includes('Ana,20,Lima')&&t.includes('Ana 20'))||'Deben verse 3, «Ana,20,Lima» y «Ana 20».'}})]);
+AD('js',2,[
+LS('Promise.all y async/await','`Promise.all([...])` espera varias promesas a la vez y devuelve los resultados en el orden del arreglo. Dentro de una función `async` puedes usar `await`.','Reto: usa `await Promise.all` con dos promesas de `dato` y muestra los resultados unidos con `-`.',JS('  const dato = (v, ms) => new Promise((ok) => setTimeout(() => ok(v), ms));\n  \n'),JS('  const dato = (v, ms) => new Promise((ok) => setTimeout(() => ok(v), ms));\n  async function main() {\n    const r = await Promise.all([dato("A", 30), dato("B", 10)]);\n    console.log(r.join("-"));\n  }\n  main();\n'),
+ c=>{c=UJ(c);return /Promise\.all\s*\(/.test(c)&&/\basync\b/.test(c)&&/\bawait\b/.test(c)},'Necesitas `async function`, `await Promise.all([...])` y `r.join("-")`.',
+ {d:async()=>{await new Promise(r=>setTimeout(r,250));return __L.some(x=>x.trim()==='A-B')||'Debe aparecer «A-B» (el orden es el del arreglo, no el de llegada).'}})]);
+
+AD('log',0,[
+LG('Mayor de tres números','Con `Math.max(a, b, c)` o con varios `if` puedes comparar más de dos valores. Piensa qué pasa si hay empates o negativos.','Reto: `mayorDeTres(a, b, c)` devuelve el número más grande de los tres.','mayorDeTres','a, b, c','function mayorDeTres(a, b, c) {\n  return Math.max(a, b, c);\n}',
+ [['mayorDeTres(1,2,3)','3'],['mayorDeTres(9,2,3)','9'],['mayorDeTres(-1,-5,-3)','-1'],['mayorDeTres(4,4,2)','4',1]],'Prueba con `Math.max(a, b, c)`.')]);
+AD('log',1,[
+LG('Palabra más larga','Divide el texto con `texto.split(" ")` y recorre las palabras guardando la más larga vista. En un empate gana la primera.','Reto: `palabraLarga(texto)` devuelve la palabra con más letras; si hay empate, la primera.','palabraLarga','texto','function palabraLarga(texto) {\n  let mejor = "";\n  for (const p of texto.split(" ")) {\n    if (p.length > mejor.length) mejor = p;\n  }\n  return mejor;\n}',
+ [['palabraLarga("hola mundo bonito")','"bonito"'],['palabraLarga("sol luz")','"sol"'],['palabraLarga("a bb ccc")','"ccc"'],['palabraLarga("uno dos")','"uno"',1]],'Compara con `p.length > mejor.length` (usa `>`, no `>=`).')]);
+AD('log',2,[
+LG('Sumar dígitos','Un número se puede pasar a texto con `String(n)` y recorrerse dígito a dígito. `Math.abs(n)` quita el signo.','Reto: `sumaDigitos(n)` suma los dígitos de `n` (ignora el signo).','sumaDigitos','n','function sumaDigitos(n) {\n  let t = 0;\n  for (const d of String(Math.abs(n))) t += Number(d);\n  return t;\n}',
+ [['sumaDigitos(123)','6'],['sumaDigitos(0)','0'],['sumaDigitos(-45)','9'],['sumaDigitos(9999)','36',1]],'Usa `Math.abs(n)`, conviértelo a texto y suma `Number(d)`.')]);
+
 const LN=['Principiante','Intermedio','Avanzado','Desafíos'],K='nx-codelab-v1',TOT=TR.reduce((a,t)=>a+t.lv.reduce((b,l)=>b+l.length,0),0);
 const SHIM='<scr'+'ipt>(function(){window.__L=[];var S=function(x){try{return typeof x==="object"?JSON.stringify(x):String(x)}catch(e){return String(x)}};var p=function(t,a){try{parent.postMessage({nxc:[t,[].slice.call(a).map(S).join(" ")]},"*")}catch(e){}};["log","warn","error","info"].forEach(function(k){var o=console[k];console[k]=function(){if(k==="log"||k==="info")__L.push([].slice.call(arguments).map(S).join(" "));p(k,arguments);o&&o.apply(console,arguments)}});addEventListener("error",function(e){p("error",[e.message])});addEventListener("unhandledrejection",function(e){p("error",[String(e.reason)])});var AF=Object.getPrototypeOf(async function(){}).constructor;addEventListener("message",function(e){var d=e.data;if(!d||!d.nxq)return;var send=function(v){try{parent.postMessage({nxr:[d.id,v]},"*")}catch(x){}};try{new AF(d.nxq)().then(send,function(er){send("!"+String(er))})}catch(er){send("!"+String(er))}})})()<\/scr'+'ipt>';
 let done=[];try{done=JSON.parse(localStorage.getItem(K))||[]}catch(e){}
