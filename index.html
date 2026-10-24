@@ -11456,7 +11456,8 @@ const MODES=[
  {ic:'🧠',n:'Psicólogo/a',d:'Consultorio: atiende pacientes ficticios a lo largo de varias sesiones.',p:'simula una sesion de psicologia',tag:'Con cuenta'},
  {ic:'🕵️',n:'Detective',d:'Examina lugares, interroga sospechosos y descubre quién miente.',p:'modo detective'},
  {ic:'🗝️',n:'Escape room',d:'Encerrado/a en una sala: junta pistas, resuelve un código, una secuencia y un mensaje cifrado antes de quedarte sin acciones.',p:'modo escape room',tag:'Con cuenta'},
- {ic:'🎬',n:'Películas',d:'Elige entre varias mini películas animadas: cada una con su portada, sus narradores y un cuestionario final (o, en Boreal-7 y Quetzal-3000, un caso que resolver y puedes morir).',fn:'nxMovies',tag:'Con cuenta'}];
+ {ic:'🎬',n:'Películas',d:'Elige entre varias mini películas animadas: cada una con su portada, sus narradores y un cuestionario final (o, en Boreal-7 y Quetzal-3000, un caso que resolver y puedes morir).',fn:'nxMovies',tag:'Con cuenta'},
+ {ic:'💻',n:'Aprende a programar',d:'Curso interactivo de HTML, CSS y JavaScript, de principiante a avanzado, con editor de código y resultado en tiempo real.',fn:'nxCodeLab',tag:'Nuevo'}];
 function send(p){const i=$('#in'),g=$('#go');if(!i||!g)return;try{if(typeof busy!=='undefined'&&busy)return}catch(e){}i.value=p;i.dispatchEvent(new Event('input',{bubbles:true}));g.click()}
 let dlg;
 const close=()=>{if(dlg)dlg.hidden=true};
@@ -18017,5 +18018,228 @@ try{window.__nxv76sp={eotOn,eotOff,fadeTick,state:()=>({eot,fadeOn,touched}),set
  #spx .xp.lyr{padding:8dvh 0 40dvh}
 }
 </style>
+<style id="nx-codelab-css">
+/* NORYX · Aprende a programar: editor de código + resultado en vivo */
+#nxCode{position:fixed;inset:0;z-index:70;display:flex;flex-direction:column;gap:10px;padding:clamp(8px,2vw,16px);padding-top:calc(clamp(8px,2vw,16px) + env(safe-area-inset-top,0px));padding-bottom:calc(clamp(8px,2vw,16px) + env(safe-area-inset-bottom,0px));background:var(--bg);color:var(--ink);overflow:auto;font:15px/1.5 var(--ff,system-ui,sans-serif)}
+#nxCode[hidden]{display:none}
+#nxCode button{font:inherit;font-size:13.5px;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:99px;padding:6px 14px;min-height:36px;cursor:pointer}
+#nxCode button:hover{border-color:var(--acc)}
+#nxCode button:focus-visible,#nxCode textarea:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+#nxCode button.on,#nxCode button.pri{background:var(--acc);border-color:var(--acc);color:var(--bg);font-weight:600}
+#nxCode .cl-top{display:flex;align-items:center;gap:12px}
+#nxCode .cl-top b{font:800 clamp(18px,3vw,24px) 'Bricolage Grotesque',sans-serif;letter-spacing:-.02em}
+#nxCode .cl-pr{flex:1;min-width:40px;height:8px;border-radius:9px;background:var(--line);overflow:hidden}
+#nxCode .cl-pr i{display:block;height:100%;width:0;background:var(--acc);transition:width .3s}
+#nxCode .cl-top small{color:var(--mute);font-family:'JetBrains Mono',monospace}
+#nxCode .cl-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px}
+#nxCode .cl-info{border:1px solid var(--line);background:var(--panel);border-radius:16px;padding:12px 16px}
+#nxCode .cl-info h2{margin:0 0 4px;font-size:18px}
+#nxCode .cl-info p{margin:4px 0}
+#nxCode code{font-family:'JetBrains Mono',monospace;font-size:.9em;background:var(--code);padding:1px 6px;border-radius:6px}
+#nxCode .cl-task{border-left:3px solid var(--acc2);padding-left:10px}
+#nxCode .cl-ws{display:grid;grid-template-columns:1fr 1fr;gap:12px;flex:1;min-height:300px}
+#nxCode .cl-pane{display:flex;flex-direction:column;gap:6px;min-width:0;min-height:0}
+#nxCode .cl-pane>span{font:600 11.5px 'JetBrains Mono',monospace;letter-spacing:.05em;text-transform:uppercase;color:var(--mute)}
+#clEd{flex:1;width:100%;box-sizing:border-box;min-height:240px;resize:none;background:var(--code);color:var(--ink);border:1px solid var(--line);border-radius:14px;padding:12px;font:13.5px/1.6 'JetBrains Mono',monospace;tab-size:2;white-space:pre;overflow:auto}
+#clFr{flex:1;width:100%;min-height:240px;box-sizing:border-box;border:1px solid var(--line);border-radius:14px;background:#fff}
+#nxCode .cl-con{max-height:120px;min-height:40px;overflow:auto;background:var(--code);border:1px solid var(--line);border-radius:12px;padding:8px 10px;font:12.5px/1.5 'JetBrains Mono',monospace}
+#nxCode .cl-con[hidden]{display:none}
+#nxCode .cl-con:empty::before{content:"La consola aparecerá aquí";color:var(--mute)}
+#nxCode .cl-l::before{content:"› ";color:var(--mute)}
+#nxCode .cl-l.error,#nxCode .cl-l.warn{border-left:3px solid #c0392b;padding-left:6px}
+#nxCode .cl-bar{display:flex;gap:8px;flex-wrap:wrap}
+#nxCode .cl-msg{min-height:42px;border:1px solid var(--line);border-radius:12px;padding:9px 12px;color:var(--ink)}
+#nxCode .cl-msg.ok{border-color:#2fbf71;background:color-mix(in srgb,#2fbf71 12%,var(--panel))}
+#nxCode .cl-msg.bad{border-color:#e0a030;background:color-mix(in srgb,#e0a030 12%,var(--panel))}
+@media(max-width:820px){#nxCode .cl-ws{grid-template-columns:1fr}}
+</style>
+<script id="nx-codelab-js">
+/* NORYX · Aprende a programar. Para sumar un tema, agrega un objeto a TR; cada lección lleva: n título, h explicación, r reto, c código inicial, s solución, k verificador, p pista. */
+(function(){
+const $=s=>document.querySelector(s),E=(t,c,h)=>{const e=document.createElement(t);if(c)e.className=c;if(h!=null)e.innerHTML=h;return e};
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const fmt=s=>esc(s).replace(/`([^`]+)`/g,'<code>$1</code>').replace(/\*\*([^*]+)\*\*/g,'<b>$1</b>');
+const N=(c,r)=>(c.match(r)||[]).length;
+const P=(sel,prop)=>new RegExp(sel+'\\s*\\{(?:[^}]*[;\\s])?'+prop+'\\s*:\\s*[^;}\\s]','i');
+const TR=[
+{id:'html',n:'HTML',ic:'🧱',lv:[[
+ {n:'Títulos y párrafos',h:'HTML describe el contenido con **etiquetas**. `<h1>` crea un título grande y `<p>` un párrafo. Casi todas se abren y se cierran: `<p>texto</p>`.',r:'Reto: debajo del `<h1>` escribe un `<p>` que cuente algo sobre ti.',
+  c:'<h1>Hola, mundo</h1>\n',s:'<h1>Ana</h1>\n<p>Me gusta aprender a programar.</p>',
+  k:c=>/<h1[^>]*>\s*[^<\s][^<]*<\/h1>[\s\S]*<p[^>]*>\s*[^<\s][^<]*<\/p>/i.test(c),p:'Necesitas un `<h1>` y un `<p>`, los dos con texto y con su etiqueta de cierre.'},
+ {n:'Listas y enlaces',h:'`<ul>` crea una lista con viñetas y cada elemento va en un `<li>`. Un enlace se escribe `<a href="dirección">texto</a>`.',r:'Reto: completa la lista hasta tener 3 elementos y añade un enlace.',
+  c:'<ul>\n  <li>Manzana</li>\n</ul>\n',s:'<ul>\n  <li>Manzana</li>\n  <li>Pera</li>\n  <li>Uva</li>\n</ul>\n<a href="https://example.com">Visitar una página</a>',
+  k:c=>N(c,/<li[\s>]/gi)>=3&&/<a\s[^>]*href=["'][^"']+["']/i.test(c),p:'Cuenta tus `<li>` (deben ser 3) y revisa que el `<a>` tenga `href="..."`.'}],[
+ {n:'Tablas',h:'Una tabla usa `<table>`, filas `<tr>`, encabezados `<th>` y celdas `<td>`.',r:'Reto: añade 2 filas de datos debajo de la fila de encabezados.',
+  c:'<table border="1">\n  <tr><th>Nombre</th><th>Edad</th></tr>\n</table>',s:'<table border="1">\n  <tr><th>Nombre</th><th>Edad</th></tr>\n  <tr><td>Ana</td><td>20</td></tr>\n  <tr><td>Luis</td><td>25</td></tr>\n</table>',
+  k:c=>N(c,/<tr[\s>]/gi)>=3&&/<th[\s>]/i.test(c)&&N(c,/<td[\s>]/gi)>=4,p:'Debes tener 3 `<tr>` (encabezado + 2 filas) y 4 `<td>` en total.'},
+ {n:'Formularios',h:'Un `<form>` agrupa campos. Cada `<input>` tiene un `type` (text, email, number…) y se acompaña de un `<label>` para que sea accesible.',r:'Reto: crea un formulario con un `<label>`, un `<input type="email">` y un `<button>`.',
+  c:'<form>\n  \n</form>',s:'<form>\n  <label>Correo: <input type="email" placeholder="tu@correo.com"></label>\n  <button>Enviar</button>\n</form>',
+  k:c=>/<form[\s>]/i.test(c)&&/<label[\s>]/i.test(c)&&/<input[^>]*type=["']email["']/i.test(c)&&/<button[\s>]/i.test(c),p:'Dentro del `<form>` van un `<label>`, un `<input type="email">` y un `<button>`.'}],[
+ {n:'HTML semántico',h:'Las etiquetas semánticas dicen **qué es** cada parte: `<header>`, `<nav>`, `<main>`, `<section>` o `<article>` y `<footer>`. Ayudan al SEO y a los lectores de pantalla.',r:'Reto: arma una página con `header`, `nav`, `main` (con una `section` o `article`) y `footer`.',
+  c:'<header>Mi sitio</header>\n',s:'<header><h1>Mi sitio</h1></header>\n<nav><a href="#a">Inicio</a> <a href="#b">Contacto</a></nav>\n<main>\n  <section><h2>Bienvenido</h2><p>Hola</p></section>\n</main>\n<footer>© 2026</footer>',
+  k:c=>['header','nav','main','footer'].every(t=>new RegExp('<'+t+'[\\s>]','i').test(c))&&/<(section|article)[\s>]/i.test(c),p:'Usa `header`, `nav`, `main`, `footer` y una `section` o `article`.'},
+ {n:'Interactivo sin JavaScript',h:'HTML ya trae interactividad: `<details>` y `<summary>` crean un desplegable, `<progress>` una barra, y los atributos `required` y `minlength` validan campos.',r:'Reto: añade una `<progress value="40" max="100">` y un `<input>` con `required` y `minlength`.',
+  c:'<details>\n  <summary>Más info</summary>\n  Texto oculto\n</details>\n',s:'<details>\n  <summary>Más info</summary>\n  Texto oculto\n</details>\n<progress value="40" max="100"></progress>\n<br>\n<input required minlength="4" placeholder="Mínimo 4 letras">',
+  k:c=>/<details[\s>][\s\S]*<summary[\s>]/i.test(c)&&/<progress[^>]*value=[^>]*max=|<progress[^>]*max=[^>]*value=/i.test(c)&&/<input[^>]*\brequired\b[^>]*\bminlength=|<input[^>]*\bminlength=[^>]*\brequired\b/i.test(c),p:'Revisa `<details>` con `<summary>`, `<progress>` con `value` y `max`, y un `<input>` con `required` y `minlength`.'}]]},
+{id:'css',n:'CSS',ic:'🎨',lv:[[
+ {n:'Colores y texto',h:'CSS da estilo al HTML. Una regla tiene **selector** y **propiedades**: `h1 { color: tomato; }`. `font-size` cambia el tamaño y `background` el fondo.',r:'Reto: dale al `h1` un `color` y un `font-size`, y al `body` un `background`.',
+  c:'<style>\n  h1 {\n    \n  }\n</style>\n<h1>Hola CSS</h1>\n<p>Cambia mis estilos.</p>',s:'<style>\n  body { background: #fff3d6; }\n  h1 {\n    color: tomato;\n    font-size: 40px;\n  }\n</style>\n<h1>Hola CSS</h1>\n<p>Cambia mis estilos.</p>',
+  k:c=>P('h1','color').test(c)&&P('h1','font-size').test(c)&&P('body','background(?:-color)?').test(c),p:'Necesitas `color` y `font-size` dentro de `h1 { }` y `background` dentro de `body { }`.'},
+ {n:'La caja: margen, relleno y borde',h:'Todo elemento es una caja: `padding` es el espacio interior, `border` el borde, `margin` el espacio exterior y `border-radius` redondea las esquinas.',r:'Reto: dale a `.caja` `padding`, `border`, `border-radius` y `margin`.',
+  c:'<style>\n  .caja {\n    background: #e8f4ff;\n    \n  }\n</style>\n<div class="caja">Soy una caja</div>',s:'<style>\n  .caja {\n    background: #e8f4ff;\n    padding: 20px;\n    border: 3px solid #2a7de1;\n    border-radius: 16px;\n    margin: 24px;\n  }\n</style>\n<div class="caja">Soy una caja</div>',
+  k:c=>['padding','border','border-radius','margin'].every(x=>P('\\.caja',x).test(c)),p:'Dentro de `.caja { }` deben estar `padding`, `border`, `border-radius` y `margin`.'}],[
+ {n:'Flexbox',h:'`display: flex` coloca los hijos en fila. Con `justify-content` los repartes, con `align-items` los alineas y con `gap` les das separación.',r:'Reto: convierte `.fila` en un contenedor flex con `justify-content` y `gap`.',
+  c:'<style>\n  .fila {\n    \n  }\n  .fila div { background: #ffd54a; padding: 16px; }\n</style>\n<div class="fila">\n  <div>1</div><div>2</div><div>3</div>\n</div>',s:'<style>\n  .fila {\n    display: flex;\n    justify-content: space-between;\n    gap: 12px;\n  }\n  .fila div { background: #ffd54a; padding: 16px; }\n</style>\n<div class="fila">\n  <div>1</div><div>2</div><div>3</div>\n</div>',
+  k:c=>/\.fila\s*\{[^}]*display\s*:\s*flex/i.test(c)&&P('\\.fila','justify-content').test(c)&&P('\\.fila','gap').test(c),p:'En `.fila { }` usa `display: flex`, `justify-content` y `gap`.'},
+ {n:'Hover y transiciones',h:'`:hover` aplica estilos cuando pasas el mouse. Con `transition` el cambio es suave en lugar de brusco.',r:'Reto: haz que `.btn` cambie de color con `:hover` y tenga una `transition`.',
+  c:'<style>\n  .btn {\n    background: #2a7de1;\n    color: white;\n    border: 0;\n    padding: 12px 22px;\n    border-radius: 10px;\n  }\n</style>\n<button class="btn">Pásame el mouse</button>',s:'<style>\n  .btn {\n    background: #2a7de1;\n    color: white;\n    border: 0;\n    padding: 12px 22px;\n    border-radius: 10px;\n    transition: background .3s;\n  }\n  .btn:hover { background: #e1572a; }\n</style>\n<button class="btn">Pásame el mouse</button>',
+  k:c=>/\.btn\s*:hover\s*\{[^}]*(background|color)/i.test(c)&&P('\\.btn','transition').test(c),p:'Necesitas la regla `.btn:hover { ... }` con otro color y una `transition` dentro de `.btn`.'}],[
+ {n:'CSS Grid',h:'`display: grid` crea una cuadrícula de filas y columnas. `grid-template-columns: repeat(3, 1fr)` hace 3 columnas iguales.',r:'Reto: haz que `.galeria` sea una cuadrícula de 3 columnas con `gap`.',
+  c:'<style>\n  .galeria {\n    \n  }\n  .galeria div { background: #7bd88f; padding: 20px; text-align: center; }\n</style>\n<div class="galeria">\n  <div>1</div><div>2</div><div>3</div>\n  <div>4</div><div>5</div><div>6</div>\n</div>',s:'<style>\n  .galeria {\n    display: grid;\n    grid-template-columns: repeat(3, 1fr);\n    gap: 10px;\n  }\n  .galeria div { background: #7bd88f; padding: 20px; text-align: center; }\n</style>\n<div class="galeria">\n  <div>1</div><div>2</div><div>3</div>\n  <div>4</div><div>5</div><div>6</div>\n</div>',
+  k:c=>/\.galeria\s*\{[^}]*display\s*:\s*grid/i.test(c)&&P('\\.galeria','grid-template-columns').test(c)&&P('\\.galeria','gap').test(c),p:'En `.galeria { }` usa `display: grid`, `grid-template-columns` y `gap`.'},
+ {n:'Variables y animaciones',h:'Las **variables** (`--color`) se declaran en `:root` y se usan con `var(--color)`. `@keyframes` define una animación y `animation` la aplica.',r:'Reto: declara una variable en `:root`, úsala con `var()`, crea un `@keyframes` y aplícalo con `animation`.',
+  c:'<style>\n  :root {\n    \n  }\n  .bola {\n    width: 60px; height: 60px; border-radius: 50%;\n  }\n</style>\n<div class="bola"></div>',s:'<style>\n  :root { --color: #e1572a; }\n  .bola {\n    width: 60px; height: 60px; border-radius: 50%;\n    background: var(--color);\n    animation: saltar 1s infinite alternate;\n  }\n  @keyframes saltar {\n    from { transform: translateY(0); }\n    to { transform: translateY(80px); }\n  }\n</style>\n<div class="bola"></div>',
+  k:c=>/--[\w-]+\s*:/.test(c)&&/var\(\s*--/.test(c)&&/@keyframes\s+[\w-]+/.test(c)&&/animation(?:-name)?\s*:/.test(c),p:'Faltan: una variable `--nombre: valor`, su uso con `var(--nombre)`, `@keyframes nombre` y `animation`.'}]]},
+{id:'js',n:'JavaScript',ic:'⚡',lv:[[
+ {n:'Variables y consola',h:'Una **variable** guarda un valor: `let edad = 20;` o `const nombre = "Ana";`. `console.log()` muestra resultados en la consola de abajo.',r:'Reto: crea una segunda variable y muestra las dos con `console.log`.',
+  c:'<script>\n  const nombre = "Ana";\n  \n<\/script>',s:'<script>\n  const nombre = "Ana";\n  let edad = 20;\n  console.log("Hola, " + nombre);\n  console.log("Edad: " + edad);\n<\/script>',
+  k:c=>N(c,/\b(?:let|const|var)\s+\w+/g)>=2&&/console\.log\s*\(/.test(c),p:'Declara al menos 2 variables con `let` o `const` y usa `console.log(...)`.'},
+ {n:'Cambiar la página (DOM)',h:'El **DOM** es la página vista desde JavaScript. `document.getElementById("id")` elige un elemento y `.textContent = "..."` cambia su texto.',r:'Reto: cambia el texto del párrafo `#msg` desde JavaScript.',
+  c:'<p id="msg">Texto original</p>\n<script>\n  \n<\/script>',s:'<p id="msg">Texto original</p>\n<script>\n  document.getElementById("msg").textContent = "¡Cambiado con JavaScript!";\n<\/script>',
+  k:c=>/(getElementById|querySelector)\s*\(/.test(c)&&/\.(textContent|innerText|innerHTML)\s*=/.test(c),p:'Elige el elemento con `getElementById("msg")` y asígnale `.textContent = "..."`.'}],[
+ {n:'Eventos',h:'Un **evento** es algo que pasa en la página (un clic, una tecla). `elemento.addEventListener("click", función)` ejecuta tu código cuando ocurre.',r:'Reto: haz que al pulsar el botón aumente el contador en pantalla.',
+  c:'<button id="btn">Sumar</button>\n<p>Clics: <span id="n">0</span></p>\n<script>\n  let total = 0;\n  \n<\/script>',s:'<button id="btn">Sumar</button>\n<p>Clics: <span id="n">0</span></p>\n<script>\n  let total = 0;\n  document.getElementById("btn").addEventListener("click", function () {\n    total++;\n    document.getElementById("n").textContent = total;\n  });\n<\/script>',
+  k:c=>/addEventListener\s*\(\s*["']click["']/.test(c)&&/(textContent|innerText|innerHTML)\s*=/.test(c),p:'Usa `addEventListener("click", ...)` y dentro actualiza el texto con `textContent`.'},
+ {n:'Arreglos y bucles',h:'Un **arreglo** guarda varios valores: `["rojo", "azul"]`. Con `for`, `forEach` o `map` recorres cada elemento.',r:'Reto: recorre el arreglo con un bucle y muestra cada fruta.',
+  c:'<script>\n  const frutas = ["manzana", "pera", "uva"];\n  \n<\/script>',s:'<script>\n  const frutas = ["manzana", "pera", "uva"];\n  frutas.forEach(function (f) {\n    console.log("Me gusta la " + f);\n  });\n<\/script>',
+  k:c=>/\[[^\]]*,[^\]]*\]/.test(c)&&/(for\s*\(|\.forEach\s*\(|\.map\s*\()/.test(c)&&/console\.log\s*\(|textContent|innerHTML/.test(c),p:'Recorre `frutas` con `for`, `forEach` o `map` y muestra cada valor con `console.log`.'}],[
+ {n:'Funciones y objetos',h:'Una **función** reutiliza código: `function saludar(nombre) { ... }` o `const doble = (n) => n * 2;`. Un **objeto** agrupa datos: `{ nombre: "Ana", edad: 20 }`.',r:'Reto: crea una función que reciba el objeto y devuelva una frase; llámala y muestra el resultado.',
+  c:'<script>\n  const persona = { nombre: "Ana", edad: 20 };\n  \n<\/script>',s:'<script>\n  const persona = { nombre: "Ana", edad: 20 };\n  function presentar(p) {\n    return p.nombre + " tiene " + p.edad + " años";\n  }\n  console.log(presentar(persona));\n<\/script>',
+  k:c=>/(function\s+\w+\s*\(|=>)/.test(c)&&/\{[^}]*:[^}]*\}/.test(c)&&/console\.log\s*\(|textContent|innerHTML/.test(c),p:'Define una función (`function nombre(p) { ... }` o flecha `=>`) y muestra lo que devuelve.'},
+ {n:'Async y await',h:'Algunas tareas tardan (pedir datos, esperar). Una **Promesa** es un resultado futuro; `async/await` permite escribirla como código normal.',r:'Reto: crea una función `async` que haga `await esperar(1000)` y muestre un mensaje al terminar.',
+  c:'<script>\n  const esperar = (ms) => new Promise((ok) => setTimeout(ok, ms));\n  \n<\/script>',s:'<script>\n  const esperar = (ms) => new Promise((ok) => setTimeout(ok, ms));\n  async function cargar() {\n    console.log("Cargando...");\n    await esperar(1000);\n    console.log("¡Listo!");\n  }\n  cargar();\n<\/script>',
+  k:c=>/\basync\b/.test(c)&&/\bawait\b/.test(c)&&/(esperar|Promise|setTimeout)/.test(c)&&/console\.log|textContent/.test(c),p:'Escribe `async function ...`, dentro usa `await esperar(1000)` y luego `console.log`; no olvides llamarla.'}]]}];
+/* Lecciones 3 a 5 de cada nivel */
+const IMG="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80'%3E%3Ccircle cx='40' cy='40' r='38' fill='%23e1572a'/%3E%3C/svg%3E";
+const MORE=[[[
+ {n:'Imágenes',h:'`<img>` muestra una imagen. `src` indica de dónde viene, `alt` la describe (importante para accesibilidad) y `width` fija su ancho.',r:'Reto: añade `alt` y `width` a la imagen.',
+  c:'<img src="'+IMG+'">',s:'<img src="'+IMG+'" alt="Círculo naranja" width="120">',
+  k:c=>/<img[^>]*\balt=["'][^"']+["']/i.test(c)&&/<img[^>]*\bwidth=/i.test(c),p:'Tu `<img>` necesita `alt="descripción"` y `width="número"`.'},
+ {n:'Negrita, cursiva y saltos',h:'`<strong>` resalta con negrita, `<em>` con cursiva, `<br>` salta de línea y `<hr>` dibuja una línea separadora.',r:'Reto: usa `<strong>`, `<em>` y al menos un `<br>` o `<hr>`.',
+  c:'<p>Aprender HTML es divertido</p>',s:'<p>Aprender <strong>HTML</strong> es <em>muy</em> divertido.<br>Sigue practicando</p>\n<hr>',
+  k:c=>/<strong[\s>]/i.test(c)&&/<em[\s>]/i.test(c)&&/<(br|hr)\s*\/?>/i.test(c),p:'Necesitas `<strong>`, `<em>` y un `<br>` o `<hr>`.'},
+ {n:'Listas ordenadas y anidadas',h:'`<ol>` numera los elementos. Si pones una lista dentro de un `<li>`, creas subniveles.',r:'Reto: dentro de la `<ol>` anida una `<ul>`; en total, al menos 4 `<li>`.',
+  c:'<ol>\n  <li>Abrir el editor</li>\n  <li>Escribir código</li>\n  <li>Ver el resultado</li>\n</ol>',s:'<ol>\n  <li>Abrir el editor</li>\n  <li>Escribir código\n    <ul>\n      <li>HTML</li>\n      <li>CSS</li>\n    </ul>\n  </li>\n  <li>Ver el resultado</li>\n</ol>',
+  k:c=>/<ol[\s>][\s\S]*<ul[\s>][\s\S]*<\/ul>[\s\S]*<\/ol>/i.test(c)&&N(c,/<li[\s>]/gi)>=4,p:'Pon una `<ul>` dentro de un `<li>` de la `<ol>`.'}],[
+ {n:'Documento completo',h:'Una página completa empieza con `<!DOCTYPE html>`, luego `<html lang="es">` con un `<head>` (título y metadatos) y un `<body>` (lo visible).',r:'Reto: escribe la estructura completa con un `<title>` y contenido en el `<body>`.',
+  c:'<!DOCTYPE html>\n',s:'<!DOCTYPE html>\n<html lang="es">\n<head>\n  <meta charset="utf-8">\n  <title>Mi página</title>\n</head>\n<body>\n  <h1>¡Hola!</h1>\n</body>\n</html>',
+  k:c=>/<!doctype html>/i.test(c)&&/<html[^>]*\blang=/i.test(c)&&/<head[\s>][\s\S]*<title[^>]*>[^<]+<\/title>[\s\S]*<\/head>/i.test(c)&&/<body[\s>][\s\S]*<\/body>/i.test(c),p:'Necesitas `<!DOCTYPE html>`, `<html lang>`, `<head>` con `<title>` y `<body>`.'},
+ {n:'Figuras con pie de foto',h:'`<figure>` agrupa una imagen con su pie de foto `<figcaption>`.',r:'Reto: añade `alt` a la imagen y un `<figcaption>` dentro de la `<figure>`.',
+  c:'<figure>\n  <img src="'+IMG+'">\n</figure>',s:'<figure>\n  <img src="'+IMG+'" alt="Círculo naranja" width="100">\n  <figcaption>Un círculo naranja</figcaption>\n</figure>',
+  k:c=>/<figure[\s>][\s\S]*<img[^>]*\balt=["'][^"']+["'][\s\S]*<figcaption[\s>][\s\S]*<\/figure>/i.test(c),p:'Dentro de `<figure>` van la `<img alt="...">` y un `<figcaption>`.'},
+ {n:'Selectores y áreas de texto',h:'`<select>` con varios `<option>` crea un desplegable, `<textarea>` un texto largo y `<input type="checkbox">` una casilla.',r:'Reto: crea un `<select>` con 3 `<option>`, un `<textarea>` y un checkbox.',
+  c:'<form>\n  \n</form>',s:'<form>\n  <select>\n    <option>Rojo</option>\n    <option>Verde</option>\n    <option>Azul</option>\n  </select>\n  <br>\n  <textarea placeholder="Cuéntame algo"></textarea>\n  <br>\n  <label><input type="checkbox"> Acepto</label>\n</form>',
+  k:c=>/<select[\s>]/i.test(c)&&N(c,/<option[\s>]/gi)>=3&&/<textarea[\s>]/i.test(c)&&/type=["']checkbox["']/i.test(c),p:'Necesitas `<select>` con 3 `<option>`, `<textarea>` e `<input type="checkbox">`.'}],[
+ {n:'Accesibilidad',h:'Un `<label for="id">` se conecta con el `<input id="id">`: al tocar el texto se activa el campo. `aria-label` da nombre a botones sin texto.',r:'Reto: conecta el `<label>` con el `<input>` mediante `for` e `id`, y dale `aria-label` al botón.',
+  c:'<label>Nombre</label>\n<input>\n<button>🔍</button>',s:'<label for="nom">Nombre</label>\n<input id="nom">\n<button aria-label="Buscar">🔍</button>',
+  k:c=>{const f=c.match(/<label[^>]*\bfor=["']([^"']+)["']/i);return !!f&&new RegExp('<input[^>]*\\bid=["\']'+f[1]+'["\']','i').test(c)&&/<button[^>]*\baria-label=["'][^"']+["']/i.test(c)},p:'El valor de `for` debe ser igual al `id` del input, y el `<button>` necesita `aria-label="..."`.'},
+ {n:'Dialog y meter',h:'`<dialog open>` muestra un cuadro de diálogo y `<meter>` una medida dentro de un rango (`min`, `max`, `value`).',r:'Reto: crea un `<dialog open>` con un texto y un `<meter>` con `min`, `max` y `value`.',
+  c:'<dialog open>\n  \n</dialog>',s:'<dialog open>\n  <p>Batería</p>\n  <meter min="0" max="100" value="70"></meter>\n</dialog>',
+  k:c=>/<dialog[^>]*\bopen\b[\s\S]*<\/dialog>/i.test(c)&&/<meter(?=[^>]*\bmin=)(?=[^>]*\bmax=)(?=[^>]*\bvalue=)[^>]*>/i.test(c),p:'Usa `<dialog open>` y dentro un `<meter min max value>`.'},
+ {n:'SVG en línea',h:'`<svg>` dibuja gráficos vectoriales dentro del HTML: `<circle>`, `<rect>`, `<path>`. `viewBox` define sus coordenadas.',r:'Reto: dibuja un `<svg>` con `viewBox`, un `<circle>` y un `<rect>`.',
+  c:'<svg width="160" height="100">\n  \n</svg>',s:'<svg width="160" height="100" viewBox="0 0 160 100">\n  <rect x="10" y="10" width="60" height="60" fill="tomato"/>\n  <circle cx="110" cy="40" r="30" fill="royalblue"/>\n</svg>',
+  k:c=>/<svg[^>]*\bviewBox=/i.test(c)&&/<circle[\s>]/i.test(c)&&/<rect[\s>]/i.test(c),p:'El `<svg>` necesita `viewBox`, un `<circle>` y un `<rect>`.'}]],
+[[
+ {n:'Selectores',h:'`.clase` elige elementos con ese `class`, `#id` uno solo con ese `id` y `p` todas las etiquetas `<p>`.',r:'Reto: escribe una regla para `p`, otra para `.destacado` y otra para `#titulo`.',
+  c:'<style>\n  \n</style>\n<h1 id="titulo">Selectores</h1>\n<p>Normal</p>\n<p class="destacado">Destacado</p>',s:'<style>\n  p { color: gray; }\n  .destacado { color: crimson; font-weight: bold; }\n  #titulo { color: navy; }\n</style>\n<h1 id="titulo">Selectores</h1>\n<p>Normal</p>\n<p class="destacado">Destacado</p>',
+  k:c=>/(^|[}\s])p\s*\{[^}]*:/i.test(c)&&/\.destacado\s*\{[^}]*:/i.test(c)&&/#titulo\s*\{[^}]*:/i.test(c),p:'Faltan reglas con `p { }`, `.destacado { }` y `#titulo { }`, cada una con alguna propiedad.'},
+ {n:'Tipografía',h:'`font-family` elige la letra, `font-weight` el grosor, `text-align` la alineación y `line-height` el espacio entre líneas.',r:'Reto: en `body` usa las cuatro propiedades.',
+  c:'<style>\n  body {\n    \n  }\n</style>\n<p>CSS también cuida la tipografía: la letra, el grosor, la alineación y el espacio entre líneas hacen que un texto se lea cómodo.</p>',s:'<style>\n  body {\n    font-family: Georgia, serif;\n    font-weight: bold;\n    text-align: center;\n    line-height: 1.8;\n  }\n</style>\n<p>CSS también cuida la tipografía: la letra, el grosor, la alineación y el espacio entre líneas hacen que un texto se lea cómodo.</p>',
+  k:c=>['font-family','font-weight','text-align','line-height'].every(x=>P('body',x).test(c)),p:'En `body { }` deben estar `font-family`, `font-weight`, `text-align` y `line-height`.'},
+ {n:'Unidades de medida',h:'Mide en `px` (fijo), `%` (relativo al padre), `rem` (relativo a la letra base) o `vw` (ancho de pantalla). `max-width` evita que algo crezca demasiado.',r:'Reto: dale a `.tarjeta` un `width` en `%`, un `max-width` y un `font-size` en `rem`.',
+  c:'<style>\n  .tarjeta {\n    background: #e8f4ff;\n    padding: 16px;\n    \n  }\n</style>\n<div class="tarjeta">Redimensiona la ventana</div>',s:'<style>\n  .tarjeta {\n    background: #e8f4ff;\n    padding: 16px;\n    width: 80%;\n    max-width: 400px;\n    font-size: 1.5rem;\n  }\n</style>\n<div class="tarjeta">Redimensiona la ventana</div>',
+  k:c=>/\.tarjeta\s*\{(?:[^}]*[;\s])?width\s*:\s*\d+%/i.test(c)&&P('\\.tarjeta','max-width').test(c)&&/\.tarjeta\s*\{(?:[^}]*[;\s])?font-size\s*:\s*[\d.]+rem/i.test(c),p:'En `.tarjeta` usa `width: 80%`, un `max-width` y `font-size` con `rem`.'}],[
+ {n:'Posición',h:'`position: relative` en el padre y `position: absolute` en el hijo permiten colocar al hijo con `top`, `right`, `bottom` o `left` dentro del padre.',r:'Reto: deja `.badge` en la esquina superior derecha de `.padre`.',
+  c:'<style>\n  .padre {\n    background: #eee;\n    padding: 40px;\n    \n  }\n  .badge {\n    background: crimson; color: white; padding: 4px 10px; border-radius: 99px;\n    \n  }\n</style>\n<div class="padre">Tarjeta <span class="badge">Nuevo</span></div>',s:'<style>\n  .padre {\n    background: #eee;\n    padding: 40px;\n    position: relative;\n  }\n  .badge {\n    background: crimson; color: white; padding: 4px 10px; border-radius: 99px;\n    position: absolute;\n    top: 8px;\n    right: 8px;\n  }\n</style>\n<div class="padre">Tarjeta <span class="badge">Nuevo</span></div>',
+  k:c=>/\.padre\s*\{[^}]*position\s*:\s*relative/i.test(c)&&/\.badge\s*\{[^}]*position\s*:\s*absolute/i.test(c)&&P('\\.badge','(?:top|right)').test(c),p:'`.padre` lleva `position: relative`; `.badge` lleva `position: absolute` más `top` o `right`.'},
+ {n:'Pseudo-clases y pseudo-elementos',h:'`:first-child` o `:nth-child(2)` eligen según la posición. `::before` y `::after` insertan contenido con la propiedad `content`.',r:'Reto: estiliza `li:first-child` y añade un `li::before` con `content`.',
+  c:'<style>\n  \n</style>\n<ul>\n  <li>Uno</li>\n  <li>Dos</li>\n  <li>Tres</li>\n</ul>',s:'<style>\n  li:first-child { font-weight: bold; }\n  li::before { content: "★ "; color: goldenrod; }\n</style>\n<ul>\n  <li>Uno</li>\n  <li>Dos</li>\n  <li>Tres</li>\n</ul>',
+  k:c=>/:(first-child|last-child|nth-child\([^)]*\))\s*\{/i.test(c)&&/::?before\s*\{[^}]*content\s*:/i.test(c),p:'Necesitas una regla `:first-child { }` y otra `::before { content: "..."; }`.'},
+ {n:'Sombras y degradados',h:'`box-shadow: x y desenfoque color` crea una sombra y `linear-gradient(135deg, color1, color2)` un degradado.',r:'Reto: dale a `.card` un `box-shadow` y un `background` con `linear-gradient`.',
+  c:'<style>\n  .card {\n    padding: 30px;\n    border-radius: 14px;\n    color: white;\n    \n  }\n</style>\n<div class="card">Tarjeta con estilo</div>',s:'<style>\n  .card {\n    padding: 30px;\n    border-radius: 14px;\n    color: white;\n    box-shadow: 0 8px 20px rgba(0,0,0,.3);\n    background: linear-gradient(135deg, #6a11cb, #2575fc);\n  }\n</style>\n<div class="card">Tarjeta con estilo</div>',
+  k:c=>P('\\.card','box-shadow').test(c)&&/\.card\s*\{[^}]*linear-gradient\s*\(/i.test(c),p:'En `.card` usa `box-shadow` y `background: linear-gradient(...)`.'}],[
+ {n:'Media queries',h:'`@media (max-width: 600px) { ... }` aplica reglas solo en pantallas angostas, así el diseño se adapta al celular. Reduce el ancho de la ventana para verlo.',r:'Reto: con `@media (max-width: ...)` haz que `.fila` pase a `flex-direction: column`.',
+  c:'<style>\n  .fila { display: flex; gap: 10px; }\n  .fila div { flex: 1; background: #ffd54a; padding: 20px; }\n  \n</style>\n<div class="fila"><div>A</div><div>B</div><div>C</div></div>',s:'<style>\n  .fila { display: flex; gap: 10px; }\n  .fila div { flex: 1; background: #ffd54a; padding: 20px; }\n  @media (max-width: 600px) {\n    .fila { flex-direction: column; }\n  }\n</style>\n<div class="fila"><div>A</div><div>B</div><div>C</div></div>',
+  k:c=>/@media[^{]*max-width\s*:\s*\d+/i.test(c)&&/@media[^{]*\{[\s\S]*?flex-direction\s*:\s*column/i.test(c),p:'Escribe `@media (max-width: 600px) { .fila { flex-direction: column; } }`.'},
+ {n:'Transformaciones',h:'`transform` mueve, gira o escala: `rotate(10deg)`, `scale(1.2)`, `translateY(-5px)`. Con `:hover` y `transition` el efecto es fluido.',r:'Reto: haz que `.foto` gire o crezca con `:hover` y tenga una `transition`.',
+  c:'<style>\n  .foto {\n    width: 100px; height: 100px; background: teal; border-radius: 16px;\n    \n  }\n</style>\n<div class="foto"></div>',s:'<style>\n  .foto {\n    width: 100px; height: 100px; background: teal; border-radius: 16px;\n    transition: transform .3s;\n  }\n  .foto:hover { transform: rotate(15deg) scale(1.2); }\n</style>\n<div class="foto"></div>',
+  k:c=>/\.foto\s*:hover\s*\{[^}]*transform\s*:[^;}]*(rotate|scale|translate)/i.test(c)&&P('\\.foto','transition').test(c),p:'Usa `.foto:hover { transform: rotate(...) }` y `transition` dentro de `.foto`.'},
+ {n:'clamp() y calc()',h:'`clamp(mín, ideal, máx)` crea tamaños fluidos y `calc()` mezcla unidades: `calc(100% - 40px)`.',r:'Reto: usa `clamp()` en el `font-size` del `h1` y `calc()` en el `width` de `.caja`.',
+  c:'<style>\n  h1 {\n    \n  }\n  .caja {\n    background: #cdeccf; padding: 16px;\n    \n  }\n</style>\n<h1>Título fluido</h1>\n<div class="caja">Caja</div>',s:'<style>\n  h1 {\n    font-size: clamp(1.5rem, 5vw, 3rem);\n  }\n  .caja {\n    background: #cdeccf; padding: 16px;\n    width: calc(100% - 40px);\n  }\n</style>\n<h1>Título fluido</h1>\n<div class="caja">Caja</div>',
+  k:c=>/font-size\s*:\s*clamp\s*\(/i.test(c)&&/width\s*:\s*calc\s*\(/i.test(c),p:'Escribe `font-size: clamp(...)` en el `h1` y `width: calc(...)` en `.caja`.'}]],
+[[
+ {n:'Condicionales',h:'`if (condición) { ... } else { ... }` ejecuta un código u otro. Compara con `>`, `<`, `>=`, `===`.',r:'Reto: muestra «Mayor de edad» o «Menor de edad» según `edad`.',
+  c:'<script>\n  const edad = 17;\n  \n<\/script>',s:'<script>\n  const edad = 17;\n  if (edad >= 18) {\n    console.log("Mayor de edad");\n  } else {\n    console.log("Menor de edad");\n  }\n<\/script>',
+  k:c=>/\bif\s*\(/.test(c)&&/\belse\b/.test(c)&&/console\.log\s*\(/.test(c),p:'Usa `if (...) { ... } else { ... }` con `console.log` en cada rama.'},
+ {n:'Texto y sus métodos',h:'Los textos tienen métodos: `.toUpperCase()` pasa a mayúsculas, `.toLowerCase()` a minúsculas y `.length` cuenta los caracteres.',r:'Reto: muestra la frase en mayúsculas y cuántos caracteres tiene.',
+  c:'<script>\n  const frase = "Aprendo JavaScript";\n  \n<\/script>',s:'<script>\n  const frase = "Aprendo JavaScript";\n  console.log(frase.toUpperCase());\n  console.log(frase.length);\n<\/script>',
+  k:c=>/\.(toUpperCase|toLowerCase)\s*\(/.test(c)&&/\.length\b/.test(c)&&/console\.log\s*\(/.test(c),p:'Usa `frase.toUpperCase()` y `frase.length` dentro de `console.log`.'},
+ {n:'El bucle for',h:'`for (let i = 1; i <= 5; i++) { ... }` repite código con un contador. `total += i` acumula una suma.',r:'Reto: suma los números del 1 al 10 con un `for` y muestra el total.',
+  c:'<script>\n  let total = 0;\n  \n<\/script>',s:'<script>\n  let total = 0;\n  for (let i = 1; i <= 10; i++) {\n    total += i;\n  }\n  console.log("Total: " + total);\n<\/script>',
+  k:c=>/for\s*\(/.test(c)&&/\+=/.test(c)&&/console\.log\s*\(/.test(c),p:'Usa `for (let i = 1; i <= 10; i++)`, acumula con `total += i` y muestra `total`.'}],[
+ {n:'Parámetros y return',h:'Una función puede recibir **parámetros** y devolver un resultado con `return`: `function sumar(a, b) { return a + b; }`.',r:'Reto: crea `multiplicar(a, b)` con `return` y muestra `multiplicar(3, 4)`.',
+  c:'<script>\n  \n<\/script>',s:'<script>\n  function multiplicar(a, b) {\n    return a * b;\n  }\n  console.log(multiplicar(3, 4));\n<\/script>',
+  k:c=>/function\s+\w+\s*\(\s*\w+\s*,\s*\w+\s*\)/.test(c)&&/\breturn\b/.test(c)&&/console\.log\s*\(\s*\w+\s*\(/.test(c),p:'Define `function nombre(a, b)` con `return` y llámala dentro de `console.log(...)`.'},
+ {n:'Leer lo que escribe el usuario',h:'`input.value` entrega lo que el usuario escribió. Léelo dentro de un evento y muestra el resultado en la página.',r:'Reto: al pulsar el botón, lee el campo y escribe «Hola, nombre» en `#salida`.',
+  c:'<input id="nombre" placeholder="Tu nombre">\n<button id="btn">Saludar</button>\n<p id="salida"></p>\n<script>\n  \n<\/script>',s:'<input id="nombre" placeholder="Tu nombre">\n<button id="btn">Saludar</button>\n<p id="salida"></p>\n<script>\n  document.getElementById("btn").addEventListener("click", function () {\n    var n = document.getElementById("nombre").value;\n    document.getElementById("salida").textContent = "Hola, " + n;\n  });\n<\/script>',
+  k:c=>/\.value\b/.test(c)&&/addEventListener|onclick/.test(c)&&/(textContent|innerText|innerHTML)\s*=/.test(c),p:'Dentro del evento `click` lee `.value` del input y asigna `textContent` a `#salida`.'},
+ {n:'filter y map',h:'`.filter()` se queda con los elementos que cumplen una condición y `.map()` transforma cada uno. Ambos devuelven un arreglo nuevo.',r:'Reto: filtra los números pares y duplica cada uno con `map`.',
+  c:'<script>\n  const nums = [1, 2, 3, 4, 5, 6];\n  \n<\/script>',s:'<script>\n  const nums = [1, 2, 3, 4, 5, 6];\n  const dobles = nums.filter(n => n % 2 === 0).map(n => n * 2);\n  console.log(dobles);\n<\/script>',
+  k:c=>/\.filter\s*\(/.test(c)&&/\.map\s*\(/.test(c)&&/console\.log\s*\(/.test(c),p:'Encadena `nums.filter(...).map(...)` y muestra el resultado con `console.log`.'}],[
+ {n:'Clases',h:'Una **clase** es un molde de objetos: tiene un `constructor` y métodos. `new Clase()` crea un objeto.',r:'Reto: crea la clase `Animal` con `constructor` y un método `hablar`, y úsala con `new`.',
+  c:'<script>\n  \n<\/script>',s:'<script>\n  class Animal {\n    constructor(nombre) {\n      this.nombre = nombre;\n    }\n    hablar() {\n      console.log(this.nombre + " hace ruido");\n    }\n  }\n  new Animal("Toby").hablar();\n<\/script>',
+  k:c=>/\bclass\s+\w+/.test(c)&&/constructor\s*\(/.test(c)&&/\bnew\s+\w+\s*\(/.test(c)&&/console\.log/.test(c),p:'Necesitas `class Animal { constructor() {...} hablar() {...} }` y `new Animal(...)`.'},
+ {n:'Desestructuración y spread',h:'`const { nombre, edad } = persona;` extrae propiedades. `[...lista]` copia un arreglo y permite agregar elementos.',r:'Reto: desestructura el objeto y crea una copia del arreglo con `...` añadiendo un 4.',
+  c:'<script>\n  const persona = { nombre: "Ana", edad: 20 };\n  const lista = [1, 2, 3];\n  \n<\/script>',s:'<script>\n  const persona = { nombre: "Ana", edad: 20 };\n  const lista = [1, 2, 3];\n  const { nombre, edad } = persona;\n  const copia = [...lista, 4];\n  console.log(nombre, edad, copia);\n<\/script>',
+  k:c=>/\{\s*\w+(\s*,\s*\w+)*\s*\}\s*=\s*\w+/.test(c)&&/\.\.\.\w+/.test(c)&&/console\.log/.test(c),p:'Usa `const { nombre, edad } = persona;` y `[...lista, 4]`.'},
+ {n:'JSON',h:'`JSON.stringify(obj)` convierte un objeto en texto y `JSON.parse(texto)` lo vuelve objeto. Así se guardan y envían datos.',r:'Reto: convierte `datos` a texto, vuelve a objeto y muestra ambos.',
+  c:'<script>\n  const datos = { usuario: "Ana", puntos: 50 };\n  \n<\/script>',s:'<script>\n  const datos = { usuario: "Ana", puntos: 50 };\n  const texto = JSON.stringify(datos);\n  console.log(texto);\n  const objeto = JSON.parse(texto);\n  console.log(objeto.usuario);\n<\/script>',
+  k:c=>/JSON\.stringify\s*\(/.test(c)&&/JSON\.parse\s*\(/.test(c)&&/console\.log\s*\(/.test(c),p:'Usa `JSON.stringify(datos)`, luego `JSON.parse(texto)` y `console.log` de cada uno.'}]]];
+MORE.forEach((t,i)=>t.forEach((l,j)=>TR[i].lv[j].push(...l)));
+const LN=['Principiante','Intermedio','Avanzado'],K='nx-codelab-v1',TOT=TR.reduce((a,t)=>a+t.lv.reduce((b,l)=>b+l.length,0),0);
+const SHIM='<scr'+'ipt>(function(){var p=function(t,a){try{parent.postMessage({nxc:[t,[].slice.call(a).map(function(x){try{return typeof x==="object"?JSON.stringify(x):String(x)}catch(e){return String(x)}}).join(" ")]},"*")}catch(e){}};["log","warn","error","info"].forEach(function(k){var o=console[k];console[k]=function(){p(k,arguments);o&&o.apply(console,arguments)}});addEventListener("error",function(e){p("error",[e.message])});addEventListener("unhandledrejection",function(e){p("error",[String(e.reason)])})})()<\/scr'+'ipt>';
+let done=[];try{done=JSON.parse(localStorage.getItem(K))||[]}catch(e){}
+const save=()=>{try{localStorage.setItem(K,JSON.stringify(done))}catch(e){}};
+let ov,ed,fr,con,msg,nxb,tm,st={t:0,l:0,s:0};
+const cur=()=>TR[st.t].lv[st.l][st.s],key=(t,l,s)=>TR[t].id+'-'+l+'-'+s;
+function setMsg(t,c){msg.className='cl-msg '+(c||'');msg.innerHTML=fmt(t)}
+function log(k,t){const d=E('div','cl-l '+k);d.textContent=t;con.append(d);if(con.children.length>200)con.firstChild.remove();con.scrollTop=con.scrollHeight}
+function run(){const c=ed.value;con.innerHTML='';
+ if(/while\s*\(\s*(true|1)\s*\)|for\s*\(\s*;\s*;\s*\)/.test(c)){fr.srcdoc='';log('warn','Detecté un bucle infinito y no ejecuté el código para que no se congele la página.');return}
+ fr.srcdoc='<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>html{background:#fff}body{font-family:system-ui,sans-serif;margin:14px;color:#1b2430}</style>'+SHIM+'</head><body>'+c+'</body></html>'}
+function nav(){const n=$('#clNav');n.innerHTML='';
+ const row=(items,on,fn)=>{const r=E('div','cl-row');items.forEach((x,i)=>{const b=E('button',i===on?'on':'',esc(x));b.type='button';b.setAttribute('aria-pressed',i===on);b.onclick=()=>fn(i);r.append(b)});n.append(r)};
+ row(TR.map(t=>t.ic+' '+t.n),st.t,i=>{st={t:i,l:0,s:0};load()});
+ row(LN.map((x,i)=>x+' '+TR[st.t].lv[i].filter((_,j)=>done.includes(key(st.t,i,j))).length+'/'+TR[st.t].lv[i].length),st.l,i=>{st.l=i;st.s=0;load()});
+ row(TR[st.t].lv[st.l].map((x,i)=>(done.includes(key(st.t,st.l,i))?'✓ ':'')+(i+1)+'. '+x.n),st.s,i=>{st.s=i;load()});
+ $('#clBar').style.width=Math.round(done.length/TOT*100)+'%';$('#clCnt').textContent=done.length+'/'+TOT}
+function load(){const L=cur();$('#clT').textContent=TR[st.t].n+' · '+LN[st.l]+' · '+L.n;$('#clH').innerHTML=fmt(L.h);$('#clK').innerHTML=fmt(L.r);
+ ed.value=L.c;con.hidden=st.t!==2;nxb.hidden=true;nav();setMsg('Escribe tu código, mira el resultado en vivo y pulsa **Verificar** cuando termines.');run()}
+function check(){const L=cur();if(L.k(ed.value)){if(!done.includes(key(st.t,st.l,st.s))){done.push(key(st.t,st.l,st.s));save()}setMsg('✅ ¡Correcto! Cumples el reto. Pulsa **Siguiente** para continuar.','ok');nxb.hidden=false;nav()}else setMsg('🔎 Aún falta algo. '+L.p,'bad')}
+function next(){const t=TR[st.t];if(st.s+1<t.lv[st.l].length)st.s++;else if(st.l<2){st.l++;st.s=0}else if(st.t<TR.length-1){st.t++;st.l=0;st.s=0}else{setMsg('🎓 ¡Terminaste todo el curso! Puedes repetir cualquier lección cuando quieras.','ok');return}load()}
+function close(){ov.hidden=true;fr.srcdoc='';const b=$('#nxModes');b&&b.focus()}
+function build(){ov=E('div');ov.id='nxCode';ov.hidden=true;ov.setAttribute('role','dialog');ov.setAttribute('aria-modal','true');ov.setAttribute('aria-label','Aprende a programar');
+ ov.innerHTML='<div class="cl-top"><b>💻 Aprende a programar</b><span class="cl-pr"><i id="clBar"></i></span><small id="clCnt"></small><button type="button" id="clX" aria-label="Cerrar">✕</button></div><div id="clNav"></div><section class="cl-info"><h2 id="clT"></h2><p id="clH"></p><p class="cl-task" id="clK"></p></section><div class="cl-ws"><label class="cl-pane"><span>✍️ Tu código</span><textarea id="clEd" spellcheck="false" autocapitalize="off" autocomplete="off" wrap="off" aria-label="Editor de código"></textarea></label><div class="cl-pane"><span>👁 Resultado en vivo</span><iframe id="clFr" title="Resultado en vivo" sandbox="allow-scripts"></iframe><div id="clCon" class="cl-con" aria-label="Consola"></div></div></div><div class="cl-bar"><button type="button" class="pri" id="clOk">✔ Verificar</button><button type="button" id="clHint">💡 Pista</button><button type="button" id="clSol">👁 Ver solución</button><button type="button" id="clRst">↺ Reiniciar</button><button type="button" class="pri" id="clNx" hidden>Siguiente →</button></div><div id="clMsg" class="cl-msg" role="status" aria-live="polite"></div>';
+ document.body.append(ov);ed=$('#clEd');fr=$('#clFr');con=$('#clCon');msg=$('#clMsg');nxb=$('#clNx');
+ $('#clX').onclick=close;$('#clOk').onclick=check;nxb.onclick=next;$('#clRst').onclick=()=>{ed.value=cur().c;nxb.hidden=true;setMsg('Código inicial restaurado.');run()};
+ $('#clHint').onclick=()=>setMsg('💡 '+cur().p);$('#clSol').onclick=()=>{ed.value=cur().s;run();setMsg('Esta es una solución posible. Pulsa **Verificar** para comprobarla o **Reiniciar** para volver a intentarlo.')};
+ ed.addEventListener('input',()=>{clearTimeout(tm);tm=setTimeout(run,st.t===2?700:200)});
+ ed.addEventListener('keydown',e=>{if(e.key==='Tab'&&!e.shiftKey&&!e.ctrlKey&&!e.altKey&&!e.metaKey){e.preventDefault();ed.setRangeText('  ',ed.selectionStart,ed.selectionEnd,'end');ed.dispatchEvent(new Event('input'))}else if(e.key==='Escape')ed.blur()});
+ ['keydown','keyup','keypress'].forEach(t=>ov.addEventListener(t,e=>{if(t==='keydown'&&e.key==='Escape'&&e.target!==ed)close();e.stopPropagation()}));
+ addEventListener('message',e=>{const d=e.data;if(fr&&e.source===fr.contentWindow&&d&&d.nxc)log(d.nxc[0],d.nxc[1])})}
+function open(){const f=!ov;if(f)build();ov.hidden=false;f?load():run();if(matchMedia('(pointer:fine)').matches)ed.focus()}
+window.nxCodeLab=open;window.nxCodeLab.data=TR;
+})();
+</script>
 </body>
 </html>
