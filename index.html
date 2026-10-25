@@ -19500,6 +19500,80 @@ KV('Corrige el cifrado débil','Esta configuración usa algoritmos viejos. Cámb
 CM('Corrige la criptografía de SSH','Este servidor acepta cifrados, MAC e intercambios viejos. Deja solo los modernos.','# sshd_config',[['Cifrados modernos','Ciphers\\s+\\S*(chacha20-poly1305|aes256-gcm)\\S*','Ciphers chacha20-poly1305@openssh.com,aes256-gcm@openssh.com'],['MAC con cifrado autenticado (etm)','MACs\\s+\\S*etm\\S*','MACs hmac-sha2-512-etm@openssh.com'],['Intercambio de claves moderno','KexAlgorithms\\s+\\S*(curve25519|ecdh)\\S*','KexAlgorithms curve25519-sha256']],'Usa `chacha20-poly1305` o `aes256-gcm`, un MAC que termine en `-etm` y `curve25519`.','# sshd_config\nCiphers aes128-cbc,3des-cbc\nMACs hmac-md5\nKexAlgorithms diffie-hellman-group1-sha1\n')
 );
 }
+/* ===== v110: lote de lecciones nuevas (HTML, CSS, JavaScript, Lógica, C, C++, Java) ===== */
+{const R=String.raw,J=a=>'<script>\n'+a+'\n<\/script>',CXA=(id,l,W,rows)=>TR.find(t=>t.id===id).lv[l].push(...CXK(W,rows));
+AD('html',0,[LS('Imágenes y texto alternativo','`<img src=\"...\" alt=\"...\">` muestra una imagen. El atributo **alt** describe la imagen para quien usa lector de pantalla o cuando no carga.','Reto: añade una imagen con `src` y un `alt` descriptivo.','<h1>Mi mascota</h1>\n','<h1>Mi mascota</h1>\n<img src="https://example.com/gato.jpg" alt="Gato gris durmiendo en un sofá">',c=>{c=UJ(c);return /<img\s[^>]*\bsrc=["'][^"']+["']/i.test(c)&&/<img\s[^>]*\balt=["'][^"']{4,}["']/i.test(c)},'Necesitas `<img>` con `src=\"...\"` y un `alt` de al menos 4 letras.')]);
+AD('html',1,[LS('Tablas de datos','Una tabla usa `<table>`, filas `<tr>`, encabezados `<th>` y celdas `<td>`. Sirve para datos con filas y columnas, no para el diseño.','Reto: crea una tabla con una fila de encabezados (2 `<th>`) y 2 filas de datos (2 `<td>` cada una).','<table>\n  \n</table>','<table>\n  <tr><th>Fruta</th><th>Precio</th></tr>\n  <tr><td>Manzana</td><td>10</td></tr>\n  <tr><td>Pera</td><td>12</td></tr>\n</table>',c=>{c=UJ(c);return TGT(c,'table')&&N(c,/<th[\s>]/gi)>=2&&N(c,/<tr[\s>]/gi)>=3&&N(c,/<td[\s>]/gi)>=4},'Cuenta: 3 `<tr>`, 2 `<th>` y 4 `<td>`.')]);
+AD('html',2,[LS('Formularios accesibles','Cada campo necesita una `<label for=\"id\">` ligada al `id` de su `<input>`. `type=\"email\"` valida el formato y `required` obliga a llenarlo.','Reto: crea 2 campos con `label` y `id` iguales; uno de tipo `email` y `required`, y un botón.','<form>\n  \n</form>','<form>\n  <label for="nombre">Nombre</label>\n  <input id="nombre" type="text" required>\n  <label for="correo">Correo</label>\n  <input id="correo" type="email" required>\n  <button>Enviar</button>\n</form>',c=>{c=UJ(c);const m=[...c.matchAll(/<label\s[^>]*for=["']([\w-]+)["']/gi)];return m.length>=2&&m.every(x=>new RegExp('\\bid=["\']'+x[1]+'["\']').test(c))&&/type=["']email["']/i.test(c)&&/\brequired\b/i.test(c)&&TGT(c,'button')},'Cada `label for=\"x\"` debe tener un `<input id=\"x\">`; añade `type=\"email\"`, `required` y un `<button>`.')]);
+AD('css',0,[LS('Bordes, esquinas y sombras','`border` dibuja el borde, `border-radius` redondea las esquinas y `box-shadow: 0 4px 10px #0003` crea una sombra suave.','Reto: dale a `.tarjeta` un `border`, `border-radius` y `box-shadow`.','<style>\n  .tarjeta { padding: 16px; }\n  \n</style>\n<div class="tarjeta">Hola</div>','<style>\n  .tarjeta { padding: 16px; border: 1px solid #ccc; border-radius: 12px; box-shadow: 0 4px 10px #0003; }\n</style>\n<div class="tarjeta">Hola</div>',c=>HP(c,R`\.tarjeta`,'border')&&HP(c,R`\.tarjeta`,'border-radius')&&HP(c,R`\.tarjeta`,'box-shadow'),'Añade `border`, `border-radius` y `box-shadow` dentro de `.tarjeta { ... }`.')]);
+AD('css',1,[LS('Cuadrícula con Grid','`display: grid` crea una cuadrícula. `grid-template-columns: repeat(3, 1fr)` hace 3 columnas iguales y `gap` separa las celdas.','Reto: haz que `.galeria` tenga 3 columnas iguales con `repeat(` y un `gap`.','<style>\n  \n</style>\n<div class="galeria"><p>1</p><p>2</p><p>3</p><p>4</p></div>','<style>\n  .galeria { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }\n</style>\n<div class="galeria"><p>1</p><p>2</p><p>3</p><p>4</p></div>',c=>HP(c,R`\.galeria`,'display','grid')&&HP(c,R`\.galeria`,'grid-template-columns',R`repeat\(`)&&HP(c,R`\.galeria`,'gap'),'`.galeria` necesita `display: grid`, `grid-template-columns: repeat(3, 1fr)` y `gap`.')]);
+AD('css',2,[LS('Diseño adaptable con @media','Una **media query** aplica reglas solo en ciertas pantallas: `@media (max-width: 600px) { ... }` cambia el diseño en el teléfono.','Reto: `.fila` es `display: flex`; en pantallas de hasta 600px cambia su `flex-direction` a `column`.','<style>\n  \n</style>\n<div class="fila"><p>A</p><p>B</p></div>','<style>\n  .fila { display: flex; gap: 8px; }\n  @media (max-width: 600px) {\n    .fila { flex-direction: column; }\n  }\n</style>\n<div class="fila"><p>A</p><p>B</p></div>',c=>HP(c,R`\.fila`,'display','flex')&&/@media[^{]*max-width\s*:\s*\d+px[^{]*\{[\s\S]*?flex-direction\s*:\s*column/i.test(c),'Define `.fila` con flex y dentro de `@media (max-width: 600px) { ... }` pon `flex-direction: column`.')]);
+AD('js',0,[LS('Arreglos: push, length y for…of','Un arreglo guarda una lista: `[\"a\", \"b\"]`. `push` añade al final, `length` cuenta y `for (const x of lista)` lo recorre.','Reto: añade `\"uva\"` con `push`, muestra `length` y recorre el arreglo con `for…of`.',J('  const frutas = ["manzana", "pera"];\n  \n'),J('  const frutas = ["manzana", "pera"];\n  frutas.push("uva");\n  console.log(frutas.length);\n  for (const f of frutas) {\n    console.log(f);\n  }\n'),c=>{c=UJ(c);return /\.push\s*\(/.test(c)&&/\.length/.test(c)&&/for\s*\(\s*(?:const|let)\s+\w+\s+of\s+/.test(c)},'Usa `frutas.push(\"uva\")`, `frutas.length` y `for (const f of frutas)`.',{d:()=>__L.join('|')==='3|manzana|pera|uva'||'Debe salir 3, manzana, pera y uva (una por línea).'})]);
+AD('js',1,[LS('Funciones flecha, filter y map','Una función flecha es corta: `n => n * 2`. `filter` conserva los elementos que cumplen una condición y `map` transforma cada uno.','Reto: de `nums` quédate con los pares (`filter`), duplícalos (`map`) y muestra el resultado.',J('  const nums = [1, 2, 3, 4, 5, 6];\n  \n'),J('  const nums = [1, 2, 3, 4, 5, 6];\n  const r = nums.filter(n => n % 2 === 0).map(n => n * 2);\n  console.log(r);\n'),c=>{c=UJ(c);return /\.filter\s*\(/.test(c)&&/\.map\s*\(/.test(c)&&/=>/.test(c)},'Encadena `nums.filter(n => n % 2 === 0).map(n => n * 2)`.',{d:()=>__L.some(x=>x.replace(/\s/g,'')==='[4,8,12]')||'Debe verse [4,8,12].'})]);
+AD('js',2,[LS('Errores con try / catch','`JSON.parse` falla si el texto no es JSON válido. `try { ... } catch (e) { ... }` atrapa el error para que el programa no se detenga.','Reto: intenta `JSON.parse(texto)` dentro de `try` y en el `catch` muestra `JSON inválido`.',J('  const texto = "{nombre: Ana}";\n  \n'),J('  const texto = "{nombre: Ana}";\n  try {\n    const d = JSON.parse(texto);\n    console.log(d);\n  } catch (e) {\n    console.log("JSON inválido");\n  }\n'),c=>{c=UJ(c);return /\btry\s*\{/.test(c)&&/\bcatch\s*\(/.test(c)&&/JSON\.parse\s*\(/.test(c)},'Pon `JSON.parse(texto)` dentro de `try { }` y `console.log(\"JSON inválido\")` en `catch (e) { }`.',{d:()=>__L.some(x=>x.includes('JSON inválido'))||'Debe aparecer «JSON inválido».'})]);
+AD('log',0,[LG('Contar vocales','Recorre el texto letra por letra y cuenta cuántas están en `\"aeiou\"`. Pasa el texto a minúsculas con `toLowerCase()` para contar también las mayúsculas.','Reto: `cuentaVocales(texto)` devuelve cuántas vocales (a, e, i, o, u) tiene el texto.','cuentaVocales','texto','function cuentaVocales(texto) {\n  let n = 0;\n  for (const ch of texto.toLowerCase()) {\n    if ("aeiou".includes(ch)) n++;\n  }\n  return n;\n}',[['cuentaVocales("hola")','2'],['cuentaVocales("xyz")','0'],['cuentaVocales("AEIOU")','5',1],['cuentaVocales("")','0',1]],'Usa `\"aeiou\".includes(ch)` dentro de un `for…of`.')]);
+AD('log',1,[LG('Fibonacci','En la sucesión de Fibonacci cada número es la suma de los dos anteriores: 0, 1, 1, 2, 3, 5, 8… Se puede calcular con un bucle guardando los dos últimos valores.','Reto: `fib(n)` devuelve el término `n` (con `fib(0) = 0` y `fib(1) = 1`).','fib','n','function fib(n) {\n  let a = 0, b = 1;\n  for (let i = 0; i < n; i++) {\n    [a, b] = [b, a + b];\n  }\n  return a;\n}',[['fib(0)','0'],['fib(1)','1'],['fib(10)','55'],['fib(20)','6765',1]],'Empieza con `a = 0`, `b = 1` y repite `n` veces `[a, b] = [b, a + b]`.')]);
+AD('log',2,[LG('Paréntesis balanceados','Para revisar paréntesis basta un **contador**: suma 1 con `(` y resta 1 con `)`. Si baja de 0 en algún momento, o no termina en 0, está mal.','Reto: `balanceado(s)` devuelve `true` si los paréntesis están bien cerrados y en orden.','balanceado','s','function balanceado(s) {\n  let c = 0;\n  for (const ch of s) {\n    if (ch === "(") c++;\n    if (ch === ")") c--;\n    if (c < 0) return false;\n  }\n  return c === 0;\n}',[['balanceado("()")','true'],['balanceado("(())")','true'],['balanceado("(()")','false'],['balanceado(")(")','false',1],['balanceado("")','true',1]],'Si el contador es negativo en algún paso, devuelve `false`; al final debe ser 0.')]);
+CXA('c',0,WC,[['Bucle for','`for (inicio; condición; paso)` repite un bloque. `for (int i = 1; i <= 5; i++)` cuenta de 1 a 5.','Reto: con un `for` imprime del 1 al 5, un número por línea.','  \n',R`  for (int i = 1; i <= 5; i++) {
+    printf("%d\n", i);
+  }
+`,[R`for\s*\(\s*int\s+i\s*=\s*1\s*;\s*i\s*<=\s*5\s*;\s*i\+\+\s*\)`,'printf'],'Usa `for (int i = 1; i <= 5; i++)` y `printf` dentro.']]);
+CXA('c',1,WC,[['Arreglos','Un arreglo guarda varios valores del mismo tipo: `int notas[3] = {8, 9, 10};`. Se accede con índice desde 0: `notas[0]`.','Reto: declara `int notas[3]`, suma sus elementos con un `for` y muestra el total.','  \n',R`  int notas[3] = {8, 9, 10};
+  int suma = 0;
+  for (int i = 0; i < 3; i++) {
+    suma += notas[i];
+  }
+  printf("%d\n", suma);
+`,[R`int\s+\w+\s*\[\s*3\s*\]\s*=\s*\{`,'for',R`\[\s*i\s*\]`,'printf'],'Recorre con `for` y suma `notas[i]` a `suma`.']]);
+CXA('c',2,WC,[['Funciones','Una **función** agrupa código reutilizable: `int cuadrado(int n) { return n * n; }`. Se declara antes de `main` y se llama por su nombre.','Reto: crea `cuadrado` antes de `main` y muestra `cuadrado(7)`.','  \n',R`  printf("%d\n", cuadrado(7));
+`,[R`int\s+cuadrado\s*\(\s*int\s+\w+\s*\)`,R`return\s+\w+\s*\*\s*\w+`,R`cuadrado\s*\(\s*7\s*\)`,'printf'],'Escribe `int cuadrado(int n) { return n * n; }` arriba de `main` y llámala con 7.',R`int cuadrado(int n) {
+  return n * n;
+}
+`]]);
+CXA('cpp',0,WP,[['Vectores','`vector<int>` es una lista que crece sola. `push_back` añade al final y `size()` cuenta. Necesita `#include <vector>`.','Reto: crea un `vector<int>`, añade 3 y 7 con `push_back` y muestra `size()`.','  \n',R`  vector<int> v;
+  v.push_back(3);
+  v.push_back(7);
+  cout << v.size() << endl;
+`,[R`#include\s*<vector>`,R`vector\s*<\s*int\s*>`,'push_back','cout'],'Añade `#include <vector>`, usa `v.push_back(3)` y `cout << v.size()`.','#include <vector>\n']]);
+CXA('cpp',1,WP,[['Referencias','Un parámetro con `&` es una **referencia**: la función modifica la variable original. `void duplicar(int &n) { n *= 2; }`.','Reto: crea `duplicar(int &n)`, llámala con `x` y muestra `x`.','  \n',R`  int x = 5;
+  duplicar(x);
+  cout << x << endl;
+`,[R`void\s+duplicar\s*\(\s*int\s*&\s*\w+\s*\)`,R`duplicar\s*\(\s*x\s*\)`,'cout'],'Declara `void duplicar(int &n)` antes de `main` y llámala con `duplicar(x);`.',R`void duplicar(int &n) {
+  n *= 2;
+}
+`]]);
+CXA('cpp',2,WP,[['Clases y objetos','Una **clase** agrupa datos y funciones. El **constructor** inicializa el objeto: `Persona(string n) { nombre = n; }`.','Reto: crea la clase `Persona` con constructor y `saludar()`; usa un objeto `p` con `\"Ana\"`.','  \n',R`  Persona p("Ana");
+  p.saludar();
+`,[R`class\s+Persona`,R`public\s*:`,R`Persona\s*\(\s*string`,R`\.saludar\s*\(\s*\)`],'Define `class Persona { public: ... };` antes de `main` y crea `Persona p(\"Ana\");`.',R`class Persona {
+public:
+  string nombre;
+  Persona(string n) { nombre = n; }
+  void saludar() { cout << "Hola, " << nombre << endl; }
+};
+`]]);
+CXA('java',0,WJ,[['Arreglos y for-each','Un arreglo se declara `int[] nums = {4, 8, 15};` y el **for-each** lo recorre: `for (int n : nums) { ... }`.','Reto: suma los elementos de `nums` con un for-each y muéstralos con `System.out.println`.','    \n',R`    int[] nums = {4, 8, 15};
+    int suma = 0;
+    for (int n : nums) {
+      suma += n;
+    }
+    System.out.println(suma);
+`,[R`int\s*\[\s*\]\s*\w+\s*=\s*\{`,R`for\s*\(\s*int\s+\w+\s*:\s*\w+\s*\)`,R`System\.out\.println`],'Usa `for (int n : nums)` y suma a `suma`.']]);
+CXA('java',1,WJ,[['Métodos estáticos','Un **método** agrupa código: `static int doble(int n) { return n * 2; }`. Se declara dentro de la clase y se llama por su nombre desde `main`.','Reto: crea `doble` y muestra `doble(21)`.','    \n',R`    System.out.println(doble(21));
+`,[R`static\s+int\s+doble\s*\(\s*int\s+\w+\s*\)`,R`return\s+\w+\s*\*\s*2`,R`doble\s*\(\s*21\s*\)`],'Declara `static int doble(int n)` dentro de `Main`, fuera de `main`.',R`  static int doble(int n) {
+    return n * 2;
+  }
+
+`]]);
+CXA('java',2,WJ,[['Clases y objetos','Una clase describe objetos: tiene campos y métodos. El constructor lleva el nombre de la clase y `new` crea el objeto.','Reto: crea la clase `Perro` con constructor y `ladrar()`; usa `new Perro(\"Rex\")`.','    \n',R`    Perro p = new Perro("Rex");
+    p.ladrar();
+`,[R`class\s+Perro`,R`this\.nombre\s*=`,R`new\s+Perro\s*\(`,R`\.ladrar\s*\(\s*\)`],'Dentro de `Main` crea `static class Perro { ... }` con un constructor y `ladrar()`.',R`  static class Perro {
+    String nombre;
+    Perro(String nombre) { this.nombre = nombre; }
+    void ladrar() { System.out.println(nombre + " dice guau"); }
+  }
+
+`]]);
+}
 const CFGR=c=>{const L=cur(),ck=L.ck||[];const n=ck.filter(x=>new RegExp(x[1],'im').test(c)).length,pc=ck.length?Math.round(n/ck.length*100):0;const it=ck.map(x=>{const o=new RegExp(x[1],'im').test(c);return'<li class="'+(o?'o':'n')+'">'+(o?'':'')+' '+esc(x[0])+'</li>'}).join('');return'<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>body{font:14px system-ui,sans-serif;margin:12px;background:#0b0f14;color:#d6f5e3}h3{margin:0 0 8px;font-size:13px;color:#7fd8c3}ul{padding:0;margin:0 0 10px}li{list-style:none;margin:6px 0}li.n{color:#9aa7b4}pre{background:#111a22;padding:10px;border-radius:8px;white-space:pre-wrap;word-break:break-word;color:#c3ccd6;font:12.5px/1.5 ui-monospace,monospace}</style><h3>Controles de seguridad: '+n+'/'+ck.length+'</h3><div style="height:6px;background:#1c2a36;border-radius:9px;margin:0 0 10px"><i style="display:block;height:100%;width:'+pc+'%;background:#3ddc84;border-radius:9px"></i></div><ul>'+it+'</ul><pre>'+esc(c)+'</pre>'};
 const LN=['Principiante','Intermedio','Avanzado','Desafíos'],K='nx-codelab-v1',TOT=TR.reduce((a,t)=>a+t.lv.reduce((b,l)=>b+l.length,0),0);
 const SHIM='<scr'+'ipt>(function(){window.__L=[];var S=function(x){try{return typeof x==="object"?JSON.stringify(x):String(x)}catch(e){return String(x)}};var p=function(t,a){try{parent.postMessage({nxc:[t,[].slice.call(a).map(S).join(" ")]},"*")}catch(e){}};["log","warn","error","info"].forEach(function(k){var o=console[k];console[k]=function(){if(k==="log"||k==="info")__L.push([].slice.call(arguments).map(S).join(" "));p(k,arguments);o&&o.apply(console,arguments)}});addEventListener("error",function(e){p("error",[e.message])});addEventListener("unhandledrejection",function(e){p("error",[String(e.reason)])});var AF=Object.getPrototypeOf(async function(){}).constructor;addEventListener("message",function(e){var d=e.data;if(!d||!d.nxq)return;var send=function(v){try{parent.postMessage({nxr:[d.id,v]},"*")}catch(x){}};try{new AF(d.nxq)().then(send,function(er){send("!"+String(er))})}catch(er){send("!"+String(er))}})})()<\/scr'+'ipt>';
