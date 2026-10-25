@@ -20497,5 +20497,31 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
  addEventListener('keydown',e=>{if(e.key==='Escape'&&side.classList.contains('open'))open(false)});
 }catch(e){try{console.warn('v114 móvil',e)}catch(x){}}})();
 </script>
+<style id="nx-m115">
+/* ===== v115 · panel «Aprende a programar» en móvil ===== */
+@media(max-width:820px),(pointer:coarse){
+ /* causa del panel aplastado: los hijos de #nxCode (flex en columna) se encogían; ahora conservan su altura y el panel se desplaza */
+ #nxCode>*{flex-shrink:0}
+ #nxCode .cl-info{max-height:none;overflow:visible}
+ #nxCode .cl-tools{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;padding-bottom:2px}
+ #nxCode .cl-tools::-webkit-scrollbar{display:none}
+ #nxCode .cl-tools>*{flex:0 0 auto}
+ #nxCode .cl-ws{display:flex;flex-direction:column}
+ #nxCode .cl-pane{flex:none}
+ #clEd{min-height:200px;max-height:42dvh}
+ #clFr{min-height:260px}
+ #nxCode .cl-bar button:not(#clOk):not(#clNx){min-height:40px;padding:4px 10px;font-size:13px}
+ #nxCode .nxm-hint{display:none}
+}
+</style>
+<script id="nx-m115-js">
+(()=>{try{
+ const ov=document.getElementById('nxCode');if(!ov)return;
+ /* los atajos de teclado no sirven en el teléfono: se oculta esa línea */
+ let tm=0;const scan=()=>{if(!matchMedia('(max-width:820px),(pointer:coarse)').matches)return;
+  ov.querySelectorAll('*').forEach(e=>{if(!e.children.length&&/^\s*Ctrl\+Enter/.test(e.textContent))e.classList.add('nxm-hint')})};
+ new MutationObserver(()=>{clearTimeout(tm);tm=setTimeout(scan,120)}).observe(ov,{childList:true,subtree:true});scan();
+}catch(e){try{console.warn('v115 móvil',e)}catch(x){}}})();
+</script>
 </body>
 </html>
