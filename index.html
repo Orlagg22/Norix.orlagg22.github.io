@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
 <meta name="theme-color" content="#07090d">
 <title>Noryx Chat</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -20455,6 +20455,47 @@ setInterval(()=>{const o=$('#nxCode');if(!o)return;if(o.hidden){stopAmb();return
 document.addEventListener('keydown',e=>{const o=$('#nxCode');if(!o||o.hidden)return;if(e.altKey&&e.key.toLowerCase()==='k'){e.preventDefault();paleta()}},true);
 const wm=setInterval(()=>{const m=$('#clMsg');if(!m)return;clearInterval(wm);new MutationObserver(()=>{if(m.classList.contains('ok')&&/^Correcto/.test(m.textContent)){const k=curKey();if(k){S.when=S.when||{};S.when[k]=Date.now();P.save()}}}).observe(m,{childList:true,attributes:true,attributeFilter:['class']})},1000);
 })();
+</script>
+<style id="nx-m114">
+/* ===== v114 · mejoras móviles generales ===== */
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+@media (hover:none),(pointer:coarse){
+ button,[role=button],a,select,summary,label,input[type=range]{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+ body{overscroll-behavior-y:none}
+ .cp{opacity:1}
+ .ci,select,.sin{min-height:44px}
+ pre,.katex-display,table{max-width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}
+ .msg .body img,.msg .body video,.msg .body canvas,.msg .body svg{max-width:100%;height:auto}
+ .msg .body{overflow-wrap:anywhere}
+}
+@media (max-width:760px){
+ #side{width:min(86vw,320px);overscroll-behavior:contain;padding-bottom:calc(10px + env(safe-area-inset-bottom,0px));padding-left:env(safe-area-inset-left,0px)}
+ header{padding-top:calc(10px + env(safe-area-inset-top,0px));padding-left:max(14px,env(safe-area-inset-left,0px));padding-right:max(14px,env(safe-area-inset-right,0px))}
+ #comp{padding-left:max(12px,env(safe-area-inset-left,0px));padding-right:max(12px,env(safe-area-inset-right,0px))}
+ #q{max-height:30dvh}
+ #clPan{padding:0;align-items:stretch}
+ #clPan .cl-pc{width:100%;min-height:100%;border-radius:0;box-sizing:border-box}
+ #nxLab,#nxMv,#nxCin{height:100dvh}
+}
+@media (max-height:480px) and (orientation:landscape){header{padding-top:4px;padding-bottom:4px}#q{max-height:40dvh}}
+</style>
+<script id="nx-m114-js">
+(()=>{try{
+ const $=s=>document.querySelector(s),side=$('#side'),scrim=$('#scrim'),mq=matchMedia('(max-width:760px)');
+ if(!side||!scrim)return;
+ const open=on=>{side.classList.toggle('open',on);scrim.classList.toggle('open',on)};
+ /* gesto: deslizar desde el borde izquierdo abre el menú; deslizar a la izquierda lo cierra */
+ let x0=0,y0=0,t0=0,ok=false;
+ addEventListener('touchstart',e=>{if(!mq.matches||e.touches.length!==1)return;const t=e.touches[0];x0=t.clientX;y0=t.clientY;t0=Date.now();ok=!e.target.closest('input,textarea,pre,code,.katex-display,table,[contenteditable],canvas,#nxEsc,#nxMv,#nxCin,#spx,#nxy,#clPan')},{passive:true});
+ addEventListener('touchend',e=>{if(!ok||!mq.matches)return;ok=false;const t=e.changedTouches[0],dx=t.clientX-x0,dy=t.clientY-y0;if(Date.now()-t0>600||Math.abs(dy)>60||Math.abs(dx)<70)return;
+  const isOpen=side.classList.contains('open');if(!isOpen&&dx>0&&x0<28)open(true);else if(isOpen&&dx<0)open(false)},{passive:true});
+ /* al enfocar el cuadro de texto, mantenerlo visible sobre el teclado */
+ const q=$('#q');if(q)q.addEventListener('focus',()=>setTimeout(()=>{try{q.scrollIntoView({block:'end',behavior:'smooth'})}catch(e){}},320));
+ /* altura real con teclado abierto (iOS) */
+ const vv=window.visualViewport;if(vv){const f=()=>document.documentElement.style.setProperty('--vvh',vv.height+'px');vv.addEventListener('resize',f);f()}
+ /* Escape/atrás del sistema cierra el menú abierto */
+ addEventListener('keydown',e=>{if(e.key==='Escape'&&side.classList.contains('open'))open(false)});
+}catch(e){try{console.warn('v114 móvil',e)}catch(x){}}})();
 </script>
 </body>
 </html>
