@@ -19511,7 +19511,8 @@ function setMsg(t,c){msg.className='cl-msg '+(c||'');msg.innerHTML=fmt(t)}
 function log(k,t){const d=E('div','cl-l '+k);d.textContent=t;con.append(d);if(con.children.length>200)con.firstChild.remove();con.scrollTop=con.scrollHeight}
 /* ===== v87: niveles bloqueados (hay que terminar todos los ejercicios del nivel anterior) ===== */
 function pend(t,l){for(let j=0;j<l&&j<2;j++){const p=[];TR[t].lv[j].forEach((_,s)=>{if(!done.includes(key(t,j,s)))p.push(s)});if(p.length)return{j,p}}return null}
-const isLocked=(t,l)=>(l===1||l===2)&&!!TR[t].lv[l]&&!!pend(t,l);
+const isCr=()=>{try{return !!(window.nxPremium&&window.nxPremium.creator())}catch(e){return false}};
+const isLocked=(t,l)=>!isCr()&&(l===1||l===2)&&!!TR[t].lv[l]&&!!pend(t,l);
 function lockMsg(t,l){const q=pend(t,l);if(!q)return'';const n=q.p.length;return'**'+LN[l]+'** sigue bloqueado: te '+(n>1?'faltan **'+n+' ejercicios**':'falta **1 ejercicio**')+' de **'+LN[q.j]+'** (lecc. '+q.p.map(s=>s+1).join(', ')+'). Complétalos para desbloquearlo.'}
 /* ===== v87: introducción animada al empezar cada curso ===== */
 const IK='nx-codelab-intro-v1';let seenI=[];try{seenI=JSON.parse(localStorage.getItem(IK))||[]}catch(e){}
@@ -19608,7 +19609,7 @@ function nav(){const n=$('#clNav');n.innerHTML='';
  $('#clBar').style.width=Math.round(done.length/TOT*100)+'%';$('#clCnt').textContent=done.length+'/'+TOT;{const live=meta.day===dayS()||meta.day===yest();$('#clStk').textContent=live&&meta.streak?'Racha: '+meta.streak+(meta.streak>1?' días':' día'):''}}
 function busy(b){const o=$('#clOk');if(o)o.disabled=!!b}
 function load(){if(isLocked(st.t,st.l)){const q=pend(st.t,st.l);st.l=q.j;st.s=q.p[0]}meta.last={t:st.t,l:st.l,s:st.s};saveM();seq++;busy(0);const L=cur(),T=TR[st.t];$('#clT').textContent=T.n+' · '+LN[st.l]+' · '+L.n;$('#clH').innerHTML=fmt(L.h);$('#clK').innerHTML=fmt(L.r);
- ed.value=L.c;con.hidden=!T.con;ov.classList.toggle('cl-js',!!T.js);$('#clRL').textContent=T.cfg?'Controles detectados':T.cx?'Salida simulada':T.js?'Consola':'Resultado en vivo';$('#clSol').hidden=st.l>=2;nxb.hidden=true;nav();
+ ed.value=L.c;con.hidden=!T.con;ov.classList.toggle('cl-js',!!T.js);$('#clRL').textContent=T.cfg?'Controles detectados':T.cx?'Salida simulada':T.js?'Consola':'Resultado en vivo';$('#clSol').hidden=st.l>=2&&!isCr();nxb.hidden=true;nav();
  setMsg('Escribe tu código'+(T.js?'':', mira el resultado en vivo')+' y pulsa **Verificar** (o Ctrl+Enter) cuando termines.'+(st.l>=2?' En este nivel no hay solución: solo pistas.':''));run();if(introFor!==st.t){introFor=st.t;if(!seenI.includes(TR[st.t].id)){seenI.push(TR[st.t].id);saveI();showIntro(st.t)}}}
 const cl140=s=>String(s).replace(/`/g,"'").slice(0,140);
 function check(){const L=cur(),sq=++seq;clearTimeout(tm);
@@ -19639,7 +19640,7 @@ function build(){ov=E('div');ov.id='nxCode';ov.hidden=true;ov.setAttribute('role
  ov.innerHTML='<div class="cl-top"><b>Aprende a programar</b><span class="cl-pr"><i id="clBar"></i></span><small id="clCnt"></small><small id="clStk" title="Días seguidos practicando"></small><button type="button" id="clIB" title="Ver la introducción de este curso">Introducción</button><button type="button" id="clRP" title="Borrar mi progreso">↺ Progreso</button><button type="button" id="clX" aria-label="Cerrar">✕</button></div><div id="clNav"></div><section class="cl-info"><h2 id="clT"></h2><p id="clH"></p><p class="cl-task" id="clK"></p></section><div class="cl-ws"><label class="cl-pane"><span>Tu código</span><textarea id="clEd" spellcheck="false" autocapitalize="off" autocomplete="off" wrap="off" aria-label="Editor de código"></textarea></label><div class="cl-pane"><span id="clRL">Resultado en vivo</span><iframe id="clFr" title="Resultado en vivo" sandbox="allow-scripts"></iframe><div id="clCon" class="cl-con" aria-label="Consola"></div></div></div><div class="cl-bar"><button type="button" class="pri" id="clOk">Verificar</button><button type="button" id="clHint">Pista</button><button type="button" id="clSol">Ver solución</button><button type="button" id="clRst">↺ Reiniciar</button><button type="button" id="clFm" aria-label="Letra más pequeña" title="Letra más pequeña">A−</button><button type="button" id="clFp" aria-label="Letra más grande" title="Letra más grande">A+</button><button type="button" class="pri" id="clNx" hidden>Siguiente →</button></div><div id="clMsg" class="cl-msg" role="status" aria-live="polite"></div>';
  document.body.append(ov);ed=$('#clEd');fr=$('#clFr');con=$('#clCon');msg=$('#clMsg');nxb=$('#clNx');
  $('#clX').onclick=close;$('#clIB').onclick=()=>showIntro(st.t);{const setFs=n=>{meta.fs=Math.max(11,Math.min(24,n));saveM();ed.style.fontSize=meta.fs+'px'};$('#clFm').onclick=()=>setFs((meta.fs||13.5)-1);$('#clFp').onclick=()=>setFs((meta.fs||13.5)+1);if(meta.fs)ed.style.fontSize=meta.fs+'px'}$('#clRP').onclick=()=>{if(confirm('¿Borrar todo tu progreso del curso?')){done=[];save();load()}};$('#clOk').onclick=check;nxb.onclick=next;$('#clRst').onclick=()=>{ed.value=cur().c;nxb.hidden=true;setMsg('Código inicial restaurado.');run()};
- $('#clHint').onclick=()=>setMsg(''+cur().p);$('#clSol').onclick=()=>{if(st.l>=2)return;ed.value=cur().s;run();setMsg('Esta es una solución posible. Pulsa **Verificar** para comprobarla o **Reiniciar** para volver a intentarlo.')};
+ $('#clHint').onclick=()=>setMsg(''+cur().p);$('#clSol').onclick=()=>{if(st.l>=2&&!isCr())return;if(!cur().s){setMsg('Esta lección no tiene una solución guardada.');return}ed.value=cur().s;run();setMsg('Esta es una solución posible. Pulsa **Verificar** para comprobarla o **Reiniciar** para volver a intentarlo.')};
  ed.addEventListener('input',()=>{clearTimeout(tm);tm=setTimeout(run,TR[st.t].con?700:200)});
  ed.addEventListener('keydown',e=>{if(e.key==='Tab'&&!e.shiftKey&&!e.ctrlKey&&!e.altKey&&!e.metaKey){e.preventDefault();ed.setRangeText('  ',ed.selectionStart,ed.selectionEnd,'end');ed.dispatchEvent(new Event('input'))}else if(e.key==='Escape')ed.blur();else if(e.key==='Enter'&&(e.ctrlKey||e.metaKey)){e.preventDefault();check()}
  else if(e.key==='Enter'&&!e.shiftKey&&!e.altKey&&ed.selectionStart===ed.selectionEnd){const v=ed.value,p=ed.selectionStart,ls=v.lastIndexOf('\n',p-1)+1,ind=v.slice(ls,p).match(/^[ \t]*/)[0],pre=v[p-1],nx=v[p],op=/[{\[(]/.test(pre||''),pair=op&&({'{':'}','[':']','(':')'})[pre]===nx;e.preventDefault();const a='\n'+ind+(op?'  ':'');ed.setRangeText(a+(pair?'\n'+ind:''),p,p,'end');ed.selectionStart=ed.selectionEnd=p+a.length;ed.dispatchEvent(new Event('input'))}
@@ -19652,7 +19653,7 @@ INTRO.c={a:'flow',q:'C es un lenguaje **de bajo nivel y muy rápido**: te deja h
 INTRO.cpp={a:'flow',q:'C++ es **C con superpoderes**: añade clases, plantillas y una biblioteca estándar enorme sin perder velocidad.',u:'Se usa en videojuegos, navegadores y software donde el rendimiento importa. Aprenderás **programación orientada a objetos**.',ps:[['','cout y cin','Escriben y leen en la consola.'],['','vector y string','Estructuras que crecen y texto cómodo.'],['','Referencias','Modifican la variable original.'],['','Clases','Juntan datos y acciones en objetos.'],['','Herencia','Una clase hija reutiliza a la madre.'],['','Plantillas y lambdas','Código genérico y funciones sin nombre.']]};
 INTRO.java={a:'flow',q:'Java es un lenguaje **orientado a objetos** que corre en cualquier lugar gracias a la máquina virtual (JVM).',u:'Se usa en aplicaciones Android, sistemas de empresas y servidores. Su estructura clara es ideal para aprender clases y objetos.',ps:[['','Clase y main','Todo vive dentro de una clase.'],['','Tipos','`int`, `double`, `boolean` y `String`.'],['','Bucles','`for`, `while` y `for-each`.'],['','Métodos','Agrupan instrucciones reutilizables.'],['','Objetos','Clases con constructor y atributos.'],['','Excepciones','`try/catch` controla los errores.']]};
 INTRO.sec={a:'flow',q:'La ciberseguridad **defensiva** consiste en proteger cuentas, redes y equipos para que los ataques fallen. Aquí aprendes a **configurar**, no a atacar.',u:'Sirve para cuidar tu casa, tu escuela o tu trabajo: contraseñas, Wi-Fi, router, firewall, servidores y qué hacer si algo sale mal. Cada ejercicio es una configuración con una **lista de controles** que se marca en vivo.',ps:[['','Cuentas','Contraseñas largas, gestor y 2FA.'],['','Phishing','Reconocer engaños y reportarlos.'],['','Router y Wi-Fi','Claves, WPA3, firewall, UPnP y firmware.'],['','Firewall y SSH','Negar por defecto y entrar solo con llaves.'],['','Web segura','Cabeceras HTTP y consultas parametrizadas.'],['','Incidentes','Detectar, aislar, recuperar y aprender.'],['','Criptografía','Hash, cifrado, llaves, certificados y firmas.'],['','Windows y dominio','PowerShell, Active Directory y registros de eventos.']]};
-window.nxCodeLab=open;window.nxCodeLab.data=TR;window.nxCodeLab.sh=SH;window.nxCodeLab.term=TERM;
+window.nxCodeLab=open;window.nxCodeLab.data=TR;window.nxCodeLab.sh=SH;window.nxCodeLab.term=TERM;window.nxCodeLab.mark=(ks,on)=>{if(!isCr())return;ks.forEach(k=>{const i=done.indexOf(k);if(on&&i<0)done.push(k);if(!on&&i>=0)done.splice(i,1)});save();load()};
 })();
 </script>
 <script id="nx-codelab-movil">
@@ -19754,8 +19755,8 @@ function repasar(){const r=rows()[2],b=r?[...r.children].filter(x=>(x.classList.
  if(!b.length){say('Aún no tienes lecciones completadas en este nivel para repasar.');return}
  b[Math.floor(Math.random()*b.length)].click();say('Repaso: resuélvela de nuevo sin mirar la solución.')}
 function copiar(){const e=$('#clEd');(navigator.clipboard?navigator.clipboard.writeText(e.value):Promise.reject()).then(()=>say('Código copiado.'),()=>{e.select();say('Pulsa Ctrl+C para copiar el código seleccionado.')})}
-function exportar(){const o={v:1};[K,MK,IK,NK].forEach(k=>o[k]=localStorage.getItem(k));const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(o)],{type:'application/json'}));a.download='noryx-progreso-programacion.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),4000);say('Progreso guardado en un archivo.')}
-function importar(){const f=document.createElement('input');f.type='file';f.accept='.json,application/json';f.onchange=()=>{const r=new FileReader();r.onload=()=>{try{const o=JSON.parse(r.result);if(!confirm('Esto reemplaza tu progreso actual y recarga la página. ¿Continuar?'))return;[K,MK,IK,NK].forEach(k=>{if(typeof o[k]==='string')localStorage.setItem(k,o[k])});location.reload()}catch(e){say('El archivo no es válido.')}};r.readAsText(f.files[0])};f.click()}
+function exportar(){const o={v:1};[K,MK,IK,NK,'nx-prem-plus-v1','nx-codelab-dia-v1'].forEach(k=>o[k]=localStorage.getItem(k));const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(o)],{type:'application/json'}));a.download='noryx-progreso-programacion.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),4000);say('Progreso guardado en un archivo.')}
+function importar(){const f=document.createElement('input');f.type='file';f.accept='.json,application/json';f.onchange=()=>{const r=new FileReader();r.onload=()=>{try{const o=JSON.parse(r.result);if(!confirm('Esto reemplaza tu progreso actual y recarga la página. ¿Continuar?'))return;[K,MK,IK,NK,'nx-prem-plus-v1','nx-codelab-dia-v1'].forEach(k=>{if(typeof o[k]==='string')localStorage.setItem(k,o[k])});location.reload()}catch(e){say('El archivo no es válido.')}};r.readAsText(f.files[0])};f.click()}
 function notas(){const i=$('#nxCode .cl-info');if(!i||$('#clNt'))return;const d=document.createElement('details');d.className='cl-nota';
  d.innerHTML='<summary>Mis notas de esta lección</summary><textarea id="clNt" rows="3" placeholder="Anota lo que quieras recordar" spellcheck="false"></textarea>';i.append(d);
  const t=$('#clT'),ta=$('#clNt'),ld=()=>{ta.value=rd(NK,{})[t.textContent]||'';d.open=!!ta.value};
@@ -20005,6 +20006,10 @@ document.addEventListener('keydown',e=>{if(!ov||ov.hidden)return;
 #clPan .np-th i s{flex:1}
 #clPan input.np-in{padding:9px 12px;border-radius:10px;border:1px solid var(--line);background:var(--bg);color:var(--ink);font:inherit;min-width:0;flex:1}
 #clPan .np-big{font:700 34px 'JetBrains Mono',monospace;text-align:center}
+#nxCode .np-cf{position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:60}
+#nxCode .np-cf i{position:absolute;top:-12px;width:8px;height:14px;border-radius:2px;animation:npfall linear forwards}
+@keyframes npfall{to{transform:translateY(110vh) rotate(720deg);opacity:.8}}
+#clPan select.np-in{min-width:120px}
 </style>
 <script id="nx-premium-plus">
 (function(){
@@ -20026,7 +20031,9 @@ const courseDone=(t,d)=>{const c=TRs()[t];return !!c&&c.lv.every((L,l)=>L.every(
 const courseCount=t=>TRs()[t].lv.reduce((a,L)=>a+L.length,0);
 const fmt=s=>{s=Math.max(0,Math.round(s));return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0')};
 const ov=()=>$('#nxCode');
+const isCr=()=>{try{return !!(window.nxPremium&&window.nxPremium.creator())}catch(e){return false}};
 function note(t){const o=ov();if(!o)return;const e=document.createElement('div');e.className='cl-toast';e.setAttribute('role','status');e.textContent=t;o.append(e);setTimeout(()=>e.classList.add('out'),2600);setTimeout(()=>e.remove(),3200)}
+function confetti(){const o=ov();if(!o||matchMedia('(prefers-reduced-motion:reduce)').matches)return;const w=H('div','np-cf');for(let i=0;i<70;i++){const e=document.createElement('i');e.style.cssText='left:'+Math.random()*100+'%;background:'+['#f5c542','#ff9f43','#00f0ff','#3ddc97','#ff5fd2','#7c8cff'][i%6]+';animation-delay:'+Math.random()*.5+'s;animation-duration:'+(1.6+Math.random()*1.4)+'s;transform:rotate('+Math.random()*360+'deg)';w.append(e)}o.append(w);setTimeout(()=>w.remove(),3600)}
 let ac;function tone(f,d,t0){try{ac=ac||new(window.AudioContext||window.webkitAudioContext)();const o=ac.createOscillator(),g=ac.createGain(),t=ac.currentTime+(t0||0);o.frequency.value=f;g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.12,t+.02);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g);g.connect(ac.destination);o.start(t);o.stop(t+d+.05)}catch(e){}}
 /* ---- insignias ---- */
 const BADGES=[
@@ -20050,10 +20057,10 @@ function ctx(d){const T=TRs(),m=rd(MK,{});let courses=0;T.forEach((_,t)=>{if(cou
 function sync(quiet){const d=done(),n=d.length;
  if(S.seen<0){S.seen=n;quiet=true}
  if(n>S.seen){const k=day();S.days[k]=(S.days[k]||0)+(n-S.seen);S.seen=n;const ks=Object.keys(S.days);if(ks.length>60)ks.sort((a,b)=>new Date(a)-new Date(b)).slice(0,ks.length-60).forEach(x=>delete S.days[x])}
- const c=ctx(d);BADGES.forEach(b=>{if(!S.badges.includes(b[0])&&b[4](c)){S.badges.push(b[0]);if(!quiet){note('Logro desbloqueado: '+b[1]+' '+b[2]);tone(784,.15,0);tone(1175,.3,.14)}}});
- const r=rankOf(xp(d));if(r>S.rank){if(!quiet)note('¡Subes de rango! Ahora eres '+RANKS[r][1]);S.rank=r}else if(quiet)S.rank=r;
+ const c=ctx(d);BADGES.forEach(b=>{if(!S.badges.includes(b[0])&&b[4](c)){S.badges.push(b[0]);if(!quiet){note('Logro desbloqueado: '+b[1]+' '+b[2]);confetti();tone(784,.15,0);tone(1175,.3,.14)}}});
+ const r=rankOf(xp(d));if(r>S.rank){if(!quiet)note('¡Subes de rango! Ahora eres '+RANKS[r][1]);confetti();S.rank=r}else if(quiet)S.rank=r;
  save();chips()}
-function chips(){const b=$('#nxpBtn');if(!b)return;const x=xp(),r=rankOf(x);b.textContent='✦ '+RANKS[r][1]+' · '+x+' XP'}
+function chips(){const b=$('#nxpBtn');if(!b)return;const x=xp(),r=rankOf(x);b.textContent=(isCr()?'👑 ':'✦ ')+RANKS[r][1]+' · '+x+' XP'}
 /* ---- panel ---- */
 function panel(title,back){const p=$('#clPan');if(!p)return null;p.hidden=false;p.innerHTML='<div class="cl-pc"><div class="cl-ph"><b>'+title+'</b><span class="np-row">'+(back?'<button type="button" id="npBk">‹ Premium</button>':'')+'<button type="button" id="clPx">Cerrar</button></span></div><div id="clPb" style="display:grid;gap:10px"></div></div>';$('#clPx').onclick=()=>{p.hidden=true};if(back)$('#npBk').onclick=hub;return $('#clPb')}
 const H=(t,c,x)=>{const e=document.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e};
@@ -20062,15 +20069,16 @@ function summary(){const x=xp(),r=rankOf(x),lo=RANKS[r][0],hi=RANKS[r+1]?RANKS[r
  w.append(H('b','','✦ '+RANKS[r][1]+' · '+x+' XP'),H('small','',hi?'Faltan '+(hi-x)+' XP para '+RANKS[r+1][1]:'Rango máximo alcanzado'));const bar=H('div','np-bar'),u=H('u');u.style.width=(hi?Math.round((x-lo)/(hi-lo)*100):100)+'%';bar.append(u);w.append(bar);
  w.append(H('small','',done().length+' lecciones · '+S.badges.length+'/'+BADGES.length+' logros · '+S.study+' min de estudio'));return w}
 function hub(){const b=panel('Premium');if(!b)return;sync(true);b.append(summary());const g=H('div','np-grid');
- [['🏅','Logros y actividad','Insignias, XP y tu mapa de días',logros],['⚡','Reto relámpago','Una lección al azar contra el reloj',rayo],['🍅','Pomodoro','Bloques de foco y descanso',pomo],['🎨','Temas del editor','Cambia colores del modo',temas],['📜','Certificados','Descarga el de cada curso terminado',cert]].forEach(a=>{const c=btn('',a[3],'np-card');c.append(H('b','',a[0]+' '+a[1]),H('small','',a[2]));g.append(c)});b.append(g)}
+ [['🏅','Logros y actividad','Insignias, XP y tu mapa de días',logros],['⚡','Reto relámpago','Una lección al azar contra el reloj',rayo],['🍅','Pomodoro','Bloques de foco y descanso',pomo],['🎨','Temas del editor','Cambia colores del modo',temas],['📜','Certificados','Descarga el de cada curso terminado',cert]].concat(isCr()?[['👑','Herramientas del creador','Ir a cualquier lección, marcar avance y probar soluciones',creador]]:[]).forEach(a=>{const c=btn('',a[3],'np-card');c.append(H('b','',a[0]+' '+a[1]),H('small','',a[2]));g.append(c)});b.append(g)}
 function logros(){const b=panel('Logros y actividad',1);if(!b)return;sync(true);b.append(summary());const g=H('div','np-grid');
  BADGES.forEach(a=>{const o=S.badges.includes(a[0]),e=H('div','np-badge'+(o?'':' off'));e.title=a[3];e.append(H('i','',a[1]),H('b','',a[2]),H('small','',a[3]));g.append(e)});b.append(g);
+ {b.append(H('b','','Avance por curso'));const d=done();TRs().forEach((c,t)=>{const n=d.filter(k=>k.startsWith(c.id+'-')).length,tt=courseCount(t),r=H('div','np-row');const nm=H('span','',c.n+' '+n+'/'+tt);nm.style.minWidth='130px';const bar=H('div','np-bar'),u=H('u');u.style.width=Math.round(n/tt*100)+'%';bar.style.flex='1';bar.append(u);r.append(nm,bar);b.append(r)})}
  b.append(H('b','','Últimos 28 días'));const h=H('div','np-heat');for(let i=27;i>=0;i--){const dt=new Date();dt.setDate(dt.getDate()-i);const n=S.days[day(dt)]||0,s=H('span');s.style.setProperty('--a',n?Math.min(100,25+n*18)+'%':'0%');s.title=dt.toLocaleDateString()+': '+n+' lección(es)';h.append(s)}b.append(h)}
 /* ---- reto relámpago ---- */
 let RY=null;
 function rows(){return[...document.querySelectorAll('#clNav .cl-row')]}
 function goTo(t,l,s){const r=rows();if(!r[0])return false;r[0].children[t].click();if(l){const bt=rows()[1].children[l];bt.click();if(bt.getAttribute('aria-disabled'))return false}if(s)rows()[2].children[s].click();return true}
-function unlocked(t,l,d){const c=TRs()[t];for(let j=0;j<l&&j<2;j++)if(!c.lv[j].every((_,s)=>d.includes(c.id+'-'+j+'-'+s)))return false;return !!c.lv[l]}
+function unlocked(t,l,d){const c=TRs()[t];if(isCr())return !!c.lv[l];for(let j=0;j<l&&j<2;j++)if(!c.lv[j].every((_,s)=>d.includes(c.id+'-'+j+'-'+s)))return false;return !!c.lv[l]}
 function rayo(){const b=panel('Reto relámpago',1);if(!b)return;
  b.append(H('p','','Te doy una lección al azar y corre el reloj. Si la resuelves dentro del tiempo ganas XP extra. Récord personal por nivel.'));
  LVN.forEach((n,l)=>{const bt=btn('',()=>startRay(l),'np-card');bt.append(H('b','',n+' · '+fmt(PAR[l])+' · +'+BON[l]+' XP'),H('small','',S.best[l]?'Tu mejor tiempo: '+fmt(S.best[l]):'Sin récord todavía'));b.append(bt)});
@@ -20101,6 +20109,23 @@ function pomTick(){if(!PM)return;const left=(PM.end-Date.now())/1000,c=$('#nxpPo
 function applyTheme(){const o=ov();if(!o)return;[...o.classList].filter(x=>x.startsWith('nxt-')).forEach(x=>o.classList.remove(x));if(S.theme)o.classList.add('nxt-'+S.theme)}
 function temas(){const b=panel('Temas del editor',1);if(!b)return;
  THEMES.forEach(t=>{const e=btn('',()=>{S.theme=t[0];save();applyTheme();sync();temas()},'np-th'+(S.theme===t[0]?' on':''));const sw=H('i');t[2].forEach(c=>{const s=H('s');s.style.background=c;sw.append(s)});e.append(sw,H('b','',t[1]+(S.theme===t[0]?' ✓':'')));b.append(e)})}
+/* ---- creador ---- */
+function creador(){const b=panel('Herramientas del creador',1);if(!b)return;const T=TRs();if(!isCr()){b.append(H('p','','Solo el creador puede usar esto.'));return}
+ b.append(H('p','','Tienes acceso total: todos los niveles están abiertos y ves la solución en cualquier lección. Aquí puedes saltar a cualquier punto y marcar avance para probar el curso.'));
+ const mkSel=()=>{const s=document.createElement('select');s.className='np-in';return s},sc=mkSel(),sl=mkSel(),ss=mkSel(),r=H('div','np-row');
+ T.forEach((c,i)=>sc.append(new Option(c.n,i)));
+ const fillL=()=>{sl.textContent='';T[+sc.value].lv.forEach((L,i)=>sl.append(new Option((LVN[i]||'Desafíos')+' ('+L.length+')',i)));fillS()},fillS=()=>{ss.textContent='';T[+sc.value].lv[+sl.value].forEach((x,i)=>ss.append(new Option((i+1)+'. '+x.n,i)))};
+ sc.onchange=fillL;sl.onchange=fillS;fillL();r.append(sc,sl,ss);b.append(r);
+ const keys=(t,l)=>{const c=T[t],o=[];c.lv.forEach((L,j)=>{if(l!=null&&j!==l)return;L.forEach((_,s)=>o.push(c.id+'-'+j+'-'+s))});return o};
+ const cm=window.nxCodeLab.mark;
+ const r2=H('div','np-row');
+ r2.append(btn('Ir a la lección',()=>{$('#clPan').hidden=true;if(!goTo(+sc.value,+sl.value,+ss.value))note('No pude abrir esa lección')},'pri'),
+  btn('Marcar nivel como hecho',()=>{cm(keys(+sc.value,+sl.value),true);sync();note('Nivel marcado')}),
+  btn('Marcar curso como hecho',()=>{cm(keys(+sc.value),true);sync();note('Curso marcado')}),
+  btn('Desmarcar curso',()=>{if(confirm('¿Quitar el avance de este curso?')){cm(keys(+sc.value),false);sync(true);note('Avance quitado')}}));b.append(r2);
+ const r3=H('div','np-row');
+ r3.append(btn('Probar: cargar solución y verificar',()=>{$('#clPan').hidden=true;const so=$('#clSol');if(so&&!so.hidden)so.click();setTimeout(()=>{const ok=$('#clOk');ok&&ok.click()},400)}),
+  btn('Reiniciar XP de retos',()=>{if(confirm('¿Reiniciar bonos, récords y estudio?')){S.bonus=0;S.best={};S.study=0;S.ray=0;save();sync(true);creador()}}));b.append(r3)}
 /* ---- certificados ---- */
 function cert(){const b=panel('Certificados',1);if(!b)return;const d=done(),T=TRs();
  const r=H('div','np-row'),inp=H('input','np-in');inp.placeholder='Tu nombre en el certificado';inp.maxLength=48;inp.value=S.name||'';inp.oninput=()=>{S.name=inp.value.trim();save()};r.append(inp);b.append(r);
@@ -20123,7 +20148,7 @@ function drawCert(course,tt){const W=1600,Hh=1130,cv=document.createElement('can
 /* ---- barra ---- */
 function chip(w){const bar=$('#clTools');if(!bar)return;const id=w==='ray'?'nxpRay':'nxpPom';if($('#'+id))return;const c=H('button','np-chip '+w);c.type='button';c.id=id;c.onclick=w==='ray'?()=>{if(confirm('¿Cancelar el reto relámpago?')){stopRay()}}:pomo;bar.insertBefore(c,bar.querySelector('.cl-sc'))}
 function mk(){const bar=$('#clTools');if(!bar)return;applyTheme();if($('#nxpBtn'))return;const b=H('button','np-chip','');b.type='button';b.id='nxpBtn';b.onclick=hub;b.title='Logros, retos, pomodoro, temas y certificados (Alt+P)';bar.insertBefore(b,bar.querySelector('.cl-sc'));chips();if(PM)chip('pom');
- const m=$('#clMsg');if(m)new MutationObserver(()=>{if(m.classList.contains('ok')&&/^Correcto/.test(m.textContent)){setTimeout(()=>{finishRay();sync()},60)}}).observe(m,{childList:true,attributes:true,attributeFilter:['class']});
+ const m=$('#clMsg');if(m)new MutationObserver(()=>{if(m.classList.contains('ok')&&/^Correcto/.test(m.textContent)){if(/Completaste el nivel|Terminaste el curso/.test(m.textContent))confetti();setTimeout(()=>{finishRay();sync()},60)}}).observe(m,{childList:true,attributes:true,attributeFilter:['class']});
  ov().addEventListener('keydown',e=>{if(e.altKey&&e.key.toLowerCase()==='p'){e.preventDefault();hub()}},true)}
 setInterval(()=>{const o=ov();if(!o||o.hidden)return;mk();const r=$('#nxpRay');if(RY&&r)r.textContent='⚡ '+fmt((Date.now()-RY.t0)/1000)+' / '+fmt(PAR[RY.l]);pomTick()},1000);
 setInterval(()=>{const o=ov();if(o&&!o.hidden)sync()},4000);
