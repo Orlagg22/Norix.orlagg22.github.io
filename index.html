@@ -5887,11 +5887,12 @@ const grOk=(g,f)=>g.feature==f&&!g.revocado&&(!g.expira||Date.parse(g.expira)>Da
 const grAll=()=>(GR||[]).concat(GRX);
 function grantActive(f){if(creator)return true;if(grAll().some(g=>grOk(g,f)))return true;return !!(GRMISS&&f=='ensenar'&&sess&&isTesterMail(sess.email))}
 const jvAllowed=()=>grantActive('noryx');
+async function reqAcceso(f){await refreshSess();const r=await fetch(cloudBase()+'/rest/v1/solicitudes',{method:'POST',headers:{apikey:SUPA_KEY,Authorization:'Bearer '+sess.access,'Content-Type':'application/json',Prefer:'return=minimal'},body:JSON.stringify({email:sess.email.toLowerCase(),nombre:String(mem.name||sess.name||'').slice(0,60)||null,feature:f})});return(r.ok||r.status==409)?'ok':r.status==404?'nosys':(r.status==401||r.status==403)?'perm':'HTTP '+r.status}
 window.nxPremium={ok:()=>grantActive('programar'),creator:()=>!!creator,logged:()=>!!(sess||creator),login:()=>openDlg(),
  left:()=>creator?'permanente':grantLeft('programar'),
  sync:async()=>{try{if(!creator&&sess){await refreshSess();await loadGrants()}}catch(e){}},
  why:()=>{const g=(GR||[]).find(x=>x.feature=='programar');return g?(g.revocado?'Tu acceso fue revocado.':(g.expira&&Date.parse(g.expira)<=Date.now()?'Tu acceso expiró el '+fdate(Date.parse(g.expira))+'.':'')):''},
- ask:async()=>{if(!sess)return'login';if(creator)return'creador';try{await refreshSess();const r=await fetch(cloudBase()+'/rest/v1/solicitudes?on_conflict=email,feature',{method:'POST',headers:{apikey:SUPA_KEY,Authorization:'Bearer '+sess.access,'Content-Type':'application/json',Prefer:'resolution=ignore-duplicates,return=minimal'},body:JSON.stringify({email:sess.email.toLowerCase(),nombre:String(mem.name||sess.name||'').slice(0,60)||null,feature:'programar'})});return r.ok?'ok':r.status==404?'nosys':'HTTP '+r.status}catch(e){return'sin conexión'}}};
+ ask:async()=>{if(!sess)return'login';if(creator)return'creador';try{return await reqAcceso('programar')}catch(e){return'sin conexión'}}};
 function fmtLeft(ms){const m=Math.max(1,Math.ceil(ms/6e4));if(m<60)return m+' min';const h=Math.floor(m/60);if(h<48)return h+' h'+(m%60?' '+m%60+' min':'');const d=Math.floor(h/24);return d+' d'+(h%24?' '+h%24+' h':'')}
 function grantLeft(f){const gs=grAll().filter(g=>grOk(g,f));if(!gs.length)return'';if(gs.some(g=>!g.expira))return'permanente';return fmtLeft(Math.max(...gs.map(g=>Date.parse(g.expira)))-Date.now())}
 function gxStatus(g){if(g.revocado)return['rev','Revocado'];if(!g.expira)return['act','Permanente'];const l=Date.parse(g.expira)-Date.now();return l>0?['act','Activo · quedan '+fmtLeft(l)+' (hasta '+fdate(Date.parse(g.expira))+')']:['exp','Expiró el '+fdate(Date.parse(g.expira))]}
@@ -5907,9 +5908,9 @@ async function requestAccess(a){
  if(!sess){sysMsg('Primero entra con tu cuenta (botón «Entrar») y luego escribe `/solicitar`.','Noryx');openDlg();return}
  if(creator){sysMsg('Eres el creador: ya tienes acceso total.','Noryx');return}
  const f=/program/.test(norm(a||''))?'programar':/ense/.test(norm(a||''))?'ensenar':'noryx';await refreshSess();
- try{const r=await fetch(cloudBase()+'/rest/v1/solicitudes?on_conflict=email,feature',{method:'POST',headers:{apikey:SUPA_KEY,Authorization:'Bearer '+sess.access,'Content-Type':'application/json',Prefer:'resolution=ignore-duplicates,return=minimal'},body:JSON.stringify({email:sess.email.toLowerCase(),nombre:String(mem.name||sess.name||'').slice(0,60)||null,feature:f})});
-  sysMsg(r.ok?'📨 Solicitud enviada: **'+GXLAB[f]+'**. El creador decidirá si te la da y por cuánto tiempo. Usa `/acceso` para ver si ya la tienes.':r.status==404?'Todavía no está activado el sistema de accesos en el servidor. Avísale al creador.':'No pude enviar la solicitud (HTTP '+r.status+').','Noryx')}
- catch(e){sysMsg('No pude conectar con la nube para enviar la solicitud.','Noryx')}}
+ try{const r=await reqAcceso(f);
+  sysMsg(r=='ok'?'📨 Solicitud enviada: **'+GXLAB[f]+'**. El creador decidirá si te la da y por cuánto tiempo. Usa `/acceso` para ver si ya la tienes.':r=='nosys'?'Todavía no está activado el sistema de accesos en el servidor. Avísale al creador.':r=='perm'?'El servidor aún no permite enviar solicitudes. Avísale al creador: debe ejecutar de nuevo el SQL de su panel de accesos en Supabase.':'No pude enviar la solicitud ('+r+').','Noryx')}
+  catch(e){sysMsg('No pude conectar con la nube para enviar la solicitud.','Noryx')}}
 async function showAccess(){
  if(creator){sysMsg('Eres el creador: tienes acceso total y permanente.','Noryx');return}
  if(!sess){sysMsg('Entra con tu cuenta (botón «Entrar») para ver tu acceso.','Noryx');return}
@@ -5938,6 +5939,11 @@ create table if not exists public.solicitudes (
 );
 alter table public.accesos enable row level security;
 alter table public.solicitudes enable row level security;
+-- Permisos de la API para usuarios con sesión (necesarios aunque exista la política RLS)
+grant usage on schema public to authenticated;
+grant select,insert,update,delete on public.accesos to authenticated;
+grant select,insert,update,delete on public.solicitudes to authenticated;
+grant usage,select on all sequences in schema public to authenticated;
 -- Permite el acceso 'programar' (Aprende a programar) en tablas que ya existían
 alter table public.accesos drop constraint if exists accesos_feature_check;
 alter table public.accesos add constraint accesos_feature_check check (feature in ('noryx','ensenar','programar'));
@@ -19794,7 +19800,7 @@ function lockDlg(extra){const P=window.nxPremium;let d=$('#nxPrem');
  const lg=P&&P.logged(),w=extra||(P&&P.why())||'';d.hidden=false;
  d.innerHTML='<div class="pm-c"><span class="pm-t">PREMIUM</span><b id="nxPremT">Aprende a programar</b><p>Este modo es Premium. El acceso lo concede el creador y define por cuánto tiempo: horas, días o permanente. Al terminar el tiempo, se cierra solo.</p>'+(w?'<p class="pm-w">'+esc(w)+'</p>':'')+'<p class="pm-s" id="nxPremS" role="status"></p><div class="pm-b"><button type="button" class="pm-p" id="pmA">'+(lg?'Solicitar acceso':'Iniciar sesión')+'</button><button type="button" id="pmR">Ya me lo dieron: actualizar</button><button type="button" id="pmX">Cerrar</button></div></div>';
  const st=$('#nxPremS');$('#pmX').onclick=()=>{d.hidden=true};
- $('#pmA').onclick=async()=>{if(!P.logged()){d.hidden=true;P.login();return}st.textContent='Enviando solicitud...';const r=await P.ask();st.textContent=r==='ok'?'Solicitud enviada. El creador decidirá si te la da y por cuánto tiempo.':r==='nosys'?'El sistema de accesos aún no está activo en el servidor. Avísale al creador.':'No pude enviar la solicitud ('+r+'). Intenta de nuevo.'};
+ $('#pmA').onclick=async()=>{if(!P.logged()){d.hidden=true;P.login();return}st.textContent='Enviando solicitud...';const r=await P.ask();st.textContent=r==='ok'?'Solicitud enviada. El creador decidirá si te la da y por cuánto tiempo.':r==='nosys'?'El sistema de accesos aún no está activo en el servidor. Avísale al creador.':r==='perm'?'El servidor aún no permite enviar solicitudes. Avísale al creador: debe ejecutar de nuevo el SQL de su panel de accesos en Supabase.':'No pude enviar la solicitud ('+r+'). Intenta de nuevo.'};
  $('#pmR').onclick=async()=>{if(!P.logged()){st.textContent='Primero inicia sesión.';return}st.textContent='Revisando...';await P.sync();if(P.ok()){d.hidden=true;raw()}else st.textContent=P.why()||'Todavía no tienes un acceso vigente.'};
  $('#pmA').focus()}
 async function gate(){const P=window.nxPremium;if(!P){lockDlg('No pude verificar el acceso. Recarga la página.');return}
