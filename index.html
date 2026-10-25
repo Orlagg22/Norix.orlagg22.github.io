@@ -20030,7 +20030,7 @@ const rankOf=x=>{let r=0;RANKS.forEach((a,i)=>{if(x>=a[0])r=i});return r};
 const courseDone=(t,d)=>{const c=TRs()[t];return !!c&&c.lv.every((L,l)=>L.every((_,s)=>d.includes(c.id+'-'+l+'-'+s)))};
 const courseCount=t=>TRs()[t].lv.reduce((a,L)=>a+L.length,0);
 const fmt=s=>{s=Math.max(0,Math.round(s));return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0')};
-const ov=()=>$('#nxCode');
+const ov=()=>$('#nxCode');const EXT=[];
 const isCr=()=>{try{return !!(window.nxPremium&&window.nxPremium.creator())}catch(e){return false}};
 function note(t){const o=ov();if(!o)return;const e=document.createElement('div');e.className='cl-toast';e.setAttribute('role','status');e.textContent=t;o.append(e);setTimeout(()=>e.classList.add('out'),2600);setTimeout(()=>e.remove(),3200)}
 function confetti(){const o=ov();if(!o||matchMedia('(prefers-reduced-motion:reduce)').matches)return;const w=H('div','np-cf');for(let i=0;i<70;i++){const e=document.createElement('i');e.style.cssText='left:'+Math.random()*100+'%;background:'+['#f5c542','#ff9f43','#00f0ff','#3ddc97','#ff5fd2','#7c8cff'][i%6]+';animation-delay:'+Math.random()*.5+'s;animation-duration:'+(1.6+Math.random()*1.4)+'s;transform:rotate('+Math.random()*360+'deg)';w.append(e)}o.append(w);setTimeout(()=>w.remove(),3600)}
@@ -20069,7 +20069,7 @@ function summary(){const x=xp(),r=rankOf(x),lo=RANKS[r][0],hi=RANKS[r+1]?RANKS[r
  w.append(H('b','','✦ '+RANKS[r][1]+' · '+x+' XP'),H('small','',hi?'Faltan '+(hi-x)+' XP para '+RANKS[r+1][1]:'Rango máximo alcanzado'));const bar=H('div','np-bar'),u=H('u');u.style.width=(hi?Math.round((x-lo)/(hi-lo)*100):100)+'%';bar.append(u);w.append(bar);
  w.append(H('small','',done().length+' lecciones · '+S.badges.length+'/'+BADGES.length+' logros · '+S.study+' min de estudio'));return w}
 function hub(){const b=panel('Premium');if(!b)return;sync(true);b.append(summary());const g=H('div','np-grid');
- [['🏅','Logros y actividad','Insignias, XP y tu mapa de días',logros],['⚡','Reto relámpago','Una lección al azar contra el reloj',rayo],['🍅','Pomodoro','Bloques de foco y descanso',pomo],['🎨','Temas del editor','Cambia colores del modo',temas],['📜','Certificados','Descarga el de cada curso terminado',cert]].concat(isCr()?[['👑','Herramientas del creador','Ir a cualquier lección, marcar avance y probar soluciones',creador]]:[]).forEach(a=>{const c=btn('',a[3],'np-card');c.append(H('b','',a[0]+' '+a[1]),H('small','',a[2]));g.append(c)});b.append(g)}
+ [['🏅','Logros y actividad','Insignias, XP y tu mapa de días',logros],['⚡','Reto relámpago','Una lección al azar contra el reloj',rayo],['🍅','Pomodoro','Bloques de foco y descanso',pomo],['🎨','Temas del editor','Cambia colores del modo',temas],['📜','Certificados','Descarga el de cada curso terminado',cert]].concat(isCr()?[['👑','Herramientas del creador','Ir a cualquier lección, marcar avance y probar soluciones',creador]]:[]).concat(EXT).forEach(a=>{const c=btn('',a[3],'np-card');c.append(H('b','',a[0]+' '+a[1]),H('small','',a[2]));g.append(c)});b.append(g)}
 function logros(){const b=panel('Logros y actividad',1);if(!b)return;sync(true);b.append(summary());const g=H('div','np-grid');
  BADGES.forEach(a=>{const o=S.badges.includes(a[0]),e=H('div','np-badge'+(o?'':' off'));e.title=a[3];e.append(H('i','',a[1]),H('b','',a[2]),H('small','',a[3]));g.append(e)});b.append(g);
  {b.append(H('b','','Avance por curso'));const d=done();TRs().forEach((c,t)=>{const n=d.filter(k=>k.startsWith(c.id+'-')).length,tt=courseCount(t),r=H('div','np-row');const nm=H('span','',c.n+' '+n+'/'+tt);nm.style.minWidth='130px';const bar=H('div','np-bar'),u=H('u');u.style.width=Math.round(n/tt*100)+'%';bar.style.flex='1';bar.append(u);r.append(nm,bar);b.append(r)})}
@@ -20152,6 +20152,81 @@ function mk(){const bar=$('#clTools');if(!bar)return;applyTheme();if($('#nxpBtn'
  ov().addEventListener('keydown',e=>{if(e.altKey&&e.key.toLowerCase()==='p'){e.preventDefault();hub()}},true)}
 setInterval(()=>{const o=ov();if(!o||o.hidden)return;mk();const r=$('#nxpRay');if(RY&&r)r.textContent='⚡ '+fmt((Date.now()-RY.t0)/1000)+' / '+fmt(PAR[RY.l]);pomTick()},1000);
 setInterval(()=>{const o=ov();if(o&&!o.hidden)sync()},4000);
+window.nxPlus={S,save,sync,panel,H,btn,note,hub,logros,rayo,pomo,temas,cert,creador,goTo,rows,done,xp,lessonXp,rankOf,RANKS,THEMES,courseDone,isCr,startRay,ext:EXT,setTheme:t=>{S.theme=t;save();applyTheme();sync()}};
+})();
+</script>
+<script id="nx-premium-plus2">
+/* NORYX · Premium++: repaso espaciado, meta semanal, paleta de comandos, borradores, sonido de fondo y tarjeta de progreso */
+(function(){
+const P=window.nxPlus;if(!P)return;
+const $=s=>document.querySelector(s),S=P.S,H=P.H,btn=P.btn,note=P.note,TRs=()=>(window.nxCodeLab&&window.nxCodeLab.data)||[];
+const nrm=s=>String(s).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'');
+const day=(o)=>{const d=o||new Date();return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate()};
+const DAY=864e5,WEEK_DEF=150;
+/* ---- seguimiento: XP por día y fecha de cada lección ---- */
+function curKey(){const r=P.rows();if(r.length<3)return null;const ix=i=>[...r[i].children].findIndex(x=>x.classList.contains('on')),t=ix(0),l=ix(1),s=ix(2),c=TRs()[t];return c&&l>=0&&s>=0?c.id+'-'+l+'-'+s:null}
+function track(){const d=P.done(),lx=P.lessonXp(d),now=Date.now();S.when=S.when||{};S.xd=S.xd||{};
+ if(S.xs==null)S.xs=lx;
+ if(lx>S.xs){const k=day();S.xd[k]=(S.xd[k]||0)+(lx-S.xs)}
+ S.xs=lx;d.forEach(k=>{if(!S.when[k])S.when[k]=now});
+ Object.keys(S.when).forEach(k=>{if(!d.includes(k))delete S.when[k]});
+ const ks=Object.keys(S.xd);if(ks.length>60)ks.sort((a,b)=>new Date(a)-new Date(b)).slice(0,ks.length-60).forEach(x=>delete S.xd[x]);P.save()}
+const weekXp=()=>{let n=0;for(let i=0;i<7;i++){const d=new Date();d.setDate(d.getDate()-i);n+=(S.xd||{})[day(d)]||0}return n};
+/* ---- repaso y metas ---- */
+function parse(k){const m=/^(.*)-(\d)-(\d+)$/.exec(k);if(!m)return null;const t=TRs().findIndex(c=>c.id===m[1]);return t<0?null:{t,l:+m[2],s:+m[3]}}
+function repaso(){const b=P.panel('Repaso y meta semanal',1);if(!b)return;track();
+ const wg=S.wg||WEEK_DEF,wx=weekXp(),box=H('div','np-sum');box.append(H('b','','Meta semanal: '+wx+' / '+wg+' XP'));const bar=H('div','np-bar'),u=H('u');u.style.width=Math.min(100,Math.round(wx/wg*100))+'%';bar.append(u);box.append(bar,H('small','',wx>=wg?'¡Meta cumplida esta semana! 🎉':'Te faltan '+(wg-wx)+' XP en los últimos 7 días.'));
+ const r=H('div','np-row');r.append(btn('Cambiar meta',()=>{const v=parseInt(prompt('Meta semanal de XP:',wg),10);if(v>=10&&v<=5000){S.wg=v;P.save();repaso()}}));box.append(r);b.append(box);
+ b.append(H('b','','Para repasar (las más antiguas primero)'));
+ const now=Date.now(),L=Object.keys(S.when||{}).map(k=>({k,w:S.when[k],p:parse(k)})).filter(x=>x.p).sort((a,b)=>a.w-b.w).slice(0,12);
+ if(!L.length){b.append(H('p','','Aún no has completado lecciones. Resuelve algunas y aquí te sugiero cuáles repasar.'));return}
+ b.append(btn('Repasar la más antigua',()=>{$('#clPan').hidden=true;P.goTo(L[0].p.t,L[0].p.l,L[0].p.s)},'pri'));
+ L.forEach(x=>{const dd=Math.floor((now-x.w)/DAY),c=TRs()[x.p.t],lec=c.lv[x.p.l][x.p.s],bt=btn('',()=>{$('#clPan').hidden=true;P.goTo(x.p.t,x.p.l,x.p.s)},'cl-rb');bt.textContent=c.n+' · '+lec.n+' — '+(dd<1?'hoy':dd===1?'hace 1 día':'hace '+dd+' días')+(dd>=7?' ⏰':'');b.append(bt)})}
+/* ---- sonido de fondo ---- */
+let AC,AMB=null;
+function stopAmb(){if(AMB){try{AMB.src.stop();AMB.g.disconnect()}catch(e){}AMB=null}}
+function startAmb(kind,vol){stopAmb();if(!kind)return;try{AC=AC||new(window.AudioContext||window.webkitAudioContext)();if(AC.state==='suspended')AC.resume();
+ const n=AC.sampleRate*3,buf=AC.createBuffer(1,n,AC.sampleRate),d=buf.getChannelData(0);let last=0;
+ for(let i=0;i<n;i++){const w=Math.random()*2-1;if(kind==='brown'){last=(last+.02*w)/1.02;d[i]=last*3.5}else d[i]=w}
+ const src=AC.createBufferSource();src.buffer=buf;src.loop=true;const g=AC.createGain();g.gain.value=vol;let node=src;
+ if(kind==='rain'){const hp=AC.createBiquadFilter();hp.type='highpass';hp.frequency.value=900;const lp=AC.createBiquadFilter();lp.type='lowpass';lp.frequency.value=7000;node.connect(hp);hp.connect(lp);node=lp}
+ if(kind==='wind'){const lp=AC.createBiquadFilter();lp.type='lowpass';lp.frequency.value=500;node.connect(lp);node=lp;const o=AC.createOscillator(),og=AC.createGain();o.frequency.value=.12;og.gain.value=vol*.8;o.connect(og);og.connect(g.gain);o.start()}
+ node.connect(g);g.connect(AC.destination);src.start();AMB={src,g,kind}}catch(e){}}
+function ambiente(){const b=P.panel('Sonido de fondo',1);if(!b)return;b.append(H('p','','Ruido suave para concentrarte. Se apaga solo al cerrar el modo.'));
+ [['','Apagado'],['rain','🌧️ Lluvia'],['brown','🌊 Ruido marrón'],['wind','🍃 Viento']].forEach(a=>b.append(btn(a[1]+((S.amb||'')===a[0]?' ✓':''),()=>{S.amb=a[0];P.save();startAmb(a[0],S.vol||.12);ambiente()},'np-th')));
+ const r=H('div','np-row');r.append(H('span','','Volumen'));const sl=document.createElement('input');sl.type='range';sl.min=2;sl.max=40;sl.value=Math.round((S.vol||.12)*100);sl.style.flex='1';sl.oninput=()=>{S.vol=sl.value/100;if(AMB)AMB.g.gain.value=S.vol};sl.onchange=()=>P.save();r.append(sl);b.append(r)}
+/* ---- tarjeta de progreso ---- */
+function tarjeta(){const d=P.done();if(!S.name){const n=prompt('¿Con qué nombre quieres la tarjeta?',S.name||'');if(!n)return;S.name=n.trim().slice(0,40);P.save()}
+ const W=1200,Hh=630,cv=document.createElement('canvas');cv.width=W;cv.height=Hh;const g=cv.getContext('2d'),F='"Segoe UI",system-ui,Arial,sans-serif',x=P.xp(d),r=P.rankOf(x);
+ const bg=g.createLinearGradient(0,0,W,Hh);bg.addColorStop(0,'#07090d');bg.addColorStop(1,'#12202c');g.fillStyle=bg;g.fillRect(0,0,W,Hh);
+ const go=g.createLinearGradient(0,0,W,0);go.addColorStop(0,'#f5c542');go.addColorStop(1,'#ff9f43');g.fillStyle=go;g.fillRect(0,0,W,8);
+ g.textAlign='left';g.fillStyle=go;g.font='700 22px '+F;g.fillText('NORYX · APRENDE A PROGRAMAR',60,80);
+ g.fillStyle='#e8eef6';g.font='800 70px '+F;g.fillText(S.name,60,185,W-120);
+ g.fillStyle='#00f0ff';g.font='700 40px '+F;g.fillText('✦ '+P.RANKS[r][1]+' · '+x+' XP',60,250);
+ const m=JSON.parse(localStorage.getItem('nx-codelab-meta-v1')||'{}'),T=TRs();let cc=0;T.forEach((_,t)=>{if(P.courseDone(t,d))cc++});
+ [[d.length,'lecciones'],[m.streak||0,'días de racha'],[cc+'/'+T.length,'cursos'],[S.badges.length,'logros']].forEach((a,i)=>{const X=60+i*280;g.fillStyle='rgba(255,255,255,.06)';g.fillRect(X,320,250,150);g.fillStyle='#e8eef6';g.font='800 64px '+F;g.fillText(String(a[0]),X+20,405);g.fillStyle='#8693a6';g.font='400 26px '+F;g.fillText(a[1],X+20,445)});
+ g.fillStyle='#8693a6';g.font='400 24px '+F;g.fillText(new Date().toLocaleDateString('es-MX',{year:'numeric',month:'long',day:'numeric'}),60,570);
+ const a=document.createElement('a');a.download='mi-progreso-noryx.png';a.href=cv.toDataURL('image/png');a.click();note('Tarjeta descargada')}
+/* ---- paleta de comandos ---- */
+function cmds(){const c=[['Logros y actividad',P.logros],['Reto relámpago',P.rayo],['Pomodoro',P.pomo],['Temas del editor',P.temas],['Certificados',P.cert],['Repaso y meta semanal',repaso],['Sonido de fondo',ambiente],['Tarjeta de progreso',tarjeta],['Buscar lección',()=>{$('#clPan').hidden=true;const b=[...document.querySelectorAll('#clTools button')].find(x=>x.textContent==='Buscar');b&&b.click()}],['Enfoque (ocultar explicación)',()=>{$('#clPan').hidden=true;$('#nxCode').classList.toggle('cl-fold')}],['Descargar código',()=>{$('#clPan').hidden=true;const b=[...document.querySelectorAll('#clTools button')].find(x=>x.textContent==='Descargar');b&&b.click()}]];
+ [1,2,3].forEach(i=>c.push(['Reto relámpago · '+['Principiante','Intermedio','Avanzado'][i-1],()=>{$('#clPan').hidden=true;P.startRay(i-1)}]));
+ P.THEMES.forEach(t=>c.push(['Tema: '+t[1],()=>{P.setTheme(t[0]);$('#clPan').hidden=true;note('Tema: '+t[1])}]));
+ if(P.isCr())c.push(['Herramientas del creador',P.creador]);return c}
+function paleta(){const b=P.panel('Paleta de comandos');if(!b)return;const inp=document.createElement('input');inp.className='np-in';inp.placeholder='Escribe: tema, pomodoro, repaso, logros…';const list=H('div');list.style.display='grid';list.style.gap='6px';b.append(inp,list);let sel=0,items=[];
+ const draw=()=>{const w=nrm(inp.value).split(/\s+/).filter(Boolean);items=cmds().filter(x=>w.every(y=>nrm(x[0]).includes(y))).slice(0,10);sel=0;list.textContent='';items.forEach((x,i)=>{const e=btn(x[0],x[1],'cl-rb'+(i===0?' sel':''));list.append(e)});if(!items.length)list.textContent='Sin resultados.'};
+ inp.oninput=draw;draw();inp.focus();
+ inp.onkeydown=e=>{const bs=[...list.querySelectorAll('button')];if(e.key==='Enter'){e.preventDefault();e.stopPropagation();if(items[sel])items[sel][1]()}else if(e.key==='ArrowDown'||e.key==='ArrowUp'){e.preventDefault();sel=Math.max(0,Math.min(bs.length-1,sel+(e.key==='ArrowDown'?1:-1)));bs.forEach((x,i)=>x.classList.toggle('sel',i===sel));bs[sel]&&bs[sel].scrollIntoView({block:'nearest'})}}}
+/* ---- borradores automáticos ---- */
+const DK='nx-prem-draft-v1',dr=()=>{try{return JSON.parse(localStorage.getItem(DK))||{}}catch(e){return{}}};
+let lastT='',dtm=0;
+function wireDrafts(){const ed=$('#clEd'),t=$('#clT');if(!ed||!t||ed.dataset.np)return;ed.dataset.np='1';
+ ed.addEventListener('input',()=>{clearTimeout(dtm);dtm=setTimeout(()=>{const o=dr(),k=t.textContent;if(!k)return;o[k]=ed.value;const ks=Object.keys(o);if(ks.length>150)delete o[ks[0]];try{localStorage.setItem(DK,JSON.stringify(o))}catch(e){}},600)});
+ new MutationObserver(()=>{const k=t.textContent;if(!k||k===lastT)return;lastT=k;setTimeout(()=>{const v=dr()[k];if(v&&v!==ed.value){ed.value=v;ed.dispatchEvent(new Event('input'));note('Recuperé tu último código de esta lección')}},120)}).observe(t,{childList:true,characterData:true,subtree:true});lastT=t.textContent}
+/* ---- arranque ---- */
+P.ext.push(['🔁','Repaso y meta semanal','Lecciones para repasar y tu meta de XP',repaso],['🎧','Sonido de fondo','Lluvia, ruido marrón o viento para concentrarte',ambiente],['🖼️','Tarjeta de progreso','Imagen para compartir tu rango y avance',tarjeta],['⌨️','Paleta de comandos','Todo con el teclado (Alt+K)',paleta]);
+setInterval(()=>{const o=$('#nxCode');if(!o)return;if(o.hidden){stopAmb();return}wireDrafts();track()},1500);
+document.addEventListener('keydown',e=>{const o=$('#nxCode');if(!o||o.hidden)return;if(e.altKey&&e.key.toLowerCase()==='k'){e.preventDefault();paleta()}},true);
+const wm=setInterval(()=>{const m=$('#clMsg');if(!m)return;clearInterval(wm);new MutationObserver(()=>{if(m.classList.contains('ok')&&/^Correcto/.test(m.textContent)){const k=curKey();if(k){S.when=S.when||{};S.when[k]=Date.now();P.save()}}}).observe(m,{childList:true,attributes:true,attributeFilter:['class']})},1000);
 })();
 </script>
 </body>
