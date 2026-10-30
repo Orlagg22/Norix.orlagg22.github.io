@@ -160,6 +160,11 @@ textarea{flex:1;resize:none;border:0;outline:0;background:none;color:var(--ink);
 @media (prefers-reduced-motion:reduce){.rx i,.jvwave i{animation:none!important}}
 .npbar i{width:100%;transform:scaleX(0);transform-origin:left}.npbar{height:6px}
 .npti{display:flex;justify-content:space-between;font:400 11px 'JetBrains Mono',monospace;color:var(--mute)}
+/* Botón «+» de la barra de escribir (subir imágenes) */
+#comp .box #plus{flex:none;margin-left:-4px;color:var(--ink)}
+#comp .box #plus:hover{background:color-mix(in srgb,var(--acc) 14%,transparent);color:var(--acc)}
+#comp .box{padding-left:10px!important}
+#drop{display:none!important}
 /* Modo Noryx: espacio fijo para que nada se mueva ni se encime cuando Noryx responde o habla */
 #jv{scrollbar-gutter:stable;overflow-anchor:none}
 #jv>*{flex-shrink:0!important}
@@ -681,6 +686,7 @@ html,body{overscroll-behavior:none}#feed{overscroll-behavior:contain}
   <section id="feed" aria-live="polite"></section>
   <div id="comp"><button id="sdn" type="button" hidden aria-label="Ir al final"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12l7 7 7-7"/></svg></button>
    <div id="mk" hidden><div class="h"><span>Teclado matemático</span><span><button type="button" id="mkr">🔊 Leer símbolos: no</button><button type="button" id="mkx" aria-label="Cerrar">✕</button></span></div><div class="g"></div></div><div id="slash" hidden></div><div class="box">
+    <button class="ib" id="plus" type="button" aria-label="Subir imágenes" title="Subir imágenes"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></button>
     <textarea id="in" rows="1" placeholder="Escribe a Noryx… (/ayuda para ver comandos)" aria-label="Mensaje"></textarea>
     <input id="pw" type="password" autocomplete="off" hidden aria-label="Contraseña de creador">
     <button class="ib" id="fx" type="button" aria-label="Teclado matemático" title="Teclado matemático">∑</button>
@@ -699,7 +705,7 @@ html,body{overscroll-behavior:none}#feed{overscroll-behavior:contain}
  <div id="vln">Habla con naturalidad; Noryx contesta en voz alta y vuelve a escucharte sola. Di «adiós» para terminar. Noryx te oye con Whisper en la nube (Groq, rápido y gratis); si no hay conexión, usa su motor propio dentro de tu equipo (la primera vez descarga ~80 MB).</div>
 </div>
 <div id="studio" hidden><div class="card" role="dialog" aria-label="Estudio de imágenes">
- <div class="sh"><b>Imágenes</b><div class="tabs"><button id="tbUp" class="on">Subir</button><button id="tbMk">Crear</button><button id="tbLab">Laboratorio</button></div><button id="stX" aria-label="Cerrar">✕</button></div>
+ <div class="sh"><b>Imágenes</b><div class="tabs"><button id="tbMk" class="on">Crear</button><button id="tbLab">Laboratorio</button></div><button id="stX" aria-label="Cerrar">✕</button></div>
  <div id="pUp" class="pn">
   <label class="drop" id="drop">Arrastra imágenes aquí o toca para elegirlas (hasta 6 a la vez)<input type="file" id="imf" accept="image/*" multiple hidden></label>
   <div id="imtb" class="imtb"></div>
@@ -5406,11 +5412,11 @@ vlo.onclick=()=>{if(VL.st=='speak')speechSynthesis.cancel()};
 $('#vlm').onclick=function(){VL.mute=!VL.mute;this.textContent=VL.mute?'Activar micrófono':'Silenciar micrófono';if(VL.mute){const r=VL.rec;VL.rec=null;try{r&&r.abort()}catch(e){}if(VL.st=='listen')vlSet('mute')}else if(VL.st=='mute')vlListen()};
 
 const st=$('#studio');
-function stOpen(t){if(!sess)return openDlg();closeMenu();st.hidden=false;stTab(t||'up')}
-function stTab(t){$('#pUp').hidden=t!='up';$('#pMk').hidden=t!='mk';const lab=$('#nxLab');if(lab)lab.hidden=t!='lab';$('#tbUp').classList.toggle('on',t=='up');$('#tbMk').classList.toggle('on',t=='mk');$('#tbLab').classList.toggle('on',t=='lab')}
-$('#imb').onclick=()=>stOpen('up');
+function stOpen(t){if(!sess)return openDlg();closeMenu();st.hidden=false;stTab(t||'mk')}
+function stTab(t){$('#pUp').hidden=t!='up';$('#pMk').hidden=t!='mk';const lab=$('#nxLab');if(lab)lab.hidden=t!='lab';$('#tbMk').classList.toggle('on',t=='mk');$('#tbLab').classList.toggle('on',t=='lab')}
+$('#imb').onclick=()=>stOpen('mk');
 
-$('#stX').onclick=()=>st.hidden=true;$('#tbUp').onclick=()=>stTab('up');$('#tbMk').onclick=()=>stTab('mk');$('#tbLab').onclick=()=>stTab('lab');
+$('#stX').onclick=()=>st.hidden=true;$('#tbMk').onclick=()=>stTab('mk');$('#tbLab').onclick=()=>stTab('lab');
 st.addEventListener('click',e=>{if(e.target==st)st.hidden=true});
 addEventListener('keydown',e=>{if(e.key!='Escape')return;if(!st.hidden)st.hidden=true;else if(VL.on)vlStop()});
 const dl=(blob,name)=>{const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),4000)};
@@ -5447,7 +5453,8 @@ async function loadFiles(fl){fl=[...(fl||[])];if(!fl.length)return;
  if(!items.length)return;
  imSync();items.forEach(it=>imList.push(it));imHist=[];imSnaps=[];
  $('#imw').hidden=false;$('#imo').textContent='';imShow(imList.length-1);$('#imq').focus()}
-$('#imf').onchange=e=>{loadFiles(e.target.files);e.target.value=''};
+$('#imf').onchange=e=>{const fl=[...e.target.files];e.target.value='';if(!fl.length)return;stOpen('up');loadFiles(fl)};
+$('#plus').onclick=()=>{if(!sess)return openDlg();$('#imf').click()};
 const drop=$('#drop');['dragenter','dragover'].forEach(n=>drop.addEventListener(n,e=>{e.preventDefault();drop.classList.add('over')}));['dragleave','drop'].forEach(n=>drop.addEventListener(n,e=>{e.preventDefault();drop.classList.remove('over')}));
 drop.addEventListener('drop',e=>loadFiles(e.dataTransfer.files));
 function analyze(){const w=imc.width,h=imc.height,k=Math.min(1,64/Math.max(w,h)),sw=Math.max(1,Math.round(w*k)),sh=Math.max(1,Math.round(h*k)),t=document.createElement('canvas');t.width=sw;t.height=sh;const x=t.getContext('2d');x.drawImage(imc,0,0,sw,sh);
