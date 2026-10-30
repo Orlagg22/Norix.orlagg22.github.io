@@ -160,6 +160,12 @@ textarea{flex:1;resize:none;border:0;outline:0;background:none;color:var(--ink);
 @media (prefers-reduced-motion:reduce){.rx i,.jvwave i{animation:none!important}}
 .npbar i{width:100%;transform:scaleX(0);transform-origin:left}.npbar{height:6px}
 .npti{display:flex;justify-content:space-between;font:400 11px 'JetBrains Mono',monospace;color:var(--mute)}
+/* Modo Noryx: espacio fijo para que nada se mueva ni se encime cuando Noryx responde o habla */
+#jv{scrollbar-gutter:stable;overflow-anchor:none}
+#jv>*{flex-shrink:0!important}
+#jv #jvu{height:1.5em;min-height:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+#jv #jvt{height:7.25em!important;min-height:0!important;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin}
+#jv #jvc{min-height:40px;align-content:center}
 
 
 #md{position:fixed;inset:0;z-index:50;background:#000a;display:grid;place-items:center}#md[hidden]{display:none}
