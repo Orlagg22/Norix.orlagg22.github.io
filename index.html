@@ -21144,6 +21144,14 @@ button,summary,select,[role=button],label[for]{touch-action:manipulation;-webkit
  html body main>header #chip{flex:0 1 auto;min-width:0;max-width:34vw;overflow:hidden;text-overflow:ellipsis}
  html body main>header #ttl{min-width:0}
 }
+
+/* Menú de temas: siempre dentro de la pantalla */
+@media (max-width:820px){
+ html body #nxp{left:auto!important;right:8px!important;width:min(300px,calc(100vw - 16px));max-height:calc(var(--nx-vh)*100 - 90px - var(--nx-sat) - var(--nx-sab))}
+}
+/* Introducciones: el texto es visible por defecto; la animación solo lo mejora.
+   Si el dispositivo no ejecuta animaciones, ya no queda en blanco. */
+html body #clIntro .clin-t,html body #clIntro .clin-p,html body #clIntro .clin-b{opacity:1!important;animation:none!important;transform:none!important}
 </style>
 <script id="nx-v131-movil-js">
 (function(){
