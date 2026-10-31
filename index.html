@@ -2764,7 +2764,7 @@ joke:[['¿Por qué las redes neuronales no pagan renta? Porque ya tienen muchas 
 
 /* ============ Maestro externo: otra IA (estilo Gemini) sin API key; Noryx aprende de sus respuestas ============ */
 let MAESTRO=!!S.get('nx-maestro2',true),busyAsk=0; /* IA activa por defecto para todos; /ia apagar la desactiva */
-const SYS='Eres Noryx, una asistente conversacional en español (responde en el idioma del usuario). Primero contesta la pregunta concreta; después explica lo necesario con lenguaje natural, preciso y respetuoso. Adapta la extensión a la petición: breve por defecto y más profunda cuando pidan detalles, pasos, ejemplos o comparación. Usa el historial reciente para resolver referencias como «eso», «más», «¿por qué?», «hazlo más simple» y «dame ejemplos»; no reinicies el tema sin motivo. Si una pregunta es ambigua, pregunta solo lo necesario. Distingue hechos, estimaciones e inferencias; no inventes citas, enlaces, búsquedas, cifras actuales ni acciones. Si no tienes evidencia suficiente, dilo y explica qué dato falta. Si te piden código, entrega un ejemplo ejecutable y explica sus supuestos. No afirmes que consultaste Internet ni una fuente salvo que realmente se haya hecho. Identidad: te llamas Noryx y te creó Orlando. Nunca digas que eres ChatGPT, GPT-4, un producto de OpenAI, Gemini ni Claude, y no inventes detalles técnicos de tu modelo. Si te preguntan en qué modelo te basas, qué modelo eres o si eres ChatGPT, responde que eres Noryx, el asistente que creó Orlando; que combinas un núcleo local propio con un modelo de lenguaje en la nube para las preguntas abiertas; y que no tienes más detalles técnicos del modelo. No afirmes ni niegues marcas o versiones concretas. Matemáticas: escribe las fórmulas en LaTeX, en línea entre signos de dólar (por ejemplo $x^2+1$) y las importantes en bloque entre dobles signos de dólar (por ejemplo $$\\int_0^1 x\\,dx=\\frac{1}{2}$$). Los precios en dinero escríbelos como texto normal.';
+const SYS='Eres Noryx, una asistente conversacional en español (responde en el idioma del usuario). Primero contesta la pregunta concreta; después explica lo necesario con lenguaje natural, preciso y respetuoso. Adapta la extensión a la petición: breve por defecto y más profunda cuando pidan detalles, pasos, ejemplos o comparación. Usa el historial reciente para resolver referencias como «eso», «más», «¿por qué?», «hazlo más simple» y «dame ejemplos»; no reinicies el tema sin motivo. Si una pregunta es ambigua, pregunta solo lo necesario. Distingue hechos, estimaciones e inferencias; no inventes citas, enlaces, búsquedas, cifras actuales ni acciones. Si no tienes evidencia suficiente, dilo y explica qué dato falta. Si te piden código, entrega un ejemplo ejecutable y explica sus supuestos. No afirmes que consultaste Internet ni una fuente salvo que realmente se haya hecho. Identidad: te llamas Noryx y te creó Orlando. Nunca digas que eres ChatGPT, GPT-4, un producto de OpenAI, Gemini ni Claude, y no inventes detalles técnicos de tu modelo. Si te preguntan en qué modelo te basas, qué modelo eres o si eres ChatGPT, responde que eres Noryx, el asistente que creó Orlando; que combinas un núcleo local propio con un modelo de lenguaje en la nube para las preguntas abiertas; y que no tienes más detalles técnicos del modelo. No afirmes ni niegues marcas o versiones concretas. Matemáticas: escribe las fórmulas en LaTeX, en línea entre signos de dólar (por ejemplo $x^2+1$) y las importantes en bloque entre dobles signos de dólar (por ejemplo $$\\int_0^1 x\\,dx=\\frac{1}{2}$$). Los precios en dinero escríbelos como texto normal. Cuando compares cosas o listes datos con varias columnas, usa tablas en markdown.';
 const clean=x=>x.replace(/\n*(?:---+\s*)?(?:\*\*)?(?:Powered by|Support) Pollinations[\s\S]*$/i,'').replace(/<think>[\s\S]*?<\/think>/g,'').trim();
 /* ===== Noryx API (Cloudflare Worker → Ollama) ===== */
 const NORYX_API='https://api-llama-proxy.orlandogeovanni519.workers.dev/v1/chat'; /* URL de tu Worker */
@@ -21641,6 +21641,183 @@ html #nxEsc .ne-help{font-size:10.5px;opacity:.55}
  const main=document.querySelector('main');
  if(main)['dragover','drop'].forEach(n=>main.addEventListener(n,e=>{const dt=e.dataTransfer;if(!dt||![...(dt.types||[])].includes('Files'))return;e.preventDefault();
   if(n=='drop'){const f=[...dt.files].filter(x=>/^image\//.test(x.type));if(f.length)nxAttach(f)}}));
+})();
+</script>
+<script id="nx-visual-js">
+/* Noryx · tablas, mapas conceptuales, diagramas y gráficas (estilo ChatGPT)
+   - Tablas markdown → tabla con botones Copiar / CSV / Excel (SheetJS, se carga al pulsar)
+   - Bloques ```mermaid → diagramas, mapas mentales, líneas de tiempo, Gantt… (Mermaid, se carga al primer uso)
+   - Bloques ```chart  → gráficas de barras, líneas, pastel… (Chart.js, se carga al primer uso)
+   Las librerías vienen de jsDelivr (con respaldo en cdnjs) y solo se descargan cuando hacen falta. */
+(function(){
+ 'use strict';
+ if(typeof md!=='function'||window.__nxVisual)return;window.__nxVisual=1;
+ const LIBS={
+  mermaid:['https://cdn.jsdelivr.net/npm/mermaid@10.9.3/dist/mermaid.min.js','https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.3/mermaid.min.js'],
+  chart:['https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.js','https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js'],
+  xlsx:['https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js','https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js']};
+ const GLOB={mermaid:'mermaid',chart:'Chart',xlsx:'XLSX'},pend={};
+ function loadLib(k){
+  if(window[GLOB[k]])return Promise.resolve(window[GLOB[k]]);
+  if(pend[k])return pend[k];
+  pend[k]=new Promise((ok,no)=>{let i=0;const next=()=>{
+   if(i>=LIBS[k].length){delete pend[k];no(Error('No se pudo descargar la librería ('+k+'). Revisa tu conexión.'));return}
+   const s=document.createElement('script');s.src=LIBS[k][i++];s.async=true;
+   s.onload=()=>window[GLOB[k]]?ok(window[GLOB[k]]):next();s.onerror=()=>{s.remove();next()};document.head.appendChild(s)};next()});
+  return pend[k]}
+ const esc2=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+ const hash=s=>{let h=5381;for(let i=0;i<s.length;i++)h=((h<<5)+h+s.charCodeAt(i))|0;return (h>>>0).toString(36)+s.length};
+ const plain=t=>String(t).replace(/\*\*|__|`/g,'').replace(/<br\s*\/?>/gi,' ').trim();
+
+ /* ---------- estilos ---------- */
+ const st=document.createElement('style');st.textContent=
+ '.nx-tbl{margin:10px 0;max-width:100%}.nx-tbw{overflow-x:auto;border:1px solid var(--line);border-radius:12px}'+
+ '.nx-tbl table{border-collapse:collapse;width:100%;min-width:max-content;margin:0;border:0;display:table}'+
+ '.nx-tbl th,.nx-tbl td{border:0;border-bottom:1px solid var(--line);padding:8px 12px;vertical-align:top;text-align:left}'+
+ '.nx-tbl th{background:color-mix(in srgb,var(--ink) 9%,transparent);font-weight:700;white-space:nowrap}'+
+ '.nx-tbl tbody tr:nth-child(even) td{background:color-mix(in srgb,var(--ink) 4%,transparent)}.nx-tbl tbody tr:last-child td{border-bottom:0}'+
+ '.nx-act{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}'+
+ '.nx-act button{font:600 12px inherit;font-family:inherit;padding:5px 11px;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--ink);opacity:.75;cursor:pointer}'+
+ '.nx-act button:hover{opacity:1;background:color-mix(in srgb,var(--ink) 10%,transparent)}'+
+ '.nx-vis{margin:10px 0;max-width:100%}.nx-vc{background:#fff;color:#1f2937;border-radius:14px;padding:12px;overflow:auto;text-align:center;min-height:60px}'+
+ '.nx-vc svg{max-width:100%;height:auto}.nx-vc img{max-width:100%;height:auto}.nx-vc .nx-ld{font:500 13px system-ui,sans-serif;opacity:.6;padding:18px}'+
+ '.nx-err{font-size:13px;opacity:.8;margin:6px 0}';
+ document.head.appendChild(st);
+
+ /* ---------- tablas ---------- */
+ const SEP=/^\s*\|?\s*:?-+:?\s*(\|\s*:?-+:?\s*)*\|?\s*$/;
+ function splitRow(r){r=r.trim();if(r.charAt(0)==='|')r=r.slice(1);if(r.length&&r.charAt(r.length-1)==='|'&&r.charAt(r.length-2)!=='\\')r=r.slice(0,-1);
+  const out=[];let cur='';for(let i=0;i<r.length;i++){const c=r[i];if(c==='\\'&&r[i+1]==='|'){cur+='|';i++}else if(c==='|'){out.push(cur.trim());cur=''}else cur+=c}out.push(cur.trim());return out}
+ function tableHtml(head,al,rows,base){
+  const cell=(t,tag,a)=>'<'+tag+' style="text-align:'+a+'">'+base(String(t).replace(/<br\s*\/?>/gi,'\n'))+'</'+tag+'>';
+  const n=head.length,data=[head.map(plain)].concat(rows.map(r=>r.map(plain)));
+  return '<div class="nx-tbl" data-nxt="'+encodeURIComponent(JSON.stringify(data))+'"><div class="nx-tbw"><table><thead><tr>'+head.map((h,i)=>cell(h,'th',al[i]||'left')).join('')+'</tr></thead><tbody>'+
+   rows.map(r=>'<tr>'+head.map((_,i)=>cell(r[i]==null?'':r[i],'td',al[i]||'left')).join('')+'</tr>').join('')+'</tbody></table></div>'+
+   '<div class="nx-act"><button data-nxa="tcopy">Copiar tabla</button><button data-nxa="tcsv">Descargar CSV</button><button data-nxa="txls">Descargar Excel</button></div></div>'}
+ function nxTables(txt,hold,base){
+  const L=txt.split('\n'),out=[];
+  for(let i=0;i<L.length;i++){
+   const h=L[i],s=L[i+1];
+   if(s!==undefined&&h.indexOf('|')>=0&&s.indexOf('|')>=0&&SEP.test(s)){
+    const head=splitRow(h);
+    if(head.length>=2&&head.length<=12){
+     const al=splitRow(s).map(c=>/^:-+:$/.test(c)?'center':/-:$/.test(c)?'right':'left');
+     const rows=[];let j=i+2;
+     while(j<L.length&&L[j].trim()&&L[j].indexOf('|')>=0){rows.push(splitRow(L[j]));j++}
+     out.push('\n'+hold(tableHtml(head,al,rows,base))+'\n');i=j-1;continue}}
+   out.push(h)}
+  return out.join('\n')}
+
+ /* ---------- Mermaid y Chart.js ---------- */
+ const cache=new Map(),flight=new Set();let mid=0,mInit=false;
+ const kindKey=(k,code)=>k+hash(code);
+ function visBlock(kind,code){
+  const c=cache.get(kindKey(kind,code));
+  return '<div class="nx-vis" data-nxk="'+kind+'" data-nxc="'+encodeURIComponent(code)+'">'+
+   '<div class="nx-vc"'+(c?'':' data-nxp="1"')+'>'+(c||'<div class="nx-ld">'+(kind==='mermaid'?'Dibujando diagrama…':'Dibujando gráfica…')+'</div>')+'</div>'+
+   '<div class="nx-act">'+(kind==='mermaid'?'<button data-nxa="vsvg">Descargar SVG</button><button data-nxa="vpng">Descargar PNG</button><button data-nxa="vcode">Copiar código</button>':'<button data-nxa="vimg">Descargar PNG</button><button data-nxa="vcode">Copiar datos</button>')+'</div></div>'}
+ function finish(kind,code,html){
+  cache.set(kindKey(kind,code),html);
+  document.querySelectorAll('.nx-vis[data-nxk="'+kind+'"]').forEach(v=>{if(decodeURIComponent(v.dataset.nxc)===code){const b=v.querySelector('.nx-vc');if(b&&b.dataset.nxp){b.removeAttribute('data-nxp');b.innerHTML=html}}})}
+ const errHtml=(what,e,code)=>'<div class="nx-err" style="text-align:left">No pude dibujar '+what+' ('+esc2(String(e&&e.message||e).split('\n')[0].slice(0,120))+'). Esto fue lo que recibí:</div><pre style="text-align:left;white-space:pre-wrap;color:#1f2937;margin:0">'+esc2(code)+'</pre>';
+ async function renderMermaid(code){
+  try{
+   const M=await loadLib('mermaid');
+   if(!mInit){M.initialize({startOnLoad:false,securityLevel:'strict',theme:'default',htmlLabels:false,flowchart:{htmlLabels:false,useMaxWidth:true,curve:'basis'},mindmap:{useMaxWidth:true},fontFamily:'system-ui,Segoe UI,Arial,sans-serif'});mInit=true}
+   const id='nxm'+(++mid);let r;
+   try{r=await M.render(id,code)}finally{const e=document.getElementById('d'+id);if(e)e.remove()}
+   finish('mermaid',code,r.svg)
+  }catch(e){finish('mermaid',code,errHtml('el diagrama',e,code))}}
+ const CT=['bar','line','pie','doughnut','radar','polarArea'],PAL=['#4f7cff','#ff7a59','#2fbf8f','#f5b83d','#9b6bff','#ef5da8','#27b5d8','#8a9aa8'];
+ function chartCfg(code){
+  const j=JSON.parse(code);if(!j||CT.indexOf(j.type)<0||!Array.isArray(j.labels)||!Array.isArray(j.datasets)||!j.datasets.length)throw Error('formato de gráfica no válido');
+  const labels=j.labels.slice(0,50).map(String),pie=/pie|doughnut|polarArea/.test(j.type);
+  const ds=j.datasets.slice(0,8).map((d,i)=>{const data=(Array.isArray(d.data)?d.data:[]).slice(0,50).map(Number);
+   const o={label:String(d.label||'Serie '+(i+1)),data,borderWidth:pie?2:(j.type==='line'?3:1),borderColor:pie?'#fff':PAL[i%8]};
+   o.backgroundColor=pie?data.map((_,k)=>PAL[k%8]):(j.type==='line'||j.type==='radar'?PAL[i%8]+'33':PAL[i%8]);
+   if(j.type==='line'){o.tension=.3;o.pointRadius=3;o.fill=false}return o});
+  return{type:j.type,data:{labels,datasets:ds},options:{responsive:false,animation:false,devicePixelRatio:2,
+   plugins:{title:{display:!!j.title,text:String(j.title||''),color:'#1f2937',font:{size:16,weight:'bold'}},legend:{display:pie||ds.length>1,labels:{color:'#1f2937'}}},
+   scales:pie||j.type==='radar'?undefined:{x:{ticks:{color:'#374151'},grid:{color:'#e5e7eb'}},y:{ticks:{color:'#374151'},grid:{color:'#e5e7eb'},beginAtZero:true}}},
+   plugins:[{id:'bg',beforeDraw(c){const x=c.ctx;x.save();x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);x.restore()}}]}}
+ async function renderChart(code){
+  try{
+   const C=await loadLib('chart'),cfg=chartCfg(code),cv=document.createElement('canvas');cv.width=640;cv.height=/pie|doughnut|polarArea|radar/.test(cfg.type)?400:360;
+   const ch=new C(cv,cfg),url=cv.toDataURL('image/png');ch.destroy();
+   finish('chart',code,'<img alt="Gráfica" src="'+url+'">')
+  }catch(e){finish('chart',code,errHtml('la gráfica',e,code))}}
+
+ /* ---------- md() con tablas y bloques visuales ---------- */
+ const base=md;
+ md=function(s){
+  s=String(s==null?'':s);
+  if(s.indexOf('|')<0&&s.indexOf('```')<0)return base(s);
+  const B=[],hold=h=>'\u0001'+(B.push(h)-1)+'\u0001';
+  const parts=s.split(/(```[\s\S]*?(?:```|$))/);
+  s=parts.map((p,i)=>{
+   if(i%2){const m=p.match(/^```([\w-]*)[ \t]*\n?([\s\S]*?)```$/);
+    if(m){const l=m[1].toLowerCase();if(l==='mermaid'&&m[2].trim())return '\n'+hold(visBlock('mermaid',m[2].trim()))+'\n';if((l==='chart'||l==='grafica')&&m[2].trim())return '\n'+hold(visBlock('chart',m[2].trim()))+'\n'}
+    return p}
+   return nxTables(p,hold,base)}).join('');
+  let out=base(s);
+  if(B.length)out=out.replace(/(?:<br>)*\u0001(\d+)\u0001(?:<br>)*/g,(m,i)=>B[i]);
+  return out};
+
+ /* ---------- dibujar lo pendiente cuando aparece en el chat ---------- */
+ let tick=0;
+ function scan(){tick=0;document.querySelectorAll('.nx-vc[data-nxp="1"]').forEach(b=>{
+  const v=b.parentNode,k=v.dataset.nxk,code=decodeURIComponent(v.dataset.nxc),key=kindKey(k,code);
+  if(flight.has(key))return;flight.add(key);
+  (k==='chart'?renderChart:renderMermaid)(code).finally(()=>flight.delete(key))})}
+ const feedEl=document.getElementById('feed')||document.body;
+ new MutationObserver(()=>{if(!tick)tick=requestAnimationFrame(scan)}).observe(feedEl,{childList:true,subtree:true});
+
+ /* ---------- botones ---------- */
+ const dl=(blob,name)=>{const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},500)};
+ const say=m=>{try{toast(m)}catch(e){}};
+ function svgToPng(svgText){return new Promise((ok,no)=>{
+  const m=svgText.match(/viewBox="([\d.\s-]+)"/),vb=m?m[1].trim().split(/\s+/).map(Number):[0,0,800,600],w=Math.max(50,vb[2]),h=Math.max(50,vb[3]),k=2;
+  let tag=(svgText.match(/^<svg[^>]*>/)||['<svg>'])[0],nt=tag.replace(/\s(width|height|style)="[^"]*"/g,'').replace('<svg','<svg width="'+w+'" height="'+h+'"'+(/xmlns=/.test(tag)?'':' xmlns="http://www.w3.org/2000/svg"'));
+  const s=nt+svgText.slice(tag.length),img=new Image();
+  img.onload=()=>{const c=document.createElement('canvas');c.width=Math.round(w*k);c.height=Math.round(h*k);const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);x.drawImage(img,0,0,c.width,c.height);
+   try{c.toBlob(b=>b?ok(b):no(Error('png')),'image/png')}catch(e){no(e)}};img.onerror=()=>no(Error('svg'));
+  img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(s)})}
+ document.addEventListener('click',async e=>{
+  const b=e.target.closest&&e.target.closest('[data-nxa]');if(!b)return;
+  const a=b.dataset.nxa,tb=b.closest('.nx-tbl'),vs=b.closest('.nx-vis');
+  try{
+   if(tb){const data=JSON.parse(decodeURIComponent(tb.dataset.nxt));
+    if(a==='tcopy'){await navigator.clipboard.writeText(data.map(r=>r.join('\t')).join('\n'));say('Tabla copiada (pégala en Excel o Sheets)')}
+    else if(a==='tcsv'){const q=v=>'"'+String(v).replace(/"/g,'""')+'"';dl(new Blob(['\ufeff'+data.map(r=>r.map(q).join(',')).join('\r\n')],{type:'text/csv;charset=utf-8'}),'tabla-noryx.csv')}
+    else if(a==='txls'){b.textContent='Preparando…';try{const X=await loadLib('xlsx'),ws=X.utils.aoa_to_sheet(data),wb=X.utils.book_new();X.utils.book_append_sheet(wb,ws,'Tabla');X.writeFile(wb,'tabla-noryx.xlsx')}finally{b.textContent='Descargar Excel'}}}
+   else if(vs){const code=decodeURIComponent(vs.dataset.nxc);
+    if(a==='vcode'){await navigator.clipboard.writeText(code);say('Código copiado')}
+    else if(a==='vsvg'){const sv=vs.querySelector('svg');if(!sv){say('Aún no hay diagrama');return}dl(new Blob([sv.outerHTML.indexOf('xmlns=')>0?sv.outerHTML:sv.outerHTML.replace('<svg','<svg xmlns="http://www.w3.org/2000/svg"')],{type:'image/svg+xml'}),'diagrama-noryx.svg')}
+    else if(a==='vpng'){const sv=vs.querySelector('svg');if(!sv){say('Aún no hay diagrama');return}dl(await svgToPng(sv.outerHTML),'diagrama-noryx.png')}
+    else if(a==='vimg'){const im=vs.querySelector('img');if(!im){say('Aún no hay gráfica');return}const r=await fetch(im.src);dl(await r.blob(),'grafica-noryx.png')}}
+  }catch(err){say('No se pudo completar la acción')}});
+
+ /* ---------- Noryx entiende cuándo le piden tablas, mapas o gráficas ---------- */
+ const VIS=' FORMATO VISUAL (úsalo cuando lo pidan o cuando de verdad ayude): '+
+  '1) TABLAS: markdown con fila de encabezado y fila |---|---|, máximo 8 columnas, celdas cortas. Úsalas al comparar cosas. '+
+  '2) MAPAS CONCEPTUALES, MAPAS MENTALES, DIAGRAMAS DE FLUJO, ORGANIGRAMAS, LÍNEAS DE TIEMPO: un bloque de código con la etiqueta mermaid. Mapa conceptual o de ideas: `flowchart TD`, nodos con id corto y texto entre comillas dobles, y frases de enlace en las flechas, por ejemplo: A["Fotosíntesis"] -->|"produce"| B["Glucosa"]. Mapa mental: `mindmap` con sangría, raíz `root((Tema))` y ramas con texto simple sin paréntesis ni dos puntos. Línea de tiempo: `timeline` con `title` y filas `2001 : Hecho`. Cronograma: `gantt`. Interacciones: `sequenceDiagram`. Reglas: todo texto de nodo entre comillas dobles; ids de una sola palabra (A, B1); entre 6 y 20 nodos; sin HTML, sin \\n, sin estilos ni colores. '+
+  '3) GRÁFICAS: un bloque con la etiqueta chart y JSON válido: {"type":"bar|line|pie|doughnut|radar","title":"...","labels":["A","B"],"datasets":[{"label":"Serie","data":[1,2]}]}. Usa solo datos reales o dados por el usuario y di cuando sean estimaciones. '+
+  'Después del bloque agrega 1 a 3 líneas que lo expliquen. Nunca metas un diagrama dentro de otro bloque de código.';
+ const STRONG=/\b(mapa conceptual|mapas conceptuales|mapa mental|mapas mentales|mapa de ideas|organigrama|diagrama de flujo|flujograma|cuadro sinoptico|linea de tiempo|cuadro comparativo|tabla comparativa|mindmap|mind map|infografia)\b/,
+  VERB=/\b(haz|hazme|crea|creame|genera|generame|dame|arma|armame|elabora|elaborame|dibuja|dibujame|muestrame|prepara|preparame|organiza|ponlo|pon|pasalo|conviertelo|convierte|make|create|draw|build|show)\b/,
+  GEN=/\b(diagrama|esquema|tabla|grafica|grafico|chart|gantt|cronograma|resumen en tabla)\b/,
+  NO=/\btabla (del|de multiplicar|periodica|de verdad|de multiplicacion|de integrales|de derivadas|de valores)\b|^\s*(que|como) (es|son|se hace|se hacen|hago|puedo)\b|diagrama de (circuito|cuerpo libre|fase|bode|venn)|\bcircuito|tabla periodica|\bsql\b|create table/;
+ function wants(t){if(!t||t.length>600||t.charAt(0)==='/')return false;const n=typeof norm==='function'?norm(t):String(t).toLowerCase();
+  if(NO.test(n))return false;return STRONG.test(n)||(VERB.test(n)&&GEN.test(n))}
+ async function askVisual(t){
+  const c=conv(),h=((c&&c.msgs)||[]).slice(-17,-1).map(m=>({role:m.r=='u'?'user':'assistant',content:String(m.t||'').slice(0,1600)}));
+  const r=await ask([{role:'system',content:(SYS+(mem&&mem.name?' El usuario se llama '+mem.name+'.':'')+VIS).slice(0,3990)},...h,{role:'user',content:t}]);
+  return r&&r.t?{t:r.t,m:'Noryx · visual'}:null}
+ const _b=brain;
+ brain=async function(t,s){
+  if(!s&&typeof MAESTRO!=='undefined'&&MAESTRO&&wants(t)){try{const r=await askVisual(t);if(r)return r}catch(e){console.warn('NXVIS',e)}}
+  return _b(t,s)};
+ window.NXVIS={wants,md};
 })();
 </script>
 </body>
