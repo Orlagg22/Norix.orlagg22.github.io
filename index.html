@@ -5559,15 +5559,17 @@ async function imLocalAllLocal(q,wait){if(imList.length<2)return localVision(q,w
  return out.join('\n\n')}
 /* ===== Fotos del chat y del estudio: lectura con visión de Groq (Worker /v1/vision) y respuesta de Noryx (Worker /v1/chat) =====
    Si la nube no responde, cae al lector local de antes (imLocalAllLocal). Las claves nunca van en esta página. */
+const IMV_BASE=(()=>{try{return String(NORYX_API).replace(/\/v1\/chat$/,'')}catch(e){return 'https://api-llama-proxy.orlandogeovanni519.workers.dev'}})();
+const IMV_PROMPT='Transcribe todo el texto y las expresiones matemáticas de la imagen sin resolverlas. Usa texto plano: x^2, sqrt(x), ∫, a/b. Si hay figuras o diagramas, descríbelos y lista sus etiquetas y valores.';
 function imDataUrl(it,max,q){const d=it.cur||it.orig,c=document.createElement('canvas');c.width=d.width;c.height=d.height;c.getContext('2d').putImageData(d,0,0);
  const k=Math.min(1,max/Math.max(d.width,d.height)),t=document.createElement('canvas');t.width=Math.max(1,Math.round(d.width*k));t.height=Math.max(1,Math.round(d.height*k));
  const x=t.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,t.width,t.height);x.drawImage(c,0,0,t.width,t.height);return t.toDataURL('image/jpeg',q)}
 async function imVisionOne(it,q){
  let image=imDataUrl(it,1600,.88);if(image.length>3900000)image=imDataUrl(it,1200,.75);if(image.length>3900000)image=imDataUrl(it,900,.7);
- const prompt=(NX_VISION_PROMPT.generic+' Además, describe en pocas líneas lo que se ve (objetos, escena, colores, ambiente; si hay personas, solo descríbelas, no las identifiques). El usuario pidió lo siguiente; úsalo solo para saber qué detalles importan y NO lo respondas: «'+String(q||'').slice(0,300)+'»').slice(0,1500);
+ const prompt=(IMV_PROMPT+' Además, describe en pocas líneas lo que se ve (objetos, escena, colores, ambiente; si hay personas, solo descríbelas, no las identifiques). El usuario pidió lo siguiente; úsalo solo para saber qué detalles importan y NO lo respondas: «'+String(q||'').slice(0,300)+'»').slice(0,1500);
  for(let intento=0;intento<2;intento++){
   const ctrl=new AbortController(),tm=setTimeout(()=>ctrl.abort(),70000);
-  try{const r=await fetch(NX_VISION_BASE+'/v1/vision',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({kind:'generic',prompt,image}),signal:ctrl.signal});
+  try{const r=await fetch(IMV_BASE+'/v1/vision',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({kind:'generic',prompt,image}),signal:ctrl.signal});
    if(r.status===429&&intento===0){clearTimeout(tm);await new Promise(ok=>setTimeout(ok,4000));continue}
    if(!r.ok){window._nxVisionDiag='HTTP '+r.status;return null}
    const d=await r.json(),text=String(d&&d.text||'').replace(/<think>[\s\S]*?<\/think>/g,'').trim();
