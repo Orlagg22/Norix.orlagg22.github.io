@@ -21837,5 +21837,679 @@ html #nxEsc .ne-help{font-size:10.5px;opacity:.55}
  window.NXVIS={wants,md};
 })();
 </script>
+<script id="nx-docs-js">
+/* Noryx — crear documentos: Word (.docx), PDF, Excel (.xlsx), PowerPoint (.pptx), Markdown
+   Todo se genera en el navegador, sin librerías externas y sin internet (solo la redacción usa la IA).
+   Flujo: el usuario lo pide → la IA redacta el contenido en un bloque :::documento … ::: → se muestra una
+   tarjeta con vista previa y botones de descarga. También: "pásalo a Word/PDF/Excel" convierte la última respuesta
+   (sin IA) y "exporta la conversación a PDF" convierte todo el chat. */
+(function(root){
+'use strict';
+const IS_BROWSER=typeof document!=='undefined';
+if(IS_BROWSER){if(root.__nxDocs)return;root.__nxDocs=1}
+
+/* ============================== utilidades ============================== */
+const TE=new TextEncoder(),u8=s=>TE.encode(s);
+const xe=s=>String(s==null?'':s).replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f\ufffe\uffff]/g,'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const nrm=s=>String(s==null?'':s).normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+function concat(arr){let n=0;arr.forEach(a=>n+=a.length);const o=new Uint8Array(n);let p=0;arr.forEach(a=>{o.set(a,p);p+=a.length});return o}
+const CRCT=(()=>{const t=new Uint32Array(256);for(let n=0;n<256;n++){let c=n;for(let k=0;k<8;k++)c=c&1?0xEDB88320^(c>>>1):c>>>1;t[n]=c>>>0}return t})();
+function crc32(b){let c=0xFFFFFFFF;for(let i=0;i<b.length;i++)c=CRCT[(c^b[i])&255]^(c>>>8);return(c^0xFFFFFFFF)>>>0}
+/* ZIP sin compresión (suficiente para .docx/.xlsx/.pptx) */
+function zip(files){
+ const parts=[],cen=[];let off=0;const d=new Date();
+ const dt=(d.getHours()<<11)|(d.getMinutes()<<5)|(d.getSeconds()>>1),dd=((d.getFullYear()-1980)<<9)|((d.getMonth()+1)<<5)|d.getDate();
+ for(const f of files){
+  const nb=u8(f[0]),db=typeof f[1]==='string'?u8(f[1]):f[1],crc=crc32(db);
+  const lh=new Uint8Array(30+nb.length),v=new DataView(lh.buffer);
+  v.setUint32(0,0x04034b50,true);v.setUint16(4,20,true);v.setUint16(6,0x0800,true);v.setUint16(8,0,true);v.setUint16(10,dt,true);v.setUint16(12,dd,true);
+  v.setUint32(14,crc,true);v.setUint32(18,db.length,true);v.setUint32(22,db.length,true);v.setUint16(26,nb.length,true);v.setUint16(28,0,true);lh.set(nb,30);
+  const ch=new Uint8Array(46+nb.length),c=new DataView(ch.buffer);
+  c.setUint32(0,0x02014b50,true);c.setUint16(4,20,true);c.setUint16(6,20,true);c.setUint16(8,0x0800,true);c.setUint16(10,0,true);c.setUint16(12,dt,true);c.setUint16(14,dd,true);
+  c.setUint32(16,crc,true);c.setUint32(20,db.length,true);c.setUint32(24,db.length,true);c.setUint16(28,nb.length,true);c.setUint32(42,off,true);ch.set(nb,46);
+  parts.push(lh,db);cen.push(ch);off+=lh.length+db.length}
+ const cs=cen.reduce((a,b)=>a+b.length,0),end=new Uint8Array(22),e=new DataView(end.buffer);
+ e.setUint32(0,0x06054b50,true);e.setUint16(8,files.length,true);e.setUint16(10,files.length,true);e.setUint32(12,cs,true);e.setUint32(16,off,true);
+ return concat(parts.concat(cen,[end]))}
+
+/* ============================== Markdown → bloques ============================== */
+const SEP=/^\s*\|?\s*:?-+:?\s*(\|\s*:?-+:?\s*)*\|?\s*$/;
+function splitRow(r){r=r.trim();if(r.charAt(0)==='|')r=r.slice(1);if(r.length&&r.charAt(r.length-1)==='|'&&r.charAt(r.length-2)!=='\\')r=r.slice(0,-1);
+ const out=[];let cur='';for(let i=0;i<r.length;i++){const c=r[i];if(c==='\\'&&r[i+1]==='|'){cur+='|';i++}else if(c==='|'){out.push(cur.trim());cur=''}else cur+=c}out.push(cur.trim());return out}
+function inl(s){
+ s=String(s==null?'':s).replace(/<br\s*\/?>/gi,'\n');
+ const out=[];let last=0,m;const re=/\*\*\*([^*]+?)\*\*\*|\*\*([^*]+?)\*\*|(^|[\s(\u00bf\u00a1"\u201c])\*([^*\s][^*]*?)\*(?=$|[\s).,;:!?"\u201d])|`([^`]+)`|\[([^\]]+)\]\((https?:[^)\s]+)\)/g;
+ while((m=re.exec(s))){
+  if(m.index>last)out.push({t:s.slice(last,m.index)});
+  if(m[1]!=null)out.push({t:m[1],b:1,i:1});else if(m[2]!=null)out.push({t:m[2],b:1});else if(m[4]!=null){if(m[3])out.push({t:m[3]});out.push({t:m[4],i:1})}else if(m[5]!=null)out.push({t:m[5],c:1});else out.push({t:m[6]+' ('+m[7]+')'});
+  last=re.lastIndex}
+ if(last<s.length)out.push({t:s.slice(last)});
+ return out.length?out:[{t:''}]}
+const strip=s=>inl(s).map(r=>r.t).join('').replace(/\n+/g,' ').trim();
+const cellTxt=s=>/^\s*=/.test(String(s))?String(s).trim():strip(s);
+function parse(md){
+ const L=String(md||'').replace(/\r\n?/g,'\n').replace(/\t/g,'    ').split('\n'),B=[];let i=0;
+ const ulRe=/^(\s*)([-*•+])\s+(.*)$/,olRe=/^(\s*)(\d+)[.)]\s+(.*)$/,hRe=/^\s{0,3}(#{1,6})\s+(.*?)\s*#*\s*$/,hrRe=/^\s{0,3}([-*_])(\s*\1){2,}\s*$/;
+ const isTblAt=k=>k+1<L.length&&L[k].indexOf('|')>=0&&L[k+1].indexOf('|')>=0&&SEP.test(L[k+1]);
+ while(i<L.length){
+  const l=L[i];let m;
+  if(!l.trim()){i++;continue}
+  if(/^\s*```/.test(l)){const buf=[];i++;while(i<L.length&&!/^\s*```/.test(L[i])){buf.push(L[i]);i++}i++;B.push({k:'code',t:buf.join('\n')});continue}
+  if(hrRe.test(l)&&!ulRe.test(l)){B.push({k:'hr'});i++;continue}
+  if((m=l.match(hRe))){B.push({k:'h',l:Math.min(3,m[1].length),t:m[2]});i++;continue}
+  if(isTblAt(i)){
+   const head=splitRow(l),al=splitRow(L[i+1]).map(c=>/^:-+:$/.test(c)?'c':/-:$/.test(c)?'r':'l'),rows=[];i+=2;
+   while(i<L.length&&L[i].trim()&&L[i].indexOf('|')>=0){rows.push(splitRow(L[i]));i++}
+   const n=head.length;rows.forEach(r=>{while(r.length<n)r.push('');if(r.length>n)r.length=n});
+   B.push({k:'tbl',head,al,rows});continue}
+  if(ulRe.test(l)||olRe.test(l)){
+   const first=l.match(ulRe)||l.match(olRe),ord=!ulRe.test(l),items=[],stack=[];
+   while(i<L.length){
+    const x=L[i],mu=x.match(ulRe),mo=x.match(olRe),mm=mu||mo;
+    if(mm){
+     if(!mu!==ord&&mm[1].length<=first[1].length)break;
+     const n=mm[1].length;while(stack.length&&stack[stack.length-1]>n)stack.pop();if(!stack.length||stack[stack.length-1]<n)stack.push(n);
+     items.push({t:mm[3],lv:Math.min(2,stack.length-1)});i++}
+    else if(x.trim()&&/^\s{2,}\S/.test(x)&&items.length&&!isTblAt(i)){items[items.length-1].t+='\n'+x.trim();i++}
+    else break}
+   B.push({k:ord?'ol':'ul',items});continue}
+  if(/^\s*>/.test(l)){const buf=[];while(i<L.length&&/^\s*>/.test(L[i])){buf.push(L[i].replace(/^\s*>\s?/,''));i++}B.push({k:'quote',t:buf.join('\n')});continue}
+  const buf=[];
+  while(i<L.length&&L[i].trim()&&!/^\s*```/.test(L[i])&&!hRe.test(L[i])&&!(hrRe.test(L[i])&&!ulRe.test(L[i]))&&!ulRe.test(L[i])&&!olRe.test(L[i])&&!/^\s*>/.test(L[i])&&!isTblAt(i)){buf.push(L[i].trim());i++}
+  if(!buf.length){buf.push(l.trim());i++}
+  B.push({k:'p',t:buf.join('\n')})}
+ return B}
+
+/* ============================== Fórmulas (para mostrar y guardar valores) ============================== */
+const NUMRE=/^-?(0|[1-9]\d{0,14})(\.\d+)?$/;
+const fixF=f=>String(f).replace(/\bSUMA\s*\(/gi,'SUM(').replace(/\bPROMEDIO\s*\(/gi,'AVERAGE(').replace(/\bCONTAR\s*\(/gi,'COUNT(').replace(/\bREDONDEAR\s*\(/gi,'ROUND(').replace(/\bPRODUCTO\s*\(/gi,'PRODUCT(').replace(/\bMAXIMO\s*\(/gi,'MAX(').replace(/\bMINIMO\s*\(/gi,'MIN(').replace(/\bSI\s*\(/gi,'IF(').replace(/;/g,',');
+function cellVal(s){
+ s=String(s==null?'':s).trim();let m;
+ if(!s)return{s:''};
+ if(s.charAt(0)==='='&&s.length>1)return{f:fixF(s.slice(1))};
+ if(NUMRE.test(s))return{n:parseFloat(s)};
+ if((m=s.match(/^(-?)\$\s?(\d{1,3}(?:,\d{3})+|\d+)(\.\d+)?$/)))return{n:parseFloat(m[1]+m[2].replace(/,/g,'')+(m[3]||'')),fmt:'cur'};
+ if((m=s.match(/^(-?\d+(?:\.\d+)?)\s?%$/)))return{n:Math.round(parseFloat(m[1])*1e6)/1e8,fmt:'pct'};
+ if(/^-?\d{1,3}(,\d{3})+(\.\d+)?$/.test(s))return{n:parseFloat(s.replace(/,/g,'')),fmt:'int'};
+ return{s:cellTxt(s)}}
+const colIdx=c=>{let n=0;for(const ch of c)n=n*26+ch.charCodeAt(0)-64;return n-1};
+function colName(i){let s='';i++;while(i>0){const m=(i-1)%26;s=String.fromCharCode(65+m)+s;i=Math.floor((i-1)/26)}return s}
+function evalGrid(rows){
+ const memo={},stk={};
+ const raw=(r,c)=>{const x=rows[r]&&rows[r][c];return x==null?'':String(x).trim()};
+ const numAt=(r,c)=>{const s=raw(r,c);if(!s)return 0;if(s.charAt(0)==='=')return calc(r,c);const v=cellVal(s);return v.n!=null?v.n:0};
+ const numOnly=(r,c)=>{const s=raw(r,c);if(!s)return null;if(s.charAt(0)==='='){const v=calc(r,c);return typeof v==='number'&&isFinite(v)?v:null}const v=cellVal(s);return v.n!=null?v.n:null};
+ function calc(r,c){const k=r+','+c;if(k in memo)return memo[k];if(stk[k])return NaN;stk[k]=1;let out;try{out=run(raw(r,c).slice(1))}catch(e){out=NaN}delete stk[k];return memo[k]=out}
+ const flat=a=>{const o=[];a.forEach(x=>Array.isArray(x)?x.forEach(y=>o.push(y)):o.push(x));return o};
+ const FN={F_SUM:(...a)=>flat(a).reduce((s,x)=>s+x,0),F_PRODUCT:(...a)=>flat(a).reduce((s,x)=>s*x,1),F_AVERAGE:(...a)=>{const f=flat(a);return f.length?f.reduce((s,x)=>s+x,0)/f.length:NaN},
+  F_MIN:(...a)=>Math.min(...flat(a)),F_MAX:(...a)=>Math.max(...flat(a)),F_COUNT:(...a)=>flat(a).length,F_ABS:x=>Math.abs(x),F_ROUND:(x,n)=>{const p=Math.pow(10,n||0);return Math.round(x*p)/p}};
+ const RG=(c1,r1,c2,r2)=>{const o=[];for(let r=Math.min(r1,r2);r<=Math.max(r1,r2);r++)for(let c=Math.min(c1,c2);c<=Math.max(c1,c2);c++){const v=numOnly(r,c);if(v!=null)o.push(v)}return o};
+ function run(f){
+  let e=fixF(f).replace(/\$/g,'').toUpperCase();
+  e=e.replace(/\b([A-Z]{1,2})(\d{1,4}):([A-Z]{1,2})(\d{1,4})\b/g,(m,c1,r1,c2,r2)=>'RG('+colIdx(c1)+','+(r1-1)+','+colIdx(c2)+','+(r2-1)+')');
+  e=e.replace(/\b([A-Z]{1,2})(\d{1,4})\b(?!\s*\()/g,(m,c,r)=>'CL('+colIdx(c)+','+(r-1)+')');
+  e=e.replace(/(\d+(?:\.\d+)?)%/g,'($1/100)').replace(/\^/g,'**').replace(/\b(SUM|AVERAGE|MIN|MAX|COUNT|ROUND|ABS|PRODUCT)\s*\(/g,'F_$1(');
+  if(/[^0-9\s+\-*\/().,]/.test(e.replace(/RG|CL|F_(?:SUM|AVERAGE|MIN|MAX|COUNT|ROUND|ABS|PRODUCT)/g,'')))throw Error('f');
+  const fn=new Function('RG','CL','F_SUM','F_PRODUCT','F_AVERAGE','F_MIN','F_MAX','F_COUNT','F_ABS','F_ROUND','"use strict";return ('+e+')');
+  return fn(RG,(c,r)=>numAt(r,c),FN.F_SUM,FN.F_PRODUCT,FN.F_AVERAGE,FN.F_MIN,FN.F_MAX,FN.F_COUNT,FN.F_ABS,FN.F_ROUND)}
+ return{calc,raw}}
+function fmtNum(v,cur){const r=Math.round(v*100)/100,s=Math.abs(r).toLocaleString('en-US',{minimumFractionDigits:Number.isInteger(r)?0:2,maximumFractionDigits:2});return(r<0?'-':'')+(cur?'$':'')+s}
+function curColsOf(grid){
+ const n=Math.max(...grid.map(r=>r.length),1),cur=[];
+ for(let c=0;c<n;c++)cur[c]=grid.slice(1).some(r=>/^-?\$\s?\d/.test(String(r[c]==null?'':r[c]).trim()));
+ for(let pass=0;pass<3;pass++)grid.slice(1).forEach(r=>r.forEach((x,c)=>{
+  const f=String(x==null?'':x).trim();if(f.charAt(0)!=='='||f.indexOf('/')>=0||cur[c])return;
+  const refs=f.toUpperCase().match(/\$?[A-Z]{1,2}\$?\d{1,4}/g)||[];
+  if(refs.some(rf=>cur[colIdx(rf.replace(/[$\d]/g,''))]))cur[c]=true}));
+ return cur}
+/* Valores para mostrar en Word/PDF/PowerPoint: resuelve fórmulas y limpia el formato */
+function displayRows(head,rows){
+ const grid=[head].concat(rows),g=evalGrid(grid),ncol=head.length;
+ const cur=curColsOf(grid);
+ return grid.map((r,ri)=>r.map((x,ci)=>{
+  const s=String(x==null?'':x).trim();
+  if(ri>0&&s.charAt(0)==='='&&s.length>1){const v=g.calc(ri,ci);return typeof v==='number'&&isFinite(v)?fmtNum(v,cur[ci]):s}
+  return cellTxt(s)}))}
+
+/* ============================== Documento ============================== */
+function mkDoc(tipo,titulo,md){
+ const blocks=parse(md);
+ blocks.forEach(b=>{if(b.k==='tbl'){const d=displayRows(b.head,b.rows);b.dhead=d[0];b.drows=d.slice(1)}});
+ let t=strip(titulo||'');if(!t){const h=blocks.find(b=>b.k==='h');t=h?strip(h.t):'Documento'}
+ return{tipo,titulo:t,blocks,md}}
+function bodyBlocks(d){const b=d.blocks.slice();if(b[0]&&b[0].k==='h'&&b[0].l===1&&nrm(strip(b[0].t))===nrm(d.titulo))b.shift();return b}
+const slug=s=>(nrm(s).replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,50))||'documento';
+function colWeights(head,rows,min,max){const n=head.length;return head.map((h,c)=>clamp(Math.max(String(h).length,...rows.map(r=>String(r[c]==null?'':r[c]).length),1),min||4,max||40))}
+
+/* ============================== WORD (.docx) ============================== */
+const WNS='xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"';
+const XH='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>\n';
+function wrun(t,o){
+ if(t==='')return'';let pr='';
+ if(o.c)pr+='<w:rFonts w:ascii="Consolas" w:hAnsi="Consolas" w:cs="Consolas"/>';
+ if(o.b)pr+='<w:b/>';if(o.i)pr+='<w:i/>';
+ if(o.color)pr+='<w:color w:val="'+o.color+'"/>';if(o.sz)pr+='<w:sz w:val="'+o.sz+'"/><w:szCs w:val="'+o.sz+'"/>';
+ if(o.c)pr+='<w:shd w:val="clear" w:color="auto" w:fill="F1F3F5"/>';
+ return'<w:r>'+(pr?'<w:rPr>'+pr+'</w:rPr>':'')+'<w:t xml:space="preserve">'+xe(t)+'</w:t></w:r>'}
+function wruns(text,base){
+ base=base||{};const out=[];
+ String(text).split('\n').forEach((ln,ix)=>{if(ix)out.push('<w:r><w:br/></w:r>');inl(ln).forEach(r=>out.push(wrun(r.t,{b:r.b||base.b,i:r.i||base.i,c:r.c,color:base.color,sz:base.sz})))});
+ return out.join('')}
+const wP=(style,inner,extra)=>'<w:p><w:pPr>'+(style?'<w:pStyle w:val="'+style+'"/>':'')+(extra||'')+'</w:pPr>'+inner+'</w:p>';
+function docx(d){
+ const body=[],nums=[];let numId=2;
+ const tipoTitle=d.titulo;
+ body.push(wP('Title',wrun(tipoTitle,{})));
+ bodyBlocks(d).forEach(b=>{
+  if(b.k==='h')body.push(wP('Heading'+b.l,wruns(b.t)));
+  else if(b.k==='p')body.push(wP('',wruns(b.t)));
+  else if(b.k==='ul'||b.k==='ol'){
+   let id=1;if(b.k==='ol'){id=++numId;nums.push(id)}
+   b.items.forEach(it=>body.push(wP('ListParagraph',wruns(it.t),'<w:numPr><w:ilvl w:val="'+it.lv+'"/><w:numId w:val="'+id+'"/></w:numPr>')))}
+  else if(b.k==='quote')body.push(wP('Quote',wruns(b.t)));
+  else if(b.k==='code')String(b.t).split('\n').forEach(ln=>body.push(wP('Code','<w:r><w:t xml:space="preserve">'+xe(ln)+'</w:t></w:r>')));
+  else if(b.k==='hr')body.push(wP('','','<w:pBdr><w:bottom w:val="single" w:sz="6" w:space="1" w:color="C8CDD5"/></w:pBdr>'));
+  else if(b.k==='tbl'){
+   const n=b.head.length,W=colWeights(b.dhead,b.drows,4,36),tot=W.reduce((a,x)=>a+x,0);let g=W.map(x=>Math.max(700,Math.round(9360*x/tot)));const s=g.reduce((a,x)=>a+x,0);g=g.map(x=>Math.round(x*9360/s));
+   const cell=(txt,ci,hd,ri)=>'<w:tc><w:tcPr><w:tcW w:w="'+g[ci]+'" w:type="dxa"/>'+(hd?'<w:shd w:val="clear" w:color="auto" w:fill="4F7CFF"/>':(ri%2?'<w:shd w:val="clear" w:color="auto" w:fill="F4F6FB"/>':''))+'</w:tcPr>'+
+    '<w:p><w:pPr><w:spacing w:before="40" w:after="40"/>'+(b.al[ci]==='r'?'<w:jc w:val="right"/>':b.al[ci]==='c'?'<w:jc w:val="center"/>':'')+'</w:pPr>'+wruns(txt,hd?{b:1,color:'FFFFFF'}:{})+'</w:p></w:tc>';
+   const rows=['<w:tr><w:trPr><w:cantSplit/><w:tblHeader/></w:trPr>'+b.dhead.map((h,ci)=>cell(h,ci,1,0)).join('')+'</w:tr>'].concat(b.drows.map((r,ri)=>'<w:tr><w:trPr><w:cantSplit/></w:trPr>'+r.map((x,ci)=>cell(x,ci,0,ri)).join('')+'</w:tr>'));
+   body.push('<w:tbl><w:tblPr><w:tblStyle w:val="TableGrid"/><w:tblW w:w="9360" w:type="dxa"/><w:tblLayout w:type="fixed"/><w:tblLook w:val="04A0" w:firstRow="1" w:lastRow="0" w:firstColumn="0" w:lastColumn="0" w:noHBand="0" w:noVBand="1"/></w:tblPr><w:tblGrid>'+g.map(x=>'<w:gridCol w:w="'+x+'"/>').join('')+'</w:tblGrid>'+rows.join('')+'</w:tbl>');
+   body.push(wP('','','<w:spacing w:after="80"/>'))}});
+ const docXml=XH+'<w:document '+WNS+'><w:body>'+body.join('')+'<w:sectPr><w:footerReference w:type="default" r:id="rId3"/><w:pgSz w:w="12240" w:h="15840"/><w:pgMar w:top="1440" w:right="1440" w:bottom="1440" w:left="1440" w:header="708" w:footer="708" w:gutter="0"/></w:sectPr></w:body></w:document>';
+ const lvl=(i,fmt,txt,left)=>'<w:lvl w:ilvl="'+i+'"><w:start w:val="1"/><w:numFmt w:val="'+fmt+'"/><w:lvlText w:val="'+txt+'"/><w:lvlJc w:val="left"/><w:pPr><w:ind w:left="'+left+'" w:hanging="360"/></w:pPr></w:lvl>';
+ const numXml=XH+'<w:numbering '+WNS+'><w:abstractNum w:abstractNumId="0"><w:multiLevelType w:val="hybridMultilevel"/>'+lvl(0,'bullet','\u2022',720)+lvl(1,'bullet','\u25E6',1440)+lvl(2,'bullet','\u25AA',2160)+'</w:abstractNum>'+
+  '<w:abstractNum w:abstractNumId="1"><w:multiLevelType w:val="hybridMultilevel"/>'+lvl(0,'decimal','%1.',720)+lvl(1,'lowerLetter','%2.',1440)+lvl(2,'lowerRoman','%3.',2160)+'</w:abstractNum>'+
+  '<w:num w:numId="1"><w:abstractNumId w:val="0"/></w:num><w:num w:numId="2"><w:abstractNumId w:val="1"/></w:num>'+
+  nums.map(id=>'<w:num w:numId="'+id+'"><w:abstractNumId w:val="1"/><w:lvlOverride w:ilvl="0"><w:startOverride w:val="1"/></w:lvlOverride></w:num>').join('')+'</w:numbering>';
+ const sty=(id,name,pPr,rPr,extra)=>'<w:style w:type="paragraph" w:styleId="'+id+'"><w:name w:val="'+name+'"/><w:basedOn w:val="Normal"/>'+(extra||'')+'<w:qFormat/>'+(pPr?'<w:pPr>'+pPr+'</w:pPr>':'')+(rPr?'<w:rPr>'+rPr+'</w:rPr>':'')+'</w:style>';
+ const bd=side=>'<w:'+side+' w:val="single" w:sz="4" w:space="0" w:color="C8CDD5"/>';
+ const stylesXml=XH+'<w:styles '+WNS+'><w:docDefaults><w:rPrDefault><w:rPr><w:rFonts w:ascii="Calibri" w:hAnsi="Calibri" w:eastAsia="Calibri" w:cs="Calibri"/><w:sz w:val="22"/><w:szCs w:val="22"/><w:lang w:val="es-MX" w:eastAsia="en-US" w:bidi="ar-SA"/></w:rPr></w:rPrDefault><w:pPrDefault><w:pPr><w:spacing w:after="120" w:line="276" w:lineRule="auto"/></w:pPr></w:pPrDefault></w:docDefaults>'+
+  '<w:style w:type="paragraph" w:default="1" w:styleId="Normal"><w:name w:val="Normal"/><w:qFormat/></w:style>'+
+  '<w:style w:type="character" w:default="1" w:styleId="DefaultParagraphFont"><w:name w:val="Default Paragraph Font"/><w:uiPriority w:val="1"/><w:semiHidden/></w:style>'+
+  '<w:style w:type="table" w:default="1" w:styleId="TableNormal"><w:name w:val="Normal Table"/><w:uiPriority w:val="99"/><w:semiHidden/><w:tblPr><w:tblInd w:w="0" w:type="dxa"/><w:tblCellMar><w:top w:w="0" w:type="dxa"/><w:left w:w="108" w:type="dxa"/><w:bottom w:w="0" w:type="dxa"/><w:right w:w="108" w:type="dxa"/></w:tblCellMar></w:tblPr></w:style>'+
+  sty('Title','Title','<w:pBdr><w:bottom w:val="single" w:sz="12" w:space="4" w:color="4F7CFF"/></w:pBdr><w:spacing w:after="240"/>','<w:b/><w:color w:val="1F2937"/><w:sz w:val="52"/><w:szCs w:val="52"/>','<w:next w:val="Normal"/>')+
+  sty('Heading1','heading 1','<w:keepNext/><w:keepLines/><w:spacing w:before="360" w:after="120"/><w:outlineLvl w:val="0"/>','<w:b/><w:color w:val="1F3A8A"/><w:sz w:val="34"/><w:szCs w:val="34"/>','<w:next w:val="Normal"/>')+
+  sty('Heading2','heading 2','<w:keepNext/><w:keepLines/><w:spacing w:before="280" w:after="100"/><w:outlineLvl w:val="1"/>','<w:b/><w:color w:val="2F4FBF"/><w:sz w:val="28"/><w:szCs w:val="28"/>','<w:next w:val="Normal"/>')+
+  sty('Heading3','heading 3','<w:keepNext/><w:keepLines/><w:spacing w:before="200" w:after="80"/><w:outlineLvl w:val="2"/>','<w:b/><w:color w:val="374151"/><w:sz w:val="24"/><w:szCs w:val="24"/>','<w:next w:val="Normal"/>')+
+  sty('ListParagraph','List Paragraph','<w:spacing w:after="60"/><w:ind w:left="720"/><w:contextualSpacing/>','')+
+  sty('Quote','Quote','<w:pBdr><w:left w:val="single" w:sz="18" w:space="8" w:color="C8CDD5"/></w:pBdr><w:ind w:left="567"/>','<w:i/><w:color w:val="4B5563"/>')+
+  sty('Code','Code','<w:shd w:val="clear" w:color="auto" w:fill="F1F3F5"/><w:spacing w:after="0" w:line="240" w:lineRule="auto"/>','<w:rFonts w:ascii="Consolas" w:hAnsi="Consolas" w:cs="Consolas"/><w:sz w:val="19"/><w:szCs w:val="19"/>')+
+  sty('Footer','footer','<w:jc w:val="center"/><w:spacing w:after="0"/>','<w:color w:val="8A94A6"/><w:sz w:val="18"/><w:szCs w:val="18"/>')+
+  '<w:style w:type="table" w:styleId="TableGrid"><w:name w:val="Table Grid"/><w:basedOn w:val="TableNormal"/><w:uiPriority w:val="39"/><w:pPr><w:spacing w:after="0" w:line="240" w:lineRule="auto"/></w:pPr><w:tblPr><w:tblBorders>'+['top','left','bottom','right','insideH','insideV'].map(bd).join('')+'</w:tblBorders></w:tblPr></w:style></w:styles>';
+ const ftr=XH+'<w:ftr '+WNS+'><w:p><w:pPr><w:pStyle w:val="Footer"/></w:pPr><w:r><w:t xml:space="preserve">P\u00e1gina </w:t></w:r><w:r><w:fldChar w:fldCharType="begin"/></w:r><w:r><w:instrText xml:space="preserve"> PAGE </w:instrText></w:r><w:r><w:fldChar w:fldCharType="separate"/></w:r><w:r><w:t>1</w:t></w:r><w:r><w:fldChar w:fldCharType="end"/></w:r></w:p></w:ftr>';
+ const R='http://schemas.openxmlformats.org/officeDocument/2006/relationships';
+ return zip([
+  ['[Content_Types].xml',XH+'<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/><Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/><Override PartName="/word/numbering.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.numbering+xml"/><Override PartName="/word/footer1.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.footer+xml"/><Override PartName="/docProps/core.xml" ContentType="application/vnd.openxmlformats-package.core-properties+xml"/><Override PartName="/docProps/app.xml" ContentType="application/vnd.openxmlformats-officedocument.extended-properties+xml"/></Types>'],
+  ['_rels/.rels',XH+'<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="'+R+'/officeDocument" Target="word/document.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties" Target="docProps/core.xml"/><Relationship Id="rId3" Type="'+R+'/extended-properties" Target="docProps/app.xml"/></Relationships>'],
+  ['word/_rels/document.xml.rels',XH+'<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="'+R+'/styles" Target="styles.xml"/><Relationship Id="rId2" Type="'+R+'/numbering" Target="numbering.xml"/><Relationship Id="rId3" Type="'+R+'/footer" Target="footer1.xml"/></Relationships>'],
+  ['word/document.xml',docXml],['word/styles.xml',stylesXml],['word/numbering.xml',numXml],['word/footer1.xml',ftr],
+  ['docProps/core.xml',coreXml(d.titulo)],['docProps/app.xml',appXml('Microsoft Word')]])}
+function coreXml(title){const n=new Date().toISOString().replace(/\.\d+Z$/,'Z');return XH+'<cp:coreProperties xmlns:cp="http://schemas.openxmlformats.org/package/2006/metadata/core-properties" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><dc:title>'+xe(title)+'</dc:title><dc:creator>Noryx</dc:creator><dcterms:created xsi:type="dcterms:W3CDTF">'+n+'</dcterms:created><dcterms:modified xsi:type="dcterms:W3CDTF">'+n+'</dcterms:modified></cp:coreProperties>'}
+function appXml(app){return XH+'<Properties xmlns="http://schemas.openxmlformats.org/officeDocument/2006/extended-properties"><Application>'+app+'</Application></Properties>'}
+
+/* ============================== EXCEL (.xlsx) ============================== */
+function sheetsFrom(d){
+ const S=[],used=new Set();let cur='';
+ const nm=b=>{let base=String(b||'').replace(/[\[\]:*?\/\\]/g,' ').replace(/\s+/g,' ').trim().slice(0,31)||('Hoja '+(S.length+1)),x=base,k=2;
+  while(used.has(x.toLowerCase())){const suf=' '+k++;x=base.slice(0,31-suf.length)+suf}used.add(x.toLowerCase());return x};
+ d.blocks.forEach(b=>{
+  if(b.k==='h')cur=strip(b.t);
+  else if(b.k==='tbl'){S.push({name:nm(cur),rows:[b.head.map(cellTxt)].concat(b.rows.map(r=>r.map(x=>/^\s*=/.test(x)?String(x).trim():cellTxt(x))))});cur=''}});
+ if(!S.length){
+  const rows=[];
+  d.blocks.forEach(b=>{if(b.k==='h'||b.k==='p'||b.k==='quote'||b.k==='code')rows.push([strip(b.t)]);else if(b.k==='ul'||b.k==='ol')b.items.forEach(it=>rows.push([strip(it.t)]))});
+  S.push({name:nm(d.titulo||'Datos'),rows:rows.length?rows:[['']]})}
+ return S}
+function xlsx(d){
+ const sheets=sheetsFrom(d);
+ const R='http://schemas.openxmlformats.org/officeDocument/2006/relationships',NS='xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main"';
+ const sheetXml=sh=>{
+  const g=evalGrid(sh.rows),nC=Math.max(...sh.rows.map(r=>r.length),1),widths=new Array(nC).fill(8);
+  const curCols=curColsOf(sh.rows);
+  const rowsXml=sh.rows.map((r,ri)=>{
+   const cells=[];
+   for(let ci=0;ci<nC;ci++){
+    const x=r[ci],ref=colName(ci)+(ri+1),raw=x==null?'':String(x).trim(),v=cellVal(raw);
+    let len=raw.length;
+    if(ri===0){cells.push(raw===''?'<c r="'+ref+'" s="1"/>':'<c r="'+ref+'" s="1" t="inlineStr"><is><t xml:space="preserve">'+xe(raw)+'</t></is></c>');widths[ci]=Math.max(widths[ci],len*1.2+3);continue}
+    if(v.f!=null){const val=g.calc(ri,ci),ok=typeof val==='number'&&isFinite(val);len=ok?fmtNum(val,curCols[ci]).length:10;
+     cells.push('<c r="'+ref+'" s="'+(curCols[ci]?4:3)+'"><f>'+xe(v.f.replace(/;/g,','))+'</f>'+(ok?'<v>'+val+'</v>':'')+'</c>')}
+    else if(v.n!=null){const s=v.fmt==='cur'?4:v.fmt==='int'?7:v.fmt==='pct'?((Math.round(v.n*1e4)%100===0)?5:6):3;cells.push('<c r="'+ref+'" s="'+s+'"><v>'+v.n+'</v></c>')}
+    else if(raw==='')cells.push('<c r="'+ref+'" s="2"/>');
+    else cells.push('<c r="'+ref+'" s="2" t="inlineStr"><is><t xml:space="preserve">'+xe(v.s)+'</t></is></c>');
+    widths[ci]=Math.max(widths[ci],Math.min(len,60)*1.1+2)}
+   return'<row r="'+(ri+1)+'"'+(ri===0?' ht="22" customHeight="1"':'')+'>'+cells.join('')+'</row>'}).join('');
+  const nR=sh.rows.length,last=colName(nC-1)+nR;
+  return XH+'<worksheet '+NS+'><dimension ref="A1:'+last+'"/><sheetViews><sheetView workbookViewId="0"'+(sheets.indexOf(sh)===0?' tabSelected="1"':'')+' showGridLines="1">'+(nR>1?'<pane ySplit="1" topLeftCell="A2" activePane="bottomLeft" state="frozen"/><selection pane="bottomLeft" activeCell="A2" sqref="A2"/>':'')+'</sheetView></sheetViews><sheetFormatPr defaultRowHeight="15"/><cols>'+
+   widths.map((w,i)=>'<col min="'+(i+1)+'" max="'+(i+1)+'" width="'+clamp(Math.round(w*10)/10,9,60)+'" customWidth="1"/>').join('')+'</cols><sheetData>'+rowsXml+'</sheetData>'+(nR>1&&nC>1?'<autoFilter ref="A1:'+last+'"/>':'')+'<pageMargins left="0.7" right="0.7" top="0.75" bottom="0.75" header="0.3" footer="0.3"/></worksheet>'};
+ const bdr='<border><left style="thin"><color rgb="FFD0D5DD"/></left><right style="thin"><color rgb="FFD0D5DD"/></right><top style="thin"><color rgb="FFD0D5DD"/></top><bottom style="thin"><color rgb="FFD0D5DD"/></bottom><diagonal/></border>';
+ const xf=(fmt,font,fill,border,al)=>'<xf numFmtId="'+fmt+'" fontId="'+font+'" fillId="'+fill+'" borderId="'+border+'" xfId="0"'+(fmt?' applyNumberFormat="1"':'')+(font?' applyFont="1"':'')+(fill?' applyFill="1"':'')+(border?' applyBorder="1"':'')+' applyAlignment="1">'+al+'</xf>';
+ const top='<alignment vertical="top" wrapText="1"/>',topR='<alignment vertical="top"/>';
+ const styles=XH+'<styleSheet '+NS+'><numFmts count="1"><numFmt numFmtId="164" formatCode="&quot;$&quot;#,##0.00"/></numFmts><fonts count="2"><font><sz val="11"/><name val="Calibri"/><family val="2"/></font><font><b/><sz val="11"/><color rgb="FFFFFFFF"/><name val="Calibri"/><family val="2"/></font></fonts>'+
+  '<fills count="3"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill><fill><patternFill patternType="solid"><fgColor rgb="FF4F7CFF"/><bgColor indexed="64"/></patternFill></fill></fills><borders count="2"><border><left/><right/><top/><bottom/><diagonal/></border>'+bdr+'</borders>'+
+  '<cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs><cellXfs count="8">'+
+  xf(0,0,0,0,'')+xf(0,1,2,1,'<alignment vertical="center" wrapText="1"/>')+xf(0,0,0,1,top)+xf(0,0,0,1,topR)+xf(164,0,0,1,topR)+xf(9,0,0,1,topR)+xf(10,0,0,1,topR)+xf(3,0,0,1,topR)+
+  '</cellXfs><cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles></styleSheet>';
+ const files=[
+  ['[Content_Types].xml',XH+'<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/>'+sheets.map((s,i)=>'<Override PartName="/xl/worksheets/sheet'+(i+1)+'.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>').join('')+'<Override PartName="/docProps/core.xml" ContentType="application/vnd.openxmlformats-package.core-properties+xml"/><Override PartName="/docProps/app.xml" ContentType="application/vnd.openxmlformats-officedocument.extended-properties+xml"/></Types>'],
+  ['_rels/.rels',XH+'<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="'+R+'/officeDocument" Target="xl/workbook.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties" Target="docProps/core.xml"/><Relationship Id="rId3" Type="'+R+'/extended-properties" Target="docProps/app.xml"/></Relationships>'],
+  ['xl/workbook.xml',XH+'<workbook '+NS+' xmlns:r="'+R+'"><bookViews><workbookView xWindow="0" yWindow="0" windowWidth="24000" windowHeight="12000"/></bookViews><sheets>'+sheets.map((s,i)=>'<sheet name="'+xe(s.name)+'" sheetId="'+(i+1)+'" r:id="rId'+(i+1)+'"/>').join('')+'</sheets><calcPr calcId="191029" fullCalcOnLoad="1"/></workbook>'],
+  ['xl/_rels/workbook.xml.rels',XH+'<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'+sheets.map((s,i)=>'<Relationship Id="rId'+(i+1)+'" Type="'+R+'/worksheet" Target="worksheets/sheet'+(i+1)+'.xml"/>').join('')+'<Relationship Id="rId'+(sheets.length+1)+'" Type="'+R+'/styles" Target="styles.xml"/></Relationships>'],
+  ['xl/styles.xml',styles],['docProps/core.xml',coreXml(d.titulo)],['docProps/app.xml',appXml('Microsoft Excel')]];
+ sheets.forEach((s,i)=>files.push(['xl/worksheets/sheet'+(i+1)+'.xml',sheetXml(s)]));
+ return zip(files)}
+
+/* ============================== Diapositivas (modelo común para PPTX y PDF) ============================== */
+const SW=12192000,SH=6858000,PT=12700,IN=914400,MX=640080;
+const C={ink:'1F2937',dark:'0B1020',acc:'4F7CFF',soft:'AFC0FF',gray:'8A94A6',head:'1F3A8A'};
+function estLines(txt,wEmu,sz){const cpl=Math.max(6,Math.floor(wEmu/PT/(sz*0.5)));return String(txt).split('\n').reduce((n,s)=>n+Math.max(1,Math.ceil(strip(s).length/cpl)),0)}
+function itemSz(it,sz){return it.k==='s'?sz+2:it.k==='c'?Math.max(10,sz-3):sz}
+function estH(items,sz,w){let h=0;items.forEach(it=>{const fs=itemSz(it,sz),ind=it.k==='b'?(0.4+0.4*(it.lv||0))*IN:0;h+=estLines(it.t,w-ind,fs)*fs*1.2*PT+fs*0.5*PT});return h}
+function fitChunks(items,w,h){
+ for(const sz of[30,28,26,24,22,20,18,16,14])if(estH(items,sz,w)<=h)return[{items,sz}];
+ if(items.length<2)return[{items,sz:14}];
+ const mid=Math.ceil(items.length/2);return fitChunks(items.slice(0,mid),w,h).concat(fitChunks(items.slice(mid),w,h))}
+function layoutSlides(d){
+ const blocks=d.blocks,hasHr=blocks.some(b=>b.k==='hr');
+ let groups=[],cur=[];
+ blocks.forEach(b=>{if(hasHr){if(b.k==='hr'){groups.push(cur);cur=[]}else cur.push(b)}else{if(b.k==='h'&&b.l<=2&&cur.length){groups.push(cur);cur=[]}cur.push(b)}});
+ groups.push(cur);groups=groups.filter(g=>g.length);
+ const slides=[];
+ const isCover=g=>g.every(b=>b.k==='h'||b.k==='p')&&g.some(b=>b.k==='h'||b.k==='p');
+ let start=0;
+ if(groups.length&&isCover(groups[0])&&groups[0].length<=3){
+  const g=groups[0],h=g.find(b=>b.k==='h'),ps=g.filter(b=>b.k==='p');
+  slides.push({cover:1,title:h?strip(h.t):d.titulo,sub:ps.map(p=>strip(p.t)).join('\n')});start=1}
+ else slides.push({cover:1,title:d.titulo,sub:''});
+ const W=SW-2*MX,BH=SH-1.95*IN-0.75*IN;
+ for(let gi=start;gi<groups.length;gi++){
+  const g=groups[gi];let title=d.titulo,i0=0;
+  if(g[0].k==='h'){title=strip(g[0].t);i0=1}
+  const units=[];let u={items:[],tbl:null};
+  const push=()=>{if(u.items.length||u.tbl)units.push(u);u={items:[],tbl:null}};
+  g.slice(i0).forEach(b=>{
+   if(b.k==='tbl'){if(u.tbl)push();u.tbl=b}
+   else{if(u.tbl)push();
+    if(b.k==='ul'||b.k==='ol')b.items.forEach((it,n)=>u.items.push({k:'b',t:it.t,lv:it.lv,ord:b.k==='ol'?n+1:0}));
+    else if(b.k==='p')u.items.push({k:'p',t:b.t});
+    else if(b.k==='h')u.items.push({k:'s',t:b.t});
+    else if(b.k==='code')u.items.push({k:'c',t:b.t});
+    else if(b.k==='quote')u.items.push({k:'q',t:b.t})}});
+  push();
+  if(!units.length)units.push({items:[],tbl:null});
+  let first=true;
+  units.forEach(un=>{
+   const mk=(extra)=>{slides.push(Object.assign({title:first?title:title+' (cont.)'},extra));first=false};
+   if(un.tbl){
+    const txtH=un.items.length?Math.min(BH*0.38,estH(un.items,18,W)):0,fit=un.items.length?fitChunks(un.items,W,txtH)[0]:{items:[],sz:18};
+    const n=un.tbl.dhead.length,sz=n>6?12:n>4?14:n>3?16:18,rowH=(sz*1.2+9)*PT,avail=BH-(fit.items.length?txtH+0.15*IN:0),per=Math.max(2,Math.floor(avail/rowH)-1);
+    const rows=un.tbl.drows;
+    for(let r=0;r<Math.max(1,rows.length);r+=per){
+     mk({items:r===0?fit.items:[],isz:fit.sz,tbl:{head:un.tbl.dhead,al:un.tbl.al,rows:rows.slice(r,r+per),sz}})}}
+   else fitChunks(un.items,W,BH).forEach(ch=>mk({items:ch.items,isz:ch.sz}))})}
+ return slides}
+function slideShapes(s,n,total){
+ const out=[],W=SW-2*MX;
+ if(s.cover){
+  const len=String(s.title).length,fs=len>70?30:len>40?38:46;
+  out.push({t:'rect',x:0,y:0,w:SW,h:SH,fill:C.dark});
+  out.push({t:'rect',x:MX,y:2.35*IN,w:1.4*IN,h:0.07*IN,fill:C.acc});
+  out.push({t:'text',x:MX,y:0.9*IN,w:W,h:1.35*IN,anchor:'b',paras:[{runs:[{t:s.title}],sz:fs,color:'FFFFFF',bold:1,aft:0}]});
+  if(s.sub)out.push({t:'text',x:MX,y:2.7*IN,w:W,h:2.2*IN,anchor:'t',paras:String(s.sub).split('\n').map(x=>({runs:[{t:x}],sz:22,color:C.soft,aft:8}))});
+  return{bg:C.dark,shapes:out}}
+ out.push({t:'rect',x:0,y:0,w:SW,h:0.14*IN,fill:C.acc});
+ const tl=String(s.title).length,ts=tl>80?24:tl>50?28:32;
+ out.push({t:'text',x:MX,y:0.4*IN,w:W,h:1.05*IN,anchor:'ctr',paras:[{runs:[{t:s.title}],sz:ts,color:C.dark,bold:1,aft:0}]});
+ out.push({t:'rect',x:MX,y:1.5*IN,w:1.2*IN,h:0.05*IN,fill:C.acc});
+ let y=1.8*IN;
+ if(s.items&&s.items.length){
+  const sz=s.isz||20;
+  const paras=s.items.map(it=>{
+   const fs=itemSz(it,sz);
+   if(it.k==='b')return{runs:inl(it.t),sz:fs,color:C.ink,bu:it.ord?'num':(['\u2022','\u2013','\u00b7'][it.lv||0]),num:it.ord,lv:it.lv||0,aft:Math.round(fs*0.5)};
+   if(it.k==='s')return{runs:inl(it.t),sz:fs,color:C.head,bold:1,aft:Math.round(fs*0.4)};
+   if(it.k==='c')return{runs:[{t:it.t,c:1}],sz:fs,color:C.ink,mono:1,aft:4};
+   if(it.k==='q')return{runs:inl(it.t),sz:fs,color:'4B5563',ital:1,aft:Math.round(fs*0.5)};
+   return{runs:inl(it.t),sz:fs,color:C.ink,aft:Math.round(fs*0.5)}});
+  const h=s.tbl?Math.min(SH-y-0.75*IN,estH(s.items,sz,W)+0.1*IN):SH-y-0.75*IN;
+  out.push({t:'text',x:MX,y,w:W,h,anchor:'t',paras});y+=h+0.12*IN}
+ if(s.tbl){
+  const t=s.tbl,wts=colWeights(t.head,t.rows,4,30),tot=wts.reduce((a,x)=>a+x,0);let cols=wts.map(x=>Math.max(0.6*IN,Math.round(W*x/tot)));const cs=cols.reduce((a,x)=>a+x,0);cols=cols.map(x=>Math.round(x*W/cs));
+  const rows=[{h:Math.round((t.sz*1.2+9)*PT),cells:t.head.map((x,i)=>({t:x,b:1,color:'FFFFFF',fill:C.acc,al:t.al[i]}))}];
+  t.rows.forEach((r,ri)=>{
+   const lines=Math.max(...r.map((x,i)=>estLines(x,cols[i]-0.2*IN,t.sz)),1);
+   rows.push({h:Math.round((lines*t.sz*1.2+9)*PT),cells:r.map((x,i)=>({t:x,color:C.ink,fill:ri%2?'F4F6FB':'FFFFFF',al:t.al[i]}))})});
+  out.push({t:'table',x:MX,y,cols,rows,sz:t.sz})}
+ out.push({t:'text',x:SW-1.6*IN,y:SH-0.55*IN,w:1.0*IN,h:0.3*IN,anchor:'ctr',paras:[{runs:[{t:String(n)}],sz:11,color:C.gray,al:'r',aft:0}]});
+ return{bg:'FFFFFF',shapes:out}}
+
+/* ============================== POWERPOINT (.pptx) ============================== */
+function pptx(d){
+ const slides=layoutSlides(d),NSP='xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" xmlns:p="http://schemas.openxmlformats.org/presentationml/2006/main"';
+ const R='http://schemas.openxmlformats.org/officeDocument/2006/relationships';
+ const grp='<p:nvGrpSpPr><p:cNvPr id="1" name=""/><p:cNvGrpSpPr/><p:nvPr/></p:nvGrpSpPr><p:grpSpPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="0" cy="0"/><a:chOff x="0" y="0"/><a:chExt cx="0" cy="0"/></a:xfrm></p:grpSpPr>';
+ const rpr=(o,tag)=>'<a:'+(tag||'rPr')+' lang="es-MX" sz="'+Math.round(o.sz*100)+'"'+(o.b?' b="1"':'')+(o.i?' i="1"':'')+' dirty="0"><a:solidFill><a:srgbClr val="'+o.color+'"/></a:solidFill><a:latin typeface="'+(o.c?'Consolas':'Calibri')+'"/><a:cs typeface="'+(o.c?'Consolas':'Calibri')+'"/></a:'+(tag||'rPr')+'>';
+ const rect=(sh,id)=>'<p:sp><p:nvSpPr><p:cNvPr id="'+id+'" name="Forma '+id+'"/><p:cNvSpPr/><p:nvPr/></p:nvSpPr><p:spPr><a:xfrm><a:off x="'+Math.round(sh.x)+'" y="'+Math.round(sh.y)+'"/><a:ext cx="'+Math.round(sh.w)+'" cy="'+Math.round(sh.h)+'"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom><a:solidFill><a:srgbClr val="'+sh.fill+'"/></a:solidFill><a:ln><a:noFill/></a:ln></p:spPr><p:txBody><a:bodyPr/><a:lstStyle/><a:p><a:endParaRPr lang="es-MX"/></a:p></p:txBody></p:sp>';
+ const text=(sh,id,name)=>'<p:sp><p:nvSpPr><p:cNvPr id="'+id+'" name="'+name+'"/><p:cNvSpPr txBox="1"/><p:nvPr/></p:nvSpPr><p:spPr><a:xfrm><a:off x="'+Math.round(sh.x)+'" y="'+Math.round(sh.y)+'"/><a:ext cx="'+Math.round(sh.w)+'" cy="'+Math.round(sh.h)+'"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom><a:noFill/></p:spPr><p:txBody><a:bodyPr wrap="square" lIns="0" tIns="0" rIns="0" bIns="0" anchor="'+sh.anchor+'"><a:normAutofit/></a:bodyPr><a:lstStyle/>'+
+  sh.paras.map(p=>{
+   const mar=p.bu?Math.round((0.45+0.4*(p.lv||0))*IN):0;
+   const ppr='<a:pPr marL="'+mar+'" indent="'+(p.bu?-Math.round(0.4*IN):0)+'"'+(p.al==='r'?' algn="r"':p.al==='ctr'?' algn="ctr"':'')+'><a:spcAft><a:spcPts val="'+Math.round((p.aft||0)*100)+'"/></a:spcAft>'+(p.bu==='num'?'<a:buClr><a:srgbClr val="'+C.acc+'"/></a:buClr><a:buFont typeface="+mj-lt"/><a:buAutoNum type="arabicPeriod" startAt="'+p.num+'"/>':p.bu?'<a:buClr><a:srgbClr val="'+C.acc+'"/></a:buClr><a:buFont typeface="Arial"/><a:buChar char="'+xe(p.bu)+'"/>':'<a:buNone/>')+'</a:pPr>';
+   return'<a:p>'+ppr+p.runs.map(r=>r.t===''?'':'<a:r>'+rpr({sz:p.sz,color:p.color,b:r.b||p.bold,i:r.i||p.ital,c:r.c||p.mono})+'<a:t>'+xe(r.t.replace(/\n/g,' '))+'</a:t></a:r>').join('')+'<a:endParaRPr lang="es-MX" sz="'+Math.round(p.sz*100)+'" dirty="0"/></a:p>'}).join('')+'</p:txBody></p:sp>';
+ const table=(sh,id)=>{
+  const tw=sh.cols.reduce((a,x)=>a+x,0),th=sh.rows.reduce((a,r)=>a+r.h,0);
+  return'<p:graphicFrame><p:nvGraphicFramePr><p:cNvPr id="'+id+'" name="Tabla"/><p:cNvGraphicFramePr><a:graphicFrameLocks noGrp="1"/></p:cNvGraphicFramePr><p:nvPr/></p:nvGraphicFramePr><p:xfrm><a:off x="'+Math.round(sh.x)+'" y="'+Math.round(sh.y)+'"/><a:ext cx="'+tw+'" cy="'+th+'"/></p:xfrm><a:graphic><a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/table"><a:tbl><a:tblPr firstRow="1" bandRow="1"/><a:tblGrid>'+sh.cols.map(w=>'<a:gridCol w="'+w+'"/>').join('')+'</a:tblGrid>'+
+   sh.rows.map(r=>'<a:tr h="'+r.h+'">'+r.cells.map(c=>'<a:tc><a:txBody><a:bodyPr/><a:lstStyle/><a:p><a:pPr'+(c.al==='r'?' algn="r"':c.al==='c'?' algn="ctr"':'')+'/>'+(c.t===''?'':'<a:r>'+rpr({sz:sh.sz,color:c.color,b:c.b})+'<a:t>'+xe(c.t)+'</a:t></a:r>')+'<a:endParaRPr lang="es-MX" sz="'+Math.round(sh.sz*100)+'" dirty="0"/></a:p></a:txBody><a:tcPr marL="91440" marR="91440" marT="45720" marB="45720" anchor="ctr"><a:lnL w="6350"><a:solidFill><a:srgbClr val="D0D5DD"/></a:solidFill></a:lnL><a:lnR w="6350"><a:solidFill><a:srgbClr val="D0D5DD"/></a:solidFill></a:lnR><a:lnT w="6350"><a:solidFill><a:srgbClr val="D0D5DD"/></a:solidFill></a:lnT><a:lnB w="6350"><a:solidFill><a:srgbClr val="D0D5DD"/></a:solidFill></a:lnB><a:solidFill><a:srgbClr val="'+c.fill+'"/></a:solidFill></a:tcPr></a:tc>').join('')+'</a:tr>').join('')+'</a:tbl></a:graphicData></a:graphic></p:graphicFrame>'};
+ const slideXml=(s,n)=>{
+  const m=slideShapes(s,n,slides.length);let id=1;
+  const sh=m.shapes.map(x=>{id++;return x.t==='rect'?rect(x,id):x.t==='table'?table(x,id):text(x,id,x.anchor==='ctr'&&x.h>0.9*IN?'T\u00edtulo':'Texto '+id)}).join('');
+  return XH+'<p:sld '+NSP+'><p:cSld><p:bg><p:bgPr><a:solidFill><a:srgbClr val="'+m.bg+'"/></a:solidFill><a:effectLst/></p:bgPr></p:bg><p:spTree>'+grp+sh+'</p:spTree></p:cSld><p:clrMapOvr><a:masterClrMapping/></p:clrMapOvr></p:sld>'};
+ const N=slides.length;
+ const empty='<a:solidFill><a:schemeClr val="phClr"/></a:solidFill>',ln='<a:ln w="6350"><a:solidFill><a:schemeClr val="phClr"/></a:solidFill></a:ln>',es='<a:effectStyle><a:effectLst/></a:effectStyle>';
+ const theme=XH+'<a:theme xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" name="Noryx"><a:themeElements><a:clrScheme name="Noryx"><a:dk1><a:srgbClr val="1F2937"/></a:dk1><a:lt1><a:srgbClr val="FFFFFF"/></a:lt1><a:dk2><a:srgbClr val="0B1020"/></a:dk2><a:lt2><a:srgbClr val="EEF2FF"/></a:lt2><a:accent1><a:srgbClr val="4F7CFF"/></a:accent1><a:accent2><a:srgbClr val="FF7A59"/></a:accent2><a:accent3><a:srgbClr val="2FBF8F"/></a:accent3><a:accent4><a:srgbClr val="F5B83D"/></a:accent4><a:accent5><a:srgbClr val="9B6BFF"/></a:accent5><a:accent6><a:srgbClr val="EF5DA8"/></a:accent6><a:hlink><a:srgbClr val="2563EB"/></a:hlink><a:folHlink><a:srgbClr val="7C3AED"/></a:folHlink></a:clrScheme>'+
+  '<a:fontScheme name="Noryx"><a:majorFont><a:latin typeface="Calibri"/><a:ea typeface=""/><a:cs typeface=""/></a:majorFont><a:minorFont><a:latin typeface="Calibri"/><a:ea typeface=""/><a:cs typeface=""/></a:minorFont></a:fontScheme>'+
+  '<a:fmtScheme name="Noryx"><a:fillStyleLst>'+empty+empty+empty+'</a:fillStyleLst><a:lnStyleLst>'+ln+ln+ln+'</a:lnStyleLst><a:effectStyleLst>'+es+es+es+'</a:effectStyleLst><a:bgFillStyleLst>'+empty+empty+empty+'</a:bgFillStyleLst></a:fmtScheme></a:themeElements></a:theme>';
+ const master=XH+'<p:sldMaster '+NSP+'><p:cSld><p:bg><p:bgRef idx="1001"><a:schemeClr val="bg1"/></p:bgRef></p:bg><p:spTree>'+grp+'</p:spTree></p:cSld><p:clrMap bg1="lt1" tx1="dk1" bg2="lt2" tx2="dk2" accent1="accent1" accent2="accent2" accent3="accent3" accent4="accent4" accent5="accent5" accent6="accent6" hlink="hlink" folHlink="folHlink"/><p:sldLayoutIdLst><p:sldLayoutId id="2147483649" r:id="rId1"/></p:sldLayoutIdLst><p:txStyles><p:titleStyle><a:lvl1pPr><a:defRPr sz="4400"/></a:lvl1pPr></p:titleStyle><p:bodyStyle><a:lvl1pPr><a:defRPr sz="2800"/></a:lvl1pPr></p:bodyStyle><p:otherStyle><a:defRPr/></p:otherStyle></p:txStyles></p:sldMaster>';
+ const layout=XH+'<p:sldLayout '+NSP+' type="blank" preserve="1"><p:cSld name="En blanco"><p:spTree>'+grp+'</p:spTree></p:cSld><p:clrMapOvr><a:masterClrMapping/></p:clrMapOvr></p:sldLayout>';
+ const rel=(id,type,target)=>'<Relationship Id="'+id+'" Type="'+R+'/'+type+'" Target="'+target+'"/>',RS='<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">';
+ const files=[
+  ['[Content_Types].xml',XH+'<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/ppt/presentation.xml" ContentType="application/vnd.openxmlformats-officedocument.presentationml.presentation.main+xml"/><Override PartName="/ppt/slideMasters/slideMaster1.xml" ContentType="application/vnd.openxmlformats-officedocument.presentationml.slideMaster+xml"/><Override PartName="/ppt/slideLayouts/slideLayout1.xml" ContentType="application/vnd.openxmlformats-officedocument.presentationml.slideLayout+xml"/><Override PartName="/ppt/theme/theme1.xml" ContentType="application/vnd.openxmlformats-officedocument.theme+xml"/><Override PartName="/ppt/presProps.xml" ContentType="application/vnd.openxmlformats-officedocument.presentationml.presProps+xml"/><Override PartName="/ppt/viewProps.xml" ContentType="application/vnd.openxmlformats-officedocument.presentationml.viewProps+xml"/><Override PartName="/ppt/tableStyles.xml" ContentType="application/vnd.openxmlformats-officedocument.presentationml.tableStyles+xml"/>'+slides.map((s,i)=>'<Override PartName="/ppt/slides/slide'+(i+1)+'.xml" ContentType="application/vnd.openxmlformats-officedocument.presentationml.slide+xml"/>').join('')+'<Override PartName="/docProps/core.xml" ContentType="application/vnd.openxmlformats-package.core-properties+xml"/><Override PartName="/docProps/app.xml" ContentType="application/vnd.openxmlformats-officedocument.extended-properties+xml"/></Types>'],
+  ['_rels/.rels',XH+RS+rel('rId1','officeDocument','ppt/presentation.xml')+'<Relationship Id="rId2" Type="http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties" Target="docProps/core.xml"/>'+rel('rId3','extended-properties','docProps/app.xml')+'</Relationships>'],
+  ['ppt/presentation.xml',XH+'<p:presentation '+NSP+' saveSubsetFonts="1"><p:sldMasterIdLst><p:sldMasterId id="2147483648" r:id="rId1"/></p:sldMasterIdLst><p:sldIdLst>'+slides.map((s,i)=>'<p:sldId id="'+(256+i)+'" r:id="rId'+(i+2)+'"/>').join('')+'</p:sldIdLst><p:sldSz cx="'+SW+'" cy="'+SH+'"/><p:notesSz cx="6858000" cy="9144000"/></p:presentation>'],
+  ['ppt/_rels/presentation.xml.rels',XH+RS+rel('rId1','slideMaster','slideMasters/slideMaster1.xml')+slides.map((s,i)=>rel('rId'+(i+2),'slide','slides/slide'+(i+1)+'.xml')).join('')+rel('rId'+(N+2),'theme','theme/theme1.xml')+rel('rId'+(N+3),'presProps','presProps.xml')+rel('rId'+(N+4),'viewProps','viewProps.xml')+rel('rId'+(N+5),'tableStyles','tableStyles.xml')+'</Relationships>'],
+  ['ppt/slideMasters/slideMaster1.xml',master],['ppt/slideMasters/_rels/slideMaster1.xml.rels',XH+RS+rel('rId1','slideLayout','../slideLayouts/slideLayout1.xml')+rel('rId2','theme','../theme/theme1.xml')+'</Relationships>'],
+  ['ppt/slideLayouts/slideLayout1.xml',layout],['ppt/slideLayouts/_rels/slideLayout1.xml.rels',XH+RS+rel('rId1','slideMaster','../slideMasters/slideMaster1.xml')+'</Relationships>'],
+  ['ppt/theme/theme1.xml',theme],
+  ['ppt/presProps.xml',XH+'<p:presentationPr '+NSP+'/>'],['ppt/viewProps.xml',XH+'<p:viewPr '+NSP+'/>'],
+  ['ppt/tableStyles.xml',XH+'<a:tblStyleLst xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" def="{5C22544A-7EE6-4342-B048-85BDC9FD1C3A}"/>'],
+  ['docProps/core.xml',coreXml(d.titulo)],['docProps/app.xml',appXml('Microsoft Office PowerPoint')]];
+ slides.forEach((s,i)=>{files.push(['ppt/slides/slide'+(i+1)+'.xml',slideXml(s,i+1)]);files.push(['ppt/slides/_rels/slide'+(i+1)+'.xml.rels',XH+RS+rel('rId1','slideLayout','../slideLayouts/slideLayout1.xml')+'</Relationships>'])});
+ return zip(files)}
+
+/* ============================== PDF (escritor propio, Helvetica/Courier, WinAnsi) ============================== */
+const HW={
+ r:[278,278,355,556,556,889,667,191,333,333,389,584,278,333,278,278,556,556,556,556,556,556,556,556,556,556,278,278,584,584,584,556,1015,
+  667,667,722,722,667,611,778,722,278,500,667,556,833,722,778,667,778,722,667,611,722,667,944,667,667,611,278,278,278,469,556,333,
+  556,556,500,556,556,278,556,556,222,222,500,222,833,556,556,556,556,333,500,278,556,500,722,500,500,500,334,260,334,584],
+ b:[278,333,474,556,556,889,722,238,333,333,389,584,278,333,278,278,556,556,556,556,556,556,556,556,556,556,333,333,584,584,584,611,975,
+  722,722,722,722,667,611,778,722,278,556,722,611,833,722,778,667,778,722,667,611,722,667,944,667,667,611,333,278,333,584,556,333,
+  556,611,556,611,556,333,611,611,278,278,556,278,889,611,611,611,611,389,556,333,611,556,778,556,556,500,389,280,389,584]};
+const W1252={8364:128,8218:130,402:131,8222:132,8230:133,8224:134,8225:135,710:136,8240:137,352:138,8249:139,338:140,381:142,8216:145,8217:146,8220:147,8221:148,8226:149,8211:150,8212:151,732:152,8482:153,353:154,8250:155,339:156,382:158,376:159};
+const SUBS={'\u2080':'0','\u2081':'1','\u2082':'2','\u2083':'3','\u2084':'4','\u2085':'5','\u2086':'6','\u2087':'7','\u2088':'8','\u2089':'9','\u2070':'0','\u2074':'4','\u2075':'5','\u2076':'6','\u2077':'7','\u2078':'8','\u2079':'9','\u2192':'->','\u2190':'<-','\u2194':'<->','\u2265':'>=','\u2264':'<=','\u2260':'!=','\u2713':'v','\u2714':'v','\u2717':'x','\u2718':'x','\u2212':'-','\u2248':'~','\u221e':'inf','\u00a0':' ','\u2009':' ','\u202f':' ','\u25e6':'-','\u25aa':'-','\u2023':'>','\u2043':'-','\u2010':'-','\u2011':'-','\u2012':'-','\u2015':'-','\u2022':'\u2022','\u00b7':'\u00b7'};
+/* devuelve una cadena "de bytes" WinAnsi */
+function san(s){
+ let o='';
+ for(const ch of String(s==null?'':s)){
+  let c=ch.codePointAt(0),x=ch;
+  if(c<32){o+=' ';continue}
+  if(SUBS[ch]!=null){x=SUBS[ch];for(const y of x){const k=y.codePointAt(0);o+=W1252[k]?String.fromCharCode(W1252[k]):(k<256?y:'?')}continue}
+  if(c<128||(c>=160&&c<256)){o+=ch;continue}
+  if(W1252[c]){o+=String.fromCharCode(W1252[c]);continue}
+  if(c>0xFFFF||(c>=0x2600&&c<=0x27BF)||(c>=0xFE00&&c<=0xFE0F)||c===0x200d||(c>=0x200b&&c<=0x200f))continue;
+  const b=ch.normalize('NFD')[0];o+=(b&&b.charCodeAt(0)<128&&b!==ch)?b:'?'}
+ return o}
+const pdfEsc=s=>s.replace(/\\/g,'\\\\').replace(/\(/g,'\\(').replace(/\)/g,'\\)');
+function cw(code,bold){
+ if(code>=32&&code<127)return(bold?HW.b:HW.r)[code-32];
+ if(code===149)return 350;if(code===150)return 556;if(code===151||code===133||code===153)return 1000;if(code===145||code===146)return 222;if(code===147||code===148)return 333;if(code===128)return 556;
+ if(code===191)return bold?611:556;if(code===161)return 333;if(code===176)return 400;if(code===169||code===174)return 737;if(code===215||code===247)return 584;if(code===183)return 278;
+ if(code>=192){const b=String.fromCharCode(code).normalize('NFD')[0].charCodeAt(0);if(b>=32&&b<127)return(bold?HW.b:HW.r)[b-32]}
+ return 556}
+const FONTS={n:{id:'F1',bold:0,mono:0},b:{id:'F2',bold:1,mono:0},i:{id:'F3',bold:0,mono:0},bi:{id:'F4',bold:1,mono:0},m:{id:'F5',bold:0,mono:1}};
+const fontOf=r=>r.c?'m':(r.b&&r.i?'bi':r.b?'b':r.i?'i':'n');
+function tw(bs,fk,sz){const f=FONTS[fk];if(f.mono)return bs.length*0.6*sz;let w=0;for(let i=0;i<bs.length;i++)w+=cw(bs.charCodeAt(i),f.bold);return w*sz/1000}
+/* parte los runs en líneas que caben en `width` */
+function wrapRuns(runs,width,sz,defBold,defItal){
+ const toks=[];
+ runs.forEach(r=>{
+  const fk=fontOf({b:r.b||defBold,i:r.i||defItal,c:r.c});
+  String(r.t).split(/(\n)/).forEach(part=>{
+   if(part==='\n'){toks.push({nl:1});return}
+   part.split(/(\s+)/).forEach(w=>{if(w==='')return;const bs=san(w);if(bs==='')return;toks.push({fk,s:/^\s+$/.test(w)?' ':bs,sp:/^\s+$/.test(w),w:tw(/^\s+$/.test(w)?' ':bs,fk,sz)})})})});
+ const lines=[];let line={segs:[],w:0};
+ const flush=()=>{while(line.segs.length&&line.segs[line.segs.length-1].sp){line.w-=line.segs.pop().w}lines.push(line);line={segs:[],w:0}};
+ toks.forEach(t=>{
+  if(t.nl){flush();return}
+  if(t.sp&&!line.segs.length)return;
+  if(line.w+t.w>width+0.01&&!t.sp&&line.segs.length)flush();
+  if(!t.sp&&t.w>width){let rest=t.s;while(rest.length){let n=1;while(n<rest.length&&tw(rest.slice(0,n+1),t.fk,sz)<=width)n++;const piece=rest.slice(0,n);if(line.segs.length)flush();line.segs.push({fk:t.fk,s:piece,w:tw(piece,t.fk,sz)});line.w=tw(piece,t.fk,sz);rest=rest.slice(n);if(rest.length)flush()}return}
+  line.segs.push(t);line.w+=t.w});
+ flush();return lines}
+function hexRgb(h){h=String(h||'000000');return[parseInt(h.slice(0,2),16)/255,parseInt(h.slice(2,4),16)/255,parseInt(h.slice(4,6),16)/255].map(v=>v.toFixed(3)).join(' ')}
+class Pdf{
+ constructor(){this.pages=[];this.w=612;this.h=792}
+ page(w,h,bg){const p={w:w||612,h:h||792,ops:[]};if(bg)p.ops.push(hexRgb(bg)+' rg 0 0 '+p.w+' '+p.h+' re f');this.pages.push(p);this.cur=p;return p}
+ rect(x,yTop,w,h,fill,stroke){const p=this.cur;let o='';if(fill)o+=hexRgb(fill)+' rg ';if(stroke)o+=hexRgb(stroke)+' RG 0.5 w ';o+=x.toFixed(2)+' '+(p.h-yTop-h).toFixed(2)+' '+w.toFixed(2)+' '+h.toFixed(2)+' re '+(fill&&stroke?'B':fill?'f':'S');p.ops.push(o)}
+ line(x1,y1,x2,y2,color,wd){const p=this.cur;p.ops.push(hexRgb(color)+' RG '+(wd||0.5)+' w '+x1.toFixed(2)+' '+(p.h-y1).toFixed(2)+' m '+x2.toFixed(2)+' '+(p.h-y2).toFixed(2)+' l S')}
+ text(bs,fk,sz,x,yBase,color){const p=this.cur;p.ops.push('BT /'+FONTS[fk].id+' '+sz+' Tf '+hexRgb(color)+' rg '+x.toFixed(2)+' '+(p.h-yBase).toFixed(2)+' Td ('+pdfEsc(bs)+') Tj ET')}
+ drawLine(l,x,yTop,sz,color,align,width){let xx=x;if(align==='r')xx=x+width-l.w;else if(align==='ctr')xx=x+(width-l.w)/2;
+  const base=yTop+sz*0.82;let cx=xx;l.segs.forEach(s=>{if(!s.sp||true){if(!s.sp)this.text(s.s,s.fk,sz,cx,base,color);cx+=s.w}})}
+ build(title){
+  const out=[];let off=0;const offs=[];
+  const put=s=>{out.push(s);off+=s.length};
+  put('%PDF-1.4\n%\xE2\xE3\xCF\xD3\n');
+  const objs=[];const add=s=>{objs.push(s);return objs.length};
+  add('<< /Type /Catalog /Pages 2 0 R >>');add('');
+  const fonts=[['F1','Helvetica'],['F2','Helvetica-Bold'],['F3','Helvetica-Oblique'],['F4','Helvetica-BoldOblique'],['F5','Courier']];
+  fonts.forEach(f=>add('<< /Type /Font /Subtype /Type1 /BaseFont /'+f[1]+' /Encoding /WinAnsiEncoding >>'));
+  const kids=[];
+  this.pages.forEach(p=>{
+   const content=p.ops.join('\n'),cid=add('<< /Length '+content.length+' >>\nstream\n'+content+'\nendstream'),pid=objs.length+1;
+   add('<< /Type /Page /Parent 2 0 R /MediaBox [0 0 '+p.w+' '+p.h+'] /Resources << /Font << /F1 3 0 R /F2 4 0 R /F3 5 0 R /F4 6 0 R /F5 7 0 R >> >> /Contents '+cid+' 0 R >>');kids.push(pid+' 0 R')});
+  objs[1]='<< /Type /Pages /Kids ['+kids.join(' ')+'] /Count '+kids.length+' >>';
+  const infoId=add('<< /Title ('+pdfEsc(san(title||'Documento'))+') /Producer (Noryx) /Creator (Noryx) >>');
+  objs.forEach((o,i)=>{offs.push(off);put((i+1)+' 0 obj\n'+o+'\nendobj\n')});
+  const xr=off;put('xref\n0 '+(objs.length+1)+'\n0000000000 65535 f \n');
+  offs.forEach(o=>put(String(o).padStart(10,'0')+' 00000 n \n'));
+  put('trailer\n<< /Size '+(objs.length+1)+' /Root 1 0 R /Info '+infoId+' 0 R >>\nstartxref\n'+xr+'\n%%EOF');
+  const s=out.join(''),b=new Uint8Array(s.length);for(let i=0;i<s.length;i++)b[i]=s.charCodeAt(i)&255;return b}}
+
+function pdfFlow(d){
+ const wide=d.tipo==='excel'&&d.blocks.some(b=>b.k==='tbl'&&b.head.length>6),PW=wide?792:612,PH=wide?612:792,M=60,CW=PW-2*M,BOT=PH-54;
+ const P=new Pdf();P.page(PW,PH);let y=M;
+ const need=h=>{if(y+h>BOT){P.page(PW,PH);y=M}};
+ const gap=g=>{y+=g};
+ const para=(runs,o)=>{
+  const x=o.x==null?M:o.x,w=o.w==null?CW:o.w,lh=o.lh||o.sz*1.38;
+  const lines=wrapRuns(runs,w,o.sz,o.bold,o.ital);
+  lines.forEach((l,i)=>{need(lh);if(o.bg)P.rect(x-4,y-1,w+8,lh,o.bg);P.drawLine(l,x,y+(lh-o.sz)/2-1,o.sz,o.color||C.ink,o.align,w);y+=lh});
+  return lines.length};
+ const title=d.titulo;
+ need(60);para([{t:title}],{sz:24,bold:1,color:C.ink,lh:30});gap(3);P.line(M,y,M+CW,y,C.acc,2);gap(14);
+ bodyBlocks(d).forEach(b=>{
+  if(b.k==='h'){const sz=b.l===1?17:b.l===2?14:12,col=b.l===1?C.head:b.l===2?'2F4FBF':'374151';need(sz*1.4+(b.l===1?18:12)+sz);gap(b.l===1?14:9);para(inl(b.t),{sz,bold:1,color:col,lh:sz*1.3});gap(4)}
+  else if(b.k==='p'){para(inl(b.t),{sz:10.5});gap(6)}
+  else if(b.k==='ul'||b.k==='ol'){
+   b.items.forEach((it,n)=>{const ind=16+it.lv*16;need(16);const startY=y;
+    const lines=wrapRuns(inl(it.t),CW-ind-14,10.5),lh=14.5;
+    lines.forEach((l,i)=>{need(lh);if(i===0){const mark=b.k==='ol'?san((n+1)+'.'):'\x95';P.text(mark,'n',10.5,M+ind-(b.k==='ol'?0:2),y+(lh-10.5)/2-1+10.5*0.82,C.acc)}P.drawLine(l,M+ind+14,y+(lh-10.5)/2-1,10.5,C.ink,'l',CW-ind-14);y+=lh});
+    y+=2});gap(5)}
+  else if(b.k==='quote'){const lines=wrapRuns(inl(b.t),CW-20,10.5,0,1),lh=14.5;lines.forEach(l=>{need(lh);P.rect(M+2,y,2.2,lh,'C8CDD5');P.drawLine(l,M+14,y+(lh-10.5)/2-1,10.5,'4B5563','l',CW-20);y+=lh});gap(6)}
+  else if(b.k==='code'){String(b.t).split('\n').forEach(ln=>{const bs=san(ln.replace(/\s+$/,'')),lh=12.5;need(lh);P.rect(M-4,y,CW+8,lh,'F1F3F5');let rest=bs;const per=Math.max(10,Math.floor(CW/(0.6*9)));do{const seg=rest.slice(0,per);P.text(seg,'m',9,M,y+(lh-9)/2+9*0.82-0.5,'1F2937');rest=rest.slice(per);if(rest.length){y+=lh;need(lh);P.rect(M-4,y,CW+8,lh,'F1F3F5')}}while(rest.length);y+=lh});gap(7)}
+  else if(b.k==='hr'){gap(4);need(8);P.line(M,y,M+CW,y,'C8CDD5',0.7);gap(10)}
+  else if(b.k==='tbl'){
+   const n=b.dhead.length,sz=n>7?8:n>5?8.5:9.5,pad=4,lh=sz*1.32,all=[b.dhead].concat(b.drows);
+   const nat=[],mn=[];
+   for(let c=0;c<n;c++){let mx=0,ml=0;all.forEach(r=>{const bs=san(r[c]);mx=Math.max(mx,tw(bs,'n',sz));bs.split(/\s+/).forEach(w=>{ml=Math.max(ml,tw(w,'b',sz))})});nat[c]=Math.min(mx+pad*2+2,CW);mn[c]=Math.min(ml+pad*2+2,CW)}
+   let cols;const sn=nat.reduce((a,x)=>a+x,0),sm=mn.reduce((a,x)=>a+x,0);
+   if(sn<=CW)cols=nat.map(x=>x*CW/sn);else if(sm>=CW)cols=mn.map(x=>x*CW/sm);else{const ex=CW-sm,tot=nat.reduce((a,x,i)=>a+(x-mn[i]),0)||1;cols=mn.map((x,i)=>x+ex*(nat[i]-mn[i])/tot)}
+   const drawRow=(r,hd,zebra)=>{
+    const cells=r.map((x,c)=>wrapRuns(hd?[{t:x,b:1}]:inl(x),cols[c]-pad*2,sz,hd)),h=Math.max(...cells.map(l=>l.length))*lh+pad*2-1;
+    need(h+(hd?lh*2:0));
+    let x0=M;cols.forEach((cwid,c)=>{P.rect(x0,y,cwid,h,hd?C.acc:(zebra?'F4F6FB':'FFFFFF'),'D0D5DD');
+     cells[c].forEach((l,li)=>P.drawLine(l,x0+pad,y+pad-1+li*lh+(lh-sz)/2,sz,hd?'FFFFFF':C.ink,b.al[c]==='r'?'r':b.al[c]==='c'?'ctr':'l',cwid-pad*2));x0+=cwid});
+    y+=h};
+   need(lh*4);drawRow(b.dhead,1);
+   b.drows.forEach((r,ri)=>{if(y+lh*2+pad*2>BOT){P.page(PW,PH);y=M;drawRow(b.dhead,1)}drawRow(r,0,ri%2)});
+   gap(10)}});
+ const N=P.pages.length;
+ P.pages.forEach((p,i)=>{P.cur=p;const bs=san('P\u00e1gina '+(i+1)+' de '+N),w=tw(bs,'n',9);P.text(bs,'n',9,PW/2-w/2,PH-30,C.gray)});
+ return P.build(title)}
+function pdfSlides(d){
+ const slides=layoutSlides(d),k=960/SW,P=new Pdf();
+ slides.forEach((s,i)=>{
+  const m=slideShapes(s,i+1,slides.length);P.page(960,540,m.bg);
+  m.shapes.forEach(sh=>{
+   const X=sh.x*k,Y=sh.y*k,W=sh.w*k,H=sh.h*k;
+   if(sh.t==='rect')P.rect(X,Y,W,H,sh.fill);
+   else if(sh.t==='text'){
+    const blocks=sh.paras.map(p=>{
+     const ind=p.bu?(0.45+0.4*(p.lv||0))*72:0,lines=wrapRuns(p.runs.map(r=>({t:r.t,b:r.b,i:r.i,c:r.c||p.mono})),W-ind-(p.bu?0:0),p.sz,p.bold,p.ital);
+     return{p,ind,lines,lh:p.sz*1.2,h:lines.length*p.sz*1.2+(p.aft||0)}});
+    const tot=blocks.reduce((a,b)=>a+b.h,0);let yy=Y;if(sh.anchor==='ctr')yy=Y+(H-tot)/2;else if(sh.anchor==='b')yy=Y+H-tot;
+    blocks.forEach(b=>{b.lines.forEach((l,li)=>{
+     if(li===0&&b.p.bu){const mk=b.p.bu==='num'?san(b.p.num+'.'):san(b.p.bu);P.text(mk,'n',b.p.sz,X+b.ind-0.4*72,yy+b.p.sz*0.82,C.acc)}
+     P.drawLine(l,X+b.ind,yy,b.p.sz,b.p.color,b.p.al,W-b.ind);yy+=b.lh});yy+=(b.p.aft||0)})}
+   else if(sh.t==='table'){
+    let yy=Y;sh.rows.forEach((r,ri)=>{let xx=X;const rh=r.h*k;r.cells.forEach((c,ci)=>{const cwid=sh.cols[ci]*k;P.rect(xx,yy,cwid,rh,c.fill,'D0D5DD');
+     const lines=wrapRuns([{t:c.t,b:c.b}],cwid-14,sh.sz,c.b),th=lines.length*sh.sz*1.2;lines.forEach((l,li)=>P.drawLine(l,xx+7,yy+(rh-th)/2+li*sh.sz*1.2,sh.sz,c.color,c.al==='r'?'r':c.al==='c'?'ctr':'l',cwid-14));xx+=cwid});yy+=rh})}})});
+ return P.build(d.titulo)}
+function pdf(d){return d.tipo==='ppt'?pdfSlides(d):pdfFlow(d)}
+
+/* ============================== API pública ============================== */
+const MIME={docx:'application/vnd.openxmlformats-officedocument.wordprocessingml.document',xlsx:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',pptx:'application/vnd.openxmlformats-officedocument.presentationml.presentation',pdf:'application/pdf',md:'text/markdown;charset=utf-8'};
+function build(fmt,d){
+ const nm=slug(d.titulo);
+ if(fmt==='word')return{bytes:docx(d),mime:MIME.docx,name:nm+'.docx'};
+ if(fmt==='excel')return{bytes:xlsx(d),mime:MIME.xlsx,name:nm+'.xlsx'};
+ if(fmt==='ppt')return{bytes:pptx(d),mime:MIME.pptx,name:nm+'.pptx'};
+ if(fmt==='pdf')return{bytes:pdf(d),mime:MIME.pdf,name:nm+'.pdf'};
+ if(fmt==='md')return{bytes:u8('# '+d.titulo+'\n\n'+String(d.md||'').trim()+'\n'),mime:MIME.md,name:nm+'.md'};
+ throw Error('Formato no soportado: '+fmt)}
+const API={parse,mkDoc,build,docx,xlsx,pptx,pdf,layoutSlides,evalGrid,san,slug,inl,strip,nrm};
+if(!IS_BROWSER){root.NXDOCS=API;return}
+root.NXDOCS=API;
+
+/* ============================== Interfaz del chat (solo navegador) ============================== */
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const say=m=>{try{toast(m)}catch(e){}};
+const LBL={word:'Word',pdf:'PDF',excel:'Excel',ppt:'PowerPoint'},EXT={word:'DOCX',pdf:'PDF',excel:'XLSX',ppt:'PPTX'},COL={word:'#2b6cd9',pdf:'#e04b4b',excel:'#1f9d63',ppt:'#e8743b'};
+const st=document.createElement('style');st.textContent=
+ '.nxd{margin:10px 0;border:1px solid var(--line);border-radius:14px;padding:12px;max-width:100%;background:color-mix(in srgb,var(--ink) 4%,transparent)}'+
+ '.nxd-h{display:flex;align-items:center;gap:10px;margin-bottom:8px}.nxd-b{flex:none;font:700 11px/1 inherit;font-family:inherit;color:#fff;border-radius:8px;padding:8px 7px;letter-spacing:.4px}'+
+ '.nxd-t{font-weight:700;line-height:1.25;overflow-wrap:anywhere}.nxd-s{font-size:12px;opacity:.65;margin-top:2px}'+
+ '.nxd-a{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}.nxd-a button{font:600 12.5px inherit;font-family:inherit;padding:7px 13px;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--ink);cursor:pointer;opacity:.85}'+
+ '.nxd-a button:hover{opacity:1;background:color-mix(in srgb,var(--ink) 10%,transparent)}.nxd-a button.p{background:var(--nxd-c);border-color:var(--nxd-c);color:#fff;opacity:1}.nxd-a button[disabled]{opacity:.5;cursor:wait}'+
+ '.nxd details{margin-top:8px}.nxd summary{cursor:pointer;font-size:12.5px;font-weight:600;opacity:.75}.nxd-p{margin-top:8px;max-height:340px;overflow:auto;padding-right:6px;border-top:1px solid var(--line);padding-top:8px}';
+document.head.appendChild(st);
+
+function attrs(a){const o={};String(a||'').replace(/(\w+)=("([^"]*)"|\S+)/g,(m,k,v,q)=>{o[k]=q!=null?q:v;return m});return o}
+function counts(md){const w=(String(md).match(/\S+/g)||[]).length;return w}
+function card(a,body,base){
+ const at=attrs(a),tipo=LBL[at.tipo]?at.tipo:'word',prim=LBL[at.prim]?at.prim:tipo;
+ let d;try{d=mkDoc(tipo,at.titulo,body)}catch(e){return'<pre>'+esc(body)+'</pre>'}
+ const order=[prim].concat(['word','pdf','excel','ppt'].filter(x=>x!==prim));
+ const data=encodeURIComponent(JSON.stringify({tipo,titulo:d.titulo,md:body}));
+ return'<div class="nxd" data-nxd="'+data+'" style="--nxd-c:'+COL[prim]+'"><div class="nxd-h"><span class="nxd-b" style="background:'+COL[prim]+'">'+EXT[prim]+'</span><div><div class="nxd-t">'+esc(d.titulo)+'</div><div class="nxd-s">Documento listo \u00b7 '+counts(body)+' palabras \u00b7 se genera en tu dispositivo</div></div></div>'+
+  '<div class="nxd-a">'+order.map((f,i)=>'<button data-nxda="'+f+'"'+(i===0?' class="p"':'')+'>Descargar '+LBL[f]+'</button>').join('')+'<button data-nxda="md">Markdown</button><button data-nxda="copy">Copiar texto</button></div>'+
+  '<details><summary>Ver contenido</summary><div class="nxd-p">'+base(body)+'</div></details></div>'}
+const BLK=/(^|\n):::documento([^\n]*)\n([\s\S]*?)(?:\n:::[ \t]*(?=\n|$)|$)/g;
+const _md=md;
+md=function(s){
+ s=String(s==null?'':s);
+ if(s.indexOf(':::documento')<0)return _md(s);
+ const B=[];
+ const t=s.replace(BLK,(m,pre,a,body)=>{B.push(card(a,body.trim(),_md));return pre+'\n\nNXDOCTOKEN'+(B.length-1)+'END\n\n'});
+ return _md(t).replace(/(?:<br>|<p>)*NXDOCTOKEN(\d+)END(?:<br>|<\/p>)*/g,(m,i)=>B[+i])};
+function save(r){const b=new Blob([r.bytes],{type:r.mime}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=r.name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},2000)}
+document.addEventListener('click',async e=>{
+ const b=e.target.closest&&e.target.closest('[data-nxda]');if(!b)return;
+ const c=b.closest('.nxd');if(!c)return;
+ const f=b.dataset.nxda;let j;try{j=JSON.parse(decodeURIComponent(c.dataset.nxd))}catch(x){return}
+ try{
+  if(f==='copy'){await navigator.clipboard.writeText(j.md);say('Texto copiado');return}
+  const old=b.textContent;b.disabled=true;b.textContent='Preparando\u2026';
+  try{await new Promise(r=>setTimeout(r,30));const d=mkDoc(j.tipo,j.titulo,j.md);save(build(f,d))}finally{b.disabled=false;b.textContent=old}
+ }catch(err){console.warn('NXDOC',err);say('No pude crear el archivo: '+String(err&&err.message||err).slice(0,80))}});
+
+/* la voz no lee el documento */
+if(typeof speakable==='function'){const _sp=speakable;speakable=function(t){t=String(t==null?'':t).replace(BLK,(m,pre)=>pre+' Te dejo el documento listo para descargar. ');return _sp(t)}}
+
+/* ---------- detectar cuándo piden un documento ---------- */
+const FMT={ppt:/\b(powerpoint|power point|pptx?|presentacion(?:es)?|diapositivas?|slides?)\b/,excel:/\b(excel|xlsx?|hoja de calculo|hojas de calculo|planilla|spreadsheet)\b/,pdf:/\bpdf\b/,word:/\b(word|docx?|documento)\b/};
+const fmtsOf=n=>Object.keys(FMT).filter(k=>FMT[k].test(n));
+const VERB=/\b(haz|hazme|hazlo|hazla|crea|creame|crear|genera|generame|generar|dame|damelo|arma|armame|elabora|elaborame|redacta|redactame|escribe|escribeme|prepara|preparame|necesito|quiero|ocupo|puedes|podrias|me\s+(?:haces|creas|generas|armas|das|preparas|redactas)|make|create|generate|write|build)\b/;
+const DOCNOUN=/\b(reporte|informe|carta|curriculum|curriculo|cv|contrato|ensayo|oficio|memorando|memorandum|acta|cotizacion|propuesta|minuta|presupuesto|constancia|solicitud|factura|certificado|folleto)\b/;
+const NOQ=/^\s*[\u00bf]?\s*(que|como|cual|cuales|por que|porque|para que|cuando|donde|quien|quienes)\b/;
+const EXPV=/\b(pasa|pasalo|pasala|pasame|convierte|conviertelo|convertilo|exporta|exportalo|exportame|descarga|descargalo|descargame|guarda|guardalo|hazlo|hazla|ponlo|ponla|dame|damelo|damela|manda|mandalo|bajalo)\b/;
+const REF=/\b(esto|eso|todo esto|todo eso|lo anterior|la respuesta|lo de arriba|lo que (?:me )?(?:dijiste|escribiste|hiciste)|(?:esta|la|toda la|esa) (?:conversacion|charla)|(?:este|el) chat)\b/,CLIT=/\b(pasalo|pasala|conviertelo|convertilo|exportalo|descargalo|guardalo|hazlo|hazla|ponlo|ponla|damelo|damela|mandalo|bajalo)\b/;
+const AUXF=/(?:\ben\b|\ba\b|\bcomo\b|\bpara\b)\s+(?:un\s+|una\s+)?(?:word|pdf|excel|power\s?point|pptx?|presentacion|docx?|xlsx?|documento)\b/;
+const HELP='S\u00ed, ya puedo crear documentos y dejarte los archivos listos para descargar: **Word (.docx)**, **PDF**, **Excel (.xlsx)** y **PowerPoint (.pptx)**.\n\nDime qu\u00e9 necesitas, por ejemplo:\n- \u00abHazme un Word con un informe sobre el cambio clim\u00e1tico\u00bb\n- \u00abCrea un Excel con un presupuesto mensual con f\u00f3rmulas\u00bb\n- \u00abHazme una presentaci\u00f3n de 8 diapositivas sobre la Revoluci\u00f3n Mexicana\u00bb\n- \u00abHazme un PDF con una carta de renuncia\u00bb\n\nTambi\u00e9n puedes decirme \u00abp\u00e1salo a Word / PDF / Excel / PowerPoint\u00bb despu\u00e9s de cualquier respuesta m\u00eda, o \u00abexporta esta conversaci\u00f3n a PDF\u00bb.';
+function intent(t){
+ if(!t||t.length>1500||t.charAt(0)==='/')return null;
+ const n=nrm(t),fm=fmtsOf(n),short=t.length<=90;
+ const tipo=fm.find(k=>k!=='pdf'&&k!=='word')||(fm.includes('pdf')?'pdf':'word'),prim=fm.includes('pdf')?'pdf':tipo;
+ const hasF=fm.length>0;
+ if(hasF&&/\b(puedes|podrias|sabes|eres capaz)\b/.test(n)&&n.length<70&&!/\b(de|sobre|con|para|acerca|del)\b/.test(n.replace(/\bpara\s+(?:mi|me)\b/,'')))return{kind:'help'};
+ if(hasF&&EXPV.test(n)&&short&&(REF.test(n)||CLIT.test(n))&&!/\b(sobre|acerca de|con|que|donde)\b/.test(n.replace(/\blo que (me )?(dijiste|escribiste|hiciste)\b/,''))){
+  if(/\b(conversacion|chat|charla)\b/.test(n))return{kind:'chat',tipo,prim};
+  return{kind:'last',tipo,prim}}
+ if(NOQ.test(n))return null;
+ if(VERB.test(n)&&(hasF||DOCNOUN.test(n)))return{kind:'new',tipo,prim};
+ return null}
+const SYSD=' Eres Noryx, una asistente creada por Orlando. Redacta el CONTENIDO COMPLETO y listo para usar del documento que pide el usuario, en el idioma del usuario. Responde SOLO con un bloque as\u00ed, sin nada antes ni despu\u00e9s:\n:::documento titulo="T\u00edtulo corto"\n(contenido en Markdown)\n:::\nMarkdown permitido: # ## ### t\u00edtulos, p\u00e1rrafos, listas con - o 1., **negrita**, *cursiva*, tablas con | y fila |---|, y --- como separador. Contenido real, concreto y bien desarrollado (nada de "aqu\u00ed va..."); si falta un dato personal usa [corchetes]. No uses bloques de c\u00f3digo salvo c\u00f3digo real. ';
+const HINT={
+ word:'Es un documento de Word: t\u00edtulo, secciones con ##, p\u00e1rrafos desarrollados, listas y tablas solo cuando ayuden.',
+ pdf:'Es un documento PDF: t\u00edtulo, secciones con ##, p\u00e1rrafos desarrollados, listas y tablas solo cuando ayuden.',
+ excel:'Es una hoja de c\u00e1lculo: una tabla Markdown por hoja, con un ## antes de cada tabla como nombre de la hoja (m\u00e1x. 31 caracteres); la fila 1 son los encabezados. N\u00fameros sin separador de miles (12500, no 12,500); dinero como $12500. Usa f\u00f3rmulas que empiecen con = y nombres en INGL\u00c9S (=SUM(B2:B6), =B2*C2, =AVERAGE(C2:C9)) con referencias reales de celda; agrega fila de totales con f\u00f3rmulas cuando aplique. Sin p\u00e1rrafos largos.',
+ ppt:'Es una presentaci\u00f3n: separa las diapositivas con una l\u00ednea ---. La 1.\u00aa es la portada: "# T\u00edtulo" y debajo una l\u00ednea de subt\u00edtulo. Cada diapositiva: "## T\u00edtulo" y 3 a 5 vi\u00f1etas de m\u00e1ximo 15 palabras (o una tabla corta). Entre 6 y 12 diapositivas salvo que pidan otra cantidad; cierra con conclusiones.'};
+function unwrap(txt,tipo,prim,fallbackTitle){
+ txt=String(txt||'').trim();
+ const fence=txt.match(/^```[\w-]*\n([\s\S]*?)\n```$/);if(fence)txt=fence[1].trim();
+ let m;BLK.lastIndex=0;m=BLK.exec(txt);BLK.lastIndex=0;
+ let title,body,note='';
+ if(m){const at=attrs(m[2]);title=at.titulo;body=m[3].trim();note=(txt.slice(0,m.index)+txt.slice(m.index+m[0].length)).trim()}
+ else{body=txt}
+ if(!title){const h=body.match(/^\s{0,3}#{1,2}\s+(.+)$/m);title=h?strip(h[1]):(fallbackTitle||'Documento')}
+ return{title,body,note,block:':::documento tipo='+tipo+' prim='+prim+' titulo="'+String(title).replace(/"/g,"'")+'"\n'+body+'\n:::'}}
+function chartMd(code){try{const j=JSON.parse(code);if(!j||!Array.isArray(j.labels)||!Array.isArray(j.datasets))return null;
+ const head=['']; j.datasets.forEach((d,i)=>head.push(String(d.label||'Serie '+(i+1))));
+ const rows=j.labels.map((l,i)=>[String(l)].concat(j.datasets.map(d=>d.data&&d.data[i]!=null?String(d.data[i]):'')));
+ return(j.title?'**'+j.title+'**\n\n':'')+'| '+head.join(' | ')+' |\n|'+head.map(()=>'---').join('|')+'|\n'+rows.map(r=>'| '+r.join(' | ')+' |').join('\n')}catch(e){return null}}
+function cleanForDoc(t){
+ t=String(t||'');
+ BLK.lastIndex=0;const m=BLK.exec(t);BLK.lastIndex=0;if(m)t=m[3].trim();
+ t=t.replace(/```(chart|grafica)[ \t]*\n([\s\S]*?)```/g,(x,l,c)=>chartMd(c.trim())||'');
+ return t.trim()}
+function lastAssistant(){const c=conv(),ms=(c&&c.msgs)||[];for(let i=ms.length-1;i>=0;i--){if(ms[i].r!=='u'&&String(ms[i].t||'').trim().length>30){let prev='';for(let k=i-1;k>=0;k--){if(ms[k].r==='u'){prev=String(ms[k].t||'');break}}return{t:ms[i].t,q:prev}}}return null}
+function titleFrom(body,q){const h=String(body).match(/^\s{0,3}#{1,3}\s+(.+)$/m);if(h)return strip(h[1]);const s=strip(String(q||'').replace(/^[^\w\u00c0-\u017f]+/,'')).split(/\s+/).slice(0,8).join(' ');return s?s.charAt(0).toUpperCase()+s.slice(1):'Respuesta de Noryx'}
+function localDoc(r,it){
+ const body=cleanForDoc(r.t);if(!body)return null;
+ const title=titleFrom(body,r.q);
+ return{t:'Listo, convert\u00ed la respuesta en documento. Desc\u00e1rgalo en el formato que prefieras:\n\n:::documento tipo='+it.tipo+' prim='+it.prim+' titulo="'+title.replace(/"/g,"'")+'"\n'+body+'\n:::',m:'Noryx \u00b7 documento'}}
+function chatDoc(it){
+ const c=conv(),ms=((c&&c.msgs)||[]).filter(m=>String(m.t||'').trim()&&!/^NXDOCTOKEN/.test(m.t));
+ if(ms.length<2)return null;
+ const last=ms[ms.length-1];const arr=last&&last.r==='u'?ms.slice(0,-1):ms;
+ const body=arr.map(m=>(m.r==='u'?'## T\u00fa\n\n':'## Noryx\n\n')+cleanForDoc(m.t).replace(/^#{1,3}\s/gm,'#### ')).join('\n\n');
+ const title=(c&&c.title)?String(c.title):'Conversaci\u00f3n con Noryx';
+ return{t:'Listo, aqu\u00ed tienes la conversaci\u00f3n completa como documento:\n\n:::documento tipo='+it.tipo+' prim='+it.prim+' titulo="'+title.replace(/"/g,"'")+'"\n'+body+'\n:::',m:'Noryx \u00b7 documento'}}
+async function askDoc(t,it){
+ const c=conv(),h=((c&&c.msgs)||[]).slice(-9,-1).map(m=>({role:m.r=='u'?'user':'assistant',content:String(m.t||'').replace(BLK,' [documento] ').slice(0,1400)}));
+ const sys=(SYSD+HINT[it.tipo]).slice(0,3900);
+ const r=await ask([{role:'system',content:sys},...h,{role:'user',content:t}]);
+ if(!r||!r.t)return{err:r&&r.err||'net'};
+ const u=unwrap(r.t,it.tipo,it.prim,'');
+ if(u.body.length<20)return{err:'empty'};
+ return{t:(u.note&&u.note.length<400?u.note+'\n\n':'Listo, aqu\u00ed tienes tu documento. Desc\u00e1rgalo en el formato que prefieras:\n\n')+u.block,m:'Noryx \u00b7 documento'}}
+const _brain=brain;
+brain=async function(t,s){
+ if(!s){
+  let it=null;try{it=intent(t)}catch(e){console.warn('NXDOC',e)}
+  if(it){
+   try{
+    if(it.kind==='help')return{t:HELP,m:'Noryx \u00b7 documentos'};
+    if(it.kind==='last'){const l=lastAssistant();if(l){const r=localDoc(l,it);if(r)return r}return{t:'Todav\u00eda no tengo una respuesta anterior para convertir. Dime qu\u00e9 documento quieres, por ejemplo: \u00abHazme un Word sobre el sistema solar\u00bb.',m:'Noryx \u00b7 documentos'}}
+    if(it.kind==='chat'){const r=chatDoc(it);if(r)return r;return{t:'La conversaci\u00f3n a\u00fan es muy corta para exportarla.',m:'Noryx \u00b7 documentos'}}
+    if(it.kind==='new'){
+     if(typeof MAESTRO!=='undefined'&&!MAESTRO)return{t:'Para redactar documentos necesito la IA activa. Escribe `/ia activar` y vuelve a pedirlo. Mientras tanto puedo convertir cualquier respuesta m\u00eda: dime \u00abp\u00e1salo a Word\u00bb o \u00abp\u00e1salo a PDF\u00bb.',m:'Noryx \u00b7 documentos'};
+     const r=await askDoc(t,it);if(r&&r.t)return r;
+     return{t:r&&r.err==='rate'?'La IA est\u00e1 saturada en este momento. Int\u00e9ntalo de nuevo en unos segundos.':'No pude contactar a la IA para redactar el documento. Revisa tu conexi\u00f3n e int\u00e9ntalo otra vez; si ya tienes una respuesta m\u00eda en pantalla, dime \u00abp\u00e1salo a Word\u00bb y la convierto sin IA.',m:'Noryx \u00b7 documentos'}}
+   }catch(e){console.warn('NXDOC',e)}}}
+ return _brain(t,s)};
+})(typeof window!=='undefined'?window:globalThis);
+
+</script>
 </body>
 </html>
