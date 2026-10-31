@@ -21817,6 +21817,23 @@ html #nxEsc .ne-help{font-size:10.5px;opacity:.55}
  brain=async function(t,s){
   if(!s&&typeof MAESTRO!=='undefined'&&MAESTRO&&wants(t)){try{const r=await askVisual(t);if(r)return r}catch(e){console.warn('NXVIS',e)}}
   return _b(t,s)};
+ /* ---------- la voz lee la explicación, no las tablas ni los diagramas ---------- */
+ if(typeof speakable==='function'){
+  const _sp=speakable;
+  speakable=function(t){
+   t=String(t==null?'':t);
+   t=t.split(/(```[\s\S]*?(?:```|$))/).map((p,i)=>{
+    if(i%2){const m=p.match(/^```([\w-]*)/),l=m?m[1].toLowerCase():'';
+     return l==='mermaid'?' Te dejo el diagrama en pantalla. ':(l==='chart'||l==='grafica')?' Te dejo la gráfica en pantalla. ':p}
+    const L=p.split('\n'),out=[];let said=false;
+    for(let k=0;k<L.length;k++){
+     if(L[k].indexOf('|')>=0&&k+1<L.length&&L[k+1].indexOf('|')>=0&&SEP.test(L[k+1])){
+      let j=k+2;while(j<L.length&&L[j].trim()&&L[j].indexOf('|')>=0)j++;
+      if(!said){out.push('Te dejo la tabla en pantalla.');said=true}
+      k=j-1;continue}
+     out.push(L[k])}
+    return out.join('\n')}).join('');
+   return _sp(t)}}
  window.NXVIS={wants,md};
 })();
 </script>
