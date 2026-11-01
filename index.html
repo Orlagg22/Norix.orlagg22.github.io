@@ -778,13 +778,13 @@ html,body{overscroll-behavior:none}#feed{overscroll-behavior:contain}
 </div></div>
 <div id="gx" hidden role="dialog" aria-label="Accesos"><div class="card">
  <div class="sh"><b>Accesos</b><button id="gxr" title="Actualizar" aria-label="Actualizar">↻</button><button id="gxx" aria-label="Cerrar">✕</button></div>
- <small>Tú decides quién puede usar el modo Noryx, enseñarle a Noryx o entrar a Aprende a programar, y por cuánto tiempo. Cuando el tiempo se acaba, el acceso se corta solo.</small>
+ <small>Tú decides quién puede usar el modo Noryx, enseñarle a Noryx, entrar a Aprende a programar o jugar Turbo Racer, y por cuánto tiempo. Cuando el tiempo se acaba, el acceso se corta solo.</small>
  <div id="gxw"></div>
  <div id="gxq"></div>
  <div class="qh">Conceder o ampliar acceso</div>
  <input id="gxe" type="email" list="gxdl" placeholder="Correo de la persona (su cuenta de Noryx)" autocomplete="off"><datalist id="gxdl"></datalist>
  <input id="gxn" type="text" placeholder="Nombre (opcional)" maxlength="60" autocomplete="off">
- <div class="row"><select id="gxs" aria-label="Permiso"><option value="noryx">Modo Noryx (voz y órdenes)</option><option value="ensenar">Enseñar a Noryx (tester)</option><option value="programar">Aprende a programar (Premium)</option></select></div>
+ <div class="row"><select id="gxs" aria-label="Permiso"><option value="noryx">Modo Noryx (voz y órdenes)</option><option value="ensenar">Enseñar a Noryx (tester)</option><option value="programar">Aprende a programar (Premium)</option><option value="carreras">Turbo Racer · modo carreras (Premium)</option></select></div>
  <div class="row"><input id="gxv" type="number" min="1" value="1" style="max-width:110px;flex:none" aria-label="Cantidad"><select id="gxu" aria-label="Unidad"><option value="m">minutos</option><option value="h" selected>horas</option><option value="d">días</option><option value="w">semanas</option><option value="p">permanente</option></select><button class="pri" id="gxg">Conceder</button></div>
  <div class="chips2" id="gxc"></div>
  <div class="qh">Accesos concedidos</div><div id="gxl" style="display:flex;flex-direction:column;gap:8px"></div>
@@ -6028,7 +6028,7 @@ paintPro();
    El creador decide desde /accesos. La verificación real la hacen las políticas RLS de Supabase
    (ver el SQL del panel); aquí el navegador solo lee tus accesos para mostrar u ocultar funciones. */
 var GR=null,GRX=[],GRMISS=false;
-const GXLAB={noryx:'Modo Noryx',ensenar:'Enseñar a Noryx (tester)',programar:'Aprende a programar (Premium)'},GXMS={m:6e4,h:36e5,d:864e5,w:6048e5};
+const GXLAB={noryx:'Modo Noryx',ensenar:'Enseñar a Noryx (tester)',programar:'Aprende a programar (Premium)',carreras:'Turbo Racer · modo carreras (Premium)'},GXMS={m:6e4,h:36e5,d:864e5,w:6048e5};
 const grOk=(g,f)=>g.feature==f&&!g.revocado&&(!g.expira||Date.parse(g.expira)>Date.now());
 const grAll=()=>(GR||[]).concat(GRX);
 function grantActive(f){if(creator)return true;if(grAll().some(g=>grOk(g,f)))return true;return !!(GRMISS&&f=='ensenar'&&sess&&isTesterMail(sess.email))}
@@ -6039,6 +6039,9 @@ window.nxPremium={ok:()=>grantActive('programar'),creator:()=>!!creator,logged:(
  sync:async()=>{try{if(!creator&&sess){await refreshSess();await loadGrants()}}catch(e){}},
  why:()=>{const g=(GR||[]).find(x=>x.feature=='programar');return g?(g.revocado?'Tu acceso fue revocado.':(g.expira&&Date.parse(g.expira)<=Date.now()?'Tu acceso expiró el '+fdate(Date.parse(g.expira))+'.':'')):''},
  ask:async()=>{if(!sess)return'login';if(creator)return'creador';try{return await reqAcceso('programar')}catch(e){return'sin conexión'}}};
+Object.assign(window.nxPremium,{okF:f=>grantActive(f),leftF:f=>creator?'permanente':grantLeft(f),
+ whyF:f=>{const g=(GR||[]).find(x=>x.feature==f);return g?(g.revocado?'Tu acceso fue revocado.':(g.expira&&Date.parse(g.expira)<=Date.now()?'Tu acceso expiró el '+fdate(Date.parse(g.expira))+'.':'')):''},
+ askF:async f=>{if(!sess)return'login';if(creator)return'creador';try{return await reqAcceso(f)}catch(e){return'sin conexión'}}});
 function fmtLeft(ms){const m=Math.max(1,Math.ceil(ms/6e4));if(m<60)return m+' min';const h=Math.floor(m/60);if(h<48)return h+' h'+(m%60?' '+m%60+' min':'');const d=Math.floor(h/24);return d+' d'+(h%24?' '+h%24+' h':'')}
 function grantLeft(f){const gs=grAll().filter(g=>grOk(g,f));if(!gs.length)return'';if(gs.some(g=>!g.expira))return'permanente';return fmtLeft(Math.max(...gs.map(g=>Date.parse(g.expira)))-Date.now())}
 function gxStatus(g){if(g.revocado)return['rev','Revocado'];if(!g.expira)return['act','Permanente'];const l=Date.parse(g.expira)-Date.now();return l>0?['act','Activo · quedan '+fmtLeft(l)+' (hasta '+fdate(Date.parse(g.expira))+')']:['exp','Expiró el '+fdate(Date.parse(g.expira))]}
@@ -6053,7 +6056,7 @@ async function noryxEntry(k,a){
 async function requestAccess(a){
  if(!sess){sysMsg('Primero entra con tu cuenta (botón «Entrar») y luego escribe `/solicitar`.','Noryx');openDlg();return}
  if(creator){sysMsg('Eres el creador: ya tienes acceso total.','Noryx');return}
- const f=/program/.test(norm(a||''))?'programar':/ense/.test(norm(a||''))?'ensenar':'noryx';await refreshSess();
+ const f=/carrer|turbo|racer/.test(norm(a||''))?'carreras':/program/.test(norm(a||''))?'programar':/ense/.test(norm(a||''))?'ensenar':'noryx';await refreshSess();
  try{const r=await reqAcceso(f);
   sysMsg(r=='ok'?'📨 Solicitud enviada: **'+GXLAB[f]+'**. El creador decidirá si te la da y por cuánto tiempo. Usa `/acceso` para ver si ya la tienes.':r=='nosys'?'Todavía no está activado el sistema de accesos en el servidor. Avísale al creador.':r=='perm'?'El servidor aún no permite enviar solicitudes. Avísale al creador: debe ejecutar de nuevo el SQL de su panel de accesos en Supabase.':'No pude enviar la solicitud ('+r+').','Noryx')}
   catch(e){sysMsg('No pude conectar con la nube para enviar la solicitud.','Noryx')}}
@@ -6068,7 +6071,7 @@ create table if not exists public.accesos (
   id bigint generated always as identity primary key,
   email text not null,
   nombre text,
-  feature text not null default 'noryx' check (feature in ('noryx','ensenar','programar')),
+  feature text not null default 'noryx' check (feature in ('noryx','ensenar','programar','carreras')),
   expira timestamptz,                       -- null = permanente
   revocado boolean not null default false,
   otorgado_por text,
@@ -6079,7 +6082,7 @@ create table if not exists public.solicitudes (
   id bigint generated always as identity primary key,
   email text not null,
   nombre text,
-  feature text not null default 'noryx' check (feature in ('noryx','ensenar','programar')),
+  feature text not null default 'noryx' check (feature in ('noryx','ensenar','programar','carreras')),
   ts timestamptz not null default now(),
   unique (email, feature)
 );
@@ -6090,11 +6093,11 @@ grant usage on schema public to authenticated;
 grant select,insert,update,delete on public.accesos to authenticated;
 grant select,insert,update,delete on public.solicitudes to authenticated;
 grant usage,select on all sequences in schema public to authenticated;
--- Permite el acceso 'programar' (Aprende a programar) en tablas que ya existían
+-- Permite los accesos 'programar' (Aprende a programar) y 'carreras' (Turbo Racer) en tablas que ya existían
 alter table public.accesos drop constraint if exists accesos_feature_check;
-alter table public.accesos add constraint accesos_feature_check check (feature in ('noryx','ensenar','programar'));
+alter table public.accesos add constraint accesos_feature_check check (feature in ('noryx','ensenar','programar','carreras'));
 alter table public.solicitudes drop constraint if exists solicitudes_feature_check;
-alter table public.solicitudes add constraint solicitudes_feature_check check (feature in ('noryx','ensenar','programar'));
+alter table public.solicitudes add constraint solicitudes_feature_check check (feature in ('noryx','ensenar','programar','carreras'));
 
 create or replace function public.es_creador() returns boolean
 language sql stable as $$ select lower(coalesce(auth.jwt()->>'email',''))='${CREATOR_EMAIL.toLowerCase()}' $$;
@@ -8729,12 +8732,12 @@ function paintAccount(){
   const c=E('div','sc');c.append(btn('Accesos',()=>{setClose(true);gxOpen()}),btn('Abogados',()=>{setClose(true);abPanel()}),btn('Psicólogos',()=>{setClose(true);psPanel()}),btn('Detectives',()=>{setClose(true);dtPanel()}),btn('Mensajes',()=>{setClose(true);mgOpen()}));
   box.append(row('Panel de creador','Acceso total y permanente a Noryx.',c))
  }else if(linked){
-  [['noryx','Modo Noryx','Voz en vivo y órdenes.'],['ensenar','Enseñar a Noryx','Modo tester.']].forEach(([f,l,d])=>{
+  [['noryx','Modo Noryx','Voz en vivo y órdenes.'],['ensenar','Enseñar a Noryx','Modo tester.'],['carreras','Turbo Racer','Modo carreras (Premium).']].forEach(([f,l,d])=>{
    const on=grantActive(f);let txt;
    if(on){const left=grantLeft(f);txt=left=='permanente'?'Permanente':left?'Activo · quedan '+left:'Activo'}
    else{const g=(GR||[]).find(x=>x.feature==f);txt=g?gxStatus(g)[1]:'Sin acceso'}
    const c=E('div','sc');c.append(E('span','sst',txt));
-   if(!on)c.append(btn('Solicitar',()=>{setClose(true);requestAccess(f=='ensenar'?'ensenar':'')}));
+   if(!on)c.append(btn('Solicitar',()=>{setClose(true);requestAccess(f=='ensenar'?'ensenar':f=='carreras'?'carreras':'')}));
    box.append(row(l,d,c))})
  }
  if(linked||creator||tester){
@@ -11621,7 +11624,7 @@ const MODES=[
  {ic:'🗝️',n:'Escape room',d:'Sala 3D en primera persona: cajas fuertes, cifrados, terminales con minijuegos, eventos al azar, retos opcionales y ventajas entre salas. Modos: clásico, contrarreloj, reto diario y apagón.',p:'modo escape room',tag:'Con cuenta'},
  {ic:'🎬',n:'Películas',d:'Elige entre varias mini películas animadas: cada una con su portada, sus narradores y un cuestionario final (o, en Boreal-7 y Quetzal-3000, un caso que resolver y puedes morir).',fn:'nxMovies',tag:'Con cuenta'},
  {ic:'{ }',n:'Aprende a programar',d:'Curso interactivo de HTML, CSS, JavaScript, Lógica y algoritmos, Linux, Windows CMD, C, C++, Java y Ciberseguridad defensiva: más de 370 lecciones con retos que se prueban de verdad, desafíos finales y sin soluciones en los niveles avanzados.',fn:'nxCodeLab',tag:'Premium'},
- {ic:'🏎️',n:'Turbo Racer',d:'Juego de carreras arcade en pantalla grande: esquiva el tráfico, recoge monedas, cumple misiones y sube de nivel. Garaje con 7 coches, mejoras (suspensión, motor, frenos, turbo…) y estilo. Carrera, persecución policial o 1 contra 1.',fn:'nxTurbo',tag:'Nuevo'}];
+ {ic:'🏎️',n:'Turbo Racer',d:'Juego de carreras arcade en pantalla grande: esquiva el tráfico, recoge monedas, cumple misiones y sube de nivel. Garaje con 7 coches, mejoras (suspensión, motor, frenos, turbo…) y estilo. Carrera, persecución policial o 1 contra 1.',fn:'nxTurbo',tag:'Premium'}];
 function send(p){if(typeof p!=='string'||!p)return;const i=$('#in'),g=$('#go');if(!i||!g)return;try{if(typeof busy!=='undefined'&&busy)return}catch(e){}i.value=p;i.dispatchEvent(new Event('input',{bubbles:true}));g.click()}
 let dlg;
 const close=()=>{if(dlg)dlg.hidden=true};
@@ -21858,7 +21861,7 @@ function close(){if(!ov)return;ov.hidden=true;if(fr){fr.srcdoc='about:blank'}doc
 function onKey(e){if(e.key==='Escape'&&ov&&!ov.hidden){e.stopPropagation();close()}}
 function build(){
  ov=document.createElement('div');ov.id='nxTurbo';ov.hidden=true;ov.setAttribute('role','dialog');ov.setAttribute('aria-modal','true');ov.setAttribute('aria-label','Turbo Racer');
- ov.innerHTML='<div class="tb-top"><b>🏎️ Turbo Racer</b><button type="button" data-fs>Pantalla completa</button><button type="button" data-x>Cerrar</button></div><iframe title="Turbo Racer" allow="autoplay; fullscreen; clipboard-read; clipboard-write"></iframe>';
+ ov.innerHTML='<div class="tb-top"><b>🏎️ Turbo Racer</b><span data-pm style="font:700 11px sans-serif;color:#ffd84a;margin:0 auto 0 10px"></span><button type="button" data-fs>Pantalla completa</button><button type="button" data-x>Cerrar</button></div><iframe title="Turbo Racer" allow="autoplay; fullscreen; clipboard-read; clipboard-write"></iframe>';
  fr=ov.querySelector('iframe');
  ov.querySelector('[data-x]').onclick=close;
  ov.querySelector('[data-fs]').onclick=()=>{try{(fr.requestFullscreen||fr.webkitRequestFullscreen).call(fr)}catch(e){}};
@@ -21867,7 +21870,25 @@ function build(){
 function open(){
  try{if(!ov)build();fr.srcdoc=html();ov.hidden=false;document.addEventListener('keydown',onKey,true);setTimeout(()=>{try{fr.focus()}catch(e){}},50)}
  catch(e){throw e}}
-window.nxTurbo=open;
+const $=q=>document.querySelector(q),esc=t=>String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+/* Premium: el modo de carreras solo se abre con el acceso 'carreras' que concede el creador (igual que Aprende a programar) */
+function lock(extra){const P=window.nxPremium;let d=$('#nxPrem');
+ if(!d){d=document.createElement('div');d.id='nxPrem';d.setAttribute('role','dialog');d.setAttribute('aria-modal','true');d.setAttribute('aria-labelledby','nxPremT');document.body.append(d);
+  d.addEventListener('click',e=>{if(e.target===d)d.hidden=true});d.addEventListener('keydown',e=>{if(e.key==='Escape'){d.hidden=true;e.stopPropagation()}})}
+ const lg=P&&P.logged(),w=extra||(P&&P.whyF('carreras'))||'';d.hidden=false;
+ d.innerHTML='<div class="pm-c"><span class="pm-t">PREMIUM</span><b id="nxPremT">Turbo Racer · modo carreras</b><p>Este modo es Premium. El acceso lo concede el creador y define por cuánto tiempo: horas, días o permanente. Al terminar el tiempo, se cierra solo.</p>'+(w?'<p class="pm-w">'+esc(w)+'</p>':'')+'<p class="pm-s" id="nxPremS" role="status"></p><div class="pm-b"><button type="button" class="pm-p" id="pmA">'+(lg?'Solicitar acceso':'Iniciar sesión')+'</button><button type="button" id="pmR">Ya me lo dieron: actualizar</button><button type="button" id="pmX">Cerrar</button></div></div>';
+ const st=$('#nxPremS');$('#pmX').onclick=()=>{d.hidden=true};
+ $('#pmA').onclick=async()=>{if(!P.logged()){d.hidden=true;P.login();return}st.textContent='Enviando solicitud...';const r=await P.askF('carreras');st.textContent=r==='ok'?'Solicitud enviada. El creador decidirá si te la da y por cuánto tiempo.':r==='nosys'?'El sistema de accesos aún no está activo en el servidor. Avísale al creador.':r==='perm'?'El servidor aún no permite enviar solicitudes. Avísale al creador: debe ejecutar de nuevo el SQL de su panel de accesos en Supabase.':'No pude enviar la solicitud ('+r+'). Intenta de nuevo.'};
+ $('#pmR').onclick=async()=>{if(!P.logged()){st.textContent='Primero inicia sesión.';return}st.textContent='Revisando...';await P.sync();if(P.okF('carreras')){d.hidden=true;open()}else st.textContent=P.whyF('carreras')||'Todavía no tienes un acceso vigente.'};
+ $('#pmA').focus()}
+async function gate(){const P=window.nxPremium;if(!P){lock('No pude verificar el acceso. Recarga la página.');return}
+ if(P.creator()){open();return}if(P.logged())await P.sync();if(P.okF('carreras'))open();else lock()}
+window.nxTurbo=gate;
+/* vigilancia: cierra el juego cuando el acceso vence o se revoca, y muestra el tiempo restante */
+let tk=0;setInterval(()=>{const P=window.nxPremium;if(!ov||ov.hidden||!P)return;tk++;
+ if(!P.creator()&&tk%12===0)P.sync();
+ if(!P.creator()&&!P.okF('carreras')){close();lock('Tu acceso Premium terminó o fue retirado.');return}
+ const b=ov.querySelector('[data-pm]');if(b){const l=P.leftF('carreras');b.textContent=P.creator()?'Premium · creador':'Premium · '+(l==='permanente'?'permanente':'quedan '+l)}},5000);
 })();
 </script>
 </body>
