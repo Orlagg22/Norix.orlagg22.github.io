@@ -21930,5 +21930,126 @@ function open(){
 window.nxPuzzle=open;
 })();
 </script>
+
+<style id="nxBrainCss">
+#nxBrainChip{display:none;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;max-width:780px;width:100%;margin:0 auto;padding:4px 18px 0;font-size:13px;color:var(--mute)}
+#nxBrainChip.on{display:flex}
+#nxBrainChip .bc{display:inline-flex;align-items:center;gap:8px;border:1px solid color-mix(in srgb,var(--acc) 45%,var(--line));border-radius:999px;padding:4px 6px 4px 12px;background:color-mix(in srgb,var(--acc) 10%,transparent);color:var(--ink)}
+#nxBrainChip .bc b{font-weight:600}
+#nxBrainChip button{border:0;border-radius:999px;padding:3px 11px;font-size:12.5px;color:var(--ink);background:color-mix(in srgb,var(--acc) 28%,transparent);cursor:pointer}
+#nxBrainChip button:hover{background:color-mix(in srgb,var(--acc) 45%,transparent)}
+#nxBrainChip button.x{background:transparent;color:var(--mute);padding:3px 7px}
+</style>
+
+<script>
+/* ============ Puente con el cerebro neuronal (página padre) ============
+   Solo actúa cuando Noryx está embebido en un iframe.
+   cerebro -> Noryx : brain-hello {lang, region, regions[]}, brain-region {key,name,mode}, brain-lang {lang}
+   Noryx -> cerebro : noryx-ready, noryx-ack, noryx-regions {keys:[...]}
+   ===================================================================== */
+(function(){
+ if(window.parent===window)return;
+ var NB={linked:false,lang:'es',region:null,regions:[],origin:'*',lastAck:0};
+ try{var q=new URLSearchParams(location.search);if(q.get('lang')==='en'||q.get('lang')==='es')NB.lang=q.get('lang');
+  if(q.get('embed')==='1')document.documentElement.setAttribute('data-embed','1')}catch(e){}
+ window.NoryxBrain=NB;
+
+ function post(type,data){
+  var m={source:'noryx',type:type,version:1};
+  for(var k in (data||{}))m[k]=data[k];
+  try{parent.postMessage(m,NB.origin)}catch(e){try{parent.postMessage(m,'*')}catch(_){}}
+ }
+
+ /* ---- Palabras clave -> regiones del cerebro (sin tildes, ES + EN) ---- */
+ var MAP=[
+  ['labelPrefrontal',/prefrontal/],
+  ['labelMotorCortex',/corteza motora|motor cortex|area motora|motor area/],
+  ['labelVisualCortex',/corteza visual|visual cortex|corteza occipital|occipital/],
+  ['labelHippocampus',/hipocamp|hippocamp/],
+  ['labelAmygdala',/amigdala|amygdala/],
+  ['labelThalamus',/talamo|thalam/],
+  ['labelHypothalamus',/hipotalamo|hypothalam/],
+  ['labelPituitary',/hipofisis|pituitari/],
+  ['labelPineal',/pineal|epifisis/],
+  ['labelBasalGanglia',/ganglios basales|basal ganglia|nucleo caudado|putamen|estriado|striatum/],
+  ['labelCallosum',/cuerpo calloso|corpus callosum/],
+  ['labelCerebellum',/cerebelo|cerebellum/],
+  ['labelBrainstem',/tronco encefalico|tronco cerebral|bulbo raquideo|protuberancia|mesencefalo|brainstem|brain stem|medulla|midbrain|\bpons\b/],
+  ['labelCerebrum',/hemisferio|corteza cerebral|cerebral cortex|neocorteza|cerebrum|hemisphere/]
+ ];
+ function norm(t){try{return String(t||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')}catch(e){return String(t||'').toLowerCase()}}
+ function scan(text){
+  var n=norm(text),hits=[];
+  MAP.forEach(function(p){var m=p[1].exec(n);if(m)hits.push([m.index,p[0]])});
+  hits.sort(function(a,b){return a[0]-b[0]});
+  var keys=hits.map(function(h){return h[1]});
+  if(NB.regions.length){var ok={};NB.regions.forEach(function(r){ok[r.key]=1});keys=keys.filter(function(k){return ok[k]})}
+  return keys.slice(0,4);
+ }
+ window.NoryxBrain.scan=scan;
+ function announce(text){var keys=scan(text);if(keys.length)post('noryx-regions',{keys:keys})}
+
+ /* ---- Chip "región tocada en el cerebro" ---- */
+ var chip=null;
+ function ensureChip(){
+  if(chip)return chip;
+  var comp=document.getElementById('comp');if(!comp||!comp.parentNode)return null;
+  chip=document.createElement('div');chip.id='nxBrainChip';chip.setAttribute('role','status');
+  comp.parentNode.insertBefore(chip,comp);return chip;
+ }
+ function esc(t){return String(t).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+ function showChip(){
+  var r=NB.region,c=ensureChip();if(!c)return;
+  if(!r){c.classList.remove('on');return}
+  var es=NB.lang!=='en';
+  c.innerHTML='<span class="bc">🧠 <b>'+esc(r.name||r.key)+'</b><button type="button" data-a="ask">'+(es?'Explícame':'Explain')+'</button><button type="button" class="x" data-a="x" aria-label="'+(es?'Quitar':'Dismiss')+'">✕</button></span>';
+  c.classList.add('on');
+  c.querySelector('[data-a="ask"]').onclick=function(){
+   var nm=r.name||r.key;
+   var t=es?('Háblame de '+nm+' (parte del cerebro)'):('Tell me about the '+nm+' (brain region)');
+   NB.region=null;showChip();
+   try{send(t)}catch(e){try{var i=document.getElementById('in');i.value=t;i.focus()}catch(_){}}
+  };
+  c.querySelector('[data-a="x"]').onclick=function(){NB.region=null;showChip()};
+ }
+
+ /* ---- cerebro -> Noryx ---- */
+ window.addEventListener('message',function(e){
+  if(e.source!==window.parent)return;
+  var d=e.data;if(!d||typeof d!=='object'||d.source!=='brain'||typeof d.type!=='string')return;
+  if(e.origin&&e.origin!=='null')NB.origin=e.origin;
+  if(d.lang==='es'||d.lang==='en'){NB.lang=d.lang}
+  if(d.type==='brain-hello'){
+   NB.linked=true;
+   if(Array.isArray(d.regions))NB.regions=d.regions.filter(function(r){return r&&typeof r.key==='string'}).slice(0,40);
+   if(d.region&&typeof d.region.key==='string')NB.region={key:d.region.key,name:String(d.region.name||d.region.key)};
+   var now=Date.now();if(now-NB.lastAck>500){NB.lastAck=now;post('noryx-ack',{linked:true})}
+   showChip();
+  }else if(d.type==='brain-region'&&typeof d.key==='string'){
+   NB.linked=true;NB.region={key:d.key,name:String(d.name||d.key)};showChip();
+  }else if(d.type==='brain-lang'){
+   showChip();
+  }
+ });
+
+ /* ---- Noryx -> cerebro: ilumina regiones mencionadas en cada respuesta ---- */
+ try{
+  var _reply=reply;
+  reply=function(t){
+   var p=_reply.apply(this,arguments);
+   return Promise.resolve(p).then(function(v){
+    try{
+     var c=conv(),l=c&&c.msgs[c.msgs.length-1];
+     if(l&&l.r==='a')announce(String(t||'')+' '+String(l.t||''));
+    }catch(e){}
+    return v;
+   });
+  };
+ }catch(e){console.warn('Noryx bridge: no se pudo enlazar reply()',e)}
+
+ /* ---- Saludo inicial ---- */
+ post('noryx-ready',{caps:['regions','context']});
+})();
+</script>
 </body>
 </html>
