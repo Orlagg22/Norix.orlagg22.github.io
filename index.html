@@ -11626,7 +11626,7 @@ const MODES=[
  {ic:'{ }',n:'Aprende a programar',d:'Curso interactivo de HTML, CSS, JavaScript, Lógica y algoritmos, Linux, Windows CMD, C, C++, Java y Ciberseguridad defensiva: más de 370 lecciones con retos que se prueban de verdad, desafíos finales y sin soluciones en los niveles avanzados.',fn:'nxCodeLab',tag:'Premium'},
  {ic:'🏎️',n:'Turbo Racer',d:'Juego de carreras arcade en pantalla grande: esquiva el tráfico, recoge monedas, cumple misiones y sube de nivel. Garaje con 7 coches, mejoras (suspensión, motor, frenos, turbo…) y estilo. Carrera con tráfico realista (cada tipo de coche va a su velocidad), clasificatoria con rangos (Bronce a Leyenda) contra 7 pilotos visibles en pista (48 nombres, estilos y choques), torre de posiciones, rebufo, rachas de podio y ventaja de parrilla, rebases al límite, tiempos por vuelta, persecución policial o 1 contra 1.',fn:'nxTurbo',tag:'Premium'},
   {ic:'🧩',n:'Rompecabezas 3D',d:'Arma rompecabezas con piezas que caen y chocan de verdad: 51 ilustraciones con 4 dificultades (12 a 60 piezas) y 19 desafíos extremos exclusivos (paisajes, cuevas, arrecifes y más) de 360 o 640 piezas, sin modo fácil. Mesa con piezas físicas, cronómetro, imagen de referencia y cámara libre. Funciona en PC y celular.',fn:'nxPuzzle',tag:'Nuevo'},
-  {ic:'🎓',n:'Clase en vivo',d:'Clase de cálculo como en línea, con la voz de Noryx y estilo de profe cercano: pizarrón paso a paso con gráficas. Temario completo (límites, derivadas, aplicaciones, integrales y sus técnicas, series, varias variables): 8 clases listas y el resto armado por las IAs de Noryx. Puedes interrumpir en cualquier momento para preguntar, por texto o con el micrófono, o pedirle que resuelva tu propio ejercicio.',fn:'nxClase',tag:'Nuevo'}];
+  {ic:'🎓',n:'Clase en vivo',d:'Clase de cálculo como en línea, con la voz de Noryx y estilo de profe cercano: pizarrón paso a paso con gráficas. Temario completo (límites, derivadas, aplicaciones, integrales y sus técnicas, series, varias variables): 10 clases listas y el resto armado por las IAs de Noryx. Puedes interrumpir en cualquier momento para preguntar, por texto o con el micrófono, o pedirle que resuelva tu propio ejercicio.',fn:'nxClase',tag:'Nuevo'}];
 function send(p){if(typeof p!=='string'||!p)return;const i=$('#in'),g=$('#go');if(!i||!g)return;try{if(typeof busy!=='undefined'&&busy)return}catch(e){}i.value=p;i.dispatchEvent(new Event('input',{bubbles:true}));g.click()}
 let dlg;
 const close=()=>{if(dlg)dlg.hidden=true};
@@ -21949,7 +21949,11 @@ window.nxPuzzle=open;
 #nxClase canvas{width:100%;height:180px;flex:none;border-radius:10px;background:#0e2a22;border:1px solid #2c5a4b}
 #nxClase canvas[hidden]{display:none}
 #nxClase .cl-board{flex:1;min-height:0;overflow:auto;background:#123228;border:8px solid #6b4a2b;border-radius:12px;box-shadow:inset 0 0 40px #0009;padding:12px 18px;color:#f3f6ef;font-size:clamp(17px,2.2vw,24px)}
-#nxClase .ln{margin:7px 0;animation:clW .9s ease-out both}
+#nxClase .ln{margin:7px 0;width:fit-content;max-width:100%;position:relative}
+#nxClase .ln.f{border-left:4px solid #5ab8ff;background:#5ab8ff14;padding:4px 12px;border-radius:0 8px 8px 0}
+#nxClase .ln.f::before{content:"📐 Fórmula usada";display:block;font:700 11px system-ui,sans-serif;color:#8fd0ff;text-transform:uppercase;letter-spacing:.06em}
+#nxClase .pen{position:absolute;left:0;top:50%;width:9px;height:9px;margin-top:-4px;border-radius:50%;background:#fff;box-shadow:0 0 10px 3px #fff9;pointer-events:none}
+#nxClase .bub[data-p]::before{content:attr(data-p);display:block;color:#00f0ff;font:700 11px system-ui,sans-serif;letter-spacing:.06em;text-transform:uppercase;margin-bottom:3px}
 #nxClase .ln.h{color:#ffd84a;font-size:.72em;letter-spacing:.06em;text-transform:uppercase;font-weight:700}
 #nxClase .ln.r{display:inline-block;border:2px solid #7dffb0;border-radius:10px;padding:2px 14px;background:#7dffb014}
 #nxClase .ln.w{color:#b9cfc4;font-size:.8em}
@@ -22013,19 +22017,26 @@ u'=2x\quad v'=\cos x
 f'(x)=2x\sin x+x^{2}\cos x
 ? Factorizamos x para dejarlo ordenado.
 >f'(x)=x\left(2\sin x+x\cos x\right)
-== Derivada: regla de la cadena
-? La regla de la cadena sirve cuando una función está dentro de otra. Como una cebolla: derivas la capa de afuera y multiplicas por la derivada de lo de adentro.
+== Derivada: regla de la cadena (paso a paso)
+? Esta regla sirve cuando una función está metida dentro de otra, como una cebolla: hay una capa de afuera y una de adentro. Derivamos la de afuera y multiplicamos por la derivada de la de adentro.
 #Función
 f(x)=\left(3x^{2}+1\right)^{5}
-#Regla
-\dfrac{d}{dx}f(g(x))=f'(g(x))\cdot g'(x)
-? Aquí lo de afuera es algo a la quinta, y lo de adentro es tres x cuadrada más uno. Lo llamamos u.
-u=3x^{2}+1\quad f=u^{5}
-? Derivamos la capa de afuera dejando u, y multiplicamos por la derivada de u.
-f'(x)=5u^{4}\cdot u'
-u'=6x
-? Regresamos u a su valor original.
-f'(x)=5\left(3x^{2}+1\right)^{4}\cdot 6x
+? Fíjate: si te doy un valor de x, primero calculas lo de adentro, tres x cuadrada más uno, y después lo elevas a la quinta. Eso te dice quién es la capa de afuera y quién la de adentro.
+#Paso 1: identificar las capas
+f=u^{5}\qquad u=3x^{2}+1
+? Esta es la fórmula que vamos a usar: derivada de la de afuera evaluada en u, por la derivada de u.
+~\dfrac{d}{dx}f(u)=f'(u)\cdot u'
+? Paso dos: derivamos la capa de afuera. Es una potencia, así que bajamos el cinco y le restamos uno al exponente. Todavía no tocamos lo de adentro.
+#Paso 2: derivar la capa de afuera
+\dfrac{d}{du}u^{5}=5u^{4}
+? Paso tres: derivamos la capa de adentro. Tres por dos es seis, y el uno, por ser constante, desaparece.
+#Paso 3: derivar la capa de adentro
+u'=\dfrac{d}{dx}\left(3x^{2}+1\right)=6x
+? Paso cuatro: multiplicamos las dos derivadas. Aquí es donde mucha gente se olvida del seis x.
+#Paso 4: multiplicar
+f'(x)=5u^{4}\cdot 6x
+? Y por último regresamos u a su valor original y ordenamos.
+#Paso 5: sustituir u
 >f'(x)=30x\left(3x^{2}+1\right)^{4}
 == Optimización: cerca de 100 metros | 50x-x^2 | 0 | 50
 ? Tenemos cien metros de cerca para armar un rectángulo. ¿Qué medidas dan el área máxima?
@@ -22068,20 +22079,28 @@ y=50-25=25
 ? Evaluamos arriba, restamos lo evaluado abajo. Es el teorema fundamental del cálculo.
 =(16-12+10)-(0)
 >=14
-== Integral: sustitución
-? Si en la integral aparece una función y también su derivada, usamos sustitución.
+== Integral: cambio de variable (paso a paso)
+? El cambio de variable, o sustitución, es la regla de la cadena al revés. Se usa cuando dentro de la integral ves una función y también casi su derivada.
 #Integral
 \int 2x\cos\left(x^{2}\right)dx
-? Elegimos u como lo que está dentro del coseno.
+? Fíjate: adentro del coseno está x cuadrada, y afuera hay un dos x, que justo es la derivada de x cuadrada. Esa es la señal de que funciona.
+#Paso 1: elegir u
 u=x^{2}
-? Derivamos u para obtener du.
-du=2x\,dx
-? Justo aparece dos x dx en la integral, así que lo reemplazamos.
-\int\cos u\,du
-? Esta integral es directa.
+? Paso dos: derivamos u con respecto a x y despejamos du. Es importante, porque todo lo que acompaña al dx tiene que convertirse en du.
+~du=u'\,dx
+#Paso 2: calcular du
+\dfrac{du}{dx}=2x\;\Rightarrow\;du=2x\,dx
+? Paso tres: reescribimos toda la integral en términos de u. El dos x dx se vuelve du, y x cuadrada se vuelve u. Ya no debe quedar ninguna x.
+#Paso 3: reescribir
+\int\cos\left(x^{2}\right)\,2x\,dx=\int\cos u\,du
+? Paso cuatro: ahora la integral es inmediata. La integral del coseno es el seno.
+~\int\cos u\,du=\sin u+C
+#Paso 4: integrar
 =\sin u+C
-? Regresamos a la variable original.
+? Paso cinco: regresamos a la variable original, porque la pregunta venía en x.
+#Paso 5: regresar a x
 >=\sin\left(x^{2}\right)+C
+? Para comprobar, deriva el resultado con la regla de la cadena: te tiene que dar dos x coseno de x cuadrada. ¡Perfecto!
 == Integral: por partes
 ? Cuando se multiplican dos funciones distintas, como x por e a la x, usamos integración por partes.
 #Integral
@@ -22094,7 +22113,46 @@ u=x\quad dv=e^{x}dx
 du=dx\quad v=e^{x}
 ? Sustituimos en la fórmula.
 =x\,e^{x}-\int e^{x}dx
->=x\,e^{x}-e^{x}+C=e^{x}(x-1)+C`;
+>=x\,e^{x}-e^{x}+C=e^{x}(x-1)+C
+== Integral: cambio de variable en una integral definida
+? Cuando la integral tiene límites, lo más limpio es cambiar también los límites. Vamos a verlo.
+#Integral
+\int_{0}^{1}2x\left(x^{2}+1\right)^{3}dx
+? Lo de adentro del paréntesis es x cuadrada más uno, y su derivada, dos x, está afuera. Entonces u es esa expresión.
+#Paso 1: elegir u y du
+u=x^{2}+1\qquad du=2x\,dx
+? Ahora el truco: el cero y el uno son valores de x. Como cambiamos de variable, hay que convertirlos a valores de u.
+~x=a\;\Rightarrow\;u=g(a)
+#Paso 2: cambiar los límites
+x=0\Rightarrow u=0^{2}+1=1
+x=1\Rightarrow u=1^{2}+1=2
+? Reescribimos la integral completa en u, con sus nuevos límites.
+#Paso 3: reescribir
+\int_{1}^{2}u^{3}\,du
+? Integramos con la regla de la potencia: subes el exponente y divides entre el nuevo, y luego evalúas arriba menos abajo.
+~\int u^{n}du=\dfrac{u^{n+1}}{n+1}
+#Paso 4: integrar y evaluar
+=\left[\dfrac{u^{4}}{4}\right]_{1}^{2}=\dfrac{16}{4}-\dfrac{1}{4}
+>=\dfrac{15}{4}
+== Derivada: regla del cociente
+? Cuando una función se divide entre otra usamos la regla del cociente. Para recordarla: la de abajo por la derivada de la de arriba, menos la de arriba por la derivada de la de abajo, todo entre la de abajo al cuadrado.
+#Función
+f(x)=\dfrac{x^{2}+1}{x-3}
+~\left(\dfrac{u}{v}\right)'=\dfrac{u'v-u\,v'}{v^{2}}
+? Primero identificamos arriba y abajo. u es x cuadrada más uno, y v es x menos tres.
+#Paso 1: identificar u y v
+u=x^{2}+1\quad v=x-3
+? Paso dos: derivamos cada una por separado. La derivada de u es dos x, y la de v es uno.
+#Paso 2: derivar
+u'=2x\quad v'=1
+? Paso tres: sustituimos en la fórmula, con cuidado con el orden, porque aquí hay una resta.
+#Paso 3: sustituir
+f'(x)=\dfrac{2x(x-3)-(x^{2}+1)(1)}{(x-3)^{2}}
+? Paso cuatro: multiplicamos y reducimos. Ojo con el signo menos, que afecta a todo el paréntesis.
+#Paso 4: simplificar
+=\dfrac{2x^{2}-6x-x^{2}-1}{(x-3)^{2}}
+>f'(x)=\dfrac{x^{2}-6x-1}{(x-3)^{2}}
+`;
 function P(src){return src.split(/^== /m).slice(1).map(b=>{const ls=b.split('\n'),h=ls.shift().split('|').map(s=>s.trim());let c;const L={t:h[0],g:h[1]?{f:h[1],a:nv(h[2],-5),b:nv(h[3],5),x0:nv(h[4],null),r:h[5]!==undefined&&h[5]!==''?[+h[5],+h[6]]:null}:null,s:[]};
  ls.forEach(l=>{l=l.trim();if(!l)return;if(l[0]=='?'){c={s:l.slice(1).trim(),b:[],v:''};L.s.push(c)}else if(c){if(l[0]=='@')c.v=l[1];else c.b.push(l)}});return L})}
 const LS=P(SRC);
@@ -22153,22 +22211,28 @@ Derivadas parciales
 Integrales dobles`;
 const TM=[];let UU;TEMS.split('\n').forEach(l=>{if(l.startsWith('## ')){UU={u:l.slice(3),t:[]};TM.push(UU)}else if(l.trim())UU.t.push(l.trim())});
 const CN=['','Fíjate bien. ','Ahora ojo. ','Muy bien, sigamos. ','Perfecto. ','Vamos con lo que sigue. '];
-const TIPS=['Ojo: la derivada de una constante siempre es cero, y no se te olvide restarle uno al exponente.','Ojo: la derivada de un producto no es el producto de las derivadas. Ese es el error más común, ¿eh?','Ojo: no olvides multiplicar por la derivada de lo de adentro. Ahí es donde casi todos pierden puntos.','Ojo: comprueba siempre con la segunda derivada y contesta con sus unidades.','Ojo: L\'Hôpital solo se usa con cero entre cero o infinito entre infinito, y se deriva arriba y abajo por separado, no como cociente.','Ojo: en la integral indefinida no se te olvide la constante C; en la definida ya no va.','Ojo: al final regresa siempre a la variable original, y revisa que el du esté completo dentro de la integral.','Ojo: para elegir u usa la regla LIATE: logaritmos, inversas trigonométricas, algebraicas, trigonométricas y exponenciales.'];
+const TIPS=['Ojo: la derivada de una constante siempre es cero, y no se te olvide restarle uno al exponente.','Ojo: la derivada de un producto no es el producto de las derivadas. Ese es el error más común, ¿eh?','Ojo: no olvides multiplicar por la derivada de lo de adentro. Ahí es donde casi todos pierden puntos.','Ojo: comprueba siempre con la segunda derivada y contesta con sus unidades.','Ojo: L\'Hôpital solo se usa con cero entre cero o infinito entre infinito, y se deriva arriba y abajo por separado, no como cociente.','Ojo: en la integral indefinida no se te olvide la constante C; en la definida ya no va.','Ojo: al final regresa siempre a la variable original, y revisa que el du esté completo dentro de la integral.','Ojo: para elegir u usa la regla LIATE: logaritmos, inversas trigonométricas, algebraicas, trigonométricas y exponenciales.','Ojo: si cambias de variable, cambia también los límites y así ya no tienes que regresar a x.','Ojo: el orden importa en la resta del numerador, y el signo menos afecta a todo el segundo término.'];
 function deco(L,i){const s=L.s.map((x,k)=>({...x,s:CN[k%CN.length]+x.s}));s.unshift({s:'¡Hola, qué tal! Bienvenido a la clase. Hoy vamos a ver: '+L.t+'. Tranquilo, lo hacemos paso a paso, y si algo no te queda claro, me interrumpes sin pena.',b:[],v:''});if(TIPS[i])s.push({s:TIPS[i],b:[],v:''});return{...L,s}}
 function go(){const v=sel.value;if(v[0]=='b'){const i=+v.slice(1);return start(deco(LS[i],i))}const [i,j]=v.slice(1).split('.').map(Number),t=TM[i].t[j];gen('Tema de la clase: '+t+' (unidad: '+TM[i].u+'). Da la clase completa con teoría, dos ejemplos resueltos, error común y resumen.',t)}
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 async function wait(ms,tok){while(ms>0){if(tok!=Z.tok)return false;if(Z.pause){await sleep(120);continue}await sleep(80);ms-=80}return tok==Z.tok}
 async function hold(tok){while(Z.pause&&tok==Z.tok)await sleep(120)}
+const SPK={sin:'seno de',cos:'coseno de',tan:'tangente de',ln:'logaritmo natural de',log:'logaritmo de',exp:'exponencial de'};
+function mth(s){const m=/\\|\^\{|_\{|[A-Za-z]'(?:\(|\s*=)|=/.test(s);s=s.replace(/\$/g,'').replace(/\\(sin|cos|tan|ln|log|exp)\b/g,(a,b)=>' '+SPK[b]+' ').replace(/\\(?:Rightarrow|implies)/g,' entonces ').replace(/\\text\{([^{}]*)\}/g,' $1 ').replace(/([A-Za-z])''(?=\(|\s*=)/g,'$1 segunda ').replace(/([A-Za-z])'(?=\(|\s*=)/g,'$1 prima ');
+ if(m)s=s.replace(/=/g,' igual a ').replace(/\+/g,' más ').replace(/\*/g,' por ').replace(/(?<=[\w)}\]])\s*[-−]\s*(?=[\w({\\])/g,' menos ').replace(/\(/g,' paréntesis ').replace(/\)/g,' cierra paréntesis ');return s}
 function say(t){return new Promise(res=>{if(!Z.vo||!window.speechSynthesis){res();return}
- try{speechSynthesis.cancel();speechSynthesis.resume();let x=String(t).replace(/[*`_·$\\{}^#]/g,' ').replace(/\s+/g,' ').trim();try{x=pron(speechNums(nxSay(x),false)).replace(/\s+/g,' ').trim()}catch(e){}
+ try{speechSynthesis.cancel();speechSynthesis.resume();let x=mth(String(t));try{x=pron(speechNums(nxSay(x),false))}catch(e){}x=x.replace(/[*`_·$\\{}^#~]/g,' ').replace(/\s+/g,' ').trim();
  const g=(k,d)=>{try{return S.get(k,d)}catch(e){return d}},v=(()=>{try{return voiceFor('es')}catch(e){return null}})(),
  us=(typeof sayChunks=='function'?sayChunks(x):[x]).map(c=>{const u=new SpeechSynthesisUtterance(c);u.lang='es-MX';if(v){u.voice=v;u.lang=v.lang}u.pitch=g('nx-vp',1.12);u.rate=g('nx-vr',1.03);return u});
  if(!us.length){res();return}const la=us[us.length-1];la.onend=la.onerror=()=>res();setTimeout(res,x.length*95+4000);window._nxUs=us;
  setTimeout(()=>{if(window._nxUs===us)us.forEach(u=>speechSynthesis.speak(u))},80)}catch(e){res()}})}
 const hush=()=>{try{speechSynthesis.cancel()}catch(e){}};
-function bub(t,talk){bu.textContent=t;const a=$('.av',ov);a.classList.toggle('hb',!!talk)}
-function wr(l){const d=document.createElement('div');d.className='ln';const c=l[0];Z.bl.push(l);
- if(c=='#'){d.className+=' h';d.textContent=l.slice(1).trim()}else if(c=='>'){d.className+=' r';d.innerHTML=K(l.slice(1))}else d.innerHTML=K(l);bd.append(d);bd.scrollTop=bd.scrollHeight}
+function bub(t,talk){delete bu.dataset.p;bu.textContent=t;const a=$('.av',ov);a.classList.toggle('hb',!!talk)}
+function wr(l){return new Promise(res=>{const d=document.createElement('div');d.className='ln';const c=l[0];Z.bl.push(l);let tx=l;
+ if(c=='#'){d.className+=' h';d.textContent=tx=l.slice(1).trim()}else if(c=='>'){d.className+=' r';d.innerHTML=K(tx=l.slice(1))}else if(c=='~'){d.className+=' f';d.innerHTML=K(tx=l.slice(1))}else d.innerHTML=K(l);
+ bd.append(d);bd.scrollTop=bd.scrollHeight;if(!d.animate||matchMedia('(prefers-reduced-motion:reduce)').matches){res();return}
+ const W=d.offsetWidth,ms=Math.max(800,Math.min(3500,tx.length*42)),o={duration:ms,easing:'steps('+Math.max(8,Math.min(48,Math.ceil(tx.length/2)))+',end)',fill:'both'},p=document.createElement('i');p.className='pen';d.append(p);
+ const a=d.animate([{clipPath:'inset(0 100% 0 0)'},{clipPath:'inset(0 0 0 0)'}],o),b=p.animate([{transform:'translateX(0)'},{transform:'translateX('+Math.max(0,W-8)+'px)'}],o);Z.an=[a,b];setTimeout(res,ms+1500);a.onfinish=()=>{p.remove();Z.an=null;res()}})}
 function note(t){const d=document.createElement('div');d.className='ln w';d.textContent=t;bd.append(d)}
 /* ---- gráfica: curva, tangente o área ---- */
 function G(v){if(v)Z.gv=v;const g=Z.L&&Z.L.g,f=g&&fn(g.f);if(!f){cv.hidden=true;return}cv.hidden=false;
@@ -22183,19 +22247,22 @@ function G(v){if(v)Z.gv=v;const g=Z.L&&Z.L.g,f=g&&fn(g.f);if(!f){cv.hidden=true;
  x.fillStyle='#9fd9cf';x.font='12px system-ui';x.fillText('y = '+g.f,8,16)}
 /* ---- motor de la clase ---- */
 function paint(){const b=$('#clPz',ov);b.disabled=!Z.L||!Z.run;b.textContent=Z.pause?'▶ Seguir':'⏸ Pausar';b.classList.toggle('on',Z.pause);const v=$('#clVo',ov);v.textContent=Z.vo?'🔊 Voz':'🔇 Voz';v.classList.toggle('on',Z.vo)}
-function pause(){if(!Z.run)return;Z.pause=true;try{speechSynthesis.pause()}catch(e){};paint()}
-function resume(){Z.pause=false;try{speechSynthesis.resume()}catch(e){};paint();if(Z.run)bub('Seguimos…',1)}
+function pause(){if(!Z.run)return;Z.pause=true;Z.an&&Z.an.forEach(x=>x.pause());try{speechSynthesis.pause()}catch(e){};paint()}
+function resume(){Z.pause=false;Z.an&&Z.an.forEach(x=>x.play());try{speechSynthesis.resume()}catch(e){};paint();if(Z.run)bub('Seguimos…',1)}
 async function play(tok){Z.run=1;paint();
- while(tok==Z.tok&&Z.i<Z.L.s.length){const st=Z.L.s[Z.i];bub(st.s,1);const sp=say(st.s);if(st.v)G(st.v);
-  for(const l of st.b){if(!await wait(Z.vo?900:1000,tok))return;wr(l)}
+ while(tok==Z.tok&&Z.i<Z.L.s.length){const st=Z.L.s[Z.i];bub(st.s,1);bu.dataset.p='Paso '+(Z.i+1)+' de '+Z.L.s.length;const sp=say(st.s);if(st.v)G(st.v);
+  for(const l of st.b){if(!await wait(350,tok))return;try{await wr(l)}catch(e){}if(tok!=Z.tok)return}
   await Promise.all([sp,wait(Z.vo?400:Math.max(1600,st.s.length*40),tok)]);if(tok!=Z.tok)return;await hold(tok);if(tok!=Z.tok)return;Z.i++}
  if(tok==Z.tok){Z.run=0;Z.pause=false;paint();bub('¡Eso es todo! ¿Quedó claro? Pregúntame lo que quieras, pide otro ejemplo o escribe tu propio ejercicio.',0);say('Eso es todo. ¿Quedó claro? Pregúntame lo que quieras.')}}
 function start(L){Z.tok++;hush();Z.L=L;Z.i=0;Z.pause=false;Z.gv='';Z.bl=[];bd.innerHTML='';cv.hidden=true;note('Clase: '+L.t);paint();play(Z.tok)}
 function J(t){t=t.replace(/```(?:json)?/gi,'');const a=t.indexOf('{'),b=t.lastIndexOf('}');if(a<0||b<a)return null;
  try{return JSON.parse(t.slice(a,b+1).replace(/\\\\|\\(?!["\\])/g,m=>m.length==2?m:'\\\\'))}catch(e){return null}}
-function mk(o){if(!o||!Array.isArray(o.steps))return null;const s=o.steps.slice(0,16).filter(x=>x&&x.s).map(x=>({s:String(x.s).slice(0,300),b:(Array.isArray(x.b)?x.b:[]).slice(0,4).map(l=>String(l).slice(0,220)),v:''}));
+function mk(o){if(!o||!Array.isArray(o.steps))return null;const MX=/[A-Za-z]'*\([a-z]\)\s*=|\\[a-zA-Z]{2,}|[\^_]\{/,nm=z=>String(z).replace(/\s+/g,'');
+ const s=o.steps.slice(0,16).filter(x=>x&&x.s).map(x=>{let sp=String(x.s).replace(/\$/g,''),b=(Array.isArray(x.b)?x.b:[]).map(l=>typeof l=='string'?l:(l&&(l.latex||l.text||l.l))||'').map(l=>String(l).replace(/\$/g,'').trim()).filter(Boolean).slice(0,5);
+  const k=sp.search(MX);if(k>=0){const mt=sp.slice(k).replace(/[.\s]+$/,'').trim();sp=sp.slice(0,k).replace(/[:\s]+$/,'').trim()||'Mira lo que escribo en el pizarrón';if(mt&&b.length<5&&!b.some(l=>nm(l)==nm(mt)))b.push(mt)}
+  return{s:sp.slice(0,300),b:b.map(l=>l.slice(0,240)),v:''}});
  if(!s.length)return null;const g=o.f&&fn(o.f)?{f:String(o.f),a:-5,b:5,x0:null,r:null}:null;if(g)s[0].v='f';return{t:String(o.t||'Ejercicio').slice(0,80),g,s}}
-const GP='Eres Noryx dando una clase en vivo de cálculo, con el estilo cercano y paciente de un buen profe de YouTube mexicano: hablas de tú, con calidez y confianza, con frases como «fíjate», «ojo con esto», «recuerda que», «muy bien», «¿sí me vas siguiendo?», explicas el porqué de cada paso con números sencillos, avisas del error común y cierras con un resumen y un ejercicio para el alumno. Responde SOLO con JSON válido, sin texto extra ni ```: {"t":"título corto","f":"función a graficar con x (ej. x^2*sin(x)) o vacío","steps":[{"s":"lo que dices en voz alta, 1 a 3 frases, sin símbolos ni LaTeX (los signos y números dilos con palabras)","b":["línea en LaTeX sin signos de dólar","#comentario corto en texto plano",">resultado final en LaTeX"]}]}. Estructura: 1) saludo y de qué trata el tema, 2) idea o teoría con su fórmula, 3) ejemplo 1 paso a paso, 4) error común, 5) ejemplo 2 un poco más difícil, 6) resumen y ejercicio para el alumno. Entre 8 y 14 pasos, de 1 a 4 líneas en b por paso (b puede ir vacío en saludo y resumen). Cada barra invertida de LaTeX va doble (\\\\frac). Verifica la aritmética derivando o integrando de regreso. Si no es de matemáticas responde {"error":1}.';
+const GP='Eres Noryx dando una clase en vivo de cálculo, con el estilo cercano y paciente de un buen profe de YouTube mexicano: hablas de tú, con calidez y confianza, con frases como «fíjate», «ojo con esto», «recuerda que», «muy bien», «¿sí me vas siguiendo?», explicas el porqué de cada paso con números sencillos, avisas del error común y cierras con un resumen y un ejercicio para el alumno. Responde SOLO con JSON válido, sin texto extra ni ```: {"t":"título corto","f":"función a graficar con x (ej. x^2*sin(x)) o vacío","steps":[{"s":"lo que dices en voz alta, 2 a 4 frases, sin símbolos ni LaTeX (los signos y números dilos con palabras)","b":["#Paso 2: título corto en texto plano","~fórmula general que vas a usar, en LaTeX","línea de desarrollo en LaTeX sin signos de dólar",">resultado final en LaTeX"]}]}. Cada paso se explica en voz alta con el porqué, no solo qué haces. Antes de aplicar una regla escribe su fórmula en una línea que empiece con ~ (por ejemplo ~\\\\dfrac{d}{dx}x^{n}=nx^{n-1}). En derivadas: identifica las partes (u, v), deriva cada una por separado, sustituye en la fórmula y simplifica. En cambio de variable: elige u y di por qué, calcula du, cambia los límites si es definida, reescribe todo en u, integra, regresa a x y comprueba derivando. Estructura: 1) saludo y de qué trata el tema, 2) idea o teoría con su fórmula, 3) ejemplo 1 paso a paso, 4) error común, 5) ejemplo 2 un poco más difícil, 6) resumen y ejercicio para el alumno. Entre 10 y 16 pasos, de 1 a 4 líneas en b por paso (b puede ir vacío en saludo y resumen). Cada barra invertida de LaTeX va doble (\\\\frac). Verifica la aritmética derivando o integrando de regreso. Si no es de matemáticas responde {"error":1}.';
 async function gen(q,lab){q=q.trim();if(!q)return;const tok=++Z.tok;hush();Z.run=0;Z.pause=false;paint();log('u',lab||q);bub('Muy bien, voy a preparar el ejercicio para el pizarrón…',1);let L=null;
  for(let k=0;k<2&&!L;k++){const r=await ask([{role:'system',content:GP},{role:'user',content:'Ejercicio o tema: '+q.slice(0,450)}]);if(tok!=Z.tok||ov.hidden)return;const o=r&&r.t&&J(r.t);if(o&&o.error){bub('Eso no parece un ejercicio de matemáticas. Escríbeme una derivada, una integral o un límite.',0);return}L=mk(o)}
  if(!L){bub('No pude armar esa clase ahora mismo. Inténtalo otra vez o elige una de la lista.',0);return}start(L)}
