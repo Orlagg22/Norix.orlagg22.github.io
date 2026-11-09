@@ -21952,6 +21952,10 @@ window.nxPuzzle=open;
 #nxClase .ln{margin:7px 0;width:fit-content;max-width:100%;position:relative}
 #nxClase .ln.f{border-left:4px solid #5ab8ff;background:#5ab8ff14;padding:4px 12px;border-radius:0 8px 8px 0}
 #nxClase .ln.f::before{content:"📐 Fórmula usada";display:block;font:700 11px system-ui,sans-serif;color:#8fd0ff;text-transform:uppercase;letter-spacing:.06em}
+#nxClase .ln.n{color:#b8f0ff;font-size:.8em;border-left:3px solid #00f0ff;padding:2px 0 2px 10px;line-height:1.5}
+#nxClase .ln.n::before{content:"💡 ¿Por qué? ";font-weight:700;color:#00f0ff}
+#nxClase .ln.k{color:#ffe9a8;font-size:.8em;border:1.5px dashed #ffd84a99;border-radius:8px;padding:3px 10px;line-height:1.5}
+#nxClase .ln.k::before{content:"📋 Cómo se hace: ";font-weight:700;color:#ffd84a}
 #nxClase .pen{position:absolute;left:0;top:50%;width:9px;height:9px;margin-top:-4px;border-radius:50%;background:#fff;box-shadow:0 0 10px 3px #fff9;pointer-events:none}
 #nxClase .bub[data-p]::before{content:attr(data-p);display:block;color:#00f0ff;font:700 11px system-ui,sans-serif;letter-spacing:.06em;text-transform:uppercase;margin-bottom:3px}
 #nxClase .ln.h{color:#ffd84a;font-size:.72em;letter-spacing:.06em;text-transform:uppercase;font-weight:700}
@@ -22152,6 +22156,105 @@ f'(x)=\dfrac{2x(x-3)-(x^{2}+1)(1)}{(x-3)^{2}}
 #Paso 4: simplificar
 =\dfrac{2x^{2}-6x-x^{2}-1}{(x-3)^{2}}
 >f'(x)=\dfrac{x^{2}-6x-1}{(x-3)^{2}}
+
+== Cómo se deriva: desde la definición | x^2 | -3 | 3 | 1
+? Antes de memorizar reglas, vamos a ver de dónde sale derivar. Derivar es medir qué tan rápido cambia una función, o sea, la pendiente de su recta tangente en cada punto.
+@f
+#Idea
+^Tomamos dos puntos muy cercanos, $x$ y $x+h$, calculamos la pendiente entre ellos y hacemos que $h$ se acerque a cero.
+% Una pendiente normal necesita dos puntos. Con el límite juntamos los dos puntos y obtenemos la pendiente en uno solo.
+? Esa idea se escribe con la definición de la derivada. Es la fórmula madre: todas las reglas salen de aquí.
+~f'(x)=\lim_{h\to0}\dfrac{f(x+h)-f(x)}{h}
+? Vamos a usarla con f de x igual a x cuadrada. Primero calculamos f de x más h, sustituyendo x por x más h.
+#Paso 1: calcular f(x+h)
+f(x+h)=(x+h)^{2}=x^{2}+2xh+h^{2}
+? Paso dos: restamos f de x. Fíjate cómo desaparece la x cuadrada.
+#Paso 2: restar f(x)
+f(x+h)-f(x)=2xh+h^{2}
+? Paso tres: dividimos entre h. Cada término del numerador tiene una h, así que la factorizamos y la cancelamos.
+#Paso 3: dividir entre h
+\dfrac{2xh+h^{2}}{h}=\dfrac{h(2x+h)}{h}=2x+h
+% Si sustituyéramos $h=0$ desde el inicio saldría cero entre cero. Por eso primero factorizamos y cancelamos, y después hacemos el límite.
+? Paso cuatro: ahora sí hacemos que h tienda a cero.
+@t
+#Paso 4: el límite
+\lim_{h\to0}(2x+h)=2x
+>f'(x)=2x
+? Con x al cubo pasa igual: al expandir queda tres x cuadrada por h más términos con h al cuadrado, que desaparecen en el límite. De ahí sale la regla de la potencia.
+~\dfrac{d}{dx}x^{n}=n\,x^{n-1}
+% Baja el exponente multiplicando porque, al expandir $(x+h)^{n}$, el primer término con $h$ es siempre $n\,x^{n-1}h$.
+? Apliquémosla: cinco x al cubo menos cuatro x más uno. Cada término se deriva por separado y la constante da cero.
+#Ejemplo
+f(x)=5x^{3}-4x+1
+f'(x)=5\cdot 3x^{2}-4\cdot 1+0
+>f'(x)=15x^{2}-4
+? El resultado es la pendiente: en x igual a dos, quince por cuatro menos cuatro, o sea cincuenta y seis.
+f'(2)=15(4)-4=56
+== Cómo se integra: método completo | 6x^2-4x+3 | 0 | 3.5 | | 1 | 3
+? Integrar es hacer lo contrario de derivar: nos dan la derivada y buscamos la función original. Por eso también se le llama antiderivada.
+@f
+#Idea
+^Preguntarse: ¿qué función, al derivarla, me da lo que tengo dentro de la integral?
+% Derivar e integrar se deshacen entre sí, como sumar y restar. Por eso siempre podemos comprobar derivando.
+#Integral
+\int\left(6x^{2}-4x+3\right)dx
+? Primero: la integral de una suma o resta se reparte término por término, y los números que multiplican salen de la integral.
+~\int\left(a f+b g\right)dx=a\int f\,dx+b\int g\,dx
+#Paso 1: separar términos
+=6\int x^{2}dx-4\int x\,dx+3\int 1\,dx
+? Paso dos: la regla de la potencia. Subimos el exponente en uno y dividimos entre el nuevo exponente. Recuerda que x es x a la uno, y que un uno es x a la cero.
+~\int x^{n}dx=\dfrac{x^{n+1}}{n+1}+C\quad(n\neq-1)
+% Se sube el exponente porque derivar lo baja, y se divide entre el nuevo exponente para que, al derivar, ese número se cancele.
+#Paso 2: integrar cada término
+=6\cdot\dfrac{x^{3}}{3}-4\cdot\dfrac{x^{2}}{2}+3x
+? Paso tres: simplificamos y agregamos la constante de integración.
+#Paso 3: simplificar y agregar C
+>=2x^{3}-2x^{2}+3x+C
+% La constante $C$ aparece porque al derivar cualquier constante se vuelve cero: hay muchas funciones con la misma derivada.
+? Paso cuatro: comprobamos derivando el resultado.
+#Paso 4: comprobar
+\dfrac{d}{dx}\left(2x^{3}-2x^{2}+3x+C\right)=6x^{2}-4x+3
+? Ahora la integral definida de uno a tres, que es el área bajo la curva. Con el teorema fundamental evaluamos la antiderivada arriba menos abajo. Aquí ya no se escribe la constante.
+@r
+~\int_{a}^{b}f(x)\,dx=F(b)-F(a)
+#Integral definida
+\int_{1}^{3}\left(6x^{2}-4x+3\right)dx=\Big[2x^{3}-2x^{2}+3x\Big]_{1}^{3}
+? Evaluamos en tres y en uno.
+F(3)=54-18+9=45\qquad F(1)=2-2+3=3
+>=45-3=42
+% La $C$ no se escribe porque al restar $F(b)-F(a)$ se cancela.
+== Cambio de variable: cómo y por qué se toma u
+? Hoy respondemos la pregunta que todos se hacen: ¿cómo sé qué elegir como u, y por qué funciona el cambio de variable?
+#Idea
+^Buscar dentro de la integral una función metida en otra, con su derivada, o algo parecido, multiplicando.
+% Viene de la regla de la cadena. Al derivar una función compuesta aparece la derivada de lo de adentro multiplicando; al integrar, ese factor es la pista para deshacerlo.
+? Para elegir u, fíjate primero en lo que está dentro de un paréntesis, una raíz, un exponente o una función como seno o logaritmo. Segundo, que su derivada aparezca multiplicando, aunque falte un número.
+~u=g(x)\qquad du=g'(x)\,dx
+#Ejemplo 1
+\int x\,e^{x^{2}}dx
+? El candidato a u es x cuadrada, que está en el exponente. Su derivada es dos x, y en la integral tenemos una x: casi igual, solo falta el dos.
+#Paso 1: elegir u
+u=x^{2}
+? Paso dos: calculamos du. Nos sobra un dos, así que despejamos x dx.
+#Paso 2: calcular du
+du=2x\,dx\;\Rightarrow\;x\,dx=\dfrac{du}{2}
+% Un número que falta no es problema: se acomoda dividiendo entre él. Lo que no se puede arreglar es que falte una variable.
+? Paso tres: reescribimos todo en u. El un medio sale de la integral.
+#Paso 3: reescribir
+\int e^{u}\,\dfrac{du}{2}=\dfrac{1}{2}\int e^{u}du
+? Paso cuatro: la integral de e a la u es e a la u, y regresamos a x.
+#Paso 4: integrar y regresar a x
+=\dfrac{1}{2}e^{u}+C
+>=\dfrac{1}{2}e^{x^{2}}+C
+? Segundo ejemplo, con un paréntesis elevado a la quinta.
+#Ejemplo 2
+\int(3x+1)^{5}dx
+? Lo de adentro del paréntesis es tres x más uno. Su derivada es tres, una constante, y eso siempre se puede acomodar.
+u=3x+1\qquad du=3\,dx\;\Rightarrow\;dx=\dfrac{du}{3}
+=\dfrac{1}{3}\int u^{5}du=\dfrac{1}{3}\cdot\dfrac{u^{6}}{6}+C
+>=\dfrac{(3x+1)^{6}}{18}+C
+? Una señal de alerta: si después de cambiar quedan equis mezcladas con u, esa u no era buena. Prueba otra o usa otra técnica.
+^Comprobar siempre: derivar el resultado debe devolver la integral original.
 `;
 function P(src){return src.split(/^== /m).slice(1).map(b=>{const ls=b.split('\n'),h=ls.shift().split('|').map(s=>s.trim());let c;const L={t:h[0],g:h[1]?{f:h[1],a:nv(h[2],-5),b:nv(h[3],5),x0:nv(h[4],null),r:h[5]!==undefined&&h[5]!==''?[+h[5],+h[6]]:null}:null,s:[]};
  ls.forEach(l=>{l=l.trim();if(!l)return;if(l[0]=='?'){c={s:l.slice(1).trim(),b:[],v:''};L.s.push(c)}else if(c){if(l[0]=='@')c.v=l[1];else c.b.push(l)}});return L})}
@@ -22211,7 +22314,7 @@ Derivadas parciales
 Integrales dobles`;
 const TM=[];let UU;TEMS.split('\n').forEach(l=>{if(l.startsWith('## ')){UU={u:l.slice(3),t:[]};TM.push(UU)}else if(l.trim())UU.t.push(l.trim())});
 const CN=['','Fíjate bien. ','Ahora ojo. ','Muy bien, sigamos. ','Perfecto. ','Vamos con lo que sigue. '];
-const TIPS=['Ojo: la derivada de una constante siempre es cero, y no se te olvide restarle uno al exponente.','Ojo: la derivada de un producto no es el producto de las derivadas. Ese es el error más común, ¿eh?','Ojo: no olvides multiplicar por la derivada de lo de adentro. Ahí es donde casi todos pierden puntos.','Ojo: comprueba siempre con la segunda derivada y contesta con sus unidades.','Ojo: L\'Hôpital solo se usa con cero entre cero o infinito entre infinito, y se deriva arriba y abajo por separado, no como cociente.','Ojo: en la integral indefinida no se te olvide la constante C; en la definida ya no va.','Ojo: al final regresa siempre a la variable original, y revisa que el du esté completo dentro de la integral.','Ojo: para elegir u usa la regla LIATE: logaritmos, inversas trigonométricas, algebraicas, trigonométricas y exponenciales.','Ojo: si cambias de variable, cambia también los límites y así ya no tienes que regresar a x.','Ojo: el orden importa en la resta del numerador, y el signo menos afecta a todo el segundo término.'];
+const TIPS=['Ojo: la derivada de una constante siempre es cero, y no se te olvide restarle uno al exponente.','Ojo: la derivada de un producto no es el producto de las derivadas. Ese es el error más común, ¿eh?','Ojo: no olvides multiplicar por la derivada de lo de adentro. Ahí es donde casi todos pierden puntos.','Ojo: comprueba siempre con la segunda derivada y contesta con sus unidades.','Ojo: L\'Hôpital solo se usa con cero entre cero o infinito entre infinito, y se deriva arriba y abajo por separado, no como cociente.','Ojo: en la integral indefinida no se te olvide la constante C; en la definida ya no va.','Ojo: al final regresa siempre a la variable original, y revisa que el du esté completo dentro de la integral.','Ojo: para elegir u usa la regla LIATE: logaritmos, inversas trigonométricas, algebraicas, trigonométricas y exponenciales.','Ojo: si cambias de variable, cambia también los límites y así ya no tienes que regresar a x.','Ojo: el orden importa en la resta del numerador, y el signo menos afecta a todo el segundo término.','Ojo: si sustituyes h igual a cero muy pronto, sale cero entre cero. Primero factoriza y cancela, luego haz el límite.','Ojo: comprueba siempre derivando tu resultado; si no te da la función original, hay un error.','Ojo: si después de sustituir quedan equis mezcladas con u, esa u no era buena.'];
 function deco(L,i){const s=L.s.map((x,k)=>({...x,s:CN[k%CN.length]+x.s}));s.unshift({s:'¡Hola, qué tal! Bienvenido a la clase. Hoy vamos a ver: '+L.t+'. Tranquilo, lo hacemos paso a paso, y si algo no te queda claro, me interrumpes sin pena.',b:[],v:''});if(TIPS[i])s.push({s:TIPS[i],b:[],v:''});return{...L,s}}
 function go(){const v=sel.value;if(v[0]=='b'){const i=+v.slice(1);return start(deco(LS[i],i))}const [i,j]=v.slice(1).split('.').map(Number),t=TM[i].t[j];gen('Tema de la clase: '+t+' (unidad: '+TM[i].u+'). Da la clase completa con teoría, dos ejemplos resueltos, error común y resumen.',t)}
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
@@ -22228,8 +22331,9 @@ function say(t){return new Promise(res=>{if(!Z.vo||!window.speechSynthesis){res(
  setTimeout(()=>{if(window._nxUs===us)us.forEach(u=>speechSynthesis.speak(u))},80)}catch(e){res()}})}
 const hush=()=>{try{speechSynthesis.cancel()}catch(e){}};
 function bub(t,talk){delete bu.dataset.p;bu.textContent=t;const a=$('.av',ov);a.classList.toggle('hb',!!talk)}
+const IM=s=>String(s).split('$').map((p,i)=>i%2?K(p):ES(p)).join('');
 function wr(l){return new Promise(res=>{const d=document.createElement('div');d.className='ln';const c=l[0];Z.bl.push(l);let tx=l;
- if(c=='#'){d.className+=' h';d.textContent=tx=l.slice(1).trim()}else if(c=='>'){d.className+=' r';d.innerHTML=K(tx=l.slice(1))}else if(c=='~'){d.className+=' f';d.innerHTML=K(tx=l.slice(1))}else d.innerHTML=K(l);
+ if(c=='#'){d.className+=' h';d.textContent=tx=l.slice(1).trim()}else if(c=='>'){d.className+=' r';d.innerHTML=K(tx=l.slice(1))}else if(c=='~'){d.className+=' f';d.innerHTML=K(tx=l.slice(1))}else if(c=='%'){d.className+=' n';d.innerHTML=IM(tx=l.slice(1).trim())}else if(c=='^'){d.className+=' k';d.innerHTML=IM(tx=l.slice(1).trim())}else d.innerHTML=K(l);
  bd.append(d);bd.scrollTop=bd.scrollHeight;if(!d.animate||matchMedia('(prefers-reduced-motion:reduce)').matches){res();return}
  const W=d.offsetWidth,ms=Math.max(800,Math.min(3500,tx.length*42)),o={duration:ms,easing:'steps('+Math.max(8,Math.min(48,Math.ceil(tx.length/2)))+',end)',fill:'both'},p=document.createElement('i');p.className='pen';d.append(p);
  const a=d.animate([{clipPath:'inset(0 100% 0 0)'},{clipPath:'inset(0 0 0 0)'}],o),b=p.animate([{transform:'translateX(0)'},{transform:'translateX('+Math.max(0,W-8)+'px)'}],o);Z.an=[a,b];setTimeout(res,ms+1500);a.onfinish=()=>{p.remove();Z.an=null;res()}})}
@@ -22258,11 +22362,11 @@ function start(L){Z.tok++;hush();Z.L=L;Z.i=0;Z.pause=false;Z.gv='';Z.bl=[];bd.in
 function J(t){t=t.replace(/```(?:json)?/gi,'');const a=t.indexOf('{'),b=t.lastIndexOf('}');if(a<0||b<a)return null;
  try{return JSON.parse(t.slice(a,b+1).replace(/\\\\|\\(?!["\\])/g,m=>m.length==2?m:'\\\\'))}catch(e){return null}}
 function mk(o){if(!o||!Array.isArray(o.steps))return null;const MX=/[A-Za-z]'*\([a-z]\)\s*=|\\[a-zA-Z]{2,}|[\^_]\{/,nm=z=>String(z).replace(/\s+/g,'');
- const s=o.steps.slice(0,16).filter(x=>x&&x.s).map(x=>{let sp=String(x.s).replace(/\$/g,''),b=(Array.isArray(x.b)?x.b:[]).map(l=>typeof l=='string'?l:(l&&(l.latex||l.text||l.l))||'').map(l=>String(l).replace(/\$/g,'').trim()).filter(Boolean).slice(0,5);
-  const k=sp.search(MX);if(k>=0){const mt=sp.slice(k).replace(/[.\s]+$/,'').trim();sp=sp.slice(0,k).replace(/[:\s]+$/,'').trim()||'Mira lo que escribo en el pizarrón';if(mt&&b.length<5&&!b.some(l=>nm(l)==nm(mt)))b.push(mt)}
-  return{s:sp.slice(0,300),b:b.map(l=>l.slice(0,240)),v:''}});
+ const s=o.steps.slice(0,16).filter(x=>x&&x.s).map(x=>{let sp=String(x.s).replace(/\$/g,''),b=(Array.isArray(x.b)?x.b:[]).map(l=>typeof l=='string'?l:(l&&(l.latex||l.text||l.l))||'').map(l=>String(l).replace(/\$/g,'').trim()).filter(Boolean).slice(0,8);
+  const k=sp.search(MX);if(k>=0){const mt=sp.slice(k).replace(/[.\s]+$/,'').trim();sp=sp.slice(0,k).replace(/[:\s]+$/,'').trim()||'Mira lo que escribo en el pizarrón';if(mt&&b.length<8&&!b.some(l=>nm(l)==nm(mt)))b.push(mt)}
+  return{s:sp.slice(0,300),b:b.map(l=>l.slice(0,300)),v:''}});
  if(!s.length)return null;const g=o.f&&fn(o.f)?{f:String(o.f),a:-5,b:5,x0:null,r:null}:null;if(g)s[0].v='f';return{t:String(o.t||'Ejercicio').slice(0,80),g,s}}
-const GP='Eres Noryx dando una clase en vivo de cálculo, con el estilo cercano y paciente de un buen profe de YouTube mexicano: hablas de tú, con calidez y confianza, con frases como «fíjate», «ojo con esto», «recuerda que», «muy bien», «¿sí me vas siguiendo?», explicas el porqué de cada paso con números sencillos, avisas del error común y cierras con un resumen y un ejercicio para el alumno. Responde SOLO con JSON válido, sin texto extra ni ```: {"t":"título corto","f":"función a graficar con x (ej. x^2*sin(x)) o vacío","steps":[{"s":"lo que dices en voz alta, 2 a 4 frases, sin símbolos ni LaTeX (los signos y números dilos con palabras)","b":["#Paso 2: título corto en texto plano","~fórmula general que vas a usar, en LaTeX","línea de desarrollo en LaTeX sin signos de dólar",">resultado final en LaTeX"]}]}. Cada paso se explica en voz alta con el porqué, no solo qué haces. Antes de aplicar una regla escribe su fórmula en una línea que empiece con ~ (por ejemplo ~\\\\dfrac{d}{dx}x^{n}=nx^{n-1}). En derivadas: identifica las partes (u, v), deriva cada una por separado, sustituye en la fórmula y simplifica. En cambio de variable: elige u y di por qué, calcula du, cambia los límites si es definida, reescribe todo en u, integra, regresa a x y comprueba derivando. Estructura: 1) saludo y de qué trata el tema, 2) idea o teoría con su fórmula, 3) ejemplo 1 paso a paso, 4) error común, 5) ejemplo 2 un poco más difícil, 6) resumen y ejercicio para el alumno. Entre 10 y 16 pasos, de 1 a 4 líneas en b por paso (b puede ir vacío en saludo y resumen). Cada barra invertida de LaTeX va doble (\\\\frac). Verifica la aritmética derivando o integrando de regreso. Si no es de matemáticas responde {"error":1}.';
+const GP='Eres Noryx dando una clase en vivo de cálculo, con el estilo cercano y paciente de un buen profe de YouTube mexicano: hablas de tú, con calidez y confianza, con frases como «fíjate», «ojo con esto», «recuerda que», «muy bien», «¿sí me vas siguiendo?», explicas el porqué de cada paso con números sencillos, avisas del error común y cierras con un resumen y un ejercicio para el alumno. Responde SOLO con JSON válido, sin texto extra ni ```: {"t":"título corto","f":"función a graficar con x (ej. x^2*sin(x)) o vacío","steps":[{"s":"lo que dices en voz alta, 2 a 4 frases, sin símbolos ni LaTeX (los signos y números dilos con palabras)","b":["#Paso 2: título corto en texto plano","^cómo se hace, en una frase (puede llevar fórmulas entre dólares)","%por qué se hace así, en una frase","~fórmula general que vas a usar, en LaTeX","línea de desarrollo en LaTeX sin signos de dólar",">resultado final en LaTeX"]}]}. Cada paso se explica en voz alta con el porqué, no solo qué haces. Antes de aplicar una regla escribe su fórmula en una línea que empiece con ~ (por ejemplo ~\\\\dfrac{d}{dx}x^{n}=nx^{n-1}). En derivadas: identifica las partes (u, v), deriva cada una por separado, sustituye en la fórmula y simplifica. En cambio de variable: elige u y di por qué, calcula du, cambia los límites si es definida, reescribe todo en u, integra, regresa a x y comprueba derivando. Escribe TODO en el pizarrón sin saltarte nada: cada paso algebraico intermedio en su propia línea, y para cada regla su fórmula (~), cómo se hace (^) y por qué funciona (%). En derivadas explica de dónde sale la regla y cómo se identifican las partes; en integrales cómo se reconoce la técnica; en cambio de variable cómo y por qué se elige u, cómo se acomoda du cuando falta una constante y qué pasa con los límites. Estructura: 1) saludo y de qué trata el tema, 2) idea o teoría con su fórmula, 3) ejemplo 1 paso a paso, 4) error común, 5) ejemplo 2 un poco más difícil, 6) resumen y ejercicio para el alumno. Entre 10 y 16 pasos, de 2 a 6 líneas en b por paso (b puede ir vacío en saludo y resumen). Cada barra invertida de LaTeX va doble (\\\\frac). Verifica la aritmética derivando o integrando de regreso. Si no es de matemáticas responde {"error":1}.';
 async function gen(q,lab){q=q.trim();if(!q)return;const tok=++Z.tok;hush();Z.run=0;Z.pause=false;paint();log('u',lab||q);bub('Muy bien, voy a preparar el ejercicio para el pizarrón…',1);let L=null;
  for(let k=0;k<2&&!L;k++){const r=await ask([{role:'system',content:GP},{role:'user',content:'Ejercicio o tema: '+q.slice(0,450)}]);if(tok!=Z.tok||ov.hidden)return;const o=r&&r.t&&J(r.t);if(o&&o.error){bub('Eso no parece un ejercicio de matemáticas. Escríbeme una derivada, una integral o un límite.',0);return}L=mk(o)}
  if(!L){bub('No pude armar esa clase ahora mismo. Inténtalo otra vez o elige una de la lista.',0);return}start(L)}
