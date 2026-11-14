@@ -11634,7 +11634,7 @@ function nxModeFail(n){const t=E('div',null,'⚠️ El modo «'+n+'» no pudo ca
 function build(){dlg=E('div');dlg.id='nxModesDlg';dlg.hidden=true;dlg.setAttribute('role','dialog');dlg.setAttribute('aria-modal','true');dlg.setAttribute('aria-label','Elegir modo');
  dlg.innerHTML='<div class="nm-card"><div class="nm-head"><b>Modos de Noryx</b><button type="button" aria-label="Cerrar" data-x>✕</button></div><p class="nm-sub">Elige una experiencia. Para salir de un modo, escribe «salir» o usa el botón de la barra que aparece sobre el chat.</p><div class="nm-grid"></div></div>';
  const g=dlg.querySelector('.nm-grid');
- MODES.forEach(m=>{const b=E('button','nm-it','<div class="nm-ic">'+m.ic+'</div><b>'+m.n+'</b><span>'+m.d+'</span>'+(m.tag?'<em class="nm-tag'+(m.tag=='Nuevo'?' new':'')+'">'+m.tag+'</em>':''));b.type='button';b.onclick=()=>{close();if(m.fn){if(typeof window[m.fn]==='function'){try{window[m.fn]()}catch(e){nxModeFail(m.n)}}else nxModeFail(m.n)}else send(m.p)};g.append(b)});
+ MODES.forEach(m=>{const b=E('button','nm-it','<div class="nm-ic">'+m.ic+'</div><b>'+m.n+'</b><span>'+m.d+'</span>'+(m.tag?'<em class="nm-tag'+(m.tag=='Nuevo'?' new':'')+'">'+m.tag+'</em>':''));b.type='button';b.onclick=()=>{close();if(m.fn){if(typeof window[m.fn]==='function'){try{window[m.fn]()}catch(e){try{console.error('NORYX · modo «'+m.n+'»',e)}catch(_){}nxModeFail(m.n)}}else nxModeFail(m.n)}else send(m.p)};g.append(b)});
  dlg.addEventListener('click',e=>{if(e.target===dlg||e.target.closest('[data-x]'))close()});
  dlg.addEventListener('keydown',e=>{if(e.key==='Escape'){e.stopPropagation();close();const b=$('#nxModes');b&&b.focus()}});
  document.body.append(dlg)}
@@ -21982,8 +21982,45 @@ window.nxPuzzle=open;
 #nxClase .cl-ac{display:flex;gap:6px;padding-bottom:env(safe-area-inset-bottom,0px)}
 #nxClase .cl-ac .bt{flex:1;border-radius:12px}
 @media(prefers-reduced-motion:reduce){#nxClase .ln,#nxClase .av.hb{animation:none!important}}
+
+/* v170: controles de la clase, progreso, teclado matemático y móvil */
+#nxClase .cl-ctl{display:flex;flex-wrap:wrap;gap:6px;align-items:center;flex:none}
+#nxClase .cl-ctl .bt{padding:6px 13px}
+#nxClase .cl-ctl select{padding:5px 8px;border-radius:99px;border:1px solid #2a3547;background:#101722}
+#nxClase .pgw{flex:1 1 100%;order:9;display:flex;align-items:center;gap:10px}
+#nxClase .pg{flex:1;height:12px;border-radius:99px;background:#1a2433;border:1px solid #2a3547;cursor:pointer;overflow:hidden}
+#nxClase .pg i{display:block;height:100%;width:0;background:linear-gradient(90deg,#00f0ff,#7dffb0);transition:width .35s}
+#nxClase .pgt{color:#9fb3c8;font-size:12px;white-space:nowrap}
+#nxClase .cl-kp{display:flex;gap:5px;overflow-x:auto;padding-bottom:2px;flex:none;scrollbar-width:none}
+#nxClase .cl-kp::-webkit-scrollbar{display:none}
+#nxClase .cl-kp button{flex:none;min-width:36px;min-height:34px;border:1px solid #2a3547;border-radius:9px;background:#101722;padding:3px 9px}
+#nxClase .cl-kp button:hover,#nxClase .cl-kp button:focus-visible{border-color:#00f0ff}
+#nxClase #clLg{display:none;flex:none;width:46px}
+#nxClase .cl-ac .bt{flex:1}
+@media(max-width:820px){
+ #nxClase .cl-top{gap:6px;padding:6px 10px;padding-top:calc(6px + env(safe-area-inset-top,0px))}
+ #nxClase .cl-top b{order:1;min-width:0;flex:1 1 auto}
+ #nxClase #clVo{order:2}#nxClase #clX{order:3}
+ #nxClase #clSel{order:4;flex:1 1 210px;min-width:0}#nxClase #clSp{width:86px}#nxClase .cl-ac .bt{font-size:13px;padding:6px 8px}#nxClase #clGo{order:5}
+ #nxClase .bt,#nxClase select{min-height:40px}
+ #nxClase .cl-main{grid-template-columns:1fr;grid-template-rows:minmax(0,1fr) auto}
+ #nxClase .cl-bd{padding:8px;gap:6px}
+ #nxClase canvas{height:120px}
+ #nxClase .cl-board{padding:8px 10px;border-width:5px}
+ #nxClase .cl-ctl .bt{padding:6px 10px}
+ #nxClase .cl-sd{border-left:0;border-top:1px solid #1a2230;padding:8px;gap:6px;max-height:44dvh;max-height:44vh;overflow:auto}
+ #nxClase .cl-sd.lg{max-height:62vh;max-height:62dvh}
+ #nxClase .bub{max-height:88px;font-size:13.5px}
+ #nxClase .cl-log,#nxClase .cl-ch{display:none}
+ #nxClase .cl-sd.lg .cl-log{display:flex;min-height:110px;max-height:26vh}
+ #nxClase .cl-sd.lg .cl-ch{display:flex}
+ #nxClase #clLg{display:inline-block}
+ #nxClase .cl-in input{font-size:16px;min-height:42px}
+}
+@media(max-height:560px) and (orientation:landscape){#nxClase .cl-main{grid-template-columns:1fr 300px;grid-template-rows:1fr}#nxClase .cl-sd{border-left:1px solid #1a2230;border-top:0;max-height:none}}
 </style>
 <script id="nx-clase-js">
+
 /* NORYX · Clase en vivo: pizarrón que se escribe paso a paso, voz, gráfica y dudas en cualquier momento (cálculo diferencial e integral). */
 (function(){
 const $=(s,r)=>(r||document).querySelector(s),ES=t=>String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -22266,7 +22303,7 @@ function fn(s){s=String(s).toLowerCase().replace(/\s+/g,'');if(!/^[0-9a-z+\-*/()
  const M={sin:1,cos:1,tan:1,exp:1,sqrt:1,abs:1,asin:1,acos:1,atan:1,sinh:1,cosh:1,tanh:1};
  s=s.replace(/[a-z]+/g,w=>w=='x'?'x':w=='pi'?'Math.PI':w=='e'?'Math.E':w=='ln'?'Math.log':w=='log'?'Math.log10':M[w]?'Math.'+w:'@');
  if(s.indexOf('@')>=0)return null;try{const f=new Function('x','return '+s);const y=f(1);return typeof y=='number'?f:null}catch(e){return null}}
-let ov,bd,cv,bu,lg,inp,sel,Z={L:null,i:0,tok:0,run:0,pause:false,gv:'',bl:[],vo:true};
+let ov,bd,cv,bu,lg,inp,sel,Z={L:null,i:0,tok:0,run:0,pause:false,gv:'',bl:[],vo:true,sp:1};
 try{Z.vo=localStorage.getItem('nx-clase-voz')!=='0'}catch(e){}
 const TEMS=String.raw`## Límites y continuidad
 Idea intuitiva de límite
@@ -22318,22 +22355,22 @@ const CN=['','Fíjate bien. ','Ahora ojo. ','Muy bien, sigamos. ','Perfecto. ','
 const TIPS=['Ojo: la derivada de una constante siempre es cero, y no se te olvide restarle uno al exponente.','Ojo: la derivada de un producto no es el producto de las derivadas. Ese es el error más común, ¿eh?','Ojo: no olvides multiplicar por la derivada de lo de adentro. Ahí es donde casi todos pierden puntos.','Ojo: comprueba siempre con la segunda derivada y contesta con sus unidades.','Ojo: L\'Hôpital solo se usa con cero entre cero o infinito entre infinito, y se deriva arriba y abajo por separado, no como cociente.','Ojo: en la integral indefinida no se te olvide la constante C; en la definida ya no va.','Ojo: al final regresa siempre a la variable original, y revisa que el du esté completo dentro de la integral.','Ojo: para elegir u usa la regla LIATE: logaritmos, inversas trigonométricas, algebraicas, trigonométricas y exponenciales.','Ojo: si cambias de variable, cambia también los límites y así ya no tienes que regresar a x.','Ojo: el orden importa en la resta del numerador, y el signo menos afecta a todo el segundo término.','Ojo: si sustituyes h igual a cero muy pronto, sale cero entre cero. Primero factoriza y cancela, luego haz el límite.','Ojo: comprueba siempre derivando tu resultado; si no te da la función original, hay un error.','Ojo: si después de sustituir quedan equis mezcladas con u, esa u no era buena.'];
 function deco(L,i){const s=L.s.map((x,k)=>({...x,s:CN[k%CN.length]+x.s}));s.unshift({s:'¡Hola, qué tal! Bienvenido a la clase. Hoy vamos a ver: '+L.t+'. Tranquilo, lo hacemos paso a paso, y si algo no te queda claro, me interrumpes sin pena.',b:[],v:''});if(TIPS[i])s.push({s:TIPS[i],b:[],v:''});return{...L,s}}
 function go(){const v=sel.value;if(v[0]=='b'){const i=+v.slice(1);return start(deco(LS[i],i))}const [i,j]=v.slice(1).split('.').map(Number),t=TM[i].t[j];gen('Tema de la clase: '+t+' (unidad: '+TM[i].u+'). '+EX(t+' '+TM[i].u),t)}
-const R=(a,b)=>a+Math.floor(Math.random()*(b-a+1)),P=a=>a[R(0,a.length-1)];
-const BK=[[/partes|liate/i,()=>P(['∫ x·e^('+R(2,5)+'x) dx','∫ x·sen('+R(2,4)+'x) dx','∫ x²·cos(x) dx','∫ x·ln(x) dx','∫ (x+'+R(1,6)+')·e^x dx','∫ ln(x) dx','∫ x²·e^(−x) dx'])],
-[/sustituci|cambio de variable/i,()=>P(['∫ ('+R(2,5)+'x+'+R(1,7)+')^'+R(3,6)+' dx','∫ x·(x²+'+R(1,5)+')^'+R(2,4)+' dx','∫ x²·e^(x³) dx','∫ sen(x)·cos(x)^'+R(2,4)+' dx','∫ ln(x)/x dx','∫ x/(x²+'+R(1,9)+') dx','∫ e^x/(1+e^x) dx','∫ x·√(x²+'+R(1,8)+') dx','∫ cos('+R(2,5)+'x) dx'])],
-[/cociente/i,()=>P(['(x²+'+R(1,5)+')/(x−'+R(1,4)+')','sen(x)/x','e^x/(x²+1)','ln(x)/x','(x+'+R(1,4)+')/(x²−'+R(1,3)+')'])],
-[/producto/i,()=>P(['x^'+R(2,4)+'·sen(x)','x²·e^x','x·ln(x)','(x²+'+R(1,4)+')·e^x','e^x·cos(x)','x³·ln(x)'])],
-[/cadena/i,()=>P(['('+R(2,5)+'x²+'+R(1,5)+')^'+R(3,6),'sen(x²)','e^('+R(2,5)+'x²)','√(x²+'+R(1,8)+')','ln(x²+'+R(1,5)+')','cos('+R(2,5)+'x+'+R(1,4)+')²','tan('+R(2,4)+'x)'])],
-[/fracciones/i,()=>{const a=R(1,4),b=a+R(1,3);return P(['∫ 1/((x+'+a+')(x+'+b+')) dx','∫ ('+R(2,5)+'x+'+R(1,4)+')/((x−'+a+')(x+'+b+')) dx','∫ 1/(x²−'+(a*a)+') dx'])}],
-[/trigonom.*sustituci|sustituci.*trigonom/i,()=>{const a=R(2,6);return P(['∫ dx/√('+a*a+'−x²)','∫ √('+a*a+'−x²) dx','∫ dx/(x²+'+a*a+')'])}],
-[/l[ií]mite|l.h.pital/i,()=>{const a=R(2,6);return P(['lím x→0 (e^('+R(2,5)+'x)−1)/x','lím x→0 sen('+R(2,5)+'x)/x','lím x→0 (1−cos(x))/x²','lím x→∞ ln(x)/x','lím x→'+a+' (x²−'+a*a+')/(x−'+a+')'])}],
-[/impl[ií]cit/i,()=>P(['x²+y²='+R(4,25),'x·y+y²='+R(3,12),'y³+x²·y='+R(2,9),'e^y+x='+R(2,6)])],
-[/optimiz|m[aá]ximos|m[ií]nimos/i,()=>P(['rectángulo con '+R(6,20)*10+' m de cerca y área máxima','caja sin tapa de base cuadrada con '+R(2,9)*50+' cm³ de volumen y área mínima','número positivo cuya suma con '+R(8,40)+' dividido entre él sea mínima'])],
-[/definid|[aá]rea|fundamental|riemann/i,()=>P(['∫ de 0 a '+R(2,5)+' de (x²+'+R(1,6)+') dx','∫ de 1 a '+R(2,4)+' de ('+R(2,5)+'x³−x) dx','área bajo y='+R(2,6)+'x−x² entre sus raíces','∫ de 0 a π de sen(x) dx'])],
-[/potencia|antiderivad|indefinid|integral|derivad|inmediat/i,()=>P(['∫ ('+R(2,7)+'x³−'+R(2,9)+'x²+'+R(1,9)+') dx','∫ ('+R(2,6)+'√x+'+R(1,8)+'/x²) dx','f(x)='+R(2,6)+'x^'+R(3,5)+'−'+R(2,9)+'x²+'+R(1,9)+'x−'+R(1,9),'∫ (e^x+'+R(2,6)+'cos(x)) dx'])]];
+const R=(a,b)=>a+Math.floor(Math.random()*(b-a+1)),PK=a=>a[R(0,a.length-1)];
+const BK=[[/partes|liate/i,()=>PK(['∫ x·e^('+R(2,5)+'x) dx','∫ x·sen('+R(2,4)+'x) dx','∫ x²·cos(x) dx','∫ x·ln(x) dx','∫ (x+'+R(1,6)+')·e^x dx','∫ ln(x) dx','∫ x²·e^(−x) dx'])],
+[/sustituci|cambio de variable/i,()=>PK(['∫ ('+R(2,5)+'x+'+R(1,7)+')^'+R(3,6)+' dx','∫ x·(x²+'+R(1,5)+')^'+R(2,4)+' dx','∫ x²·e^(x³) dx','∫ sen(x)·cos(x)^'+R(2,4)+' dx','∫ ln(x)/x dx','∫ x/(x²+'+R(1,9)+') dx','∫ e^x/(1+e^x) dx','∫ x·√(x²+'+R(1,8)+') dx','∫ cos('+R(2,5)+'x) dx'])],
+[/cociente/i,()=>PK(['(x²+'+R(1,5)+')/(x−'+R(1,4)+')','sen(x)/x','e^x/(x²+1)','ln(x)/x','(x+'+R(1,4)+')/(x²−'+R(1,3)+')'])],
+[/producto/i,()=>PK(['x^'+R(2,4)+'·sen(x)','x²·e^x','x·ln(x)','(x²+'+R(1,4)+')·e^x','e^x·cos(x)','x³·ln(x)'])],
+[/cadena/i,()=>PK(['('+R(2,5)+'x²+'+R(1,5)+')^'+R(3,6),'sen(x²)','e^('+R(2,5)+'x²)','√(x²+'+R(1,8)+')','ln(x²+'+R(1,5)+')','cos('+R(2,5)+'x+'+R(1,4)+')²','tan('+R(2,4)+'x)'])],
+[/fracciones/i,()=>{const a=R(1,4),b=a+R(1,3);return PK(['∫ 1/((x+'+a+')(x+'+b+')) dx','∫ ('+R(2,5)+'x+'+R(1,4)+')/((x−'+a+')(x+'+b+')) dx','∫ 1/(x²−'+(a*a)+') dx'])}],
+[/trigonom.*sustituci|sustituci.*trigonom/i,()=>{const a=R(2,6);return PK(['∫ dx/√('+a*a+'−x²)','∫ √('+a*a+'−x²) dx','∫ dx/(x²+'+a*a+')'])}],
+[/l[ií]mite|l.h.pital/i,()=>{const a=R(2,6);return PK(['lím x→0 (e^('+R(2,5)+'x)−1)/x','lím x→0 sen('+R(2,5)+'x)/x','lím x→0 (1−cos(x))/x²','lím x→∞ ln(x)/x','lím x→'+a+' (x²−'+a*a+')/(x−'+a+')'])}],
+[/impl[ií]cit/i,()=>PK(['x²+y²='+R(4,25),'x·y+y²='+R(3,12),'y³+x²·y='+R(2,9),'e^y+x='+R(2,6)])],
+[/optimiz|m[aá]ximos|m[ií]nimos/i,()=>PK(['rectángulo con '+R(6,20)*10+' m de cerca y área máxima','caja sin tapa de base cuadrada con '+R(2,9)*50+' cm³ de volumen y área mínima','número positivo cuya suma con '+R(8,40)+' dividido entre él sea mínima'])],
+[/definid|[aá]rea|fundamental|riemann/i,()=>PK(['∫ de 0 a '+R(2,5)+' de (x²+'+R(1,6)+') dx','∫ de 1 a '+R(2,4)+' de ('+R(2,5)+'x³−x) dx','área bajo y='+R(2,6)+'x−x² entre sus raíces','∫ de 0 a π de sen(x) dx'])],
+[/potencia|antiderivad|indefinid|integral|derivad|inmediat/i,()=>PK(['∫ ('+R(2,7)+'x³−'+R(2,9)+'x²+'+R(1,9)+') dx','∫ ('+R(2,6)+'√x+'+R(1,8)+'/x²) dx','f(x)='+R(2,6)+'x^'+R(3,5)+'−'+R(2,9)+'x²+'+R(1,9)+'x−'+R(1,9),'∫ (e^x+'+R(2,6)+'cos(x)) dx'])]];
 function EX(t){const b=!/definici[oó]n/i.test(t)&&BK.find(x=>x[0].test(t));if(b){const o=[];for(let k=0;k<30&&o.length<3;k++){const e=b[1]();if(!o.includes(e))o.push(e)}return' Resuelve exactamente estos ejemplos, en este orden y sin cambiarlos: '+o.map((e,i)=>(i+1)+') '+e).join('; ')+'.'}return' Inventa tres ejemplos distintos entre sí y no uses los clásicos. Variante '+R(100,999)+'.'}
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
-async function wait(ms,tok){while(ms>0){if(tok!=Z.tok)return false;if(Z.pause){await sleep(120);continue}await sleep(80);ms-=80}return tok==Z.tok}
+async function wait(ms,tok){ms=ms/(Z.sp||1);while(ms>0){if(tok!=Z.tok)return false;if(Z.pause){await sleep(120);continue}await sleep(80);ms-=80}return tok==Z.tok}
 async function hold(tok){while(Z.pause&&tok==Z.tok)await sleep(120)}
 const SPK={sin:'seno de',cos:'coseno de',tan:'tangente de',ln:'logaritmo natural de',log:'logaritmo de',exp:'exponencial de'};
 function mth(s){const m=/\\|\^\{|_\{|[A-Za-z]'(?:\(|\s*=)|=/.test(s);s=s.replace(/\$/g,'').replace(/\\(sin|cos|tan|ln|log|exp)\b/g,(a,b)=>' '+SPK[b]+' ').replace(/\\(?:Rightarrow|implies)/g,' entonces ').replace(/\\text\{([^{}]*)\}/g,' $1 ').replace(/([A-Za-z])''(?=\(|\s*=)/g,'$1 segunda ').replace(/([A-Za-z])'(?=\(|\s*=)/g,'$1 prima ');
@@ -22341,7 +22378,7 @@ function mth(s){const m=/\\|\^\{|_\{|[A-Za-z]'(?:\(|\s*=)|=/.test(s);s=s.replace
 function say(t){return new Promise(res=>{if(!Z.vo||!window.speechSynthesis){res();return}
  try{speechSynthesis.cancel();speechSynthesis.resume();let x=mth(String(t));try{x=pron(speechNums(nxSay(x),false))}catch(e){}x=x.replace(/[*`_·$\\{}^#~]/g,' ').replace(/\s+/g,' ').trim();
  const g=(k,d)=>{try{return S.get(k,d)}catch(e){return d}},v=(()=>{try{return voiceFor('es')}catch(e){return null}})(),
- us=(typeof sayChunks=='function'?sayChunks(x):[x]).map(c=>{const u=new SpeechSynthesisUtterance(c);u.lang='es-MX';if(v){u.voice=v;u.lang=v.lang}u.pitch=g('nx-vp',1.12);u.rate=g('nx-vr',1.03);return u});
+ us=(typeof sayChunks=='function'?sayChunks(x):[x]).map(c=>{const u=new SpeechSynthesisUtterance(c);u.lang='es-MX';if(v){u.voice=v;u.lang=v.lang}u.pitch=g('nx-vp',1.12);u.rate=Math.min(2,Math.max(.5,g('nx-vr',1.03)*(Z.sp||1)));return u});
  if(!us.length){res();return}const la=us[us.length-1];la.onend=la.onerror=()=>res();setTimeout(res,x.length*95+4000);window._nxUs=us;
  setTimeout(()=>{if(window._nxUs===us)us.forEach(u=>speechSynthesis.speak(u))},80)}catch(e){res()}})}
 const hush=()=>{try{speechSynthesis.cancel()}catch(e){}};
@@ -22349,15 +22386,15 @@ function bub(t,talk){delete bu.dataset.p;bu.textContent=t;const a=$('.av',ov);a.
 function MK(l){const t=String(l).trim().split(/\s+/),w=t.map(x=>/^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ¿¡]{3,}[.,;:?!]*$/.test(x)),f=w.map((x,i)=>x&&(w[i-1]||w[i+1]||t[i].replace(/[^A-Za-zÁ-ÿ]/g,'').length>=5));
  if(!f.some(Boolean))return K(l);const o=[];let c=[],m=f[0];t.forEach((x,i)=>{if(f[i]!==m){o.push([m,c.join(' ')]);c=[];m=f[i]}c.push(x)});o.push([m,c.join(' ')]);return o.map(([a,s])=>a?'<span class="tw"> '+ES(s)+' </span>':K(s)).join('')}
 const IM=s=>String(s).split('$').map((p,i)=>i%2?K(p):ES(p)).join('');
-function wr(l){return new Promise(res=>{const d=document.createElement('div');d.className='ln';const c=l[0];Z.bl.push(l);let tx=l;
+function wr(l,now){return new Promise(res=>{const d=document.createElement('div');d.className='ln';const c=l[0];Z.bl.push(l);let tx=l;
  if(c=='#'){d.className+=' h';d.textContent=tx=l.slice(1).trim()}else if(c=='>'){d.className+=' r';d.innerHTML=MK(tx=l.slice(1))}else if(c=='~'){d.className+=' f';d.innerHTML=MK(tx=l.slice(1))}else if(c=='%'){d.className+=' n';d.innerHTML=IM(tx=l.slice(1).trim())}else if(c=='^'){d.className+=' k';d.innerHTML=IM(tx=l.slice(1).trim())}else d.innerHTML=MK(l);
- bd.append(d);bd.scrollTop=bd.scrollHeight;if(!d.animate||matchMedia('(prefers-reduced-motion:reduce)').matches){res();return}
- const W=d.offsetWidth,ms=Math.max(800,Math.min(3500,tx.length*42)),o={duration:ms,easing:'steps('+Math.max(8,Math.min(48,Math.ceil(tx.length/2)))+',end)',fill:'both'},p=document.createElement('i');p.className='pen';d.append(p);
+ bd.append(d);bd.scrollTop=bd.scrollHeight;if(now||!d.animate||matchMedia('(prefers-reduced-motion:reduce)').matches){res();return}
+ const W=d.offsetWidth,ms=Math.max(800,Math.min(3500,tx.length*42))/(Z.sp||1),o={duration:ms,easing:'steps('+Math.max(8,Math.min(48,Math.ceil(tx.length/2)))+',end)',fill:'both'},p=document.createElement('i');p.className='pen';d.append(p);
  const a=d.animate([{clipPath:'inset(0 100% 0 0)'},{clipPath:'inset(0 0 0 0)'}],o),b=p.animate([{transform:'translateX(0)'},{transform:'translateX('+Math.max(0,W-8)+'px)'}],o);Z.an=[a,b];setTimeout(res,ms+1500);a.onfinish=()=>{p.remove();Z.an=null;res()}})}
 function note(t){const d=document.createElement('div');d.className='ln w';d.textContent=t;bd.append(d)}
 /* ---- gráfica: curva, tangente o área ---- */
 function G(v){if(v)Z.gv=v;const g=Z.L&&Z.L.g,f=g&&fn(g.f);if(!f){cv.hidden=true;return}cv.hidden=false;
- const d=devicePixelRatio||1,W=cv.clientWidth,H=cv.clientHeight,x=cv.getContext('2d');cv.width=W*d;cv.height=H*d;x.setTransform(d,0,0,d,0,0);
+ const d=devicePixelRatio||1,W=cv.clientWidth,H=cv.clientHeight,x=cv.getContext('2d');if(!x){cv.hidden=true;return}cv.width=W*d;cv.height=H*d;x.setTransform(d,0,0,d,0,0);
  const a=g.a,b=g.b,ys=[];for(let i=0;i<=240;i++){const y=f(a+(b-a)*i/240);if(isFinite(y))ys.push(y)}if(!ys.length){cv.hidden=true;return}
  ys.sort((p,q)=>p-q);let y0=ys[Math.floor(ys.length*.03)],y1=ys[Math.ceil(ys.length*.97)-1];if(y0>0)y0=Math.min(0,y0);if(y1<0)y1=Math.max(0,y1);const p=(y1-y0||1)*.12;y0-=p;y1+=p;
  const X=t=>(t-a)/(b-a)*W,Y=t=>H-(t-y0)/(y1-y0)*H;x.clearRect(0,0,W,H);x.strokeStyle='#ffffff40';x.lineWidth=1;x.beginPath();
@@ -22367,16 +22404,24 @@ function G(v){if(v)Z.gv=v;const g=Z.L&&Z.L.g,f=g&&fn(g.f);if(!f){cv.hidden=true;
  if(Z.gv=='t'&&g.x0!=null){const h=1e-5,m=(f(g.x0+h)-f(g.x0-h))/(2*h),y=f(g.x0);x.strokeStyle='#ffd84a';x.lineWidth=2;x.beginPath();x.moveTo(X(a),Y(y+m*(a-g.x0)));x.lineTo(X(b),Y(y+m*(b-g.x0)));x.stroke();x.fillStyle='#ffd84a';x.beginPath();x.arc(X(g.x0),Y(y),5,0,7);x.fill()}
  x.fillStyle='#9fd9cf';x.font='12px system-ui';x.fillText('y = '+g.f,8,16)}
 /* ---- motor de la clase ---- */
-function paint(){const b=$('#clPz',ov);b.disabled=!Z.L||!Z.run;b.textContent=Z.pause?'▶ Seguir':'⏸ Pausar';b.classList.toggle('on',Z.pause);const v=$('#clVo',ov);v.textContent=Z.vo?'🔊 Voz':'🔇 Voz';v.classList.toggle('on',Z.vo)}
+function prog(){if(!ov)return;const n=Z.L?Z.L.s.length:0,i=Math.min(Z.i,n),f=$('.pg i',ov),t=$('.pgt',ov),pg=$('#clPg',ov);if(f)f.style.width=(n?Math.round(i/n*100):0)+'%';if(t)t.textContent=n?(i>=n?'Clase completa · '+n+' pasos':'Paso '+(i+1)+' de '+n):'Sin clase iniciada';if(pg){pg.setAttribute('aria-valuenow',n?Math.round(i/n*100):0)}const pv=$('#clPv',ov),rp=$('#clRp',ov),nx=$('#clNx',ov);if(pv)pv.disabled=!n||i<=0;if(rp)rp.disabled=!n;if(nx)nx.disabled=!n||i>=n-1}
+function paint(){prog();const b=$('#clPz',ov);b.disabled=!Z.L||!Z.run;b.textContent=Z.pause?'▶ Seguir':'⏸ Pausar';b.classList.toggle('on',Z.pause);const v=$('#clVo',ov);v.textContent=Z.vo?'🔊 Voz':'🔇 Voz';v.classList.toggle('on',Z.vo)}
 function pause(){if(!Z.run)return;Z.pause=true;Z.an&&Z.an.forEach(x=>x.pause());try{speechSynthesis.pause()}catch(e){};paint()}
 function resume(){Z.pause=false;Z.an&&Z.an.forEach(x=>x.play());try{speechSynthesis.resume()}catch(e){};paint();if(Z.run)bub('Seguimos…',1)}
 async function play(tok){Z.run=1;paint();
- while(tok==Z.tok&&Z.i<Z.L.s.length){const st=Z.L.s[Z.i];bub(st.s,1);bu.dataset.p='Paso '+(Z.i+1)+' de '+Z.L.s.length;if(st.v)G(st.v);const ss=st.s.match(/[^.!?]+[.!?]*\s*/g)||[st.s],n=st.b.length,k=ss.length;let li=0;
+ while(tok==Z.tok&&Z.i<Z.L.s.length){const st=Z.L.s[Z.i];bub(st.s,1);bu.dataset.p='Paso '+(Z.i+1)+' de '+Z.L.s.length;if(st.v)G(st.v);prog();const ss=st.s.match(/[^.!?]+[.!?]*\s*/g)||[st.s],n=st.b.length,k=ss.length;let li=0;
   for(let si=0;si<k;si++){const sp=Z.vo?say(ss[si]):wait(Math.max(900,ss[si].length*42),tok),up=si==k-1?n:Math.ceil((si+1)*n/k);
    for(;li<up;li++){if(!await wait(200,tok))return;try{await wr(st.b[li])}catch(e){}if(tok!=Z.tok)return}
    await sp;await hold(tok);if(tok!=Z.tok)return}await wait(300,tok);if(tok!=Z.tok)return;await hold(tok);if(tok!=Z.tok)return;Z.i++}
  if(tok==Z.tok){Z.run=0;Z.pause=false;paint();bub('¡Eso es todo! ¿Quedó claro? Pregúntame lo que quieras, pide otro ejemplo o escribe tu propio ejercicio.',0);say('Eso es todo. ¿Quedó claro? Pregúntame lo que quieras.')}}
 function start(L){Z.tok++;hush();Z.L=L;Z.i=0;Z.pause=false;Z.gv='';Z.bl=[];bd.innerHTML='';cv.hidden=true;note('Clase: '+L.t);paint();play(Z.tok)}
+function jump(i){if(!Z.L)return;const n=Z.L.s.length;i=Math.max(0,Math.min(n-1,i));Z.tok++;hush();if(Z.an){Z.an.forEach(x=>{try{x.cancel()}catch(e){}});Z.an=null}Z.pause=false;bd.innerHTML='';Z.bl=[];Z.gv='';cv.hidden=true;note('Clase: '+Z.L.t);
+ for(let k=0;k<i;k++){const st=Z.L.s[k];if(st.v)Z.gv=st.v;st.b.forEach(l=>{try{wr(l,1)}catch(e){}})}
+ if(Z.gv)G(Z.gv);Z.i=i;paint();play(Z.tok)}
+function apuntes(){if(!Z.bl.length){bub('Todavía no hay nada en el pizarrón para guardar.',0);return}
+ const css=document.querySelector('link[href*="katex"]'),T=ES(Z.L?Z.L.t:'Clase'),h='<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Apuntes · '+T+'</title>'+(css?'<link rel="stylesheet" href="'+css.href+'">':'')+'<style>body{font:17px/1.6 system-ui,sans-serif;max-width:760px;margin:24px auto;padding:0 16px;color:#111}.ln{margin:10px 0;width:fit-content;max-width:100%}.h{font-weight:800;text-transform:uppercase;font-size:.8em;color:#8a6d00;margin-top:22px}.f{border-left:4px solid #3b82f6;padding:4px 12px;background:#eef5ff}.f:before{content:"Fórmula usada";display:block;font:700 11px sans-serif;color:#2563eb}.n{color:#075e73;border-left:3px solid #06b6d4;padding-left:10px;font-size:.9em}.n:before{content:"¿Por qué? ";font-weight:700}.k{border:1.5px dashed #d4a800;border-radius:8px;padding:3px 10px;font-size:.9em}.k:before{content:"Cómo se hace: ";font-weight:700}.r{display:inline-block;border:2px solid #16a34a;border-radius:10px;padding:2px 14px}.w{color:#666;font-size:.85em}.tw{font-size:.9em}</style><h1>'+T+'</h1>'+bd.innerHTML.replace(/<i class="pen"><\/i>/g,'');
+ try{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([h],{type:'text/html'}));a.download='apuntes-'+(Z.L?Z.L.t:'clase').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,40)+'.html';document.body.append(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1500);bub('Listo, descargué los apuntes del pizarrón. Ábrelos con tu navegador.',0)}catch(e){bub('No pude descargar los apuntes en este dispositivo.',0)}}
+const askS=async m=>{try{return typeof ask=='function'?await ask.call(null,m):null}catch(e){return null}};
 function J(t){t=t.replace(/```(?:json)?/gi,'');const a=t.indexOf('{'),b=t.lastIndexOf('}');if(a<0||b<a)return null;
  try{return JSON.parse(t.slice(a,b+1).replace(/\\\\|\\(?!["\\])/g,m=>m.length==2?m:'\\\\'))}catch(e){return null}}
 function mk(o){if(!o||!Array.isArray(o.steps))return null;const MX=/[A-Za-z]'*\([a-z]\)\s*=|\\[a-zA-Z]{2,}|[\^_]\{/,nm=z=>String(z).replace(/\s+/g,'');
@@ -22386,28 +22431,37 @@ function mk(o){if(!o||!Array.isArray(o.steps))return null;const MX=/[A-Za-z]'*\(
  if(!s.length)return null;const g=o.f&&fn(o.f)?{f:String(o.f),a:-5,b:5,x0:null,r:null}:null;if(g)s[0].v='f';return{t:String(o.t||'Ejercicio').slice(0,80),g,s}}
 const GP='Eres Noryx dando una clase en vivo de cálculo, con el estilo cercano y paciente de un buen profe de YouTube mexicano: hablas de tú, con calidez y confianza, con frases como «fíjate», «ojo con esto», «recuerda que», «muy bien», «¿sí me vas siguiendo?», explicas el porqué de cada paso con números sencillos, avisas del error común y cierras con un resumen y un ejercicio para el alumno. Responde SOLO con JSON válido, sin texto extra ni ```: {"t":"título corto","f":"función a graficar con x (ej. x^2*sin(x)) o vacío","steps":[{"s":"lo que dices en voz alta, 2 a 4 frases, sin símbolos ni LaTeX (los signos y números dilos con palabras)","b":["#Paso 2: título corto en texto plano","^cómo se hace, en una frase (puede llevar fórmulas entre dólares)","%por qué se hace así, en una frase","~fórmula general que vas a usar, en LaTeX","línea de desarrollo en LaTeX sin signos de dólar",">resultado final en LaTeX"]}]}. Cada paso se explica en voz alta con el porqué, no solo qué haces. Antes de aplicar una regla escribe su fórmula en una línea que empiece con ~ (por ejemplo ~\\\\dfrac{d}{dx}x^{n}=nx^{n-1}). En derivadas: identifica las partes (u, v), deriva cada una por separado, sustituye en la fórmula y simplifica. En cambio de variable: elige u y di por qué, calcula du, cambia los límites si es definida, reescribe todo en u, integra, regresa a x y comprueba derivando. Escribe TODO en el pizarrón sin saltarte nada: cada paso algebraico intermedio en su propia línea, y para cada regla su fórmula (~), cómo se hace (^) y por qué funciona (%). En derivadas explica de dónde sale la regla y cómo se identifican las partes; en integrales cómo se reconoce la técnica; en cambio de variable cómo y por qué se elige u, cómo se acomoda du cuando falta una constante y qué pasa con los límites. Coherencia: cada frase de s acompaña a una línea de b, en el mismo orden (frase 1 con línea 1, frase 2 con línea 2…); no digas un resultado antes de escribirlo. Las líneas de b son solo matemáticas, sin palabras sueltas: lo que se explica va en s, en % o en ^. Si te dan ejemplos concretos, resuélvelos todos en ese orden, cada uno completo con sus propios pasos y sin cambiarlos; si no, inventa tres ejemplos distintos y evita los clásicos (x·e^x, 2x·cos(x²)). Estructura: 1) saludo y de qué trata el tema, 2) idea o teoría con su fórmula, 3) ejemplo 1 paso a paso, 4) error común, 5) ejemplo 2 un poco más difícil, 6) resumen y ejercicio para el alumno. Entre 14 y 22 pasos, de 2 a 6 líneas en b por paso (b puede ir vacío en saludo y resumen). Cada barra invertida de LaTeX va doble (\\\\frac). Verifica la aritmética derivando o integrando de regreso. Si no es de matemáticas responde {"error":1}.';
 async function gen(q,lab){q=q.trim();if(!q)return;const tok=++Z.tok;hush();Z.run=0;Z.pause=false;paint();log('u',lab||q);bub('Muy bien, voy a preparar el ejercicio para el pizarrón…',1);let L=null;
- for(let k=0;k<2&&!L;k++){const r=await ask([{role:'system',content:GP},{role:'user',content:'Ejercicio o tema: '+q.slice(0,900)}]);if(tok!=Z.tok||ov.hidden)return;const o=r&&r.t&&J(r.t);if(o&&o.error){bub('Eso no parece un ejercicio de matemáticas. Escríbeme una derivada, una integral o un límite.',0);return}L=mk(o)}
+ for(let k=0;k<2&&!L;k++){const r=await askS([{role:'system',content:GP},{role:'user',content:'Ejercicio o tema: '+q.slice(0,900)}]);if(tok!=Z.tok||ov.hidden)return;const o=r&&r.t&&J(r.t);if(o&&o.error){bub('Eso no parece un ejercicio de matemáticas. Escríbeme una derivada, una integral o un límite.',0);return}L=mk(o)}
  if(!L){bub('No pude armar esa clase ahora mismo. Inténtalo otra vez o elige una de la lista.',0);return}start(L)}
 function log(k,t){const d=document.createElement('div');d.className='m '+k;let h;if(k=='n'){try{h=typeof md=='function'?md(t):ES(t)}catch(e){h=ES(t)}}else h=ES(t);d.innerHTML=h;lg.append(d);lg.scrollTop=lg.scrollHeight}
 async function duda(q){q=q.trim();if(!q)return;if(!Z.L)return gen(q);log('u',q);const was=Z.run;pause();bub('Mmm, buena pregunta. Déjame pensar…',1);
  const st=Z.L.s[Math.min(Z.i,Z.L.s.length-1)];const sys=('Eres Noryx, profesora de cálculo diferencial e integral en una clase en vivo. Un alumno te interrumpió con una duda. Responde en español, como un profe cercano y paciente (de tú, con «fíjate» y «ojo con esto»), en máximo 120 palabras, con un mini ejemplo si ayuda. Fórmulas en LaTeX entre $...$. Clase: '+Z.L.t+'. Pizarrón hasta ahora: '+Z.bl.join(' ; ').slice(0,1500)+'. Paso actual: '+st.s).slice(0,3900);
- const tok=Z.tok,r=await ask([{role:'system',content:sys},{role:'user',content:q.slice(0,500)}]);if(ov.hidden||tok!=Z.tok)return;const t=r&&r.t||'No pude conectarme ahora. Intenta preguntármelo otra vez en un momento.';
+ const tok=Z.tok,r=await askS([{role:'system',content:sys},{role:'user',content:q.slice(0,500)}]);if(ov.hidden||tok!=Z.tok)return;const t=r&&r.t||'No pude conectarme ahora. Intenta preguntármelo otra vez en un momento.';
  log('n',t);bub(was?'Eso fue lo que pasó con tu duda. Cuando quieras, pulsa «Seguir» y continuamos la clase.':'Dime si quedó claro o escribe otra duda.',0);say(t)}
 function close(){if(!ov)return;Z.tok++;Z.run=0;Z.pause=false;hush();ov.hidden=true;document.removeEventListener('keydown',onKey,true);const b=$('#nxModes');b&&b.focus()}
-function onKey(e){if(e.key==='Escape'&&ov&&!ov.hidden){e.stopPropagation();close()}}
+function onKey(e){if(!ov||ov.hidden)return;if(e.key==='Escape'){e.stopPropagation();close();return}const ty=e.target&&e.target.tagName;if(ty==='INPUT'||ty==='TEXTAREA'||ty==='SELECT'||e.ctrlKey||e.metaKey||e.altKey)return;
+ if(e.key===' '&&ty!=='BUTTON'&&Z.L&&Z.run){e.preventDefault();Z.pause?resume():pause()}else if(e.key==='ArrowRight'&&Z.L){e.preventDefault();jump(Z.i+1)}else if(e.key==='ArrowLeft'&&Z.L){e.preventDefault();jump(Z.i-1)}}
+const CTL=`<div class="cl-ctl"><button class="bt" id="clPv" type="button" aria-label="Paso anterior" title="Paso anterior (←)" disabled>⏮</button><button class="bt" id="clPz" type="button" title="Pausar o seguir (barra espaciadora)" disabled>⏸ Pausar</button><button class="bt" id="clNx" type="button" aria-label="Siguiente paso" title="Siguiente paso (→)" disabled>⏭</button><button class="bt" id="clRp" type="button" aria-label="Repetir este paso" title="Repetir este paso" disabled>↻</button><select id="clSp" aria-label="Velocidad de la clase" title="Velocidad"><option value="0.75">0.75×</option><option value="1" selected>1×</option><option value="1.25">1.25×</option><option value="1.5">1.5×</option><option value="2">2×</option></select><button class="bt" id="clNt" type="button" aria-label="Descargar apuntes" title="Descargar apuntes">📄</button><div class="pgw"><div class="pg" id="clPg" role="progressbar" aria-label="Progreso de la clase (toca para saltar)" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i></i></div><small class="pgt">Sin clase iniciada</small></div></div>`;
+const KP='<div class="cl-kp" role="group" aria-label="Símbolos matemáticos">'+[['∫','∫ '],['dx',' dx'],['√','√('],['xⁿ','^'],['x²','²'],['π','π'],['(','('],[')',')'],['ln','ln('],['sen','sen('],['cos','cos('],['eˣ','e^'],['lím','lím x→'],['→','→'],['∞','∞']].map(([a,t])=>'<button type="button" data-k="'+t+'" aria-label="'+a+'">'+a+'</button>').join('')+'</div>';
 function build(){ov=document.createElement('div');ov.id='nxClase';ov.hidden=true;ov.setAttribute('role','dialog');ov.setAttribute('aria-modal','true');ov.setAttribute('aria-label','Clase en vivo');
- ov.innerHTML='<div class="cl-top"><b>🎓 Clase en vivo</b><select id="clSel" aria-label="Elegir clase">'+'<optgroup label="⭐ Clases listas (sin conexión)">'+LS.map((l,i)=>'<option value="b'+i+'">'+ES(l.t)+'</option>').join('')+'</optgroup>'+TM.map((u,i)=>'<optgroup label="'+ES(u.u)+' · con IA">'+u.t.map((t,j)=>'<option value="t'+i+'.'+j+'">'+ES(t)+'</option>').join('')+'</optgroup>').join('')+'</select><button class="bt" id="clGo" type="button">▶ Iniciar</button><button class="bt" id="clPz" type="button" disabled>⏸ Pausar</button><button class="bt" id="clVo" type="button">🔊 Voz</button><button class="bt" id="clX" type="button">Cerrar</button></div>'+
- '<div class="cl-main"><div class="cl-bd"><canvas hidden role="img" aria-label="Gráfica de la función"></canvas><div class="cl-board" aria-label="Pizarrón"></div></div>'+
- '<div class="cl-sd"><div class="cl-t"><div class="av">🎓</div><div class="bub" aria-live="polite"></div></div><div class="cl-log"></div><div class="cl-ch"></div><div class="cl-in"><input id="clIn" type="text" maxlength="300" placeholder="Duda o ejercicio: ∫ x·e^x dx, derivada de ln(x²+1)…" aria-label="Escribe tu duda o un ejercicio"><button class="bt" id="clMic" type="button" aria-label="Hablar" hidden>🎤</button></div><div class="cl-ac"><button class="bt" id="clQ" type="button">✋ Preguntar</button><button class="bt" id="clE" type="button">📝 Resolver ejercicio</button></div></div></div>';
+ ov.innerHTML='<div class="cl-top"><b>🎓 Clase en vivo</b><select id="clSel" aria-label="Elegir clase">'+'<optgroup label="⭐ Clases listas (sin conexión)">'+LS.map((l,i)=>'<option value="b'+i+'">'+ES(l.t)+'</option>').join('')+'</optgroup>'+TM.map((u,i)=>'<optgroup label="'+ES(u.u)+' · con IA">'+u.t.map((t,j)=>'<option value="t'+i+'.'+j+'">'+ES(t)+'</option>').join('')+'</optgroup>').join('')+'</select><button class="bt" id="clGo" type="button">▶ Iniciar</button><button class="bt" id="clVo" type="button">🔊 Voz</button><button class="bt" id="clX" type="button">Cerrar</button></div>'+
+ '<div class="cl-main"><div class="cl-bd"><canvas hidden role="img" aria-label="Gráfica de la función"></canvas><div class="cl-board" aria-label="Pizarrón"></div>'+CTL+'</div>'+
+ '<div class="cl-sd"><div class="cl-t"><div class="av">🎓</div><div class="bub" aria-live="polite"></div></div><div class="cl-log"></div><div class="cl-ch"></div>'+KP+'<div class="cl-in"><input id="clIn" type="text" maxlength="300" placeholder="Duda o ejercicio: ∫ x·e^x dx, derivada de ln(x²+1)…" aria-label="Escribe tu duda o un ejercicio"><button class="bt" id="clMic" type="button" aria-label="Hablar" hidden>🎤</button></div><div class="cl-ac"><button class="bt" id="clQ" type="button">✋ Preguntar</button><button class="bt" id="clE" type="button">📝 Resolver ejercicio</button><button class="bt" id="clLg" type="button" aria-expanded="false" aria-label="Mostrar u ocultar historial y atajos">💬</button></div></div></div>';
  bd=$('.cl-board',ov);cv=$('canvas',ov);bu=$('.bub',ov);lg=$('.cl-log',ov);inp=$('#clIn',ov);sel=$('#clSel',ov);
- const ch=$('.cl-ch',ov);[['Explícalo más simple','Explícame el último paso de forma más simple, como si fuera la primera vez.'],['¿Por qué se hace así?','¿Por qué se hace así el último paso? ¿Qué pasaría si lo hiciera de otra forma?'],['Repite el paso','Repite el último paso con otras palabras.'],['Otro ejemplo','@otro']].forEach(([a,q])=>{const b=document.createElement('button');b.type='button';b.textContent=a;b.onclick=()=>q=='@otro'?gen('Clase sobre: '+(Z.L?Z.L.t:'derivada de un producto')+'.'+EX(Z.L?Z.L.t:'producto derivada'),'Otro ejemplo'+(Z.L?': '+Z.L.t:'')):duda(q);ch.append(b)});
- $('#clGo',ov).onclick=go;$('#clX',ov).onclick=close;$('#clPz',ov).onclick=()=>Z.pause?resume():pause();
+ const ch=$('.cl-ch',ov);[['Explícalo más simple','Explícame el último paso de forma más simple, como si fuera la primera vez.'],['¿Por qué se hace así?','¿Por qué se hace así el último paso? ¿Qué pasaría si lo hiciera de otra forma?'],['Repite el paso','Repite el último paso con otras palabras.'],['Resumen','Hazme un resumen corto de lo que hemos visto hasta ahora en la clase.'],['Ponme un ejercicio','Ponme un ejercicio parecido para que lo resuelva yo, sin darme la solución todavía, y dime qué pasos seguir para comprobarlo.'],['Otro ejemplo','@otro']].forEach(([a,q])=>{const b=document.createElement('button');b.type='button';b.textContent=a;b.onclick=()=>q=='@otro'?gen('Clase sobre: '+(Z.L?Z.L.t:'derivada de un producto')+'.'+EX(Z.L?Z.L.t:'producto derivada'),'Otro ejemplo'+(Z.L?': '+Z.L.t:'')):duda(q);ch.append(b)});
+ $('#clGo',ov).onclick=go;
+  $('#clPv',ov).onclick=()=>jump(Z.i-1);$('#clNx',ov).onclick=()=>jump(Z.i+1);$('#clRp',ov).onclick=()=>jump(Math.min(Z.i,(Z.L?Z.L.s.length:1)-1));
+  const pg=$('#clPg',ov);pg.onclick=e=>{if(!Z.L)return;const r=pg.getBoundingClientRect();jump(Math.floor((e.clientX-r.left)/Math.max(1,r.width)*Z.L.s.length))};
+  const sp=$('#clSp',ov);try{const v=localStorage.getItem('nx-clase-vel');if(v&&[...sp.options].some(o=>o.value==v)){sp.value=v;Z.sp=+v}}catch(e){}sp.onchange=()=>{Z.sp=+sp.value;try{localStorage.setItem('nx-clase-vel',sp.value)}catch(e){}};
+  $('#clNt',ov).onclick=apuntes;$('#clLg',ov).onclick=()=>{const o=$('.cl-sd',ov).classList.toggle('lg');$('#clLg',ov).setAttribute('aria-expanded',String(o))};
+  ov.querySelectorAll('.cl-kp button').forEach(b=>b.onclick=()=>{const t=b.dataset.k,s=inp.selectionStart==null?inp.value.length:inp.selectionStart,e=inp.selectionEnd==null?s:inp.selectionEnd;inp.value=inp.value.slice(0,s)+t+inp.value.slice(e);const c=s+t.length;inp.focus();try{inp.setSelectionRange(c,c)}catch(x){}});
+  $('#clX',ov).onclick=close;$('#clPz',ov).onclick=()=>Z.pause?resume():pause();
  $('#clVo',ov).onclick=()=>{Z.vo=!Z.vo;try{localStorage.setItem('nx-clase-voz',Z.vo?'1':'0')}catch(e){}if(!Z.vo)hush();paint()};
  const sendQ=()=>{const v=inp.value;if(!v.trim()){pause();inp.focus();bub('Claro, dime: ¿cuál es tu duda?',0);return}inp.value='';duda(v)},sendE=()=>{const v=inp.value;if(!v.trim()){inp.focus();bub('Escribe el ejercicio, por ejemplo: integral de x por e a la x.',0);return}inp.value='';gen(v)};
  $('#clQ',ov).onclick=sendQ;$('#clE',ov).onclick=sendE;inp.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();Z.L&&Z.run?sendQ():sendE()}});
  const SR=window.SpeechRecognition||window.webkitSpeechRecognition,mic=$('#clMic',ov);if(SR){mic.hidden=false;mic.onclick=()=>{try{pause();hush();const r=new SR();r.lang='es-MX';r.onresult=e=>{inp.value=e.results[0][0].transcript;sendQ()};r.start();bub('Te escucho…',0)}catch(e){}}}
  addEventListener('resize',()=>{if(ov&&!ov.hidden&&Z.L)G()});document.body.append(ov)}
-function open(){if(!ov)build();Z.tok++;Z.L=null;Z.run=0;Z.pause=false;Z.bl=[];bd.innerHTML='';lg.innerHTML='';cv.hidden=true;
+function open(){if(!ov)build();$('.cl-sd',ov).classList.remove('lg');Z.tok++;Z.L=null;Z.run=0;Z.pause=false;Z.bl=[];bd.innerHTML='';lg.innerHTML='';cv.hidden=true;
  note('Bienvenido a la clase en vivo. Elige un tema arriba y pulsa «Iniciar», o escribe tu propio ejercicio.');note('Puedes interrumpir cuando quieras con «✋ Preguntar» o el micrófono.');
  bub('¡Hola! Soy Noryx, tu profesora de cálculo. ¿Qué vemos hoy?',0);paint();ov.hidden=false;document.addEventListener('keydown',onKey,true);setTimeout(()=>{try{$('#clGo',ov).focus()}catch(e){}},50)}
 window.nxClase=open;
