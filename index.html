@@ -5716,7 +5716,7 @@ function jornada(n){const G=ld(RK(),{}),all=PSY.map((_,i)=>i),ip=shuf(all.filter
  const s={ag,c:0,k:0,G,al:G[ag[0]].al,pc:0,sum:[]},A=pGet();ctx.ps=s;s.wel=welcome1();
  return '**🛋️ Consultorio · Jornada de '+ag.length+' citas**\n'+(s.wel?'Buen día'+(A.on&&A.nom?', **'+A.nom+'**':'')+'. ':'')+'Hoy atiendes a **'+ag.length+' personas distintas** (hay '+PSY.length+' casos en total, de fáciles a muy difíciles). Cada persona lleva su propio proceso: la mayoría dura **3 sesiones**, algunas necesitan más y otras son **procesos continuos ♾️**. Si ya la atendiste antes, retomas donde la dejaste. Tus decisiones mueven la **alianza terapéutica** y el **progreso**; si la alianza cae demasiado, la persona abandona.\n\n**📅 Agenda de hoy**\n'+lst(s)+'\n\n───\n\n'+hd(s)+q(s)}
 const Rp=x=>({t:x,m:M});
-globalThis.nxPsData={PSY,P,D,F,HR,FASE,ST,cue,late,slot,voz,aside};
+globalThis.nxPsData={PSY,P,D,F,HR,FASE,ST,cue,late,slot,voz,aside,DFL};
 globalThis.psTry=function(t){const n=norm(t).replace(/\s+/g,' '),s=ctx.ps;
  if(s&&!(sess||creator)){ctx.ps=null;return Rp(nxLock('Consultorio con cuenta',LOCKP))}
  if(!s){
@@ -23778,7 +23778,7 @@ const css=`
 .pr-ag{display:grid;gap:5px;font-size:13px}
 .pr-ag div{display:flex;gap:8px;align-items:center;padding:5px 8px;border-radius:9px;background:#ffffff0c}
 .pr-ag div.cur{background:#9be3d02a;outline:1px solid #9be3d066}.pr-ag div.done{opacity:.55}
-.pr-ag b{flex:none;color:#ffd9a0;font-variant-numeric:tabular-nums;font-size:12px}.pr-ag span{flex:1;min-width:0}.pr-ag small{color:#9fc7bd}
+.pr-ag b{flex:none;color:#ffd9a0;font-variant-numeric:tabular-nums;font-size:12px}.pr-ag span{flex:1;min-width:0}.pr-ag small{color:#9fc7bd}.pr-ag em{display:block;font-style:normal;color:#9fc7bd;font-size:12px;margin-top:2px}
 .pr-nt{width:100%;min-height:84px;resize:vertical;border-radius:12px;border:1px solid #9be3d033;background:#05121399;color:#e6f3ee;padding:9px 11px;font:13px/1.45 'Instrument Sans',system-ui,sans-serif}
 .pr-q{display:grid;gap:5px;font-size:12px;color:#c9e7df}.pr-q span{display:flex;gap:7px;align-items:center}.pr-q em{font-style:normal;opacity:.5}.pr-q .ok{color:#7fe0b4}
 .pr-main{min-height:0;overflow:auto;display:flex;flex-direction:column;gap:12px;padding-right:3px}
@@ -23829,9 +23829,9 @@ const css=`
 @keyframes prban{0%{opacity:0;transform:scale(.6)}15%{opacity:1;transform:scale(1.08)}25%{transform:scale(1)}80%{opacity:1}100%{opacity:0;transform:translateY(-20px)}}
 .pr-toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);z-index:72;background:#0a1c1ef2;color:#ffe9c2;border:1px solid #ffd9a0;border-radius:99px;padding:9px 18px;font-size:14px;animation:prtoast 3.6s ease forwards}
 @keyframes prtoast{0%{opacity:0;transform:translate(-50%,16px)}10%,85%{opacity:1;transform:translate(-50%,0)}100%{opacity:0}}
-.pr-ov{position:absolute;inset:0;z-index:20;display:none;align-items:center;justify-content:center;padding:16px;background:radial-gradient(ellipse at 50% 20%,#1d5654f2,#071416f7);overflow:auto}
+.pr-ov{position:absolute;inset:0;z-index:20;display:none;align-items:flex-start;justify-content:center;padding:16px;background:radial-gradient(ellipse at 50% 20%,#1d5654f2,#071416f7);overflow:auto}
 .pr-ov.on{display:flex;animation:prin .5s ease}
-.pr-intro{position:relative;width:100%;max-width:640px;display:grid;gap:12px;text-align:center}
+.pr-intro{position:relative;width:100%;max-width:640px;display:grid;gap:12px;text-align:center;margin:auto;padding-top:34px}
 .pr-intro h2{margin:0;font-size:clamp(26px,5vw,40px);letter-spacing:-.03em;color:#bff3e3}
 .pr-intro .sub{color:#9fc7bd;margin-top:-6px}
 .pr-prof{display:flex;gap:14px;align-items:center;text-align:left}
@@ -24048,13 +24048,13 @@ function showEnd(t){view='end';try{speechSynthesis.cancel()}catch(e){}const ov=e
 /* ---------- apertura ---------- */
 function skipIntro(){ctxA();view='wait0';if(live()&&!busyNow()&&hasFirst()){view='q';showQ()}else{els.wait.style.display='';els.wait.textContent='Preparando la jornada…'}}
 function showIntro(){view='intro';const s=live(),ov=els.intro;if(s)s.wel=false;ov.textContent='';ov.classList.add('on');const P=PD(),A=prof(),w=E('div','pr-intro');
- w.append(E('div','','🧠'),E('h2','','Consultorio'),E('div','sub',(A.on&&A.nom?'Buen día, '+A.nom+'. ':'Buen día. ')+(A.con?A.con+' · ':'')+'Hoy te esperan '+(s?s.ag.length:'varias')+' personas.'));
+ w.append(E('div','','🧠'),E('h2','','Te damos la bienvenida al modo psicólogo'),E('div','sub',(A.on&&A.nom?'Buen día, '+A.nom+'. ':'Buen día. ')+(A.con?A.con+' · ':'')+'Hoy te esperan '+(s?s.ag.length:'varias')+' personas.'));const wc=E('div','pr-card');wc.append(E('h4','','🛋️ Cómo funciona'),E('div','','Eres el/la psicólogo/a. Atenderás a personas ficticias, una cita a la vez: cada paciente lleva su propio proceso (la mayoría de 3 sesiones). En cada momento eliges qué decir; tus decisiones mueven la alianza terapéutica y el progreso. Revisa abajo los casos de hoy y, cuando estés listo/a, comienza las sesiones.'));wc.lastChild.style.cssText='font-size:13px;line-height:1.5;text-align:left';w.append(wc);
  const pc=E('div','pr-card pr-prof'),av=E('div','pr-av',(A.nom||'Ψ')[0]);if(A.foto)av.style.backgroundImage='url('+A.foto+')',av.textContent='';const pi=E('div');pi.style.flex='1';pi.append(E('b','',A.nom||'Psicólogo/a en práctica'),E('div','',[rankOf(A.rec),A.esp].filter(Boolean).join(' · ')));const ch=E('div','pr-chips');[['🏆',A.rec[0],'altas'],['🟡',A.rec[1],'seguimientos'],['💔',A.rec[2],'abandonos'],['🛋️',A.rec[3],'citas']].forEach(x=>ch.append(E('span','',x[0]+' '+x[1]+' '+x[2])));pi.append(ch);pc.append(av,pi);w.append(pc);
- if(s){const ag=E('div','pr-card');ag.append(E('h4','','📅 Agenda de hoy'));const l=E('div','pr-ag');s.ag.forEach((id,i)=>{const C=P.P(id),G=s.G[id],d=E('div');d.append(E('b','',P.HR[i]),E('span','',C.n+' · '+C.e+' años · '+C.j),E('small','','ses. '+G.se+(C.ts?'/'+C.ts:' ♾️')+(G.pr||G.se>1?'':' · nueva')));l.append(d)});ag.append(l);w.append(ag)}
+ if(s){const ag=E('div','pr-card');ag.append(E('h4','','📅 Casos a atender hoy ('+s.ag.length+')'));const l=E('div','pr-ag');s.ag.forEach((id,i)=>{const C=P.P(id),G=s.G[id],d=E('div'),sp=E('span','',C.n+' · '+C.e+' años · '+C.j);sp.append(E('em','','«'+String(C.m||'').slice(0,95)+(String(C.m||'').length>95?'…':'')+'»'));d.append(E('b','',P.HR[i]),sp,E('small','','ses. '+G.se+(C.ts?'/'+C.ts:' ♾️')+(G.pr||G.se>1?'':' · nueva')+(P.DFL?' · '+P.DFL[C.df]:'')));l.append(d)});ag.append(l);w.append(ag)}
  const cs=cnt();ch.append(E('span','','📊 '+cs.s+' sesiones'+(cs.s?' · '+Math.round(cs.a/cs.s*100)+'% altas':'')));const dn=dayStreak();ch.append(E('span','','🔥 '+dn+(dn==1?' día':' días seguidos')));const U=rd('ach',{}),ac=E('div','pr-ach');ACH.forEach(([k,n,d])=>{const x=E('span',U[k]?'':'off',(U[k]?'🏅 ':'🔒 ')+n);x.title=d;ac.append(x)});const qc=E('div','pr-card');qc.append(E('h4','','🎯 Retos del día'));els.qs=E('div','pr-q');qc.append(els.qs,ac);w.append(qc);paintQuests();
  w.append(E('div','pr-tip','💡 '+TIPS[Math.floor(Math.random()*TIPS.length)]));
- const go=E('button','pr-go','Abrir la puerta y comenzar ▸');go.type='button';go.onclick=()=>{ctxA();chime(3);ov.classList.remove('on');const s2=live();if(msgs().length>seenLen||(s2&&lastText)){}view='wait0';if(live()&&!busyNow()&&hasFirst()){view='q';showQ()}else els.wait.style.display='',els.wait.textContent='Preparando la jornada…'};w.append(go);
- const dl=E('div','pr-door l'),dr=E('div','pr-door r');ov.append(w);room.append(dl,dr);dl.style.zIndex=dr.style.zIndex=30;setTimeout(()=>{dl.classList.add('o');dr.classList.add('o');tone(110,0,.5,'triangle',.08)},500);setTimeout(()=>{dl.remove();dr.remove()},2300);setTimeout(()=>go.focus&&go.focus(),300)}
+ const go=E('button','pr-go','Comenzar las sesiones ▸');go.type='button';go.onclick=()=>{ctxA();chime(3);ov.classList.remove('on');const s2=live();if(msgs().length>seenLen||(s2&&lastText)){}view='wait0';if(live()&&!busyNow()&&hasFirst()){view='q';showQ()}else els.wait.style.display='',els.wait.textContent='Preparando la jornada…'};w.append(go);
+ const dl=E('div','pr-door l'),dr=E('div','pr-door r');ov.append(w);room.append(dl,dr);dl.style.zIndex=dr.style.zIndex=30;setTimeout(()=>{dl.classList.add('o');dr.classList.add('o');tone(110,0,.5,'triangle',.08)},500);setTimeout(()=>{dl.remove();dr.remove()},2300);setTimeout(()=>{try{go.focus({preventScroll:true})}catch(e){}ov.scrollTop=0},300)}
 const hasFirst=()=>{const s=live();return !!(s&&s.o&&s.o.length)};
 /* ---------- extras ---------- */
 function supervisor(){if(view!='q'||!snap)return;hints++;const t=SUP[Math.min(snap.se,3)-1][snap.k]||SUP[0][0];els.sup.textContent='🎓 Supervisor: '+t;els.sup.className='pr-sup on';soft()}
@@ -24091,7 +24091,7 @@ function build(){room=E('div');room.id='nxPsRoom';room.setAttribute('role','dial
   if((view=='react'||view=='sess')&&(k=='enter'||k==' '||k=='arrowright')){e.preventDefault();e.stopPropagation();continueFlow();return}
   if(k=='?'){e.preventDefault();help();return}if(k=='r'){e.preventDefault();breathe()}if(k=='n'){e.preventDefault();els.nt.focus()}},true)}
 function openRoom(){if(!room)build();fsz(0);const m=msgs();startIdx=Math.max(0,m.length-1);seenLen=m.length;lastText='';pend=null;streak=0;hist=[];hints=0;sessRes=[];blog=[];mist=[];paintLog();snap=null;els.end.classList.remove('on');els.end.textContent='';openOn=true;
- room.classList.add('on');document.body.classList.add('nxps');{const s0=live();if(s0&&s0.wel===false)skipIntro();else showIntro()}const s=live();if(s&&hasFirst()){snapIt(s);paintScene(true);setMood(moodFor(snap.al,''));gauges();ficha();agenda();stepper();els.ch1.textContent='🕘 '+PD().HR[snap.c]+' · quedan '+(50-15*(snap.k||0))+' min';els.ch2.textContent='Cita '+(snap.c+1)+'/'+snap.n;els.pn.textContent=snap.C.n+' · '+snap.C.e+' años · '+snap.C.j;els.av.textContent=snap.C.n[0];els.nm.textContent=snap.C.n}}
+ room.classList.add('on');document.body.classList.add('nxps');showIntro();const s=live();if(s&&hasFirst()){snapIt(s);paintScene(true);setMood(moodFor(snap.al,''));gauges();ficha();agenda();stepper();els.ch1.textContent='🕘 '+PD().HR[snap.c]+' · quedan '+(50-15*(snap.k||0))+' min';els.ch2.textContent='Cita '+(snap.c+1)+'/'+snap.n;els.pn.textContent=snap.C.n+' · '+snap.C.e+' años · '+snap.C.j;els.av.textContent=snap.C.n[0];els.nm.textContent=snap.C.n}}
 function closeRoom(){if(room)room.classList.remove('on');document.body.classList.remove('nxps');openOn=false;view='idle';ambience(false);amb=false;try{speechSynthesis.cancel()}catch(e){}document.querySelectorAll('.pr-door').forEach(x=>x.remove());try{Q('#in').focus()}catch(e){}}
 let waitN=0;setInterval(()=>{try{if(!PD())return;const s=live(),b=busyNow(),m=msgs();
  if(s&&!wasLive){wasLive=true;openRoom()}
