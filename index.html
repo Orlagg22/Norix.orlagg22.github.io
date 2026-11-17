@@ -16608,6 +16608,17 @@ function ej11(){/* Ejemplo 11 (foto, resistencias, 240 V): A(+)–R5–(R6∥R9)
  const c=[R('R5',8,2,10,'v'),R('R6',2,12,6,'h'),R('R9',0.5,12,2,'h'),R('R2',5,26,6,'h'),R('R4',1,26,2,'h'),
   R('R7',3,38,13,'v'),R('R8',10,46,13,'v'),R('R1',0.33,26,20,'h'),R('R3',2,26,24,'h'),R('R10',4.5,12,20,'h')];
  return {V:240,A:{x:2,y:14},B:{x:2,y:20},wires:w,comps:c}}
+function ej12(){/* Ejemplo 12 (pizarrón, 600 V): A(+)–R1–[(R2+R3)∥(R4+R5)]–(R6∥R7)–R8–[R9∥(R10+R11+R12)]–B(−) */
+ const R=(n,v,x,y,o)=>CC(n,v,x,y,o,'R');
+ const w=[W(2,10,4,10),W(8,10,12,10),W(12,10,14,8),W(18,4,20,2),W(20,2,22,4),W(26,8,28,10),
+  W(12,10,14,12),W(18,16,20,18),W(20,18,22,16),W(26,12,28,10),
+  W(28,10,36,10),W(36,10,36,15),W(36,19,36,26),W(36,10,44,10),W(44,10,44,15),W(44,19,44,26),W(44,26,36,26),
+  W(36,26,32,26),W(28,26,26,26),W(26,26,16,26),W(12,26,8,26),W(8,26,2,26),
+  W(8,26,8,29),W(8,33,8,36),W(8,36,14,36),W(18,36,26,36),W(26,36,26,33),W(26,29,26,26)];
+ const c=[R('R1',3,6,10,'h'),R('R2',5,16,6,'d'),R('R3',8,24,6,'e'),R('R4',7,16,14,'e'),R('R5',1,24,14,'d'),
+  R('R6',2,36,17,'v'),R('R7',4,44,17,'v'),R('R8',10,30,26,'h'),R('R9',3,14,26,'h'),
+  R('R10',6,8,31,'v'),R('R11',0.5,16,36,'h'),R('R12',4,26,31,'v')];
+ return {V:600,A:{x:2,y:10},B:{x:2,y:26},wires:w,comps:c}}
 const PRESETS=[
  {id:'foto',name:'Ejemplo 2: dibujo exacto de la foto (20 V, 10 capacitores)',make:()=>photo()},
  {id:'fotop',name:'Ejemplo 3: foto con puente C11 entre C5–C6 y C8–C9 (Kirchhoff)',make:()=>photo({bridge:true})},
@@ -16618,7 +16629,8 @@ const PRESETS=[
  {id:'paralelo',name:'Ejemplo 8: tres capacitores en paralelo (10 V)',make:par3},
  {id:'foto2',name:'Ejemplo 9: dos ramas A–B con octágono C9–C12 (80 V, 10 capacitores)',make:octaedro},
  {id:'ej10',name:'Ejemplo 10: C5–C2–C6–(C3∥C9)–[C7 ∥ (C10–C4–C8)]–C1 (48 V, 10 capacitores)',make:ej10},
- {id:'ej11',name:'Ejemplo 11: 10 resistencias a 240 V · R5–(R6∥R9)–(R2∥R4)–(R7∥R8)–(R1∥R3)–R10',make:ej11}];
+ {id:'ej11',name:'Ejemplo 11: 10 resistencias a 240 V · R5–(R6∥R9)–(R2∥R4)–(R7∥R8)–(R1∥R3)–R10',make:ej11},
+ {id:'ej12',name:'Ejemplo 12: 12 resistencias a 600 V · R1–[(R2+R3)∥(R4+R5)]–(R6∥R7)–R8–[R9∥(R10+R11+R12)]',make:ej12}];
 globalThis.NoryxCircuits={solve,PRESET,PRESETS,netlist,sci,si};
 if(typeof document==='undefined')return;
 /* ================= INTERFAZ ================= */
@@ -23983,7 +23995,7 @@ function revealed(s){return{em:s.se>1||s.k>=1,th:s.se>=2,ta:s.se>=3&&s.k>=1}}
 function snapIt(s){const P=PD(),C=P.P(s.ag[s.c]),G=s.G[C.i],d=s.d||P.D[(G.se-1)*3+s.k];snap={lt:s.lt,c:s.c,n:s.ag.length,C,se:G.se,k:s.k,al:s.al,pc:s.pc,pr:G.pr||0,d,id:C.i,mood:snap&&snap.id==C.i?snap.mood:null};return snap}
 function ring(v){const r=els.rg,c=2*Math.PI*30;r.fg.style.strokeDasharray=c;r.fg.style.strokeDashoffset=c*(1-Math.max(0,Math.min(100,v))/100);r.fg.style.stroke=v<35?'#ff8f7a':v<55?'#ffd9a0':v<65?'#b8e08a':'#7fe0b4';r.num.textContent=Math.round(v)}
 function gauges(){const s=snap;ring(s.al);const tot=s.pr+s.pc,pct=Math.max(0,Math.min(100,tot/12*100));els.pb.style.width=pct+'%';els.pt.textContent=tot+' / 10 pts para el alta';
- [...els.dots.children].forEach((d,i)=>d.className=i+1<s.se?'on':i+1==s.se?'cur':'');els.dtx.textContent='Sesión '+s.se+(PD().P(s.ag[s.c]).ts?' de '+PD().P(s.ag[s.c]).ts:' · continuo ♾️')+' · '+(PD().FASE[s.se-1]||'Seguimiento y mantenimiento');spark()}
+ [...els.dots.children].forEach((d,i)=>d.className=i+1<s.se?'on':i+1==s.se?'cur':'');els.dtx.textContent='Sesión '+s.se+(s.C&&s.C.ts?' de '+s.C.ts:' · continuo ♾️')+' · '+(PD().FASE[s.se-1]||'Seguimiento y mantenimiento');spark()}
 function paintLog(){if(!els.bl)return;els.bl.textContent='';if(!blog.length){els.bl.append(E('span','','Aquí verás tus decisiones de hoy.'));return}blog.slice(-8).reverse().forEach(x=>{const d=E('div');d.append(E('b','',x.t),E('span','',x.n+': '+(x.l||'').slice(0,90)));els.bl.append(d)})}
 function spark(){const h=hist.slice(-9),W=240,H=34,v=h.length>=2;els.sp.style.display=els.spl.style.display=v?'':'none';if(!v){els.sp.innerHTML='';return}const pts=h.map((v,i)=>(i/(h.length-1)*W).toFixed(1)+','+(H-2-(v/100)*(H-4)).toFixed(1)).join(' ');els.sp.innerHTML='<polyline fill="none" stroke="#9be3d0" stroke-width="2" stroke-linejoin="round" points="'+pts+'"/><line x1="0" x2="'+W+'" y1="'+(H-2-.35*(H-4))+'" y2="'+(H-2-.35*(H-4))+'" stroke="#ff8f7a55" stroke-dasharray="3 3"/>'}
 function ficha(){const s=snap,C=s.C,r=revealed(s),rows=[['Motivo de consulta',C.m,1],['Emoción',C.em,r.em],['Se activa cuando',C.sit,r.em],['Pensamiento automático','«'+C.th+'»',r.th],['Herramienta acordada',C.ta,r.ta],['Historial',(()=>{try{const g=live().G[C.i];return 'Sesión anterior: alianza '+Math.round(g.al)+' · progreso acumulado '+g.pr}catch(e){return ''}})(),s.se>1]],prev=ficha.p||{};els.fi.textContent='';rows.forEach(([a,b,ok])=>{const d=E('div'),dt=E('dt','',a),dd=E('dd',ok?(prev[a+C.i]?'':'new'):'lock',ok?b:'Aún por descubrir…');d.append(dt,dd);els.fi.append(d);if(ok)prev[a+C.i]=1});ficha.p=prev}
@@ -24081,13 +24093,15 @@ function build(){room=E('div');room.id='nxPsRoom';room.setAttribute('role','dial
 function openRoom(){if(!room)build();fsz(0);const m=msgs();startIdx=Math.max(0,m.length-1);seenLen=m.length;lastText='';pend=null;streak=0;hist=[];hints=0;sessRes=[];blog=[];mist=[];paintLog();snap=null;els.end.classList.remove('on');els.end.textContent='';openOn=true;
  room.classList.add('on');document.body.classList.add('nxps');{const s0=live();if(s0&&s0.wel===false)skipIntro();else showIntro()}const s=live();if(s&&hasFirst()){snapIt(s);paintScene(true);setMood(moodFor(snap.al,''));gauges();ficha();agenda();stepper();els.ch1.textContent='🕘 '+PD().HR[snap.c]+' · quedan '+(50-15*(snap.k||0))+' min';els.ch2.textContent='Cita '+(snap.c+1)+'/'+snap.n;els.pn.textContent=snap.C.n+' · '+snap.C.e+' años · '+snap.C.j;els.av.textContent=snap.C.n[0];els.nm.textContent=snap.C.n}}
 function closeRoom(){if(room)room.classList.remove('on');document.body.classList.remove('nxps');openOn=false;view='idle';ambience(false);amb=false;try{speechSynthesis.cancel()}catch(e){}document.querySelectorAll('.pr-door').forEach(x=>x.remove());try{Q('#in').focus()}catch(e){}}
-setInterval(()=>{try{if(!PD())return;const s=live(),b=busyNow(),m=msgs();
+let waitN=0;setInterval(()=>{try{if(!PD())return;const s=live(),b=busyNow(),m=msgs();
  if(s&&!wasLive){wasLive=true;openRoom()}
  if(s&&openOn&&view=='intro'&&!snap&&hasFirst()){snapIt(s);paintScene(true);setMood(moodFor(snap.al,''));gauges();ficha();agenda();stepper();els.ch1.textContent='🕘 '+PD().HR[snap.c]+' · quedan '+(50-15*(snap.k||0))+' min';els.ch2.textContent='Cita '+(snap.c+1)+'/'+snap.n;els.pn.textContent=snap.C.n+' · '+snap.C.e+' años · '+snap.C.j;els.av.textContent=snap.C.n[0];els.nm.textContent=snap.C.n}
  if(openOn&&!s&&!b&&view!='end'&&m.slice(-3).some(x=>x.r=='a'&&/Jornada cerrada\./.test(x.t||''))){closeRoom();return}
  if(openOn&&!b&&m.length!==seenLen){seenLen=m.length;const last=m[m.length-1];if(last&&last.r=='a'){if(view=='wait0'&&s&&hasFirst()){lastText=last.t;view='q';showQ()}else if(view=='wait'||view=='q'||view=='react'||view=='sess'||view=='intro'||view=='wait0')onMsg(last.t,!!s)}}
  if(!s&&wasLive){if(view=='end'||view=='idle'||!openOn){wasLive=false}else if(!(pend&&pend.end&&(view=='react'||view=='sess'))&&!b&&++noLive>14){wasLive=false;noLive=0;if(openOn)closeRoom()}}
- if(s)noLive=0}catch(e){}},250);
+ /* arreglo: si la sala se abrió mientras el chat estaba ocupado, la jornada ya está lista pero nunca llega un mensaje nuevo que la muestre */
+  if(openOn&&view=='wait0'&&!b){if(s&&hasFirst()){const la=[...m].reverse().find(x=>x&&x.r=='a');if(la&&la.t)lastText=la.t;seenLen=m.length;waitN=0;view='q';showQ()}else if(++waitN>36){waitN=0;try{ctx.ps=null}catch(e){}closeRoom();toast('No se pudo preparar la jornada. Pídela de nuevo con «simula una jornada de psicología».')}}else if(view!='wait0')waitN=0;
+  if(s)noLive=0}catch(e){}},250);
 globalThis.nxPsRoom={open:()=>{if(live()&&!openOn){wasLive=true;openRoom()}},close:closeRoom,tips:TIPS};
 })();
 </script>
